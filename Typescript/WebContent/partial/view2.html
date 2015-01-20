@@ -1,0 +1,14 @@
+<form class="container" data-ng-controller="SimpleController as ctrl" name="form" novalidate>
+	<h1>View 2</h1>
+   	Customer name:<br/>
+   	<input  type="text" name="name" data-ng-model="ctrl.newName" required data-ensure-expression="!ctrl.isExistingCustomer(ctrl.newName)" />
+   	<span style="color:red" ng-show="form.name.$error.required">Name is required.</span>
+   	<span style="color:red" ng-show="form.name.$error.expression">Name must be unique.</span>
+   	<br/>
+   	Customer city:<br/>
+   	<input  type="text" name="city" data-ng-model="ctrl.newCity" required/>
+   	<span style="color:red" ng-show="form.city.$error.required">City is required.</span>
+   	<br/>
+   	<a href="#/view1">Cancel</a>
+   	<a href="" data-ng-hide="form.name.$invalid || form.city.$invalid" data-ng-click="ctrl.addCustomer()">Add</a>
+</form>

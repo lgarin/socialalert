@@ -1,0 +1,13 @@
+build.path.exportedFolder=WebContent
+build.path.sourceFolder=src
+compiler.codeGenTarget=ECMASCRIPT5
+compiler.compileOnSave=true
+compiler.generateDeclarationFiles=false
+compiler.mapSourceFiles=false
+compiler.moduleGenTarget=UNSPECIFIED
+compiler.noImplicitAny=false
+compiler.noLib=false
+compiler.outputDirOption=WebContent
+compiler.outputFileOption=
+compiler.removeComments=true
+eclipse.preferences.version=1

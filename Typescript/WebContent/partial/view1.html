@@ -1,0 +1,20 @@
+<div class="container" data-ng-controller="SimpleController as ctrl">
+	<h1>View 1</h1>
+	Name:<br/>
+   	<input  type="text" data-ng-model="nameFilter"/>
+   	<table>
+   		<thead>
+   			<th>Name</th>
+   			<th>City</th>
+   			<th></th>
+   		</thead>
+   		<tbody>
+	  	<tr ng-repeat="cust in ctrl.customers | filter:nameFilter | orderBy:'name'">
+	    	<td>{{ cust.name}}</td>
+	    	<td>{{ cust.city | uppercase}}</td>
+	    	<td><button class="btn" ng-click="ctrl.deleteCustomer(cust)">Delete</button></td>
+	  	</tr>
+	  	</tbody>
+	</table>
+   	<a href="#/view2">New customer</a>
+</div>
