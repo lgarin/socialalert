@@ -1,19 +1,9 @@
 var MillisPerDay = 1000 * 60 * 60 * 24;
-var QueryResult = (function () {
-    function QueryResult() {
-    }
-    return QueryResult;
-})();
 var UserApprovalModifier;
 (function (UserApprovalModifier) {
     UserApprovalModifier[UserApprovalModifier["LIKE"] = 0] = "LIKE";
     UserApprovalModifier[UserApprovalModifier["DISLIKE"] = 1] = "DISLIKE";
 })(UserApprovalModifier || (UserApprovalModifier = {}));
-var PictureInfo = (function () {
-    function PictureInfo() {
-    }
-    return PictureInfo;
-})();
 var SearchPicturesInCategoryRequest = (function () {
     function SearchPicturesInCategoryRequest() {
     }
@@ -22,17 +12,27 @@ var SearchPicturesInCategoryRequest = (function () {
 var MapWrapper = (function () {
     function MapWrapper() {
     }
+    MapWrapper.getLocation = function (info) {
+        return new L.LatLng(info.pictureLatitude, info.pictureLongitude);
+    };
+    MapWrapper.hasLocation = function (info) {
+        if (info.pictureLongitude && info.pictureLatitude) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
     MapWrapper.prototype.displayDataCallback = function (data) {
         var _this = this;
         this.map = new L.Map("map");
-        this.map.setView(new L.LatLng(51.505, -10.09), 2);
-        var layer = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors" });
+        var layer = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 15, attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors" });
         layer.addTo(this.map);
-        data.content.forEach(function (info, index, array) {
-            if (info.pictureLatitude && info.pictureLongitude) {
-                var marker = new L.Marker(new L.LatLng(info.pictureLatitude, info.pictureLongitude));
-                marker.addTo(_this.map).bindPopup("<b>" + info.title + "</b><img src='http://jcla3ndtozbxyghx.myfritz.net:18789/socialalert-app/thumbnail/" + info.pictureUri + "' height=240 width=320/>");
-            }
+        var points = data.content.filter(MapWrapper.hasLocation).map(MapWrapper.getLocation);
+        this.map.fitBounds(L.latLngBounds(points));
+        data.content.filter(MapWrapper.hasLocation).forEach(function (info) {
+            var marker = new L.Marker(MapWrapper.getLocation(info));
+            marker.addTo(_this.map).bindPopup("<b>" + info.title + "</b><img src='http://jcla3ndtozbxyghx.myfritz.net:18789/socialalert-app/thumbnail/" + info.pictureUri + "' height=220 width=300/>");
         });
     };
     return MapWrapper;
@@ -104,12 +104,19 @@ app.directive('ensureExpression', ['$http', '$parse', function ($http, $parse) {
         }
     };
 }]);
+app.directive("thumbnail", function () {
+    return {
+        restrict: "E",
+        replace: true,
+        templateUrl: "thumbnail.html"
+    };
+});
 function errorCallback(error) {
     alert(error.message);
 }
 app.run(['rpcService', 'mapWrapper', function (rpcService, mapWrapper) {
     var request = new SearchPicturesInCategoryRequest();
-    request.maxAge = 360 * MillisPerDay;
+    request.maxAge = 720 * MillisPerDay;
     request.category = 'ART';
     request.pageNumber = 0;
     request.pageSize = 20;

@@ -1,10 +1,10 @@
 
 var MillisPerDay : number = 1000 * 60 * 60 * 24;
 
-class QueryResult<T> {
-    public content : T[];
-    public pageNumber : number;
-    public pageCount : number;
+interface QueryResult<T> {
+    content : T[];
+    pageNumber : number;
+    pageCount : number;
 }
 
 enum UserApprovalModifier {
@@ -12,31 +12,31 @@ enum UserApprovalModifier {
     DISLIKE
 }
 
-class PictureInfo {
-    public pictureUri : string;
-    public title : string;
-    public description : string;
-    public profileId : string;
-    public creation : Date;
-    public lastUpdate : Date;
-    public pictureTimestamp : Date;
-    public pictureWidth : number;
-    public pictureHeight : number;
-    public pictureLongitude : number;
-    public pictureLatitude : number;
-    public locality : string;
-    public country : string;
-    public cameraMaker : string;
-    public cameraModel : string;
-    public hitCount : number;
-    public likeCount : number;
-    public dislikeCount : number;
-    public commentCount : number;
-    public categories : string[];
-    public tags : string[];
-    public userApprovalModifier : UserApprovalModifier;
-    public creator : string;
-    public oline : boolean;
+interface PictureInfo {
+    pictureUri : string;
+    title : string;
+    description : string;
+    profileId : string;
+    creation : Date;
+    lastUpdate : Date;
+    pictureTimestamp : Date;
+    pictureWidth : number;
+    pictureHeight : number;
+    pictureLongitude : number;
+    pictureLatitude : number;
+    locality : string;
+    country : string;
+    cameraMaker : string;
+    cameraModel : string;
+    hitCount : number;
+    likeCount : number;
+    dislikeCount : number;
+    commentCount : number;
+    categories : string[];
+    tags : string[];
+    userApprovalModifier : UserApprovalModifier;
+    creator : string;
+    online : boolean;
 }
 
 class SearchPicturesInCategoryRequest {
@@ -54,23 +54,31 @@ class MapWrapper {
      private map : L.Map;
     
     constructor() {
-        
-        
-       
+    }
+    
+    static getLocation(info : PictureInfo) {
+       return new L.LatLng(info.pictureLatitude, info.pictureLongitude);
+    }
+    
+    static hasLocation(info : PictureInfo) {
+       if (info.pictureLongitude && info.pictureLatitude) {
+          return true; 
+       } else {
+          return false; 
+       }
     }
     
     public displayDataCallback(data: QueryResult<PictureInfo>) : void {
-            this.map = new L.Map("map");
-            this.map.setView(new L.LatLng(51.505, -10.09), 2);
-            var layer = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", 
-                {maxZoom: 18, attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"});
-            layer.addTo(this.map);
+        this.map = new L.Map("map");
+        var layer = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", 
+            {maxZoom: 15, attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"});
+        layer.addTo(this.map);
         
-        data.content.forEach((info, index, array) => {
-            if (info.pictureLatitude && info.pictureLongitude) {
-                var marker = new L.Marker(new L.LatLng(info.pictureLatitude, info.pictureLongitude));
-                marker.addTo(this.map).bindPopup("<b>" + info.title + "</b><img src='http://jcla3ndtozbxyghx.myfritz.net:18789/socialalert-app/thumbnail/" + info.pictureUri + "' height=240 width=320/>");
-            }
+        var points = data.content.filter(MapWrapper.hasLocation).map(MapWrapper.getLocation);
+        this.map.fitBounds(L.latLngBounds(points));
+        data.content.filter(MapWrapper.hasLocation).forEach(info => {
+            var marker = new L.Marker(MapWrapper.getLocation(info));
+            marker.addTo(this.map).bindPopup("<b>" + info.title + "</b><img src='http://jcla3ndtozbxyghx.myfritz.net:18789/socialalert-app/thumbnail/" + info.pictureUri + "' height=220 width=300/>");
         });
     }
 }
@@ -151,13 +159,21 @@ app.directive('ensureExpression', ['$http', '$parse', function($http, $parse) {
     };
 }]);
 
+app.directive("thumbnail", function() {
+  return {
+    restrict: "E",
+    replace: true,
+    templateUrl: "thumbnail.html"
+  };
+});
+
 function errorCallback(error : RpcError) {
    alert(error.message); 
 }
 
 app.run(['rpcService', 'mapWrapper', function(rpcService : RpcService, mapWrapper : MapWrapper) {
     var request : SearchPicturesInCategoryRequest = new SearchPicturesInCategoryRequest();
-    request.maxAge = 360 * MillisPerDay;
+    request.maxAge = 720 * MillisPerDay;
     request.category = 'ART';
     request.pageNumber = 0;
     request.pageSize = 20;
