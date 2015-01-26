@@ -50,6 +50,20 @@ class SearchPicturesInCategoryRequest {
     public category : string;
 }
 
+class SearchPicturesRequest {
+    public maxAge : number;
+    public keywords : string;
+    public maxDistance : number;
+    public pageSize : number;
+    public pageNumber : number;
+    public longitude : number;
+    public latitude : number;
+}
+
+class FindKeywordSuggestionsRequest {
+   public partial : string; 
+}
+
 class MapWrapper {
      private map : L.Map;
     
@@ -69,10 +83,12 @@ class MapWrapper {
     }
     
     public displayDataCallback(data: QueryResult<PictureInfo>) : void {
-        this.map = new L.Map("map");
-        var layer = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", 
-            {maxZoom: 15, attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"});
-        layer.addTo(this.map);
+        if (!this.map) {
+            this.map = new L.Map("mapDiv");
+            var layer = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", 
+                {maxZoom: 15, attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"});
+            layer.addTo(this.map);
+        }
         
         var points = data.content.filter(MapWrapper.hasLocation).map(MapWrapper.getLocation);
         this.map.fitBounds(L.latLngBounds(points));
@@ -85,7 +101,37 @@ class MapWrapper {
 
 class MapController {
     
-    constructor(private map : MapWrapper) {
+    public keyword : string;
+    
+    constructor(private rpcService : RpcService, private mapWrapper : MapWrapper) {
+        this.keyword = "";
+    }
+    
+    public reloadData() {
+        var request = new SearchPicturesRequest();
+        request.maxAge = 720 * MillisPerDay;
+        request.pageNumber = 0;
+        request.pageSize = 20;
+        if (this.keyword.length == 0) {
+            request.keywords = null;
+        } else {
+            request.keywords = this.keyword;
+        }
+        request.longitude = null;
+        request.latitude = null;
+        request.maxDistance = null;
+        this.rpcService.call('pictureFacade', "searchPictures", request, this.mapWrapper.displayDataCallback, errorCallback);
+    }
+    
+    private debug(v : Array<string>) {
+        alert(v);
+        return v;
+    }
+    
+    public getSuggestions(input : string) : ng.IPromise<Array<string>> {
+        var request = new FindKeywordSuggestionsRequest();
+        request.partial = input;
+       return this.rpcService.call<Array<string>>("pictureFacade", "findKeywordSuggestions", request, (data) => data, errorCallback).then((data) => this.debug(data.result));
     }
 }
 
@@ -124,9 +170,9 @@ class RpcService {
     constructor(private $http : ng.IHttpService, private baseUrl : string) {
     }
     
-    public call<T>(service : string, method : string, parameters : any, success : RpcCallback<T>, error : RpcCallback<RpcError>) : void {
+    public call<T>(service : string, method : string, parameters : any, success : RpcCallback<T>, error : RpcCallback<RpcError>) : ng.IPromise<RpcResponse<T>> {
         var request = new RpcRequest(this.id++, method, parameters);
-        this.$http.post(this.baseUrl + service, request, {'headers':{'Content-Type': 'application/json'}}).
+        return this.$http.post(this.baseUrl + service, request, {'headers':{'Content-Type': 'application/json'}}).
             success((data : RpcResponse<T>) => {if (data.error) error(data.error); else success(data.result);}).
             error((data: any, status: number) =>  error(new RpcError(status, "Cannot connect")));
     }
@@ -141,12 +187,12 @@ class AppConfig {
     }
 }
 
-var app = angular.module('app', ['ngRoute']);
+var app = angular.module('app', ['ngRoute', 'ui.bootstrap']);
 app.value('baseUrl', 'http://jcla3ndtozbxyghx.myfritz.net:18789/socialalert-app/rest/');
 app.service('mapWrapper', MapWrapper);
 app.service('rpcService', ['$http', 'baseUrl', RpcService]);
 app.config(['$routeProvider', AppConfig]);
-app.controller('MapController', ['mapWrapper', MapController]);
+app.controller('MapController', ['rpcService', 'mapWrapper', MapController]);
 app.directive('ensureExpression', ['$http', '$parse', function($http, $parse) {
     return {
         require: 'ngModel',
@@ -172,14 +218,13 @@ function errorCallback(error : RpcError) {
 }
 
 app.run(['rpcService', 'mapWrapper', function(rpcService : RpcService, mapWrapper : MapWrapper) {
-    var request : SearchPicturesInCategoryRequest = new SearchPicturesInCategoryRequest();
+    var request = new SearchPicturesRequest();
     request.maxAge = 720 * MillisPerDay;
-    request.category = 'ART';
     request.pageNumber = 0;
     request.pageSize = 20;
     request.keywords = null;
     request.longitude = null;
     request.latitude = null;
     request.maxDistance = null;
-    rpcService.call('pictureFacade', "searchPicturesInCategory", request, mapWrapper.displayDataCallback, errorCallback);
+    rpcService.call('pictureFacade', "searchPictures", request, mapWrapper.displayDataCallback, errorCallback);
 }]);
