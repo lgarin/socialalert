@@ -21,9 +21,9 @@
     	<div class="container-fluid">
     		<div class="form-horizontal">
     			<div class="form-group">
-    				<label for="keyword" class="col-sm-2 control-label">Keyword: <i data-ng-show="loadingSuggestions" class="glyphicon glyphicon-refresh"></i> </label>
+    				<label for="keyword" class="col-sm-2 control-label">Keyword: </label>
     				 <div class="col-sm-2">
-		    			<input id="keyword" type="text" class="form-control" placeholder="Keyword" data-ng-model="mapCtrl.keyword" data-ng-change="mapCtrl.reloadData()" data-ng-model-options="{debounce: 500}" data-typeahead="item for item in mapCtrl.getSuggestions($viewValue)" data-typeahead-loading="loadingSuggestions"/>
+		    			<input id="keyword" type="text" class="form-control" placeholder="Keyword" data-ng-model="mapCtrl.keyword" data-ng-model-options="{debounce: 500}" data-typeahead="item for item in mapCtrl.getSuggestions($viewValue)" data-typeahead-min-length="2" data-ng-keypress="$event.keyCode == 13 && mapCtrl.reloadData()" data-typeahead-on-select="mapCtrl.startSearch($item)"/>
 		    		 </div>
 	    		</div>
 	    	</div>
