@@ -19,13 +19,44 @@ var FindKeywordSuggestionsRequest = (function () {
     }
     return FindKeywordSuggestionsRequest;
 })();
-var MapWrapper = (function () {
-    function MapWrapper() {
+var MapController = (function () {
+    function MapController(rpcService, $scope, $compile) {
+        var _this = this;
+        this.rpcService = rpcService;
+        this.$scope = $scope;
+        this.$compile = $compile;
+        this.displayDataCallback = function (data) {
+            if (!_this.map) {
+                _this.map = new L.Map("mapDiv");
+                var layer = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 15, attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors" });
+                layer.addTo(_this.map);
+                _this.markers = new L.LayerGroup();
+                _this.markers.addTo(_this.map);
+            }
+            _this.markers.clearLayers();
+            var points = data.content.filter(MapController.hasLocation).map(MapController.getLocation);
+            if (points.length > 0) {
+                _this.map.fitBounds(L.latLngBounds(points));
+            }
+            else {
+                _this.map.fitWorld();
+            }
+            data.content.filter(MapController.hasLocation).forEach(function (info) {
+                var marker = new L.Marker(MapController.getLocation(info));
+                var scope = _this.$scope.$new();
+                scope['info'] = 'Lucien';
+                var template = _this.$compile("<thumbnail/>")(scope);
+                marker.bindPopup(template.html());
+                _this.markers.addLayer(marker);
+            });
+        };
+        this.keyword = "";
+        this.reloadData();
     }
-    MapWrapper.getLocation = function (info) {
+    MapController.getLocation = function (info) {
         return new L.LatLng(info.pictureLatitude, info.pictureLongitude);
     };
-    MapWrapper.hasLocation = function (info) {
+    MapController.hasLocation = function (info) {
         if (info.pictureLongitude && info.pictureLatitude) {
             return true;
         }
@@ -33,38 +64,6 @@ var MapWrapper = (function () {
             return false;
         }
     };
-    MapWrapper.prototype.displayDataCallback = function (data) {
-        var _this = this;
-        if (!this.map) {
-            this.map = new L.Map("mapDiv");
-            var layer = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 15, attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors" });
-            layer.addTo(this.map);
-            this.markers = new L.LayerGroup();
-            this.markers.addTo(this.map);
-        }
-        this.markers.clearLayers();
-        var points = data.content.filter(MapWrapper.hasLocation).map(MapWrapper.getLocation);
-        if (points.length > 0) {
-            this.map.fitBounds(L.latLngBounds(points));
-        }
-        else {
-            this.map.fitWorld();
-        }
-        data.content.filter(MapWrapper.hasLocation).forEach(function (info) {
-            var marker = new L.Marker(MapWrapper.getLocation(info));
-            marker.bindPopup("<b>" + info.title + "</b><img src='http://jcla3ndtozbxyghx.myfritz.net:18789/socialalert-app/thumbnail/" + info.pictureUri + "' height=220 width=300/>");
-            _this.markers.addLayer(marker);
-        });
-    };
-    return MapWrapper;
-})();
-var MapController = (function () {
-    function MapController(rpcService, mapWrapper) {
-        this.rpcService = rpcService;
-        this.mapWrapper = mapWrapper;
-        this.keyword = "";
-        this.reloadData();
-    }
     MapController.prototype.reloadData = function () {
         var request = new SearchPicturesRequest();
         request.maxAge = 2000 * MillisPerDay;
@@ -79,15 +78,11 @@ var MapController = (function () {
         request.longitude = null;
         request.latitude = null;
         request.maxDistance = null;
-        this.rpcService.call('pictureFacade', "searchPictures", request).then(this.mapWrapper.displayDataCallback).catch(errorCallback);
+        this.rpcService.call('pictureFacade', "searchPictures", request).then(this.displayDataCallback).catch(errorCallback);
     };
     MapController.prototype.startSearch = function (keyword) {
         this.keyword = keyword;
         this.reloadData();
-    };
-    MapController.prototype.debug = function (v) {
-        alert(v);
-        return v;
     };
     MapController.prototype.getSuggestions = function (input) {
         var request = new FindKeywordSuggestionsRequest();
@@ -119,25 +114,26 @@ var RpcResponse = (function () {
 })();
 var RpcService = (function () {
     function RpcService($http, $q, baseUrl) {
+        var _this = this;
         this.$http = $http;
         this.$q = $q;
         this.baseUrl = baseUrl;
         this.id = 0;
+        this.successCallback = function (arg) {
+            if (arg.data.error) {
+                return _this.$q.reject(arg.data.error);
+            }
+            else {
+                return arg.data.result;
+            }
+        };
+        this.errorCallback = function (arg) {
+            return _this.$q.reject(new RpcError(arg.status, "Cannot connect"));
+        };
     }
-    RpcService.prototype.success = function (arg) {
-        if (arg.data.error) {
-            return this.$q.reject(arg.data.error);
-        }
-        else {
-            return arg.data.result;
-        }
-    };
-    RpcService.prototype.error = function (arg) {
-        return this.$q.reject(new RpcError(arg.status, "Cannot connect"));
-    };
     RpcService.prototype.call = function (service, method, parameters) {
         var request = new RpcRequest(this.id++, method, parameters);
-        return this.$http.post(this.baseUrl + service, request, { 'headers': { 'Content-Type': 'application/json' } }).then(this.success, this.error);
+        return this.$http.post(this.baseUrl + service, request, { 'headers': { 'Content-Type': 'application/json' } }).then(this.successCallback, this.errorCallback);
     };
     return RpcService;
 })();
@@ -149,10 +145,9 @@ var AppConfig = (function () {
 })();
 var app = angular.module('app', ['ngRoute', 'ui.bootstrap']);
 app.value('baseUrl', 'http://jcla3ndtozbxyghx.myfritz.net:18789/socialalert-app/rest/');
-app.service('mapWrapper', MapWrapper);
 app.service('rpcService', ['$http', '$q', 'baseUrl', RpcService]);
 app.config(['$routeProvider', AppConfig]);
-app.controller('MapController', ['rpcService', 'mapWrapper', MapController]);
+app.controller('MapController', ['rpcService', '$scope', '$compile', MapController]);
 app.directive('ensureExpression', ['$http', '$parse', function ($http, $parse) {
     return {
         require: 'ngModel',
@@ -167,8 +162,9 @@ app.directive('ensureExpression', ['$http', '$parse', function ($http, $parse) {
 app.directive("thumbnail", function () {
     return {
         restrict: "E",
-        replace: true,
-        templateUrl: "thumbnail.html"
+        replace: false,
+        transclude: true,
+        template: "<b>Hello {{info}}</b>"
     };
 });
 function errorCallback(error) {
