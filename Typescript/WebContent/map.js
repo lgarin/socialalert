@@ -44,9 +44,9 @@ var MapController = (function () {
             data.content.filter(MapController.hasLocation).forEach(function (info) {
                 var marker = new L.Marker(MapController.getLocation(info));
                 var scope = _this.$scope.$new();
-                scope['info'] = 'Lucien';
+                scope['info'] = info;
                 var template = _this.$compile("<thumbnail/>")(scope);
-                marker.bindPopup(template.html());
+                marker.bindPopup(template[0]);
                 _this.markers.addLayer(marker);
             });
         };
@@ -164,7 +164,7 @@ app.directive("thumbnail", function () {
         restrict: "E",
         replace: false,
         transclude: true,
-        template: "<b>Hello {{info}}</b>"
+        templateUrl: "partial/thumbnail.html"
     };
 });
 function errorCallback(error) {

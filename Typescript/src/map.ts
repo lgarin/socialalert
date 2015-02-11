@@ -95,7 +95,6 @@ class MapController {
             layer.addTo(this.map);
             this.markers = new L.LayerGroup<L.Marker>();
             this.markers.addTo(this.map);
-            
         }
         
         this.markers.clearLayers(); 
@@ -108,17 +107,12 @@ class MapController {
         }
            
         data.content.filter(MapController.hasLocation).forEach(info => {
-            /*
             var marker = new L.Marker(MapController.getLocation(info));
-            marker.bindPopup("<b>" + info.title + "</b><img src='http://jcla3ndtozbxyghx.myfritz.net:18789/socialalert-app/thumbnail/" + info.pictureUri + "' height=220 width=300/>");
+            var scope = this.$scope.$new();
+            scope['info'] = info;
+            var template = this.$compile("<thumbnail/>")(scope);
+            marker.bindPopup(template[0]);
             this.markers.addLayer(marker);
-            */
-                var marker = new L.Marker(MapController.getLocation(info));
-                var scope = this.$scope.$new();
-                scope['info'] = 'Lucien';
-                var template = this.$compile("<thumbnail/>")(scope);
-                marker.bindPopup(template.html());
-                this.markers.addLayer(marker);
         });
     }
     
@@ -234,8 +228,7 @@ app.directive("thumbnail", function() {
     restrict: "E",
     replace: false,
     transclude: true,
-    //templateUrl: "partial/thumbnail.html"
-    template : "<b>Hello {{info}}</b>"
+    templateUrl: "partial/thumbnail.html"
   };
 });
 
