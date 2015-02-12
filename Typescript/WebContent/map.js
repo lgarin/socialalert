@@ -1,4 +1,5 @@
 var MillisPerDay = 1000 * 60 * 60 * 24;
+var EarthRadius = 6378.1370;
 var UserApprovalModifier;
 (function (UserApprovalModifier) {
     UserApprovalModifier[UserApprovalModifier["LIKE"] = 0] = "LIKE";
@@ -14,6 +15,11 @@ var SearchPicturesRequest = (function () {
     }
     return SearchPicturesRequest;
 })();
+var MapPictureMatchCountRequest = (function () {
+    function MapPictureMatchCountRequest() {
+    }
+    return MapPictureMatchCountRequest;
+})();
 var FindKeywordSuggestionsRequest = (function () {
     function FindKeywordSuggestionsRequest() {
     }
@@ -25,36 +31,47 @@ var MapController = (function () {
         this.rpcService = rpcService;
         this.$scope = $scope;
         this.$compile = $compile;
-        this.displayDataCallback = function (data) {
-            if (!_this.map) {
-                _this.map = new L.Map("mapDiv");
-                var layer = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 15, attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors" });
-                layer.addTo(_this.map);
-                _this.markers = new L.LayerGroup();
-                _this.markers.addTo(_this.map);
-            }
-            _this.markers.clearLayers();
-            var points = data.content.filter(MapController.hasLocation).map(MapController.getLocation);
-            if (points.length > 0) {
-                _this.map.fitBounds(L.latLngBounds(points));
+        this.populateMap = function () {
+            var request = new MapPictureMatchCountRequest();
+            request.latitude = _this.map.getCenter().lat;
+            request.longitude = _this.map.getCenter().lng;
+            request.radius = _this.map.getCenter().distanceTo(_this.map.getBounds().getNorthEast()) / 1000;
+            if (_this.keyword.length == 0) {
+                request.keywords = null;
             }
             else {
-                _this.map.fitWorld();
+                request.keywords = _this.keyword;
             }
-            data.content.filter(MapController.hasLocation).forEach(function (info) {
-                var marker = new L.Marker(MapController.getLocation(info));
-                var scope = _this.$scope.$new();
-                scope['info'] = info;
-                var template = _this.$compile("<thumbnail/>")(scope);
-                marker.bindPopup(template[0]);
-                _this.markers.addLayer(marker);
-            });
+            request.maxAge = 2000 * MillisPerDay;
+            request.profileId = null;
+            _this.rpcService.call('pictureFacade', 'mapPictureMatchCount', request).then(_this.displayStatisticCallback).catch(errorCallback);
+        };
+        this.displayDataCallback = function (data) {
+            var points = data.content.filter(MapController.hasLocation).map(MapController.getLocation);
+            _this.initMap(points);
+            _this.displayItems(data);
+        };
+        this.displayStatisticCallback = function (data) {
+            var points = data.map(MapController.getPoint);
+            _this.initMap(points);
+            if (data.length == 1 && data[0].count < 100) {
+                _this.searchItems(data[0]);
+            }
+            else if (data.length == 1) {
+                _this.drillDown(data[0]);
+            }
+            else if (data.length > 1) {
+                _this.displayStatistic(data);
+            }
         };
         this.keyword = "";
-        this.reloadData();
+        this.reloadStatisticData();
     }
     MapController.getLocation = function (info) {
         return new L.LatLng(info.pictureLatitude, info.pictureLongitude);
+    };
+    MapController.getPoint = function (info) {
+        return new L.LatLng(info.latitude, info.longitude);
     };
     MapController.hasLocation = function (info) {
         if (info.pictureLongitude && info.pictureLatitude) {
@@ -64,7 +81,52 @@ var MapController = (function () {
             return false;
         }
     };
-    MapController.prototype.reloadData = function () {
+    MapController.prototype.displayItems = function (data) {
+        var _this = this;
+        data.content.filter(MapController.hasLocation).forEach(function (info) {
+            var marker = new L.Marker(MapController.getLocation(info));
+            var scope = _this.$scope.$new();
+            scope['info'] = info;
+            var template = _this.$compile("<thumbnail/>")(scope);
+            marker.bindPopup(template[0]);
+            _this.markers.addLayer(marker);
+        });
+        this.map.on('zoomend', this.populateMap);
+    };
+    MapController.prototype.initMap = function (points) {
+        if (!this.map) {
+            this.map = new L.Map("mapDiv");
+            var layer = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 15, attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors" });
+            layer.addTo(this.map);
+            this.markers = new L.LayerGroup();
+            this.markers.addTo(this.map);
+        }
+        this.markers.clearLayers();
+        this.map.off('zoomend', this.populateMap);
+        if (points.length > 0) {
+            this.map.fitBounds(L.latLngBounds(points));
+        }
+        else {
+            this.map.fitWorld();
+        }
+    };
+    MapController.prototype.displayStatistic = function (data) {
+        var _this = this;
+        data.forEach(function (info) {
+            var markerOption = {
+                color: 'red',
+                fillColor: '#f03',
+                fillOpacity: 0.5
+            };
+            var marker = new L.Circle(MapController.getPoint(info), 500 * info.radius, markerOption);
+            var infoIcon = new L.DivIcon({ html: '<div>' + info.count + '</div>', className: 'marker-cluster' });
+            var marker2 = new L.Marker(MapController.getPoint(info), { icon: infoIcon });
+            _this.markers.addLayer(marker);
+            _this.markers.addLayer(marker2);
+        });
+        this.map.on('zoomend', this.populateMap);
+    };
+    MapController.prototype.searchItems = function (data) {
         var request = new SearchPicturesRequest();
         request.maxAge = 2000 * MillisPerDay;
         request.pageNumber = 0;
@@ -80,9 +142,39 @@ var MapController = (function () {
         request.maxDistance = null;
         this.rpcService.call('pictureFacade', "searchPictures", request).then(this.displayDataCallback).catch(errorCallback);
     };
+    MapController.prototype.drillDown = function (data) {
+        var request = new MapPictureMatchCountRequest();
+        request.latitude = data.latitude;
+        request.longitude = data.longitude;
+        request.radius = data.radius;
+        if (this.keyword.length == 0) {
+            request.keywords = null;
+        }
+        else {
+            request.keywords = this.keyword;
+        }
+        request.maxAge = 2000 * MillisPerDay;
+        request.profileId = null;
+        this.rpcService.call('pictureFacade', 'mapPictureMatchCount', request).then(this.displayStatisticCallback).catch(errorCallback);
+    };
+    MapController.prototype.reloadStatisticData = function () {
+        var request = new MapPictureMatchCountRequest();
+        request.latitude = 0;
+        request.longitude = 0;
+        request.radius = EarthRadius;
+        if (this.keyword.length == 0) {
+            request.keywords = null;
+        }
+        else {
+            request.keywords = this.keyword;
+        }
+        request.maxAge = 2000 * MillisPerDay;
+        request.profileId = null;
+        this.rpcService.call('pictureFacade', 'mapPictureMatchCount', request).then(this.displayStatisticCallback).catch(errorCallback);
+    };
     MapController.prototype.startSearch = function (keyword) {
         this.keyword = keyword;
-        this.reloadData();
+        this.reloadStatisticData();
     };
     MapController.prototype.getSuggestions = function (input) {
         var request = new FindKeywordSuggestionsRequest();

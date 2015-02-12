@@ -1,5 +1,6 @@
 
 var MillisPerDay : number = 1000 * 60 * 60 * 24;
+var EarthRadius : number = 6378.1370;
 
 interface QueryResult<T> {
     content : T[];
@@ -39,6 +40,16 @@ interface PictureInfo {
     online : boolean;
 }
 
+interface GeoArea {
+   latitude : number;
+   longitude : number;
+   radius : number; 
+}
+
+interface GeoStatistic extends GeoArea {
+   count : number;
+}
+
 class SearchPicturesInCategoryRequest {
     public maxAge : number;
     public keywords : string;
@@ -60,6 +71,15 @@ class SearchPicturesRequest {
     public latitude : number;
 }
 
+class MapPictureMatchCountRequest {
+    public latitude : number;
+    public longitude : number;
+    public radius : number;
+    public keywords : string;
+    public maxAge : number;
+    public profileId : string[];
+}
+
 class FindKeywordSuggestionsRequest {
    public partial : string; 
 }
@@ -68,15 +88,19 @@ class MapController {
     
     public keyword : string;
     private map : L.Map;
-    private markers : L.LayerGroup<L.Marker>;
+    private markers : L.LayerGroup<L.ILayer>;
     
     constructor(private rpcService : RpcService, private $scope : ng.IScope, private $compile : ng.ICompileService) {
         this.keyword = "";
-        this.reloadData();
+        this.reloadStatisticData();
     }
     
     static getLocation(info : PictureInfo) {
        return new L.LatLng(info.pictureLatitude, info.pictureLongitude);
+    }
+    
+    static getPoint(info : GeoArea) {
+       return new L.LatLng(info.latitude, info.longitude); 
     }
     
     static hasLocation(info : PictureInfo) {
@@ -87,7 +111,43 @@ class MapController {
        }
     }
     
+    private populateMap = () => {
+        var request = new MapPictureMatchCountRequest();
+        request.latitude = this.map.getCenter().lat;
+        request.longitude = this.map.getCenter().lng;
+        request.radius = this.map.getCenter().distanceTo(this.map.getBounds().getNorthEast()) / 1000;
+        if (this.keyword.length == 0) {
+            request.keywords = null;
+        } else {
+            request.keywords = this.keyword;
+        }
+        request.maxAge = 2000 * MillisPerDay;
+        request.profileId = null;
+        this.rpcService.call('pictureFacade', 'mapPictureMatchCount', request).then(this.displayStatisticCallback).catch(errorCallback);
+        
+    }
+    
+    private displayItems(data: QueryResult<PictureInfo>) {
+        data.content.filter(MapController.hasLocation).forEach(info => {
+            var marker = new L.Marker(MapController.getLocation(info));
+            var scope = this.$scope.$new();
+            scope['info'] = info;
+            var template = this.$compile("<thumbnail/>")(scope);
+            marker.bindPopup(template[0]);
+            this.markers.addLayer(marker);
+        });
+        
+        this.map.on('zoomend', this.populateMap);
+    }
+    
     public displayDataCallback = (data: QueryResult<PictureInfo>) => {
+
+        var points = data.content.filter(MapController.hasLocation).map(MapController.getLocation);
+        this.initMap(points);
+        this.displayItems(data);
+    }
+    
+    private initMap(points) {
         if (!this.map) {
             this.map = new L.Map("mapDiv");
             var layer = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", 
@@ -98,25 +158,48 @@ class MapController {
         }
         
         this.markers.clearLayers(); 
+
+        this.map.off('zoomend', this.populateMap);
         
-        var points = data.content.filter(MapController.hasLocation).map(MapController.getLocation);
         if (points.length > 0) {
-            this.map.fitBounds(L.latLngBounds(points));
+           this.map.fitBounds(L.latLngBounds(points));
         } else {
            this.map.fitWorld(); 
         }
-           
-        data.content.filter(MapController.hasLocation).forEach(info => {
-            var marker = new L.Marker(MapController.getLocation(info));
-            var scope = this.$scope.$new();
-            scope['info'] = info;
-            var template = this.$compile("<thumbnail/>")(scope);
-            marker.bindPopup(template[0]);
-            this.markers.addLayer(marker);
-        });
     }
     
-    public reloadData() {
+    public displayStatisticCallback = (data : GeoStatistic[]) => {
+        
+        var points = data.map(MapController.getPoint);
+        this.initMap(points);
+
+        if (data.length == 1 && data[0].count < 100)  {
+            this.searchItems(data[0]);
+        } else if (data.length == 1) {
+            this.drillDown(data[0]);
+        } else if (data.length > 1) {
+            this.displayStatistic(data);
+        }
+    }
+    
+    private displayStatistic(data : GeoStatistic[]) {
+        data.forEach(info => {
+            var markerOption = {
+                color: 'red',
+                fillColor: '#f03',
+                fillOpacity: 0.5
+            }
+            var marker = new L.Circle(MapController.getPoint(info), 500 * info.radius, markerOption);
+            var infoIcon = new L.DivIcon({html: '<div>' + info.count + '</div>', className: 'marker-cluster'});
+            var marker2 = new L.Marker(MapController.getPoint(info), {icon : infoIcon});
+            this.markers.addLayer(marker);
+            this.markers.addLayer(marker2);
+         });
+        
+        this.map.on('zoomend', this.populateMap);
+    }
+    
+    private searchItems(data : GeoStatistic) {
         var request = new SearchPicturesRequest();
         request.maxAge = 2000 * MillisPerDay;
         request.pageNumber = 0;
@@ -132,9 +215,56 @@ class MapController {
         this.rpcService.call('pictureFacade', "searchPictures", request).then(this.displayDataCallback).catch(errorCallback);
     }
     
+    private drillDown(data : GeoStatistic) {
+     
+        var request = new MapPictureMatchCountRequest();
+        request.latitude = data.latitude;
+        request.longitude = data.longitude;
+        request.radius = data.radius;
+        if (this.keyword.length == 0) {
+            request.keywords = null;
+        } else {
+            request.keywords = this.keyword;
+        }
+        request.maxAge = 2000 * MillisPerDay;
+        request.profileId = null;
+        this.rpcService.call('pictureFacade', 'mapPictureMatchCount', request).then(this.displayStatisticCallback).catch(errorCallback);
+    }
+    
+    public reloadStatisticData() {
+       var request = new MapPictureMatchCountRequest();
+        request.latitude = 0;
+        request.longitude = 0;
+        request.radius = EarthRadius;
+        if (this.keyword.length == 0) {
+            request.keywords = null;
+        } else {
+            request.keywords = this.keyword;
+        }
+        request.maxAge = 2000 * MillisPerDay;
+        request.profileId = null;
+        this.rpcService.call('pictureFacade', 'mapPictureMatchCount', request).then(this.displayStatisticCallback).catch(errorCallback);
+    }
+    /*
+    public reloadData() {
+        var request = new SearchPicturesRequest();
+        request.maxAge = 2000 * MillisPerDay;
+        request.pageNumber = 0;
+        request.pageSize = 20;
+        if (this.keyword.length == 0) {
+            request.keywords = null;
+        } else {
+            request.keywords = this.keyword;
+        }
+        request.longitude = null;
+        request.latitude = null;
+        request.maxDistance = null;
+        this.rpcService.call('pictureFacade', "searchPictures", request).then(this.displayDataCallback).catch(errorCallback);
+    }
+    */
     public startSearch(keyword : string) {
         this.keyword = keyword;
-        this.reloadData();
+        this.reloadStatisticData();
     }
 
     public getSuggestions(input : string) : ng.IPromise<Array<string>> {
