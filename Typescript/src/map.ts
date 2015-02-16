@@ -95,6 +95,14 @@ class MapController {
         this.reloadStatisticData();
     }
     
+    static toGeoArea(map : L.Map) : GeoArea {
+       return {
+           longitude : map.getCenter().lng,
+           latitude : map.getCenter().lat,
+           radius : map.getCenter().distanceTo(map.getBounds().getNorthEast()) / 1000
+        } 
+    }
+    
     static getLocation(info : PictureInfo) {
        return new L.LatLng(info.pictureLatitude, info.pictureLongitude);
     }
@@ -113,9 +121,10 @@ class MapController {
     
     private populateMap = () => {
         var request = new MapPictureMatchCountRequest();
-        request.latitude = this.map.getCenter().lat;
-        request.longitude = this.map.getCenter().lng;
-        request.radius = this.map.getCenter().distanceTo(this.map.getBounds().getNorthEast()) / 1000;
+        var area = MapController.toGeoArea(this.map);
+        request.latitude = area.latitude;
+        request.longitude = area.longitude;
+        request.radius = area.radius;
         if (this.keyword.length == 0) {
             request.keywords = null;
         } else {
@@ -124,7 +133,6 @@ class MapController {
         request.maxAge = 2000 * MillisPerDay;
         request.profileId = null;
         this.rpcService.call('pictureFacade', 'mapPictureMatchCount', request).then(this.displayStatisticCallback).catch(errorCallback);
-        
     }
     
     private displayItems(data: QueryResult<PictureInfo>) {
@@ -138,16 +146,32 @@ class MapController {
         });
         
         this.map.on('zoomend', this.populateMap);
+        this.map.on('moveend', this.populateMap);
     }
     
     public displayDataCallback = (data: QueryResult<PictureInfo>) => {
 
         var points = data.content.filter(MapController.hasLocation).map(MapController.getLocation);
-        this.initMap(points);
+        this.initMap(points, false);
         this.displayItems(data);
     }
     
-    private initMap(points) {
+    public displayStatisticCallback = (data : GeoStatistic[]) => {
+        
+        var points = data.map(MapController.getPoint);
+        this.initMap(points, false);
+        
+        var totalCount = data.map(i => i.count).reduce((c, n) => c + n, 0);
+        
+        if (totalCount < 10) {
+           var area = MapController.toGeoArea(this.map); 
+           this.searchItems(area);
+        } else {
+           this.displayStatistic(data);
+        }
+    }
+    
+    private initMap(points : L.LatLng[], adjustMap : boolean) {
         if (!this.map) {
             this.map = new L.Map("mapDiv");
             var layer = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", 
@@ -160,18 +184,21 @@ class MapController {
         this.markers.clearLayers(); 
 
         this.map.off('zoomend', this.populateMap);
+        this.map.off('moveend', this.populateMap);
         
-        if (points.length > 0) {
-           this.map.fitBounds(L.latLngBounds(points));
-        } else {
-           this.map.fitWorld(); 
+        if (adjustMap) {
+            if (points.length > 0) {
+               this.map.fitBounds(L.latLngBounds(points));
+            } else {
+               this.map.fitWorld(); 
+            }
         }
     }
     
-    public displayStatisticCallback = (data : GeoStatistic[]) => {
+    public initialDisplayCallback = (data : GeoStatistic[]) => {
         
         var points = data.map(MapController.getPoint);
-        this.initMap(points);
+        this.initMap(points, true);
 
         if (data.length == 1 && data[0].count < 100)  {
             this.searchItems(data[0]);
@@ -189,7 +216,7 @@ class MapController {
                 fillColor: '#f03',
                 fillOpacity: 0.5
             }
-            var marker = new L.Circle(MapController.getPoint(info), 500 * info.radius, markerOption);
+            var marker = new L.Circle(MapController.getPoint(info), 750 * info.radius, markerOption);
             var infoIcon = new L.DivIcon({html: '<div>' + info.count + '</div>', className: 'marker-cluster'});
             var marker2 = new L.Marker(MapController.getPoint(info), {icon : infoIcon});
             this.markers.addLayer(marker);
@@ -197,9 +224,10 @@ class MapController {
          });
         
         this.map.on('zoomend', this.populateMap);
+        this.map.on('moveend', this.populateMap);
     }
     
-    private searchItems(data : GeoStatistic) {
+    private searchItems(data : GeoArea) {
         var request = new SearchPicturesRequest();
         request.maxAge = 2000 * MillisPerDay;
         request.pageNumber = 0;
@@ -209,9 +237,9 @@ class MapController {
         } else {
             request.keywords = this.keyword;
         }
-        request.longitude = null;
-        request.latitude = null;
-        request.maxDistance = null;
+        request.longitude = data.longitude;
+        request.latitude = data.latitude;
+        request.maxDistance = data.radius;
         this.rpcService.call('pictureFacade', "searchPictures", request).then(this.displayDataCallback).catch(errorCallback);
     }
     
@@ -228,7 +256,7 @@ class MapController {
         }
         request.maxAge = 2000 * MillisPerDay;
         request.profileId = null;
-        this.rpcService.call('pictureFacade', 'mapPictureMatchCount', request).then(this.displayStatisticCallback).catch(errorCallback);
+        this.rpcService.call('pictureFacade', 'mapPictureMatchCount', request).then(this.initialDisplayCallback).catch(errorCallback);
     }
     
     public reloadStatisticData() {
@@ -243,7 +271,7 @@ class MapController {
         }
         request.maxAge = 2000 * MillisPerDay;
         request.profileId = null;
-        this.rpcService.call('pictureFacade', 'mapPictureMatchCount', request).then(this.displayStatisticCallback).catch(errorCallback);
+        this.rpcService.call('pictureFacade', 'mapPictureMatchCount', request).then(this.initialDisplayCallback).catch(errorCallback);
     }
     /*
     public reloadData() {

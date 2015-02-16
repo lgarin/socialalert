@@ -33,9 +33,10 @@ var MapController = (function () {
         this.$compile = $compile;
         this.populateMap = function () {
             var request = new MapPictureMatchCountRequest();
-            request.latitude = _this.map.getCenter().lat;
-            request.longitude = _this.map.getCenter().lng;
-            request.radius = _this.map.getCenter().distanceTo(_this.map.getBounds().getNorthEast()) / 1000;
+            var area = MapController.toGeoArea(_this.map);
+            request.latitude = area.latitude;
+            request.longitude = area.longitude;
+            request.radius = area.radius;
             if (_this.keyword.length == 0) {
                 request.keywords = null;
             }
@@ -48,12 +49,24 @@ var MapController = (function () {
         };
         this.displayDataCallback = function (data) {
             var points = data.content.filter(MapController.hasLocation).map(MapController.getLocation);
-            _this.initMap(points);
+            _this.initMap(points, false);
             _this.displayItems(data);
         };
         this.displayStatisticCallback = function (data) {
             var points = data.map(MapController.getPoint);
-            _this.initMap(points);
+            _this.initMap(points, false);
+            var totalCount = data.map(function (i) { return i.count; }).reduce(function (c, n) { return c + n; }, 0);
+            if (totalCount < 10) {
+                var area = MapController.toGeoArea(_this.map);
+                _this.searchItems(area);
+            }
+            else {
+                _this.displayStatistic(data);
+            }
+        };
+        this.initialDisplayCallback = function (data) {
+            var points = data.map(MapController.getPoint);
+            _this.initMap(points, true);
             if (data.length == 1 && data[0].count < 100) {
                 _this.searchItems(data[0]);
             }
@@ -67,6 +80,13 @@ var MapController = (function () {
         this.keyword = "";
         this.reloadStatisticData();
     }
+    MapController.toGeoArea = function (map) {
+        return {
+            longitude: map.getCenter().lng,
+            latitude: map.getCenter().lat,
+            radius: map.getCenter().distanceTo(map.getBounds().getNorthEast()) / 1000
+        };
+    };
     MapController.getLocation = function (info) {
         return new L.LatLng(info.pictureLatitude, info.pictureLongitude);
     };
@@ -92,8 +112,9 @@ var MapController = (function () {
             _this.markers.addLayer(marker);
         });
         this.map.on('zoomend', this.populateMap);
+        this.map.on('moveend', this.populateMap);
     };
-    MapController.prototype.initMap = function (points) {
+    MapController.prototype.initMap = function (points, adjustMap) {
         if (!this.map) {
             this.map = new L.Map("mapDiv");
             var layer = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 15, attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors" });
@@ -103,11 +124,14 @@ var MapController = (function () {
         }
         this.markers.clearLayers();
         this.map.off('zoomend', this.populateMap);
-        if (points.length > 0) {
-            this.map.fitBounds(L.latLngBounds(points));
-        }
-        else {
-            this.map.fitWorld();
+        this.map.off('moveend', this.populateMap);
+        if (adjustMap) {
+            if (points.length > 0) {
+                this.map.fitBounds(L.latLngBounds(points));
+            }
+            else {
+                this.map.fitWorld();
+            }
         }
     };
     MapController.prototype.displayStatistic = function (data) {
@@ -118,13 +142,14 @@ var MapController = (function () {
                 fillColor: '#f03',
                 fillOpacity: 0.5
             };
-            var marker = new L.Circle(MapController.getPoint(info), 500 * info.radius, markerOption);
+            var marker = new L.Circle(MapController.getPoint(info), 750 * info.radius, markerOption);
             var infoIcon = new L.DivIcon({ html: '<div>' + info.count + '</div>', className: 'marker-cluster' });
             var marker2 = new L.Marker(MapController.getPoint(info), { icon: infoIcon });
             _this.markers.addLayer(marker);
             _this.markers.addLayer(marker2);
         });
         this.map.on('zoomend', this.populateMap);
+        this.map.on('moveend', this.populateMap);
     };
     MapController.prototype.searchItems = function (data) {
         var request = new SearchPicturesRequest();
@@ -137,9 +162,9 @@ var MapController = (function () {
         else {
             request.keywords = this.keyword;
         }
-        request.longitude = null;
-        request.latitude = null;
-        request.maxDistance = null;
+        request.longitude = data.longitude;
+        request.latitude = data.latitude;
+        request.maxDistance = data.radius;
         this.rpcService.call('pictureFacade', "searchPictures", request).then(this.displayDataCallback).catch(errorCallback);
     };
     MapController.prototype.drillDown = function (data) {
@@ -155,7 +180,7 @@ var MapController = (function () {
         }
         request.maxAge = 2000 * MillisPerDay;
         request.profileId = null;
-        this.rpcService.call('pictureFacade', 'mapPictureMatchCount', request).then(this.displayStatisticCallback).catch(errorCallback);
+        this.rpcService.call('pictureFacade', 'mapPictureMatchCount', request).then(this.initialDisplayCallback).catch(errorCallback);
     };
     MapController.prototype.reloadStatisticData = function () {
         var request = new MapPictureMatchCountRequest();
@@ -170,7 +195,7 @@ var MapController = (function () {
         }
         request.maxAge = 2000 * MillisPerDay;
         request.profileId = null;
-        this.rpcService.call('pictureFacade', 'mapPictureMatchCount', request).then(this.displayStatisticCallback).catch(errorCallback);
+        this.rpcService.call('pictureFacade', 'mapPictureMatchCount', request).then(this.initialDisplayCallback).catch(errorCallback);
     };
     MapController.prototype.startSearch = function (keyword) {
         this.keyword = keyword;
