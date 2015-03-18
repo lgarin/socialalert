@@ -88,11 +88,12 @@ class MapController {
     
     public keyword : string;
     private map : L.Map;
+    private initialSearch : boolean;
     private markers : L.LayerGroup<L.ILayer>;
+    public topPictures : PictureInfo[];
     
     constructor(private rpcService : RpcService, private $scope : ng.IScope, private $compile : ng.ICompileService) {
-        this.keyword = "";
-        this.reloadStatisticData();
+        this.startSearch("");
     }
     
     static toGeoArea(map : L.Map) : GeoArea {
@@ -147,19 +148,42 @@ class MapController {
         
         this.map.on('zoomend', this.populateMap);
         this.map.on('moveend', this.populateMap);
+        this.initialSearch = false;
+        this.populateTopPictures();
+    }
+    
+    public populateTopPictures = () => {
+        var request = new SearchPicturesRequest();
+        request.maxAge = 2000 * MillisPerDay;
+        request.pageNumber = 0;
+        request.pageSize = 6;
+        if (this.keyword.length == 0) {
+            request.keywords = null;
+        } else {
+            request.keywords = this.keyword;
+        }
+        var area = MapController.toGeoArea(this.map);
+        request.longitude = area.longitude;
+        request.latitude = area.latitude;
+        request.maxDistance = area.radius;
+        this.rpcService.call('pictureFacade', "searchPictures", request).then(this.showTopPicturesCallback).catch(errorCallback);
+    }
+    
+    public showTopPicturesCallback = (data: QueryResult<PictureInfo>) => {
+        this.topPictures = data.content;
     }
     
     public displayDataCallback = (data: QueryResult<PictureInfo>) => {
 
         var points = data.content.filter(MapController.hasLocation).map(MapController.getLocation);
-        this.initMap(points, false);
+        this.initMap(points);
         this.displayItems(data);
     }
     
     public displayStatisticCallback = (data : GeoStatistic[]) => {
         
         var points = data.map(MapController.getPoint);
-        this.initMap(points, false);
+        this.initMap(points);
         
         var totalCount = data.map(i => i.count).reduce((c, n) => c + n, 0);
         
@@ -171,7 +195,7 @@ class MapController {
         }
     }
     
-    private initMap(points : L.LatLng[], adjustMap : boolean) {
+    private initMap(points : L.LatLng[]) {
         if (!this.map) {
             this.map = new L.Map("mapDiv");
             var layer = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", 
@@ -186,7 +210,7 @@ class MapController {
         this.map.off('zoomend', this.populateMap);
         this.map.off('moveend', this.populateMap);
         
-        if (adjustMap) {
+        if (this.initialSearch) {
             if (points.length > 0) {
                this.map.fitBounds(L.latLngBounds(points));
             } else {
@@ -198,7 +222,7 @@ class MapController {
     public initialDisplayCallback = (data : GeoStatistic[]) => {
         
         var points = data.map(MapController.getPoint);
-        this.initMap(points, true);
+        this.initMap(points);
 
         if (data.length == 1 && data[0].count < 100)  {
             this.searchItems(data[0]);
@@ -216,7 +240,7 @@ class MapController {
                 fillColor: '#f03',
                 fillOpacity: 0.5
             }
-            var marker = new L.Circle(MapController.getPoint(info), 750 * info.radius, markerOption);
+            var marker = new L.Circle(MapController.getPoint(info), 500 * info.radius, markerOption);
             var infoIcon = new L.DivIcon({html: '<div>' + info.count + '</div>', className: 'marker-cluster'});
             var marker2 = new L.Marker(MapController.getPoint(info), {icon : infoIcon});
             this.markers.addLayer(marker);
@@ -225,6 +249,8 @@ class MapController {
         
         this.map.on('zoomend', this.populateMap);
         this.map.on('moveend', this.populateMap);
+        this.initialSearch = false;
+        this.populateTopPictures();
     }
     
     private searchItems(data : GeoArea) {
@@ -260,6 +286,7 @@ class MapController {
     }
     
     public reloadStatisticData() {
+       this.initialSearch = true;
        var request = new MapPictureMatchCountRequest();
         request.latitude = 0;
         request.longitude = 0;

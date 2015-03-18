@@ -47,14 +47,34 @@ var MapController = (function () {
             request.profileId = null;
             _this.rpcService.call('pictureFacade', 'mapPictureMatchCount', request).then(_this.displayStatisticCallback).catch(errorCallback);
         };
+        this.populateTopPictures = function () {
+            var request = new SearchPicturesRequest();
+            request.maxAge = 2000 * MillisPerDay;
+            request.pageNumber = 0;
+            request.pageSize = 6;
+            if (_this.keyword.length == 0) {
+                request.keywords = null;
+            }
+            else {
+                request.keywords = _this.keyword;
+            }
+            var area = MapController.toGeoArea(_this.map);
+            request.longitude = area.longitude;
+            request.latitude = area.latitude;
+            request.maxDistance = area.radius;
+            _this.rpcService.call('pictureFacade', "searchPictures", request).then(_this.showTopPicturesCallback).catch(errorCallback);
+        };
+        this.showTopPicturesCallback = function (data) {
+            _this.topPictures = data.content;
+        };
         this.displayDataCallback = function (data) {
             var points = data.content.filter(MapController.hasLocation).map(MapController.getLocation);
-            _this.initMap(points, false);
+            _this.initMap(points);
             _this.displayItems(data);
         };
         this.displayStatisticCallback = function (data) {
             var points = data.map(MapController.getPoint);
-            _this.initMap(points, false);
+            _this.initMap(points);
             var totalCount = data.map(function (i) { return i.count; }).reduce(function (c, n) { return c + n; }, 0);
             if (totalCount < 10) {
                 var area = MapController.toGeoArea(_this.map);
@@ -66,7 +86,7 @@ var MapController = (function () {
         };
         this.initialDisplayCallback = function (data) {
             var points = data.map(MapController.getPoint);
-            _this.initMap(points, true);
+            _this.initMap(points);
             if (data.length == 1 && data[0].count < 100) {
                 _this.searchItems(data[0]);
             }
@@ -77,8 +97,7 @@ var MapController = (function () {
                 _this.displayStatistic(data);
             }
         };
-        this.keyword = "";
-        this.reloadStatisticData();
+        this.startSearch("");
     }
     MapController.toGeoArea = function (map) {
         return {
@@ -113,8 +132,10 @@ var MapController = (function () {
         });
         this.map.on('zoomend', this.populateMap);
         this.map.on('moveend', this.populateMap);
+        this.initialSearch = false;
+        this.populateTopPictures();
     };
-    MapController.prototype.initMap = function (points, adjustMap) {
+    MapController.prototype.initMap = function (points) {
         if (!this.map) {
             this.map = new L.Map("mapDiv");
             var layer = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 15, attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors" });
@@ -125,7 +146,7 @@ var MapController = (function () {
         this.markers.clearLayers();
         this.map.off('zoomend', this.populateMap);
         this.map.off('moveend', this.populateMap);
-        if (adjustMap) {
+        if (this.initialSearch) {
             if (points.length > 0) {
                 this.map.fitBounds(L.latLngBounds(points));
             }
@@ -142,7 +163,7 @@ var MapController = (function () {
                 fillColor: '#f03',
                 fillOpacity: 0.5
             };
-            var marker = new L.Circle(MapController.getPoint(info), 750 * info.radius, markerOption);
+            var marker = new L.Circle(MapController.getPoint(info), 500 * info.radius, markerOption);
             var infoIcon = new L.DivIcon({ html: '<div>' + info.count + '</div>', className: 'marker-cluster' });
             var marker2 = new L.Marker(MapController.getPoint(info), { icon: infoIcon });
             _this.markers.addLayer(marker);
@@ -150,6 +171,8 @@ var MapController = (function () {
         });
         this.map.on('zoomend', this.populateMap);
         this.map.on('moveend', this.populateMap);
+        this.initialSearch = false;
+        this.populateTopPictures();
     };
     MapController.prototype.searchItems = function (data) {
         var request = new SearchPicturesRequest();
@@ -183,6 +206,7 @@ var MapController = (function () {
         this.rpcService.call('pictureFacade', 'mapPictureMatchCount', request).then(this.initialDisplayCallback).catch(errorCallback);
     };
     MapController.prototype.reloadStatisticData = function () {
+        this.initialSearch = true;
         var request = new MapPictureMatchCountRequest();
         request.latitude = 0;
         request.longitude = 0;
