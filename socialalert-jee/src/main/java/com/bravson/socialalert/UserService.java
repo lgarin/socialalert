@@ -5,13 +5,16 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.json.JsonObject;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -41,16 +44,16 @@ public class UserService {
 		}
 	}
 	
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	@POST
+	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/login")
-	public Response login(@HeaderParam("email") String email, @HeaderParam("password") String password) {
+	public Response login(@FormParam("email") String email, @FormParam("password") String password, @Context HttpServletRequest httpRequest, @Context HttpServletResponse httpResponse) {
 		Form form = new Form().param("username", email).param("password", password).param("grant_type", "password").param("client_id", loginClientId);
 		Response response = httpClient.target(loginUrl).request().buildPost(Entity.form(form)).invoke();
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return Response.status(Status.UNAUTHORIZED).build();
 		}
 		JsonObject payload = response.readEntity(JsonObject.class);
-		return Response.status(Status.OK).entity(payload).build();
+		return Response.status(Status.OK).entity(payload.getString("access_token")).build();
 	}
 }

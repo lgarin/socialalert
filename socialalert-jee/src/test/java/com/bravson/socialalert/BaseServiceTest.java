@@ -3,6 +3,10 @@ package com.bravson.socialalert;
 import java.io.IOException;
 import java.net.URL;
 
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.client.WebTarget;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -25,4 +29,12 @@ public abstract class BaseServiceTest {
 	
 	@ArquillianResource
 	protected URL deploymentUrl;
+	
+	protected WebTarget createTarget() {
+		return ClientBuilder.newClient().target(deploymentUrl.toString() + "rest/");
+	}
+	
+	protected Builder createRequest(String path, String mediaType) {
+		return createTarget().path(path).request(mediaType);
+	}
 }
