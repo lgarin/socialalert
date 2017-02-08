@@ -3,6 +3,16 @@
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
 	version="3.1">
 
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Rest</web-resource-name>
+			<url-pattern>/rest/greeter/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>user</role-name>
+		</auth-constraint>
+	</security-constraint>
+
 	<login-config>
 		<auth-method>KEYCLOAK</auth-method>
 	</login-config>
@@ -14,11 +24,16 @@
 	<env-entry>
 		<env-entry-name>loginUrl</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
-		<env-entry-value>http://127.0.0.1:8080/auth/realms/SocialAlert-Dev/protocol/openid-connect/token</env-entry-value>
+		<env-entry-value>http://localhost:8080/auth/realms/SocialAlert-Dev/protocol/openid-connect/token</env-entry-value>
 	</env-entry>
 	<env-entry>
 		<env-entry-name>loginClientId</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
 		<env-entry-value>socialalert-jee</env-entry-value>
+	</env-entry>
+	<env-entry>
+		<env-entry-name>clientSecret</env-entry-name>
+		<env-entry-type>java.lang.String</env-entry-type>
+		<env-entry-value>f1101baf-c3d6-4108-a065-1f5a59f403f8</env-entry-value>
 	</env-entry>
 </web-app>

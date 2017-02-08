@@ -21,9 +21,10 @@ public abstract class BaseServiceTest {
 	
 	@Deployment(testable = false)
 	public static WebArchive createDeployment() throws IOException {
-		WebArchive war = ShrinkWrap.create(WebArchive.class, "socialalert-jee.war")
+		WebArchive war = ShrinkWrap.create(WebArchive.class, "socialalert-jee-test.war")
 				.addPackage("com/bravson/socialalert")
-				.addAsWebInfResource("web.xml", "web.xml");
+				.addAsWebInfResource("web.xml", "web.xml")
+				.addAsWebInfResource("keycloak.json", "keycloak.json");
 		return war;
 	}
 	

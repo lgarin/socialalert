@@ -30,6 +30,9 @@ public class UserService {
 	@Resource(name="loginClientId")
 	String loginClientId;
 	
+	@Resource(name="clientSecret")
+	String clientSecret;
+	
 	Client httpClient;
 	
 	@PostConstruct
@@ -48,7 +51,7 @@ public class UserService {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/login")
 	public Response login(@FormParam("email") String email, @FormParam("password") String password, @Context HttpServletRequest httpRequest, @Context HttpServletResponse httpResponse) {
-		Form form = new Form().param("username", email).param("password", password).param("grant_type", "password").param("client_id", loginClientId);
+		Form form = new Form().param("username", email).param("password", password).param("grant_type", "password").param("client_id", loginClientId).param("client_secret", clientSecret);
 		Response response = httpClient.target(loginUrl).request().buildPost(Entity.form(form)).invoke();
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return Response.status(Status.UNAUTHORIZED).build();

@@ -1,6 +1,6 @@
 package com.bravson.socialalert;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
@@ -17,8 +17,8 @@ public class GreeterServiceTest extends BaseServiceTest {
 
 		Response response = createRequest("/greeter/hello", MediaType.TEXT_PLAIN).get();
 
-		assertEquals(Status.OK.getStatusCode(), response.getStatus());
-		assertEquals("hello anonymous", response.readEntity(String.class));
+		assertEquals(Status.FOUND.getStatusCode(), response.getStatus());
+		assertTrue(response.getHeaderString("Location").startsWith("http://localhost:8080/auth/realms/SocialAlert-Dev/protocol/openid-connect/auth"));
 	}
 
 	@Test
@@ -26,9 +26,9 @@ public class GreeterServiceTest extends BaseServiceTest {
 		Form form = new Form("email", "test@test.com").param("password", "123");
 		String token = createRequest("user/login", MediaType.TEXT_PLAIN).post(Entity.form(form)).readEntity(String.class);
 		
-		Response response = createRequest("/greeter/hello", MediaType.TEXT_PLAIN).header("Authorization ", "Bearer " + token).get();
+		Response response = createRequest("/greeter/hello", MediaType.TEXT_PLAIN).header("Authorization", "bearer " + token).get();
 
 		assertEquals(Status.OK.getStatusCode(), response.getStatus());
-		assertEquals("hello test", response.readEntity(String.class));
+		assertEquals("hello 4b09beae-9187-4566-b15a-b26f50dd840c", response.readEntity(String.class));
 	}
 }
