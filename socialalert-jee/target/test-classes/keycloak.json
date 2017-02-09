@@ -1,9 +1,0 @@
-{
-  "realm": "SocialAlert-Dev",
-  "auth-server-url": "http://localhost:8080/auth",
-  "ssl-required": "external",
-  "resource": "socialalert-jee",
-  "public-client": true,
-  "use-resource-role-mappings": true,
-  "enable-cors": true
-}
