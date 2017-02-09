@@ -7,6 +7,7 @@
 		<web-resource-collection>
 			<web-resource-name>Rest</web-resource-name>
 			<url-pattern>/rest/greeter/*</url-pattern>
+			<url-pattern>/rest/user/logout</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>user</role-name>
@@ -25,6 +26,11 @@
 		<env-entry-name>loginUrl</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
 		<env-entry-value>http://localhost:8080/auth/realms/SocialAlert-Dev/protocol/openid-connect/token</env-entry-value>
+	</env-entry>
+	<env-entry>
+		<env-entry-name>logoutUrl</env-entry-name>
+		<env-entry-type>java.lang.String</env-entry-type>
+		<env-entry-value>http://localhost:8080/auth/realms/SocialAlert-Dev/protocol/openid-connect/logout</env-entry-value>
 	</env-entry>
 	<env-entry>
 		<env-entry-name>loginClientId</env-entry-name>

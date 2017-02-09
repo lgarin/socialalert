@@ -5,9 +5,11 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.json.JsonObject;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -26,6 +28,9 @@ public class UserService {
 
 	@Resource(name="loginUrl")
 	String loginUrl;
+	
+	@Resource(name="logoutUrl")
+	String logoutUrl;
 	
 	@Resource(name="loginClientId")
 	String loginClientId;
@@ -50,13 +55,31 @@ public class UserService {
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/login")
-	public Response login(@FormParam("email") String email, @FormParam("password") String password, @Context HttpServletRequest httpRequest, @Context HttpServletResponse httpResponse) {
+	public Response login(@FormParam("email") String email, @FormParam("password") String password) {
 		Form form = new Form().param("username", email).param("password", password).param("grant_type", "password").param("client_id", loginClientId).param("client_secret", clientSecret);
-		Response response = httpClient.target(loginUrl).request().buildPost(Entity.form(form)).invoke();
+		Response response = httpClient.target(loginUrl).request().post(Entity.form(form));
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return Response.status(Status.UNAUTHORIZED).build();
 		}
 		JsonObject payload = response.readEntity(JsonObject.class);
 		return Response.status(Status.OK).entity(payload.getString("access_token")).build();
+	}
+	
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/logout")
+	public Response logout(@HeaderParam("Authorization") String authorization, @Context HttpServletRequest httpRequest) {
+		Response response = httpClient.target(logoutUrl).request().header("Authorization", authorization).get();
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return Response.status(response.getStatus()).build();
+		}
+		httpRequest.getSession().invalidate();
+		try {
+			httpRequest.logout();
+		} catch (ServletException e) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		}
+		
+		return Response.status(Status.NO_CONTENT).build();
 	}
 }

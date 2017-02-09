@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.client.WebTarget;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -38,4 +41,15 @@ public abstract class BaseServiceTest {
 	protected Builder createRequest(String path, String mediaType) {
 		return createTarget().path(path).request(mediaType);
 	}
+	
+	protected Builder createAuthRequest(String path, String mediaType, String token) {
+		return createRequest(path, mediaType).header("Authorization", "bearer " + token);
+	}
+	
+	protected String requestLoginToken(String email, String password) {
+		Form form = new Form("email", "test@test.com").param("password", "123");
+		return createRequest("user/login", MediaType.TEXT_PLAIN).post(Entity.form(form)).readEntity(String.class);
+	}
+	
+	
 }
