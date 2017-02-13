@@ -1,9 +1,8 @@
 package com.bravson.socialalert;
 
 import javax.annotation.ManagedBean;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.json.JsonObject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +13,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Form;
@@ -38,20 +36,9 @@ public class UserService {
 	@Resource(name="clientSecret")
 	String clientSecret;
 	
+	@Inject
 	Client httpClient;
-	
-	@PostConstruct
-	void init() {
-		httpClient = ClientBuilder.newClient();
-	}
-	
-	@PreDestroy
-	void cleanup() {
-		if (httpClient != null) {
-			httpClient.close();
-		}
-	}
-	
+
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/login")

@@ -27,6 +27,11 @@
 		<env-entry-value>http://localhost:8080/auth/realms/SocialAlert-Dev/protocol/openid-connect/token</env-entry-value>
 	</env-entry>
 	<env-entry>
+		<env-entry-name>logoutUrl</env-entry-name>
+		<env-entry-type>java.lang.String</env-entry-type>
+		<env-entry-value>http://localhost:8080/auth/realms/SocialAlert-Dev/protocol/openid-connect/logout</env-entry-value>
+	</env-entry>
+	<env-entry>
 		<env-entry-name>loginClientId</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
 		<env-entry-value>socialalert-jee</env-entry-value>
@@ -35,5 +40,10 @@
 		<env-entry-name>clientSecret</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
 		<env-entry-value>f1101baf-c3d6-4108-a065-1f5a59f403f8</env-entry-value>
+	</env-entry>
+	<env-entry>
+		<env-entry-name>mongoDbUrl</env-entry-name>
+		<env-entry-type>java.lang.String</env-entry-type>
+		<env-entry-value>mongodb://localhost:27017</env-entry-value>
 	</env-entry>
 </web-app>

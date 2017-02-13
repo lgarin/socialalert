@@ -1,15 +1,17 @@
 package com.bravson.socialalert;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.client.WebTarget;
 
+import org.assertj.core.api.Assertions;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -18,7 +20,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
-public abstract class BaseServiceTest {
+public abstract class BaseServiceTest extends Assertions {
 
 	protected static final String RESOURCE_PREFIX = "rest";
 	
@@ -26,8 +28,9 @@ public abstract class BaseServiceTest {
 	public static WebArchive createDeployment() throws IOException {
 		WebArchive war = ShrinkWrap.create(WebArchive.class, "socialalert-jee-test.war")
 				.addPackage("com/bravson/socialalert")
-				.addAsWebInfResource("web.xml", "web.xml")
-				.addAsWebInfResource("keycloak.json", "keycloak.json");
+				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/web.xml"), "web.xml")
+				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/keycloak.json"), "keycloak.json")
+				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/jboss-deployment-structure.xml"), "jboss-deployment-structure.xml");
 		return war;
 	}
 	
