@@ -2,6 +2,7 @@ package com.bravson.socialalert;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Resource;
+import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -23,5 +24,13 @@ public class ClientProducer {
 	@Produces
 	public Client httpClient() {
 		return ClientBuilder.newClient();
+	}
+	
+	public void closeMongoClient(@Disposes MongoClient mongoClient) {
+		mongoClient.close();
+	}
+	
+	public void closeHttpClient(@Disposes Client httpClient) {
+		httpClient.close();
 	}
 }

@@ -2,6 +2,7 @@
    <deployment>
       <dependencies>
          <module name="org.mongodb.mongo-java-driver" />
+         <module name="org.hibernate.hibernate-validator"/>
       </dependencies>
    </deployment>
 </jboss-deployment-structure>

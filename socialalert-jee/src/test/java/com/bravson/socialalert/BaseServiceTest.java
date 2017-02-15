@@ -26,12 +26,11 @@ public abstract class BaseServiceTest extends Assertions {
 	
 	@Deployment(testable = false)
 	public static WebArchive createDeployment() throws IOException {
-		WebArchive war = ShrinkWrap.create(WebArchive.class, "socialalert-jee-test.war")
+		return ShrinkWrap.create(WebArchive.class, "socialalert-jee-test.war")
 				.addPackage("com/bravson/socialalert")
 				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/web.xml"), "web.xml")
 				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/keycloak.json"), "keycloak.json")
 				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/jboss-deployment-structure.xml"), "jboss-deployment-structure.xml");
-		return war;
 	}
 	
 	@ArquillianResource

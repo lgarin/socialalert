@@ -1,5 +1,7 @@
 package com.bravson.socialalert;
 
+import java.security.Principal;
+
 import javax.annotation.ManagedBean;
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -20,6 +22,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotEmpty;
+
+import com.mongodb.MongoClient;
+
 @Path("/user")
 @ManagedBean
 public class UserService {
@@ -38,11 +45,17 @@ public class UserService {
 	
 	@Inject
 	Client httpClient;
-
+	
+	@Inject
+	Principal principal;
+	
+	@Inject
+	UserRepository userRepository;
+	
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/login")
-	public Response login(@FormParam("email") String email, @FormParam("password") String password) {
+	public Response login(@Email @FormParam("email") String email, @NotEmpty @FormParam("password") String password) {
 		Form form = new Form().param("username", email).param("password", password).param("grant_type", "password").param("client_id", loginClientId).param("client_secret", clientSecret);
 		Response response = httpClient.target(loginUrl).request().post(Entity.form(form));
 		if (response.getStatus() != Status.OK.getStatusCode()) {
@@ -55,7 +68,7 @@ public class UserService {
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/logout")
-	public Response logout(@HeaderParam("Authorization") String authorization, @Context HttpServletRequest httpRequest) {
+	public Response logout(@NotEmpty @HeaderParam("Authorization") String authorization, @Context HttpServletRequest httpRequest) {
 		Response response = httpClient.target(logoutUrl).request().header("Authorization", authorization).get();
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return Response.status(response.getStatus()).build();
@@ -68,5 +81,16 @@ public class UserService {
 		}
 		
 		return Response.status(Status.NO_CONTENT).build();
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/current")
+	public Response current() {
+		UserInfo userInfo = userRepository.getUserInfo(principal.getName());
+		if (userInfo == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		return Response.status(Status.OK).entity(userInfo).build();
 	}
 }

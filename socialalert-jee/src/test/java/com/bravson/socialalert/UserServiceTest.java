@@ -22,6 +22,20 @@ public class UserServiceTest extends BaseServiceTest {
 	}
 	
 	@Test
+	public void loginWithEmptyPassword() throws Exception {
+		Form form = new Form("email", "test@test.com").param("password", "");
+		Response response = createRequest("/user/login", MediaType.TEXT_PLAIN).post(Entity.form(form));
+		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+	}
+	
+	@Test
+	public void loginWithInvalidEmail() throws Exception {
+		Form form = new Form("email", "test").param("password", "abc");
+		Response response = createRequest("/user/login", MediaType.TEXT_PLAIN).post(Entity.form(form));
+		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+	}
+	
+	@Test
 	public void loginWithInvalidPassword() throws Exception {
 		Form form = new Form("email", "test@test.com").param("password", "abc");
 		Response response = createRequest("/user/login", MediaType.TEXT_PLAIN).post(Entity.form(form));
@@ -39,7 +53,7 @@ public class UserServiceTest extends BaseServiceTest {
 	public void logoutWithoutToken() throws Exception {
 		Response response = createRequest("/user/logout", MediaType.TEXT_PLAIN).get();
 		//assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
-		assertThat(response.getStatus()).isEqualTo(Status.NO_CONTENT.getStatusCode());
+		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 	}
 	
 	@Test
@@ -48,4 +62,11 @@ public class UserServiceTest extends BaseServiceTest {
 		Response response = createAuthRequest("/user/logout", MediaType.TEXT_PLAIN, token).get();
 		assertThat(response.getStatus()).isEqualTo(Status.NO_CONTENT.getStatusCode());
 	}
+	
+	@Test
+	public void logoutWithInvalidToken() throws Exception {
+		Response response = createAuthRequest("/user/logout", MediaType.TEXT_PLAIN, "12344334").get();
+		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
+	}
+	
 }
