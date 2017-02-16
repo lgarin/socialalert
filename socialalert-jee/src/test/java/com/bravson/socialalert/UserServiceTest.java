@@ -69,4 +69,21 @@ public class UserServiceTest extends BaseServiceTest {
 		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
 	
+	@Test
+	public void getCurrentUserWithToken() throws Exception {
+		String token = requestLoginToken("test@test.com", "123");
+		Response response = createAuthRequest("/user/current", MediaType.APPLICATION_JSON, token).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+		UserInfo user = response.readEntity(UserInfo.class);
+		assertThat(user).isNotNull();
+		assertThat(user.firstName).isEqualTo("Test");
+		assertThat(user.lastName).isEqualTo("Hello");
+		assertThat(user.email).isEqualTo("test@test.com");
+	}
+	
+	@Test
+	public void getCurrentUserWithoutToken() throws Exception {
+		Response response = createRequest("/user/current", MediaType.APPLICATION_JSON).get();
+		assertThat(response.getStatus()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+	}
 }

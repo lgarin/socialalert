@@ -25,8 +25,6 @@ import javax.ws.rs.core.Response.Status;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.mongodb.MongoClient;
-
 @Path("/user")
 @ManagedBean
 public class UserService {
