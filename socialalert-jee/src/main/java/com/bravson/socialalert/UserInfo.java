@@ -1,18 +1,17 @@
 package com.bravson.socialalert;
 
+import java.util.List;
+
 public class UserInfo {
 
 	public String firstName;
 	public String lastName;
 	public String email;
+	public Long createdTimestamp;
+	public List<String> groupNames;
 	
 	public UserInfo() {
 		
 	}
 	
-	public UserInfo(String firstName, String lastName, String email) {
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-	}
 }

@@ -3,6 +3,7 @@
       <dependencies>
          <module name="org.mongodb.mongo-java-driver" />
          <module name="org.hibernate.hibernate-validator"/>
+         <module name="org.infinispan.infinispan-jcache"/>
       </dependencies>
    </deployment>
 </jboss-deployment-structure>

@@ -6,7 +6,7 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 
-import org.bson.Document;
+import org.bson.BsonDocument;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -20,8 +20,8 @@ public class CollectionProducer {
 	
 	@Produces
 	@NamedMongoCollection(name="*", db="*")
-	public MongoCollection<Document> getOrCreateCollection(InjectionPoint injectionPoint) {
+	public MongoCollection<BsonDocument> getOrCreateCollection(InjectionPoint injectionPoint) {
 		NamedMongoCollection annotation = injectionPoint.getAnnotated().getAnnotation(NamedMongoCollection.class);
-		return mongoClient.getDatabase(annotation.db()).getCollection(annotation.name());
+		return mongoClient.getDatabase(annotation.db()).getCollection(annotation.name(), BsonDocument.class);
 	}
 }

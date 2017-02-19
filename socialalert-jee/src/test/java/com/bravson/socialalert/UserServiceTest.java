@@ -79,6 +79,7 @@ public class UserServiceTest extends BaseServiceTest {
 		assertThat(user.firstName).isEqualTo("Test");
 		assertThat(user.lastName).isEqualTo("Hello");
 		assertThat(user.email).isEqualTo("test@test.com");
+		assertThat(user.groupNames).contains("Users");
 	}
 	
 	@Test
