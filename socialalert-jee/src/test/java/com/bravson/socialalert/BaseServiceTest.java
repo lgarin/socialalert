@@ -26,8 +26,13 @@ public abstract class BaseServiceTest extends Assertions {
 	
 	@Deployment(testable = false)
 	public static WebArchive createDeployment() throws IOException {
+		/*
+		File[] libs = Maven.resolver()  
+                .loadPomFromFile("pom.xml").importCompileAndRuntimeDependencies().resolve().withTransitivity().as(File.class);
+		*/
 		return ShrinkWrap.create(WebArchive.class, "socialalert-jee-test.war")
 				.addPackage("com/bravson/socialalert")
+				//.addAsLibraries(libs)
 				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/beans.xml"), "beans.xml")
 				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/web.xml"), "web.xml")
 				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/keycloak.json"), "keycloak.json")

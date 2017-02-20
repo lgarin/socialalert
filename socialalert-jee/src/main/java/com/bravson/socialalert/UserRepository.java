@@ -34,9 +34,6 @@ public class UserRepository {
 		for (BsonValue groupId : d.getArray("groupIds").getValues()) {
 			info.groupNames.add(userGroupRepository.getGroupName(groupId.asString().getValue()));
 		}
-		for (BsonValue groupId : d.getArray("groupIds").getValues()) {
-			info.groupNames.add(userGroupRepository.getGroupName(groupId.asString().getValue()));
-		}
 		return info;
 	}
 }
