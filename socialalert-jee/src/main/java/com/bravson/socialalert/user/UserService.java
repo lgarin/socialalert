@@ -1,4 +1,4 @@
-package com.bravson.socialalert;
+package com.bravson.socialalert.user;
 
 import java.security.Principal;
 
@@ -85,7 +85,7 @@ public class UserService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/current")
 	public Response current() {
-		UserInfo userInfo = userRepository.getUserInfo(principal.getName());
+		UserInfo userInfo = userRepository.findUserInfo(principal.getName());
 		if (userInfo == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}

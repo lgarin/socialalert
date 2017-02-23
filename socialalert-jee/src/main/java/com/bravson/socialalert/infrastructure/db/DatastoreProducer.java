@@ -1,4 +1,4 @@
-package com.bravson.socialalert;
+package com.bravson.socialalert.infrastructure.db;
 
 import javax.annotation.ManagedBean;
 import javax.enterprise.context.ApplicationScoped;
@@ -7,21 +7,36 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 
 import org.bson.BsonDocument;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.Morphia;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 
 @ManagedBean
 @ApplicationScoped
-public class CollectionProducer {
+public class DatastoreProducer {
 
 	@Inject
 	MongoClient mongoClient;
 	
+	@Inject
+	Morphia mongoMapper;
+	
 	@Produces
 	@NamedMongoCollection(name="*", db="*")
+	@Deprecated
 	public MongoCollection<BsonDocument> getOrCreateCollection(InjectionPoint injectionPoint) {
 		NamedMongoCollection annotation = injectionPoint.getAnnotated().getAnnotation(NamedMongoCollection.class);
 		return mongoClient.getDatabase(annotation.db()).getCollection(annotation.name(), BsonDocument.class);
+	}
+	
+	@Produces
+	@NamedMongoDatastore(db="*")
+	public Datastore createDataStore(InjectionPoint injectionPoint) {
+		NamedMongoDatastore annotation = injectionPoint.getAnnotated().getAnnotation(NamedMongoDatastore.class);
+		Datastore datastore = mongoMapper.createDatastore(mongoClient, annotation.db());
+		datastore.ensureIndexes();
+		return datastore;
 	}
 }

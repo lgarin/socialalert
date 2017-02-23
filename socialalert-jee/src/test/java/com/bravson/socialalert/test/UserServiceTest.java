@@ -1,6 +1,10 @@
-package com.bravson.socialalert;
+package com.bravson.socialalert.test;
 
 import static org.junit.Assert.assertEquals;
+
+import java.net.URI;
+import java.time.Instant;
+import java.time.LocalDate;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
@@ -9,6 +13,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Test;
+
+import com.bravson.socialalert.user.Gender;
+import com.bravson.socialalert.user.UserInfo;
 
 public class UserServiceTest extends BaseServiceTest {
 
@@ -76,10 +83,17 @@ public class UserServiceTest extends BaseServiceTest {
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 		UserInfo user = response.readEntity(UserInfo.class);
 		assertThat(user).isNotNull();
-		assertThat(user.firstName).isEqualTo("Test");
-		assertThat(user.lastName).isEqualTo("Hello");
-		assertThat(user.email).isEqualTo("test@test.com");
-		assertThat(user.groupNames).contains("Users");
+		assertThat(user.getFirstName()).isEqualTo("Test");
+		assertThat(user.getLastName()).isEqualTo("Hello");
+		assertThat(user.getEmail()).isEqualTo("test@test.com");
+		assertThat(user.getGroupNames()).contains("Users");
+		assertThat(user.getCreatedTimestamp()).isEqualTo(Instant.ofEpochMilli(1486287913256L));
+		assertThat(user.getAttributes().getBirthdate()).isEqualTo(LocalDate.of(1980, 2, 28));
+		assertThat(user.getAttributes().getGender()).isEqualTo(Gender.MALE);
+		assertThat(user.getAttributes().getLanguage()).isEqualTo("fr");
+		assertThat(user.getAttributes().getCountry()).isEqualTo("CH");
+		assertThat(user.getAttributes().getBiography()).isEqualTo("hello");
+		assertThat(user.getAttributes().getImageUri()).isEqualTo(URI.create("test/test.png"));
 	}
 	
 	@Test

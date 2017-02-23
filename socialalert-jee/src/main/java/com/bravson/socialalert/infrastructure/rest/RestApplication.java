@@ -1,14 +1,11 @@
-package com.bravson.socialalert;
-
-import java.util.HashSet;
-import java.util.Set;
+package com.bravson.socialalert.infrastructure.rest;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 @ApplicationPath("/rest")
 public class RestApplication extends Application {
-
+	/*
 	@Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> s = new HashSet<Class<?>>();
@@ -16,4 +13,5 @@ public class RestApplication extends Application {
         s.add(UserService.class);
         return s;
     }
+	*/
 }

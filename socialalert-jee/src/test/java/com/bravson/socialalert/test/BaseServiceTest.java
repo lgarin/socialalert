@@ -1,4 +1,4 @@
-package com.bravson.socialalert;
+package com.bravson.socialalert.test;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +17,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
@@ -26,13 +27,17 @@ public abstract class BaseServiceTest extends Assertions {
 	
 	@Deployment(testable = false)
 	public static WebArchive createDeployment() throws IOException {
-		/*
+		
 		File[] libs = Maven.resolver()  
                 .loadPomFromFile("pom.xml").importCompileAndRuntimeDependencies().resolve().withTransitivity().as(File.class);
-		*/
+		
 		return ShrinkWrap.create(WebArchive.class, "socialalert-jee-test.war")
 				.addPackage("com/bravson/socialalert")
-				//.addAsLibraries(libs)
+				.addPackage("com/bravson/socialalert/user")
+				.addPackage("com/bravson/socialalert/infrastructure/db")
+				.addPackage("com/bravson/socialalert/infrastructure/log")
+				.addPackage("com/bravson/socialalert/infrastructure/rest")
+				.addAsLibraries(libs)
 				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/beans.xml"), "beans.xml")
 				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/web.xml"), "web.xml")
 				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/keycloak.json"), "keycloak.json")

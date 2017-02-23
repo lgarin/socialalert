@@ -1,4 +1,4 @@
-package com.bravson.socialalert;
+package com.bravson.socialalert.infrastructure.log;
 
 import javax.annotation.ManagedBean;
 import javax.enterprise.context.ApplicationScoped;

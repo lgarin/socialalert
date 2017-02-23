@@ -1,4 +1,4 @@
-package com.bravson.socialalert;
+package com.bravson.socialalert.infrastructure.db;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,7 +10,8 @@ import javax.inject.Qualifier;
 
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})  
 @Retention(RetentionPolicy.RUNTIME)  
-@Qualifier  
+@Qualifier
+@Deprecated
 public @interface NamedMongoCollection {
 	@Nonbinding String name();
 	@Nonbinding String db();
