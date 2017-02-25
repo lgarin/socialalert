@@ -3,15 +3,10 @@
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
 	version="3.1">
 
-	<security-constraint>
-		<web-resource-collection>
-			<web-resource-name>Rest</web-resource-name>
-			<url-pattern>/rest/greeter/*</url-pattern>
-		</web-resource-collection>
-		<auth-constraint>
-			<role-name>user</role-name>
-		</auth-constraint>
-	</security-constraint>
+	<context-param>
+		<param-name>resteasy.role.based.security</param-name>
+		<param-value>true</param-value>
+	</context-param>
 
 	<login-config>
 		<auth-method>KEYCLOAK</auth-method>
@@ -45,5 +40,10 @@
 		<env-entry-name>mongoDbUrl</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
 		<env-entry-value>mongodb://localhost:27017</env-entry-value>
+	</env-entry>
+	<env-entry>
+		<env-entry-name>maxUploadSize</env-entry-name>
+		<env-entry-type>java.lang.Long</env-entry-type>
+		<env-entry-value>10</env-entry-value>
 	</env-entry>
 </web-app>

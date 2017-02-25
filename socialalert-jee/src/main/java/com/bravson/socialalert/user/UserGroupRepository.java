@@ -22,6 +22,6 @@ public class UserGroupRepository {
 		if (group == null) {
 			return null;
 		}
-		return group.name;
+		return group.getName();
 	}
 }

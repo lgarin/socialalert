@@ -11,13 +11,12 @@ public class GreeterServiceTest extends BaseServiceTest {
 	@Test
 	public void requestWithoutPrincial() throws Exception {
 		Response response = createRequest("/greeter/hello", MediaType.TEXT_PLAIN).get();
-		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
+		assertThat(response.getStatus()).isEqualTo(Status.FORBIDDEN.getStatusCode());
 	}
 
 	@Test
 	public void requestWithLogin() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		System.out.println(token);
 		Response response = createAuthRequest("/greeter/hello", MediaType.TEXT_PLAIN, token).get();
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 		assertThat(response.readEntity(String.class)).isEqualTo("hello 4b09beae-9187-4566-b15a-b26f50dd840c");

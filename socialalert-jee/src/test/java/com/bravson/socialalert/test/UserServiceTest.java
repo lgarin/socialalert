@@ -59,8 +59,7 @@ public class UserServiceTest extends BaseServiceTest {
 	@Test
 	public void logoutWithoutToken() throws Exception {
 		Response response = createRequest("/user/logout", MediaType.TEXT_PLAIN).get();
-		//assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
-		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+		assertThat(response.getStatus()).isEqualTo(Status.FORBIDDEN.getStatusCode());
 	}
 	
 	@Test
@@ -99,6 +98,6 @@ public class UserServiceTest extends BaseServiceTest {
 	@Test
 	public void getCurrentUserWithoutToken() throws Exception {
 		Response response = createRequest("/user/current", MediaType.APPLICATION_JSON).get();
-		assertThat(response.getStatus()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+		assertThat(response.getStatus()).isEqualTo(Status.FORBIDDEN.getStatusCode());
 	}
 }

@@ -3,6 +3,7 @@ package com.bravson.socialalert;
 import java.security.Principal;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -11,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 
 @Path("/greeter")
 @ManagedBean
+@RolesAllowed("user")
 public class GreeterService {
 
 	@Inject

@@ -34,6 +34,7 @@ public abstract class BaseServiceTest extends Assertions {
 		return ShrinkWrap.create(WebArchive.class, "socialalert-jee-test.war")
 				.addPackage("com/bravson/socialalert")
 				.addPackage("com/bravson/socialalert/user")
+				.addPackage("com/bravson/socialalert/file")
 				.addPackage("com/bravson/socialalert/infrastructure/db")
 				.addPackage("com/bravson/socialalert/infrastructure/log")
 				.addPackage("com/bravson/socialalert/infrastructure/rest")

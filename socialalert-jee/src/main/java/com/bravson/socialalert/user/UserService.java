@@ -4,10 +4,13 @@ import java.security.Principal;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.json.JsonObject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -27,6 +30,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 @Path("/user")
 @ManagedBean
+@RolesAllowed("user")
 public class UserService {
 
 	@Resource(name="loginUrl")
@@ -51,8 +55,10 @@ public class UserService {
 	UserRepository userRepository;
 	
 	@POST
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/login")
+	@PermitAll
 	public Response login(@Email @FormParam("email") String email, @NotEmpty @FormParam("password") String password) {
 		Form form = new Form().param("username", email).param("password", password).param("grant_type", "password").param("client_id", loginClientId).param("client_secret", clientSecret);
 		Response response = httpClient.target(loginUrl).request().post(Entity.form(form));
