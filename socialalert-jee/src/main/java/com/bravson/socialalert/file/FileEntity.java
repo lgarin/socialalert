@@ -9,13 +9,13 @@ public class FileEntity {
 	private final String id;
 	private final String filename;
 	private final long length;
-	private final String contentType;
 	private final Instant uploadTimestamp;
 	private final String md5;
-	
+	private final FileMetadata metadata;
+
 	public FileEntity(GridFSFile file) {
 		id = file.getId().toString();
-		contentType = file.getMetadata().getString("contentType");
+		metadata = new FileMetadata(file.getMetadata());
 		length = file.getLength();
 		filename = file.getFilename();
 		md5 = file.getMD5();
@@ -31,12 +31,15 @@ public class FileEntity {
 		return length;
 	}
 	public String getContentType() {
-		return contentType;
+		return metadata.getContentType();
 	}
 	public Instant getUploadTimestamp() {
 		return uploadTimestamp;
 	}
 	public String getMd5() {
 		return md5;
+	}
+	public String getUserId() {
+		return metadata.getUserId();
 	}
 }

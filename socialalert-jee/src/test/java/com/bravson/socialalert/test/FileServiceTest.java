@@ -24,7 +24,7 @@ public class FileServiceTest extends BaseServiceTest {
 		String token = requestLoginToken("test@test.com", "123");
 		Response response = createAuthRequest("/file/upload", MediaType.WILDCARD, token).header("filename", "test.txt").post(getPlainText("test"));
 		assertThat(response.getStatus()).isEqualTo(Status.CREATED.getStatusCode());
-		String path = response.getLocation().toString().replaceFirst("(.*/rest/)", "");
+		String path = response.getLocation().toString().replaceFirst("^(http://.*/rest/)", "");
 		String content = createAuthRequest(path, MediaType.WILDCARD, token).get(String.class);
 		assertThat(content).isEqualTo("test");
 	}
@@ -48,5 +48,14 @@ public class FileServiceTest extends BaseServiceTest {
 		String token = requestLoginToken("test@test.com", "123");
 		Response response = createAuthRequest("/file/download/f8b1befe5d29ba266c36ffad", MediaType.WILDCARD, token).get();
 		assertThat(response.getStatus()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+	}
+	
+	@Test
+	public void downloadExistingFile() throws Exception  {
+		String token = requestLoginToken("test@test.com", "123");
+		Response response = createAuthRequest("/file/download/58b28c6b28011a1ad4180419", MediaType.WILDCARD, token).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+		assertThat(response.getMediaType()).isEqualTo(MediaType.TEXT_PLAIN_TYPE);
+		assertThat(response.readEntity(String.class)).isEqualTo("test");
 	}
 }

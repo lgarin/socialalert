@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.security.Principal;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Resource;
@@ -36,6 +37,9 @@ public class FileService {
 	
 	@Inject
 	FileRepository fileRepository;
+	
+	@Inject
+	private Principal principal;
 
 	@POST
 	@Consumes(MediaType.WILDCARD) // TODO limit
@@ -47,14 +51,15 @@ public class FileService {
 		if (request.getContentLengthLong() > maxUploadSize) {
 			return Response.status(Status.REQUEST_ENTITY_TOO_LARGE).build();
 		}
-		String fileId = fileRepository.storeFile(filename, request.getContentType(), request.getContentLengthLong(), input);
+		FileMetadata metadata = new FileMetadata(request.getContentType(), request.getContentLengthLong(), principal.getName());
+		String fileId = fileRepository.storeFile(filename, metadata, input);
 		return Response.created(URI.create("file/download/" + fileId)).build();
 	}
 	
 	@GET
 	@Path("/download/{fileId}")
 	public Response download(@PathParam("fileId") String fileId) {
-		FileEntity file = fileRepository.findFile(fileId);
+		FileEntity file = fileRepository.findFile(fileId).orElse(null);
 		if (file == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
@@ -62,7 +67,7 @@ public class FileService {
         StreamingOutput stream = new StreamingOutput() {
             @Override
             public void write(OutputStream os) throws IOException {
-                fileRepository.retrieveFile(file, os);
+                fileRepository.retrieveFile(fileId, os);
             }
         };
         

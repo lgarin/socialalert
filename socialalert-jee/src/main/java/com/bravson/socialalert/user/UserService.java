@@ -91,7 +91,7 @@ public class UserService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/current")
 	public Response current() {
-		UserInfo userInfo = userRepository.findUserInfo(principal.getName());
+		UserInfo userInfo = userRepository.findUserInfo(principal.getName()).orElse(null);
 		if (userInfo == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}

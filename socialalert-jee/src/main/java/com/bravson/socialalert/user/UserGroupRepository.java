@@ -1,5 +1,7 @@
 package com.bravson.socialalert.user;
 
+import java.util.Optional;
+
 import javax.annotation.ManagedBean;
 import javax.cache.annotation.CacheResult;
 import javax.enterprise.context.ApplicationScoped;
@@ -17,11 +19,11 @@ public class UserGroupRepository {
 	Datastore datastore;
 	
 	@CacheResult
-	public String getGroupName(String id) {
+	public Optional<String> findGroupName(String id) {
 		UserGroup group = datastore.get(UserGroup.class, id);
 		if (group == null) {
-			return null;
+			return Optional.empty();
 		}
-		return group.getName();
+		return Optional.of(group.getName());
 	}
 }

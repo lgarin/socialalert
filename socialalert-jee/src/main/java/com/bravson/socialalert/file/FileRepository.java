@@ -2,11 +2,11 @@ package com.bravson.socialalert.file;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Optional;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 
-import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import com.bravson.socialalert.infrastructure.db.NamedMongoFilestore;
@@ -21,21 +21,20 @@ public class FileRepository {
 	@Inject @NamedMongoFilestore(db="socialalert", name="media")
 	GridFSBucket filestore;
 	
-	public String storeFile(String filename, String contentType, long contentLength, InputStream data) {
-		Document metdata = new Document("contentType", contentType).append("contentLength", contentLength);
-		GridFSUploadOptions options = new GridFSUploadOptions().metadata(metdata);
+	public String storeFile(String filename, FileMetadata metadata, InputStream data) {
+		GridFSUploadOptions options = new GridFSUploadOptions().metadata(metadata.toBson());
 		return filestore.uploadFromStream(filename, data, options).toString();
 	}
 	
-	public FileEntity findFile(String fileId) {
-		GridFSFile file = filestore.find(Filters.eq(fileId)).first();
+	public Optional<FileEntity> findFile(String fileId) {
+		GridFSFile file = filestore.find(Filters.eq(new ObjectId(fileId))).first();
 		if (file == null) {
-			return null;
+			return Optional.empty();
 		}
-		return new FileEntity(file);
+		return Optional.of(new FileEntity(file));
 	}
 
-	public void retrieveFile(FileEntity file, OutputStream os) {
-		filestore.downloadToStream(new ObjectId(file.getId()), os);
+	public void retrieveFile(String fileId, OutputStream os) {
+		filestore.downloadToStream(new ObjectId(fileId), os);
 	}
 }
