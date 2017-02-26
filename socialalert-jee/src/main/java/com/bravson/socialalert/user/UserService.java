@@ -69,7 +69,7 @@ public class UserService {
 		return Response.status(Status.OK).entity(payload.getString("access_token")).build();
 	}
 	
-	@GET
+	@POST
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/logout")
 	public Response logout(@NotEmpty @HeaderParam("Authorization") String authorization, @Context HttpServletRequest httpRequest) {

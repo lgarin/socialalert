@@ -32,7 +32,7 @@ public class GreeterServiceTest extends BaseServiceTest {
 	@Test
 	public void requestAfterLogout() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		createAuthRequest("/user/logout", MediaType.WILDCARD, token).get();
+		createAuthRequest("/user/logout", MediaType.WILDCARD, token).post(null);
 		
 		Response response = createAuthRequest("/greeter/hello", MediaType.TEXT_PLAIN, token).get();
 		//assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());

@@ -58,20 +58,20 @@ public class UserServiceTest extends BaseServiceTest {
 	
 	@Test
 	public void logoutWithoutToken() throws Exception {
-		Response response = createRequest("/user/logout", MediaType.TEXT_PLAIN).get();
+		Response response = createRequest("/user/logout", MediaType.TEXT_PLAIN).post(null);
 		assertThat(response.getStatus()).isEqualTo(Status.FORBIDDEN.getStatusCode());
 	}
 	
 	@Test
 	public void logoutWithToken() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/user/logout", MediaType.TEXT_PLAIN, token).get();
+		Response response = createAuthRequest("/user/logout", MediaType.TEXT_PLAIN, token).post(null);
 		assertThat(response.getStatus()).isEqualTo(Status.NO_CONTENT.getStatusCode());
 	}
 	
 	@Test
 	public void logoutWithInvalidToken() throws Exception {
-		Response response = createAuthRequest("/user/logout", MediaType.TEXT_PLAIN, "12344334").get();
+		Response response = createAuthRequest("/user/logout", MediaType.TEXT_PLAIN, "12344334").post(null);
 		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
 	
