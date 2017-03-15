@@ -37,4 +37,8 @@ public class FileRepository {
 	public void retrieveFile(String fileId, OutputStream os) {
 		filestore.downloadToStream(new ObjectId(fileId), os);
 	}
+	
+	public InputStream openFile(String fileId) {
+		return filestore.openDownloadStream(new ObjectId(fileId));
+	}
 }

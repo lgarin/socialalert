@@ -19,13 +19,14 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.hibernate.validator.constraints.NotEmpty;
+
+import com.drew.imaging.jpeg.JpegProcessingException;
 
 @Path("/file")
 @ManagedBean
@@ -39,12 +40,15 @@ public class FileService {
 	FileRepository fileRepository;
 	
 	@Inject
+	PictureFileProcessor pictureFileProcessor;
+	
+	@Inject
 	private Principal principal;
 
 	@POST
-	@Consumes(MediaType.WILDCARD) // TODO limit
-	@Path("/upload")
-	public Response upload(InputStream input, @NotEmpty @HeaderParam("filename") String filename, @Context HttpServletRequest request) throws IOException, ServletException {
+	@Consumes(FileConstants.JPG_MEDIA_TYPE)
+	@Path("/uploadPicture")
+	public Response uploadPicture(InputStream input, @NotEmpty @HeaderParam("filename") String filename, @Context HttpServletRequest request) throws IOException, ServletException {
 		if (filename == null) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
@@ -52,7 +56,15 @@ public class FileService {
 			return Response.status(Status.REQUEST_ENTITY_TOO_LARGE).build();
 		}
 		FileMetadata metadata = new FileMetadata(request.getContentType(), request.getContentLengthLong(), principal.getName());
+
 		String fileId = fileRepository.storeFile(filename, metadata, input);
+		
+		try (InputStream storedInput = fileRepository.openFile(fileId)) {
+			PictureMetadata pictureMetadata = pictureFileProcessor.parseJpegMetadata(storedInput);
+		} catch (JpegProcessingException e) {
+			return Response.status(Status.UNSUPPORTED_MEDIA_TYPE).build();
+		}
+		
 		return Response.created(URI.create("file/download/" + fileId)).build();
 	}
 	
