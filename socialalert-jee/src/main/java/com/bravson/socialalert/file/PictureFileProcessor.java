@@ -3,7 +3,6 @@ package com.bravson.socialalert.file;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -11,7 +10,6 @@ import java.util.stream.Collectors;
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.imageio.ImageIO;
 
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
@@ -56,7 +54,7 @@ public class PictureFileProcessor {
 		//watermarkImage = ImageIO.read(getClass().getClassLoader().getResourceAsStream(watermarkFile));
 	}
 	
-	public PictureMetadata parseJpegMetadata(InputStream sourceFile) throws JpegProcessingException, IOException {
+	public PictureMetadata parseJpegMetadata(File sourceFile) throws JpegProcessingException, IOException {
 		Metadata metadata = JpegMetadataReader.readMetadata(sourceFile);
 		
 		if (metadata.hasErrors()) {

@@ -2,6 +2,10 @@ package com.bravson.socialalert.file;
 
 import java.time.Instant;
 
+import org.bson.Document;
+
+import com.bravson.socialalert.infrastructure.util.DateUtil;
+
 public class PictureMetadata {
 	private Integer width;
 	private Integer height;
@@ -11,31 +15,44 @@ public class PictureMetadata {
 	private String cameraMaker;
 	private String cameraModel;
 	
-	public void setWidth(Integer width) {
+	public PictureMetadata() {
+	}
+	
+	public PictureMetadata(Document document) {
+		width = document.getInteger("width");
+		height = document.getInteger("height");
+		timestamp = DateUtil.toInstant(document.getDate("timestamp"));
+		longitude = document.getDouble("longitude");
+		latitude = document.getDouble("latitude");
+		cameraMaker = document.getString("cameraMaker");
+		cameraModel = document.getString("cameraModel");
+	}
+	
+	protected void setWidth(Integer width) {
 		this.width = width;
 	}
 
-	public void setHeight(Integer height) {
+	protected void setHeight(Integer height) {
 		this.height = height;
 	}
 
-	public void setTimestamp(Instant timestamp) {
+	protected void setTimestamp(Instant timestamp) {
 		this.timestamp = timestamp;
 	}
 
-	public void setLongitude(Double longitude) {
+	protected void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
 
-	public void setLatitude(Double latitude) {
+	protected void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
 
-	public void setCameraMaker(String cameraMaker) {
+	protected void setCameraMaker(String cameraMaker) {
 		this.cameraMaker = cameraMaker;
 	}
 
-	public void setCameraModel(String cameraModel) {
+	protected void setCameraModel(String cameraModel) {
 		this.cameraModel = cameraModel;
 	}
 
@@ -64,19 +81,19 @@ public class PictureMetadata {
 		return cameraModel;
 	}
 
-	public void setDefaultTimestamp(Instant defaultTimestamp) {
+	protected void setDefaultTimestamp(Instant defaultTimestamp) {
 		if (timestamp == null) {
 			timestamp = defaultTimestamp;
 		}
 	}
 
-	public void setDefaultLatitude(Double defaultLatitude) {
+	protected void setDefaultLatitude(Double defaultLatitude) {
 		if (latitude == null) {
 			latitude = defaultLatitude;
 		}
 	}
 
-	public void setDefaultLongitude(Double defaultLongitude) {
+	protected void setDefaultLongitude(Double defaultLongitude) {
 		if (longitude == null) {
 			longitude = defaultLongitude;
 		}
@@ -84,5 +101,9 @@ public class PictureMetadata {
 
 	public boolean hasLocation() {
 		return longitude != null && latitude != null;
+	}
+	
+	public Document toBson() {
+		return new Document("width", width).append("height", height).append("timestamp", DateUtil.toDate(timestamp)).append("longitude", longitude).append("latitude", latitude).append("cameraMaker", cameraMaker).append("cameraModel", cameraModel);
 	}
 }

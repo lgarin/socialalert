@@ -1,7 +1,7 @@
 package com.bravson.socialalert.file;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.security.Principal;
@@ -48,24 +48,34 @@ public class FileService {
 	@POST
 	@Consumes(FileConstants.JPG_MEDIA_TYPE)
 	@Path("/uploadPicture")
-	public Response uploadPicture(InputStream input, @NotEmpty @HeaderParam("filename") String filename, @Context HttpServletRequest request) throws IOException, ServletException {
+	public Response uploadPicture(File inputFile, @NotEmpty @HeaderParam("filename") String filename, @Context HttpServletRequest request) throws IOException, ServletException {
 		if (filename == null) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
 		if (request.getContentLengthLong() > maxUploadSize) {
 			return Response.status(Status.REQUEST_ENTITY_TOO_LARGE).build();
 		}
-		FileMetadata metadata = new FileMetadata(request.getContentType(), request.getContentLengthLong(), principal.getName());
-
-		String fileId = fileRepository.storeFile(filename, metadata, input);
 		
-		try (InputStream storedInput = fileRepository.openFile(fileId)) {
-			PictureMetadata pictureMetadata = pictureFileProcessor.parseJpegMetadata(storedInput);
+		PictureFileMetadata metadata = new PictureFileMetadata();
+		metadata.setFileMetadata(buildFileMetadata(request));
+		
+		try {
+			metadata.setPictureMetadata(pictureFileProcessor.parseJpegMetadata(inputFile));
 		} catch (JpegProcessingException e) {
 			return Response.status(Status.UNSUPPORTED_MEDIA_TYPE).build();
 		}
 		
+		String fileId = fileRepository.storeFile(filename, metadata, inputFile);
 		return Response.created(URI.create("file/download/" + fileId)).build();
+	}
+
+	private FileMetadata buildFileMetadata(HttpServletRequest request) {
+		FileMetadata metadata = new FileMetadata();
+		metadata.setContentType(request.getContentType());
+		metadata.setContentLength(request.getContentLengthLong());
+		metadata.setUserId(principal.getName());
+		metadata.setIpAddress(request.getRemoteAddr());
+		return metadata;
 	}
 	
 	@GET

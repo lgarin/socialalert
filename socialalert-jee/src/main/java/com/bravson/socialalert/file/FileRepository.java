@@ -1,5 +1,8 @@
 package com.bravson.socialalert.file;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Optional;
@@ -21,9 +24,11 @@ public class FileRepository {
 	@Inject @NamedMongoFilestore(db="socialalert", name="media")
 	GridFSBucket filestore;
 	
-	public String storeFile(String filename, FileMetadata metadata, InputStream data) {
+	public String storeFile(String filename, PictureFileMetadata metadata, File file) throws IOException {
 		GridFSUploadOptions options = new GridFSUploadOptions().metadata(metadata.toBson());
-		return filestore.uploadFromStream(filename, data, options).toString();
+		try (FileInputStream is = new FileInputStream(file)) {
+			return filestore.uploadFromStream(filename, is, options).toString();
+		}
 	}
 	
 	public Optional<FileEntity> findFile(String fileId) {

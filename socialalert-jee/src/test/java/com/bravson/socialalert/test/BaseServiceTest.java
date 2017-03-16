@@ -38,6 +38,7 @@ public abstract class BaseServiceTest extends Assertions {
 				.addPackage("com/bravson/socialalert/infrastructure/db")
 				.addPackage("com/bravson/socialalert/infrastructure/log")
 				.addPackage("com/bravson/socialalert/infrastructure/rest")
+				.addPackage("com/bravson/socialalert/infrastructure/util")
 				.addAsLibraries(libs)
 				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/beans.xml"), "beans.xml")
 				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/web.xml"), "web.xml")
