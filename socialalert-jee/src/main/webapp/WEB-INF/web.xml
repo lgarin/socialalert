@@ -64,7 +64,7 @@
 	<env-entry>
 		<env-entry-name>picturePreviewPrefix</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
-		<env-entry-value>thumb-</env-entry-value>
+		<env-entry-value>preview-</env-entry-value>
 	</env-entry>
 	<env-entry>
 		<env-entry-name>picturePreviewHeight</env-entry-name>

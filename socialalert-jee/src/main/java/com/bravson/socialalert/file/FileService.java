@@ -14,7 +14,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -23,8 +22,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
-
-import org.hibernate.validator.constraints.NotEmpty;
 
 import com.drew.imaging.jpeg.JpegProcessingException;
 
@@ -37,7 +34,13 @@ public class FileService {
 	Long maxUploadSize;
 	
 	@Inject
-	FileRepository fileRepository;
+	MediaRepository mediaRepository;
+	
+	@Inject
+	ThumbnailRepository thumbnailRepository;
+	
+	@Inject
+	PreviewRepository previewRepository;
 	
 	@Inject
 	PictureFileProcessor pictureFileProcessor;
@@ -48,10 +51,7 @@ public class FileService {
 	@POST
 	@Consumes(FileConstants.JPG_MEDIA_TYPE)
 	@Path("/uploadPicture")
-	public Response uploadPicture(File inputFile, @NotEmpty @HeaderParam("filename") String filename, @Context HttpServletRequest request) throws IOException, ServletException {
-		if (filename == null) {
-			return Response.status(Status.BAD_REQUEST).build();
-		}
+	public Response uploadPicture(File inputFile, @Context HttpServletRequest request) throws IOException, ServletException {
 		if (request.getContentLengthLong() > maxUploadSize) {
 			return Response.status(Status.REQUEST_ENTITY_TOO_LARGE).build();
 		}
@@ -64,8 +64,15 @@ public class FileService {
 		} catch (JpegProcessingException e) {
 			return Response.status(Status.UNSUPPORTED_MEDIA_TYPE).build();
 		}
+	
+		String fileId = mediaRepository.storePicture(metadata, inputFile);
 		
-		String fileId = fileRepository.storeFile(filename, metadata, inputFile);
+		File preview = pictureFileProcessor.createJpegPreview(inputFile);
+		previewRepository.storeDerived(fileId, FileConstants.JPG_MEDIA_TYPE, preview);
+		
+		File thumbnail = pictureFileProcessor.createJpegThumbnail(inputFile);
+		thumbnailRepository.storeDerived(fileId, FileConstants.JPG_MEDIA_TYPE, thumbnail);
+		
 		return Response.created(URI.create("file/download/" + fileId)).build();
 	}
 
@@ -78,10 +85,8 @@ public class FileService {
 		return metadata;
 	}
 	
-	@GET
-	@Path("/download/{fileId}")
-	public Response download(@PathParam("fileId") String fileId) {
-		FileEntity file = fileRepository.findFile(fileId).orElse(null);
+	private Response doDownload(FileRepository repository, String fileId) {
+		FileEntity file = repository.findFile(fileId).orElse(null);
 		if (file == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
@@ -89,7 +94,7 @@ public class FileService {
         StreamingOutput stream = new StreamingOutput() {
             @Override
             public void write(OutputStream os) throws IOException {
-                fileRepository.retrieveFile(fileId, os);
+            	repository.retrieveFile(fileId, os);
             }
         };
         
@@ -97,5 +102,23 @@ public class FileService {
 		response.header("Content-Disposition", "attachment; filename=\"" + fileId + "\"");
         response.header("Content-Length", file.getLength());
 		return response.build();
+	}
+
+	@GET
+	@Path("/download/{fileId}")
+	public Response download(@PathParam("fileId") String fileId) {
+		return doDownload(mediaRepository, fileId);
+	}
+	
+	@GET
+	@Path("/preview/{fileId}")
+	public Response preview(@PathParam("fileId") String fileId) {
+		return doDownload(previewRepository, fileId);
+	}
+	
+	@GET
+	@Path("/thumbnail/{fileId}")
+	public Response thumbnail(@PathParam("fileId") String fileId) {
+		return doDownload(thumbnailRepository, fileId);
 	}
 }

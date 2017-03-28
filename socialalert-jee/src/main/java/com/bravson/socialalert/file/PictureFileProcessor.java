@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.imageio.ImageIO;
 
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
@@ -51,7 +52,11 @@ public class PictureFileProcessor {
 	
 	@PostConstruct
 	protected void init() {
-		//watermarkImage = ImageIO.read(getClass().getClassLoader().getResourceAsStream(watermarkFile));
+		try {
+			watermarkImage = ImageIO.read(getClass().getClassLoader().getResourceAsStream(watermarkFile));
+		} catch (IOException e) {
+			throw new RuntimeException("Cannot read watermark file", e);
+		}
 	}
 	
 	public PictureMetadata parseJpegMetadata(File sourceFile) throws JpegProcessingException, IOException {

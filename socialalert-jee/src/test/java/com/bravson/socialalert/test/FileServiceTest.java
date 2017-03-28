@@ -25,38 +25,31 @@ public class FileServiceTest extends BaseServiceTest {
 	
 	@Test
 	public void uploadPictureWithoutPrincial() throws Exception {
-		Response response = createRequest("/file/uploadPicture", MediaType.WILDCARD).header("filename", "test.txt").post(getPicture("src/main/resources/logo.jpg"));
+		Response response = createRequest("/file/uploadPicture", MediaType.WILDCARD).post(getPicture("src/main/resources/logo.jpg"));
 		assertThat(response.getStatus()).isEqualTo(Status.FORBIDDEN.getStatusCode());
 	}
 
 	@Test
 	public void uploadPictureWithLogin() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/file/uploadPicture", MediaType.WILDCARD, token).header("filename", "test.txt").post(getPicture("src/main/resources/logo.jpg"));
+		Response response = createAuthRequest("/file/uploadPicture", MediaType.WILDCARD, token).post(getPicture("src/main/resources/logo.jpg"));
 		assertThat(response.getStatus()).isEqualTo(Status.CREATED.getStatusCode());
 		String path = response.getLocation().toString().replaceFirst("^(http://.*/rest/)", "");
 		File content = createAuthRequest(path, MediaType.WILDCARD, token).get(File.class);
 		assertThat(content).isFile().hasBinaryContent(Files.readAllBytes(Paths.get("src/main/resources/logo.jpg")));
 	}
-	
-	@Test
-	public void uploadPictureWithoutFilename() throws Exception {
-		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/file/uploadPicture", MediaType.WILDCARD, token).post(getPicture("src/main/resources/logo.jpg"));
-		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-	}
-	
+
 	@Test
 	public void uploadPictureTooLarge() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/file/uploadPicture", MediaType.WILDCARD, token).header("filename", "test.txt").post(getPicture("C:/Dev/jdk8/javafx-src.zip"));
+		Response response = createAuthRequest("/file/uploadPicture", MediaType.WILDCARD, token).post(getPicture("C:/Dev/jdk8/javafx-src.zip"));
 		assertThat(response.getStatus()).isEqualTo(Status.REQUEST_ENTITY_TOO_LARGE.getStatusCode());
 	}
 	
 	@Test
 	public void uploadPictureWithWrongMediaType() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/file/uploadPicture", MediaType.WILDCARD, token).header("filename", "test.txt").post(getPlainText("test"));
+		Response response = createAuthRequest("/file/uploadPicture", MediaType.WILDCARD, token).post(getPlainText("test"));
 		assertThat(response.getStatus()).isEqualTo(Status.UNSUPPORTED_MEDIA_TYPE.getStatusCode());
 	}
 
