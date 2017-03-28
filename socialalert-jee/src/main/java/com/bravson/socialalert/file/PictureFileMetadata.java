@@ -2,6 +2,8 @@ package com.bravson.socialalert.file;
 
 import org.bson.Document;
 
+import com.bravson.socialalert.file.picture.PictureMetadata;
+
 public class PictureFileMetadata {
 
 	private FileMetadata fileMetadata;

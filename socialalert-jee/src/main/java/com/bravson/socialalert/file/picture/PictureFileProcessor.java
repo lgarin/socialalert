@@ -1,4 +1,4 @@
-package com.bravson.socialalert.file;
+package com.bravson.socialalert.file.picture;
 
 import java.awt.image.BufferedImage;
 import java.io.File;

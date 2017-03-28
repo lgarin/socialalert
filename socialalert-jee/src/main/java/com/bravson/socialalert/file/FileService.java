@@ -23,6 +23,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
+import com.bravson.socialalert.file.picture.PictureFileProcessor;
 import com.drew.imaging.jpeg.JpegProcessingException;
 
 @Path("/file")
