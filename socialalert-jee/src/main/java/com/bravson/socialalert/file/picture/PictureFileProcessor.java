@@ -1,10 +1,12 @@
 package com.bravson.socialalert.file.picture;
 
+import static com.bravson.socialalert.file.media.MediaFileConstants.JPG_EXTENSION;
+import static com.bravson.socialalert.file.media.MediaFileConstants.JPG_MEDIA_TYPE;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.stream.Collectors;
 
 import javax.annotation.ManagedBean;
@@ -12,21 +14,21 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 
+import com.bravson.socialalert.file.media.MediaFileProcessor;
+import com.bravson.socialalert.file.media.MediaMetadata;
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
-import com.drew.lang.GeoLocation;
-import com.drew.metadata.Directory;
-import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDirectory;
 import com.drew.metadata.jpeg.JpegDirectory;
 
+import lombok.val;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
 
 @ManagedBean
-public class PictureFileProcessor {
+public class PictureFileProcessor implements MediaFileProcessor {
 	@Resource(name="pictureThumbnailPrefix")
 	private String thumbnailPrefix;
 	
@@ -59,24 +61,25 @@ public class PictureFileProcessor {
 		}
 	}
 	
-	public PictureMetadata parseJpegMetadata(File sourceFile) throws JpegProcessingException, IOException {
-		Metadata metadata = JpegMetadataReader.readMetadata(sourceFile);
+	@Override
+	public MediaMetadata parseMetadata(File sourceFile) throws JpegProcessingException, IOException {
+		val metadata = JpegMetadataReader.readMetadata(sourceFile);
 		
 		if (metadata.hasErrors()) {
-			ArrayList<String> errorList = new ArrayList<>();
-			for (Directory directory : metadata.getDirectories()) {
-			   for (String error : directory.getErrors()) {
+			val errorList = new ArrayList<String>();
+			for (val directory : metadata.getDirectories()) {
+			   for (val error : directory.getErrors()) {
 				   errorList.add(error);
 			   }
 	        }
 			throw new JpegProcessingException(errorList.stream().collect(Collectors.joining("; ")));
 		}
 		
-		PictureMetadata result = new PictureMetadata();
+		val result = new PictureMetadata();
 		
-		ExifIFD0Directory exifTags = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+		val exifTags = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
 		if (exifTags != null) {
-			Date dateTime = exifTags.getDate(ExifIFD0Directory.TAG_DATETIME);
+			val dateTime = exifTags.getDate(ExifIFD0Directory.TAG_DATETIME);
 			if (dateTime != null) {
 				result.setTimestamp(dateTime.toInstant());
 			}
@@ -86,23 +89,23 @@ public class PictureFileProcessor {
 			result.setWidth(exifTags.getInteger(ExifIFD0Directory.TAG_X_RESOLUTION));
 		}
 		
-		ExifSubIFDDirectory exifSubTags = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
+		val exifSubTags = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
 		if (exifSubTags != null) {
-			Date dateTime = exifSubTags.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+			val dateTime = exifSubTags.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
 			if (dateTime != null) {
 				result.setTimestamp(dateTime.toInstant());
 			}
 		}
 		
-		JpegDirectory jpegTags = metadata.getFirstDirectoryOfType(JpegDirectory.class);
+		val jpegTags = metadata.getFirstDirectoryOfType(JpegDirectory.class);
 		if (jpegTags != null) {
 			result.setHeight(jpegTags.getInteger(JpegDirectory.TAG_IMAGE_HEIGHT));
 			result.setWidth(jpegTags.getInteger(JpegDirectory.TAG_IMAGE_WIDTH));
 		}
 		
-		GpsDirectory gpsTags = metadata.getFirstDirectoryOfType(GpsDirectory.class);
+		val gpsTags = metadata.getFirstDirectoryOfType(GpsDirectory.class);
 		if (gpsTags != null) {
-			GeoLocation location = gpsTags.getGeoLocation();
+			val location = gpsTags.getGeoLocation();
 			if (location != null) {
 				result.setLatitude(location.getLatitude());
 				result.setLongitude(location.getLongitude());
@@ -112,15 +115,22 @@ public class PictureFileProcessor {
 		return result;
 	}
 	
-	public File createJpegThumbnail(File sourceFile) throws IOException {
-		File thumbnailFile = new File(sourceFile.getParent(), thumbnailPrefix + sourceFile.getName());
-		Thumbnails.of(sourceFile).watermark(Positions.CENTER, watermarkImage, 0.25f).size(thumbnailWidth, thumbnailHeight).crop(Positions.CENTER).outputFormat("jpg").toFile(thumbnailFile);
+	@Override
+	public File createThumbnail(File sourceFile) throws IOException {
+		val thumbnailFile = new File(sourceFile.getParent(), thumbnailPrefix + sourceFile.getName() + "." + JPG_EXTENSION);
+		Thumbnails.of(sourceFile).watermark(Positions.CENTER, watermarkImage, 0.25f).size(thumbnailWidth, thumbnailHeight).crop(Positions.CENTER).outputFormat(JPG_EXTENSION).toFile(thumbnailFile);
 		return thumbnailFile;
 	}
 	
-	public File createJpegPreview(File sourceFile) throws IOException {
-		File thumbnailFile = new File(sourceFile.getParent(), previewPrefix + sourceFile.getName());
-		Thumbnails.of(sourceFile).watermark(Positions.CENTER, watermarkImage, 0.25f).size(previewWidth, previewHeight).outputFormat("jpg").toFile(thumbnailFile);
-		return thumbnailFile;
+	@Override
+	public File createPreview(File sourceFile) throws IOException {
+		val previewFile = new File(sourceFile.getParent(), previewPrefix + sourceFile.getName() + "." + JPG_EXTENSION);
+		Thumbnails.of(sourceFile).watermark(Positions.CENTER, watermarkImage, 0.25f).size(previewWidth, previewHeight).outputFormat(JPG_EXTENSION).toFile(previewFile);
+		return previewFile;
+	}
+	
+	@Override
+	public String getPreviewContentType() {
+		return JPG_MEDIA_TYPE;
 	}
 }

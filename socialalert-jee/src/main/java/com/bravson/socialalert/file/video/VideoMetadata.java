@@ -4,96 +4,85 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.TemporalAccessor;
 
-public class VideoMetadata {
+import org.bson.Document;
+
+import com.bravson.socialalert.file.media.MediaMetadata;
+import com.bravson.socialalert.infrastructure.util.DateUtil;
+import com.bravson.socialalert.infrastructure.util.DurationUtil;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+public class VideoMetadata implements MediaMetadata {
+	
+	@Getter
+	@Setter(AccessLevel.PROTECTED)
 	private Integer width;
+	
+	@Getter
+	@Setter(AccessLevel.PROTECTED)
 	private Integer height;
+	
+	@Getter
 	private Instant timestamp;
+	
+	@Getter
+	@Setter(AccessLevel.PROTECTED)
 	private Duration duration;
+	
+	@Getter
+	@Setter(AccessLevel.PROTECTED)
 	private Double longitude;
+	
+	@Getter
+	@Setter(AccessLevel.PROTECTED)
 	private Double latitude;
+	
+	@Getter
+	@Setter(AccessLevel.PROTECTED)
 	private String cameraMaker;
+	
+	@Getter
+	@Setter(AccessLevel.PROTECTED)
 	private String cameraModel;
 	
-	public void setWidth(Integer width) {
-		this.width = width;
+	public VideoMetadata(Document document) {
+		width = document.getInteger("width");
+		height = document.getInteger("height");
+		duration = DurationUtil.toDuration(document.getLong("duration"));
+		timestamp = DateUtil.toInstant(document.getDate("timestamp"));
+		longitude = document.getDouble("longitude");
+		latitude = document.getDouble("latitude");
+		cameraMaker = document.getString("cameraMaker");
+		cameraModel = document.getString("cameraModel");
 	}
-
-	public void setHeight(Integer height) {
-		this.height = height;
-	}
-
-	public void setTimestamp(TemporalAccessor temporal) {
+	
+	protected void setTimestamp(TemporalAccessor temporal) {
 		this.timestamp = Instant.from(temporal);
 	}
 	
-	public void setDuration(Duration duration) {
-		this.duration = duration;
-	}
-
-	public void setLongitude(Double longitude) {
-		this.longitude = longitude;
-	}
-
-	public void setLatitude(Double latitude) {
-		this.latitude = latitude;
-	}
-
-	public void setCameraMaker(String cameraMaker) {
-		this.cameraMaker = cameraMaker;
-	}
-
-	public void setCameraModel(String cameraModel) {
-		this.cameraModel = cameraModel;
-	}
-
-	public Integer getWidth() {
-		return width;
-	}
-
-	public Integer getHeight() {
-		return height;
-	}
-
-	public Instant getTimestamp() {
-		return timestamp;
-	}
-	
-	public Duration getDuration() {
-		return duration;
-	}
-	
-	public Double getLongitude() {
-		return longitude;
-	}
-	public Double getLatitude() {
-		return latitude;
-	}
-	public String getCameraMaker() {
-		return cameraMaker;
-	}
-	public String getCameraModel() {
-		return cameraModel;
-	}
-
-	public void setDefaultTimestamp(Instant defaultTimestamp) {
+	protected void setDefaultTimestamp(Instant defaultTimestamp) {
 		if (timestamp == null) {
 			timestamp = defaultTimestamp;
 		}
 	}
 
-	public void setDefaultLatitude(Double defaultLatitude) {
+	protected void setDefaultLatitude(Double defaultLatitude) {
 		if (latitude == null) {
 			latitude = defaultLatitude;
 		}
 	}
 
-	public void setDefaultLongitude(Double defaultLongitude) {
+	protected void setDefaultLongitude(Double defaultLongitude) {
 		if (longitude == null) {
 			longitude = defaultLongitude;
 		}
 	}
-	
-	public boolean hasLocation() {
-		return longitude != null && latitude != null;
+
+	public Document toBson() {
+		return new Document("width", width).append("height", height).append("duration", DurationUtil.toMillis(duration)).append("timestamp", DateUtil.toDate(timestamp)).append("longitude", longitude).append("latitude", latitude).append("cameraMaker", cameraMaker).append("cameraModel", cameraModel);
 	}
 }

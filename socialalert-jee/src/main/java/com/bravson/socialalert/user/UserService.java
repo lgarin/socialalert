@@ -28,6 +28,8 @@ import javax.ws.rs.core.Response.Status;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import lombok.val;
+
 @Path("/user")
 @ManagedBean
 @RolesAllowed("user")
@@ -60,12 +62,12 @@ public class UserService {
 	@Path("/login")
 	@PermitAll
 	public Response login(@Email @FormParam("email") String email, @NotEmpty @FormParam("password") String password) {
-		Form form = new Form().param("username", email).param("password", password).param("grant_type", "password").param("client_id", loginClientId).param("client_secret", clientSecret);
-		Response response = httpClient.target(loginUrl).request().post(Entity.form(form));
+		val form = new Form().param("username", email).param("password", password).param("grant_type", "password").param("client_id", loginClientId).param("client_secret", clientSecret);
+		val response = httpClient.target(loginUrl).request().post(Entity.form(form));
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return Response.status(Status.UNAUTHORIZED).build();
 		}
-		JsonObject payload = response.readEntity(JsonObject.class);
+		val payload = response.readEntity(JsonObject.class);
 		return Response.status(Status.OK).entity(payload.getString("access_token")).build();
 	}
 	
@@ -73,7 +75,7 @@ public class UserService {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/logout")
 	public Response logout(@NotEmpty @HeaderParam("Authorization") String authorization, @Context HttpServletRequest httpRequest) {
-		Response response = httpClient.target(logoutUrl).request().header("Authorization", authorization).get();
+		val response = httpClient.target(logoutUrl).request().header("Authorization", authorization).get();
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return Response.status(response.getStatus()).build();
 		}
@@ -91,7 +93,7 @@ public class UserService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/current")
 	public Response current() {
-		UserInfo userInfo = userRepository.findUserInfo(principal.getName()).orElse(null);
+		val userInfo = userRepository.findUserInfo(principal.getName()).orElse(null);
 		if (userInfo == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}

@@ -1,22 +1,48 @@
 package com.bravson.socialalert.file.picture;
 
+import java.time.Duration;
 import java.time.Instant;
 
 import org.bson.Document;
 
+import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.infrastructure.util.DateUtil;
 
-public class PictureMetadata {
-	private Integer width;
-	private Integer height;
-	private Instant timestamp;
-	private Double longitude;
-	private Double latitude;
-	private String cameraMaker;
-	private String cameraModel;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+public class PictureMetadata implements MediaMetadata {
 	
-	public PictureMetadata() {
-	}
+	@Getter
+	@Setter(AccessLevel.PACKAGE)
+	private Integer width;
+	
+	@Getter
+	@Setter(AccessLevel.PACKAGE)
+	private Integer height;
+	
+	@Getter
+	@Setter(AccessLevel.PACKAGE)
+	private Instant timestamp;
+
+	@Getter
+	@Setter(AccessLevel.PACKAGE)
+	private Double longitude;
+	
+	@Getter
+	@Setter(AccessLevel.PACKAGE)
+	private Double latitude;
+	
+	@Getter
+	@Setter(AccessLevel.PACKAGE)
+	private String cameraMaker;
+	
+	@Getter
+	@Setter(AccessLevel.PACKAGE)
+	private String cameraModel;
 	
 	public PictureMetadata(Document document) {
 		width = document.getInteger("width");
@@ -28,57 +54,9 @@ public class PictureMetadata {
 		cameraModel = document.getString("cameraModel");
 	}
 	
-	protected void setWidth(Integer width) {
-		this.width = width;
-	}
-
-	protected void setHeight(Integer height) {
-		this.height = height;
-	}
-
-	protected void setTimestamp(Instant timestamp) {
-		this.timestamp = timestamp;
-	}
-
-	protected void setLongitude(Double longitude) {
-		this.longitude = longitude;
-	}
-
-	protected void setLatitude(Double latitude) {
-		this.latitude = latitude;
-	}
-
-	protected void setCameraMaker(String cameraMaker) {
-		this.cameraMaker = cameraMaker;
-	}
-
-	protected void setCameraModel(String cameraModel) {
-		this.cameraModel = cameraModel;
-	}
-
-	public Integer getWidth() {
-		return width;
-	}
-
-	public Integer getHeight() {
-		return height;
-	}
-
-	public Instant getTimestamp() {
-		return timestamp;
-	}
-	
-	public Double getLongitude() {
-		return longitude;
-	}
-	public Double getLatitude() {
-		return latitude;
-	}
-	public String getCameraMaker() {
-		return cameraMaker;
-	}
-	public String getCameraModel() {
-		return cameraModel;
+	@Override
+	public Duration getDuration() {
+		return null;
 	}
 
 	protected void setDefaultTimestamp(Instant defaultTimestamp) {
@@ -99,10 +77,6 @@ public class PictureMetadata {
 		}
 	}
 
-	public boolean hasLocation() {
-		return longitude != null && latitude != null;
-	}
-	
 	public Document toBson() {
 		return new Document("width", width).append("height", height).append("timestamp", DateUtil.toDate(timestamp)).append("longitude", longitude).append("latitude", latitude).append("cameraMaker", cameraMaker).append("cameraModel", cameraModel);
 	}

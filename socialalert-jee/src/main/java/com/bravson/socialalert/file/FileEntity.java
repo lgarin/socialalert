@@ -2,44 +2,62 @@ package com.bravson.socialalert.file;
 
 import java.time.Instant;
 
+import org.bson.Document;
+
+import com.bravson.socialalert.file.picture.PictureMetadata;
+import com.bravson.socialalert.file.video.VideoMetadata;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
+import lombok.Getter;
+import lombok.Value;
+
+@Value
 public class FileEntity {
 
+	@Getter
 	private final String id;
+	
+	@Getter
 	private final String filename;
+	
+	@Getter
 	private final long length;
+	
+	@Getter
 	private final Instant uploadTimestamp;
+	
+	@Getter
 	private final String md5;
-	private final FileMetadata metadata;
+	
+	private final Document metadata;
+	
+	@Getter(lazy=true)
+	private final FileMetadata fileMetadata = buildFileMetadata(metadata);
+	
+	@Getter(lazy=true)
+	private final PictureMetadata pictureMetadata = buildPictureMetadata(metadata);
+	
+	@Getter(lazy=true)
+	private final VideoMetadata videoMetadata = buildVideoMetadata(metadata);
 
 	public FileEntity(GridFSFile file) {
 		id = file.getId().toString();
-		metadata = new FileMetadata(file.getMetadata());
+		metadata = file.getMetadata();
 		length = file.getLength();
 		filename = file.getFilename();
 		md5 = file.getMD5();
 		uploadTimestamp = file.getUploadDate().toInstant();
 	}
-	public String getId() {
-		return id;
+
+	private static FileMetadata buildFileMetadata(Document metadata) {
+		return new FileMetadata(metadata);
 	}
-	public String getFilename() {
-		return filename;
+	
+	private static PictureMetadata buildPictureMetadata(Document metadata) {
+		return new PictureMetadata(metadata);
 	}
-	public long getLength() {
-		return length;
-	}
-	public String getContentType() {
-		return metadata.getContentType();
-	}
-	public Instant getUploadTimestamp() {
-		return uploadTimestamp;
-	}
-	public String getMd5() {
-		return md5;
-	}
-	public String getUserId() {
-		return metadata.getUserId();
+	
+	private static VideoMetadata buildVideoMetadata(Document metadata) {
+		return new VideoMetadata(metadata);
 	}
 }

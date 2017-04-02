@@ -23,7 +23,7 @@ public abstract class FileRepository {
 		this.fileStore = fileStore;
 	}
 
-	public String storePicture(PictureFileMetadata metadata, File file) throws IOException {
+	public String storeMedia(MediaFileMetadata metadata, File file) throws IOException {
 		BsonObjectId id = new BsonObjectId();
 		String filename = id.getValue().toHexString();
 		return uploadFile(filename, id, file, metadata.toBson());

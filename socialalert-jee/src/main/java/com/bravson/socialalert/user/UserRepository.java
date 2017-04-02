@@ -10,6 +10,8 @@ import org.mongodb.morphia.Datastore;
 
 import com.bravson.socialalert.infrastructure.db.NamedMongoDatastore;
 
+import lombok.val;
+
 @ManagedBean
 public class UserRepository {
 
@@ -21,7 +23,7 @@ public class UserRepository {
 	Datastore datastore;
 
 	public Optional<UserInfo> findUserInfo(String userId) {
-		UserInfo info = datastore.get(UserInfo.class, userId);
+		val info = datastore.get(UserInfo.class, userId);
 		if (info != null) {
 			populateGroupNames(info);
 		}

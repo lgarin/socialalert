@@ -2,53 +2,35 @@ package com.bravson.socialalert.file;
 
 import org.bson.Document;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
 public class FileMetadata {
 
+	@Getter
+	@Setter(AccessLevel.PROTECTED)
 	private long contentLength;
+	
+	@Getter
+	@Setter(AccessLevel.PROTECTED)
 	private String contentType;
+	
+	@Getter
+	@Setter(AccessLevel.PROTECTED)
 	private String userId;
+	
+	@Getter
+	@Setter(AccessLevel.PROTECTED)
 	private String ipAddress;
-	
-	public FileMetadata() {
-	}
-	
+
 	public FileMetadata(Document document) {
 		contentType = document.getString("contentType");
 		contentLength = document.getLong("contentLength");
 		userId = document.getString("userId");
 		ipAddress = document.getString("ipAddress");
-	}
-
-	public long getContentLength() {
-		return contentLength;
-	}
-
-	public String getContentType() {
-		return contentType;
-	}
-
-	public String getUserId() {
-		return userId;
-	}
-	
-	public String getIpAddress() {
-		return ipAddress;
-	}
-	
-	protected void setContentLength(long contentLength) {
-		this.contentLength = contentLength;
-	}
-
-	protected void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
-
-	protected void setUserId(String userId) {
-		this.userId = userId;
-	}
-	
-	protected void setIpAddress(String ipAddress) {
-		this.ipAddress = ipAddress;
 	}
 
 	public Document toBson() {

@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.Test;
 
-import com.bravson.socialalert.file.FileConstants;
+import com.bravson.socialalert.file.media.MediaFileConstants;
 
 public class FileServiceTest extends BaseServiceTest {
 
@@ -20,7 +20,7 @@ public class FileServiceTest extends BaseServiceTest {
 	}
 	
 	private Entity<File> getPicture(String filename) {
-		return Entity.entity(new File(filename), FileConstants.JPG_MEDIA_TYPE);
+		return Entity.entity(new File(filename), MediaFileConstants.JPG_MEDIA_TYPE);
 	}
 	
 	@Test

@@ -1,6 +1,6 @@
-package com.bravson.socialalert.file;
+package com.bravson.socialalert.file.media;
 
-public interface FileConstants {
+public interface MediaFileConstants {
 
 	String MOV_MEDIA_TYPE = "video/quicktime";
 	String MP4_MEDIA_TYPE = "video/mp4";

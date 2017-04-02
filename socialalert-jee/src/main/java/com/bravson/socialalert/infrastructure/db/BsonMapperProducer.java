@@ -6,6 +6,8 @@ import javax.enterprise.inject.Produces;
 
 import org.mongodb.morphia.Morphia;
 
+import lombok.val;
+
 @ManagedBean
 @ApplicationScoped
 public class BsonMapperProducer {
@@ -13,7 +15,7 @@ public class BsonMapperProducer {
 	@Produces
 	@ApplicationScoped
 	public Morphia createMapper() {
-		Morphia morphia = new Morphia();
+		val morphia = new Morphia();
 		morphia.getMapper().getConverters().addConverter(new OptionalConverter(morphia.getMapper().getConverters()));
 		morphia.mapPackage("com.bravson.socialalert");
 		return morphia;

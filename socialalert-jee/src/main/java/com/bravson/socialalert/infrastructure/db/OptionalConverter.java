@@ -7,6 +7,8 @@ import org.mongodb.morphia.converters.Converters;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.mapping.MappedField;
 
+import lombok.val;
+
 public class OptionalConverter extends TypeConverter {
 	private Converters defaultConverters;
 
@@ -21,14 +23,14 @@ public class OptionalConverter extends TypeConverter {
 			return null;
 		}
 
-		Optional<?> optional = (Optional<?>) value;
+		val optional = (Optional<?>) value;
 		return optional.map(defaultConverters::encode).orElse(null);
 	}
 
 	@Override
 	public Object decode(Class<?> type, Object fromDbObject, MappedField mappedField) {
 		if (fromDbObject instanceof Collection) {
-			Collection<?> collection = (Collection<?>) fromDbObject;
+			val collection = (Collection<?>) fromDbObject;
 			return collection.stream().findFirst();
 		}
 		return Optional.ofNullable(fromDbObject);

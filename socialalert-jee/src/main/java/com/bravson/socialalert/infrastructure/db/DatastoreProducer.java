@@ -13,6 +13,8 @@ import org.mongodb.morphia.Morphia;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 
+import lombok.val;
+
 @ManagedBean
 @ApplicationScoped
 public class DatastoreProducer {
@@ -34,8 +36,8 @@ public class DatastoreProducer {
 	@Produces
 	@NamedMongoDatastore(db="*")
 	public Datastore createDataStore(InjectionPoint injectionPoint) {
-		NamedMongoDatastore annotation = injectionPoint.getAnnotated().getAnnotation(NamedMongoDatastore.class);
-		Datastore datastore = mongoMapper.createDatastore(mongoClient, annotation.db());
+		val annotation = injectionPoint.getAnnotated().getAnnotation(NamedMongoDatastore.class);
+		val datastore = mongoMapper.createDatastore(mongoClient, annotation.db());
 		datastore.ensureIndexes();
 		return datastore;
 	}

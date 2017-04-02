@@ -14,17 +14,27 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import lombok.Getter;
+
 @Entity("users")
 public class UserInfo {
 
 	@Id
 	private String id;
+	
 	private List<String> groupIds;
 	
+	@Getter
 	private String firstName;
+	
+	@Getter
 	private String lastName;
+	
+	@Getter
 	private String email;
+	
 	private Long createdTimestamp;
+	
 	private List<String> groupNames;
 	
 	@Embedded
@@ -41,18 +51,6 @@ public class UserInfo {
 			attributes = new UserAttributes();
 		}
 		return attributes;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public String getEmail() {
-		return email;
 	}
 
 	@JsonSerialize(using = InstantSerializer.class)

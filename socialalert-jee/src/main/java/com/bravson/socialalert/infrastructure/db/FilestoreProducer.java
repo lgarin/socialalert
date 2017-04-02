@@ -10,6 +10,8 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
 
+import lombok.val;
+
 @ManagedBean
 @ApplicationScoped
 public class FilestoreProducer {
@@ -21,7 +23,7 @@ public class FilestoreProducer {
 	@NamedMongoFilestore(name="*", db="*")
 	@Deprecated
 	public GridFSBucket getFilestore(InjectionPoint injectionPoint) {
-		NamedMongoFilestore annotation = injectionPoint.getAnnotated().getAnnotation(NamedMongoFilestore.class);
+		val annotation = injectionPoint.getAnnotated().getAnnotation(NamedMongoFilestore.class);
 		return GridFSBuckets.create(mongoClient.getDatabase(annotation.db()), annotation.name());
 	}
 }
