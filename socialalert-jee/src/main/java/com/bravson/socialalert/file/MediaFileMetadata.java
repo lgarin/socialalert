@@ -4,24 +4,22 @@ import org.bson.Document;
 
 import com.bravson.socialalert.file.media.MediaMetadata;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.val;
 
-@NoArgsConstructor
+@Data
+@Builder
 @AllArgsConstructor
 class MediaFileMetadata {
 
 	@Getter
-	@Setter(AccessLevel.PROTECTED)
-	private FileMetadata fileMetadata;
+	private final FileMetadata fileMetadata;
 	
 	@Getter
-	@Setter(AccessLevel.PROTECTED)
-	private MediaMetadata mediaMetadata;
+	private final MediaMetadata mediaMetadata;
 	
 	public Document toBson() {
 		val result = fileMetadata.toBson();

@@ -75,44 +75,44 @@ public class PictureFileProcessor implements MediaFileProcessor {
 			throw new JpegProcessingException(errorList.stream().collect(Collectors.joining("; ")));
 		}
 		
-		val result = new PictureMetadata();
+		val builder = MediaMetadata.builder();
 		
 		val exifTags = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
 		if (exifTags != null) {
 			val dateTime = exifTags.getDate(ExifIFD0Directory.TAG_DATETIME);
 			if (dateTime != null) {
-				result.setTimestamp(dateTime.toInstant());
+				builder.timestamp(dateTime.toInstant());
 			}
-			result.setCameraMaker(exifTags.getString(ExifIFD0Directory.TAG_MAKE));
-			result.setCameraModel(exifTags.getString(ExifIFD0Directory.TAG_MODEL));
-			result.setHeight(exifTags.getInteger(ExifIFD0Directory.TAG_Y_RESOLUTION));
-			result.setWidth(exifTags.getInteger(ExifIFD0Directory.TAG_X_RESOLUTION));
+			builder.cameraMaker(exifTags.getString(ExifIFD0Directory.TAG_MAKE));
+			builder.cameraModel(exifTags.getString(ExifIFD0Directory.TAG_MODEL));
+			builder.height(exifTags.getInteger(ExifIFD0Directory.TAG_Y_RESOLUTION));
+			builder.width(exifTags.getInteger(ExifIFD0Directory.TAG_X_RESOLUTION));
 		}
 		
 		val exifSubTags = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
 		if (exifSubTags != null) {
 			val dateTime = exifSubTags.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
 			if (dateTime != null) {
-				result.setTimestamp(dateTime.toInstant());
+				builder.timestamp(dateTime.toInstant());
 			}
 		}
 		
 		val jpegTags = metadata.getFirstDirectoryOfType(JpegDirectory.class);
 		if (jpegTags != null) {
-			result.setHeight(jpegTags.getInteger(JpegDirectory.TAG_IMAGE_HEIGHT));
-			result.setWidth(jpegTags.getInteger(JpegDirectory.TAG_IMAGE_WIDTH));
+			builder.height(jpegTags.getInteger(JpegDirectory.TAG_IMAGE_HEIGHT));
+			builder.width(jpegTags.getInteger(JpegDirectory.TAG_IMAGE_WIDTH));
 		}
 		
 		val gpsTags = metadata.getFirstDirectoryOfType(GpsDirectory.class);
 		if (gpsTags != null) {
 			val location = gpsTags.getGeoLocation();
 			if (location != null) {
-				result.setLatitude(location.getLatitude());
-				result.setLongitude(location.getLongitude());
+				builder.latitude(location.getLatitude());
+				builder.longitude(location.getLongitude());
 			}
 		}
 		
-		return result;
+		return builder.build();
 	}
 	
 	@Override

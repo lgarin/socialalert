@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.security.Principal;
+import java.util.Optional;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Resource;
@@ -21,6 +22,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
+
+import org.slf4j.Logger;
 
 import com.bravson.socialalert.file.media.MediaFileConstants;
 import com.bravson.socialalert.file.media.MediaFileProcessor;
@@ -53,7 +56,10 @@ public class FileService {
 	VideoFileProcessor videoFileProcessor;
 	
 	@Inject
-	private Principal principal;
+	Principal principal;
+	
+	@Inject
+	Logger logger;
 
 	@POST
 	@Consumes(MediaFileConstants.JPG_MEDIA_TYPE)
@@ -73,16 +79,11 @@ public class FileService {
 		if (request.getContentLengthLong() > maxUploadSize) {
 			return Response.status(Status.REQUEST_ENTITY_TOO_LARGE).build();
 		}
-		
-		val metadata = new MediaFileMetadata();
-		metadata.setFileMetadata(buildFileMetadata(request));
-		
-		try {
-			metadata.setMediaMetadata(processor.parseMetadata(inputFile));
-		} catch (Exception e) {
+	
+		val metadata = buildMediaFileMetadata(inputFile, request, processor).orElse(null);
+		if (metadata == null) {
 			return Response.status(Status.UNSUPPORTED_MEDIA_TYPE).build();
 		}
-	
 		val fileId = mediaRepository.storeMedia(metadata, inputFile);
 		
 		val preview = processor.createPreview(inputFile);
@@ -94,13 +95,25 @@ public class FileService {
 		return Response.created(URI.create("file/download/" + fileId)).build();
 	}
 	
+	private Optional<MediaFileMetadata> buildMediaFileMetadata(File inputFile, HttpServletRequest request, MediaFileProcessor processor) {
+		val builder = MediaFileMetadata.builder();
+		try {
+			builder.mediaMetadata(processor.parseMetadata(inputFile));
+		} catch (Exception e) {
+			logger.info("Cannot extract metadata", e);
+			return Optional.empty();
+		}
+		builder.fileMetadata(buildFileMetadata(request));
+		return Optional.of(builder.build());
+	}
+	
 	private FileMetadata buildFileMetadata(HttpServletRequest request) {
-		val metadata = new FileMetadata();
-		metadata.setContentType(request.getContentType());
-		metadata.setContentLength(request.getContentLengthLong());
-		metadata.setUserId(principal.getName());
-		metadata.setIpAddress(request.getRemoteAddr());
-		return metadata;
+		val builder = FileMetadata.builder();
+		builder.contentType(request.getContentType());
+		builder.contentLength(request.getContentLengthLong());
+		builder.userId(principal.getName());
+		builder.ipAddress(request.getRemoteAddr());
+		return builder.build();
 	}
 	
 	private Response doDownload(FileRepository repository, String fileId) {

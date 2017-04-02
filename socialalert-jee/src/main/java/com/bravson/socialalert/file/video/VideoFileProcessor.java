@@ -3,12 +3,16 @@ package com.bravson.socialalert.file.video;
 import static com.bravson.socialalert.file.media.MediaFileConstants.JPG_EXTENSION;
 import static com.bravson.socialalert.file.media.MediaFileConstants.MP4_EXTENSION;
 import static com.bravson.socialalert.file.media.MediaFileConstants.MP4_MEDIA_TYPE;
+import static com.bravson.socialalert.infrastructure.util.DateUtil.parseInstant;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.regex.Pattern;
 
 import javax.annotation.ManagedBean;
@@ -17,6 +21,7 @@ import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 
 import com.bravson.socialalert.file.media.MediaFileProcessor;
+import com.bravson.socialalert.file.media.MediaMetadata;
 
 import io.humble.video.AudioChannel;
 import io.humble.video.AudioFormat;
@@ -45,7 +50,7 @@ import net.coobird.thumbnailator.geometry.Positions;
 @ManagedBean
 public class VideoFileProcessor implements MediaFileProcessor {
 
-	private static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	private static final DateTimeFormatter TIMESTAMP_FORMAT = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").parseDefaulting(ChronoField.NANO_OF_SECOND, 0).toFormatter().withZone(ZoneOffset.UTC);
 	private static final Pattern LOCATION_PATTERN = Pattern.compile("([+-]\\d+.\\d+)([+-]\\d+.\\d+)([+-]\\d+.\\d+)/");
 	
 	@Resource(name="videoSnapshotDelay")
@@ -71,11 +76,15 @@ public class VideoFileProcessor implements MediaFileProcessor {
 	
 	@Resource(name="pictureWatermarkFile")
 	private String watermarkFile;
+	
+	@Resource(name="videoLibraryPath")
+	private String videoLibraryPath;
 
 	private BufferedImage watermarkImage;
 	
 	@PostConstruct
 	protected void init() {
+		System.setProperty("java.library.path", videoLibraryPath);
 		try {
 			watermarkImage = ImageIO.read(getClass().getClassLoader().getResourceAsStream(watermarkFile));
 		} catch (IOException e) {
@@ -157,34 +166,34 @@ public class VideoFileProcessor implements MediaFileProcessor {
 	}
 
 	@Override
-	public VideoMetadata parseMetadata(File sourceFile) throws IOException {
-		val result = new VideoMetadata();
+	public MediaMetadata parseMetadata(File sourceFile) throws IOException {
+		val result = MediaMetadata.builder();
 		val demuxer = Demuxer.make();
 		try {
 			demuxer.open(sourceFile.toString(), null, false, true, null, null);
 			val metadata = demuxer.getMetaData();
-		    result.setCameraModel(metadata.getValue("model"));
-		    result.setCameraMaker(metadata.getValue("make"));
+		    result.cameraModel(metadata.getValue("model"));
+		    result.cameraMaker(metadata.getValue("make"));
 		    if (metadata.getValue("creation_time") != null) {
-		    	result.setTimestamp(TIMESTAMP_FORMAT.parse(metadata.getValue("creation_time")));
+		    	result.timestamp(parseInstant(metadata.getValue("creation_time"), TIMESTAMP_FORMAT));
 		    } else if (metadata.getValue("date") != null) {
-		    	result.setTimestamp(TIMESTAMP_FORMAT.parse(metadata.getValue("date")));
+		    	result.timestamp(parseInstant(metadata.getValue("date"), TIMESTAMP_FORMAT));
 		    }
 		    if (metadata.getValue("location") != null) {
 		    	val locationMatcher = LOCATION_PATTERN.matcher(metadata.getValue("location"));
 			    if (locationMatcher.matches()) {
-			    	result.setDefaultLatitude(Double.parseDouble((locationMatcher.group(1))));
-			    	result.setDefaultLongitude(Double.parseDouble((locationMatcher.group(2))));
+			    	result.latitude(Double.parseDouble((locationMatcher.group(1))));
+			    	result.longitude(Double.parseDouble((locationMatcher.group(2))));
 			    }
 		    }
 		    
-		    result.setDuration(Duration.ofSeconds(demuxer.getDuration() / Global.DEFAULT_PTS_PER_SECOND));
+		    result.duration(Duration.ofSeconds(demuxer.getDuration() / Global.DEFAULT_PTS_PER_SECOND));
 		    
 		    val stream = findStream(demuxer, MediaDescriptor.Type.MEDIA_VIDEO);
 		    if (stream != null) {
 		    	val decoder = stream.getDecoder();
-		    	result.setHeight(decoder.getHeight());
-	        	result.setWidth(decoder.getWidth());
+		    	result.height(decoder.getHeight());
+	        	result.width(decoder.getWidth());
 		    }
 		} catch (InterruptedException e) {
 			throw new IOException(e);
@@ -192,7 +201,7 @@ public class VideoFileProcessor implements MediaFileProcessor {
 			closeDemuxer(demuxer);
 		}
 		
-		return result;
+		return result.build();
 	}
 	
 	private void watermark(File sourceFile, File outputFile) throws IOException {

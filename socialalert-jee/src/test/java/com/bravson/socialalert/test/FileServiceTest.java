@@ -23,6 +23,10 @@ public class FileServiceTest extends BaseServiceTest {
 		return Entity.entity(new File(filename), MediaFileConstants.JPG_MEDIA_TYPE);
 	}
 	
+	private Entity<File> getVideo(String filename) {
+		return Entity.entity(new File(filename), MediaFileConstants.MOV_MEDIA_TYPE);
+	}
+
 	@Test
 	public void uploadPictureWithoutPrincial() throws Exception {
 		Response response = createRequest("/file/uploadPicture", MediaType.WILDCARD).post(getPicture("src/main/resources/logo.jpg"));
@@ -37,6 +41,16 @@ public class FileServiceTest extends BaseServiceTest {
 		String path = response.getLocation().toString().replaceFirst("^(http://.*/rest/)", "");
 		File content = createAuthRequest(path, MediaType.WILDCARD, token).get(File.class);
 		assertThat(content).isFile().hasBinaryContent(Files.readAllBytes(Paths.get("src/main/resources/logo.jpg")));
+	}
+	
+	@Test
+	public void uploadVideoWithLogin() throws Exception {
+		String token = requestLoginToken("test@test.com", "123");
+		Response response = createAuthRequest("/file/uploadVideo", MediaType.WILDCARD, token).post(getVideo("C:/Dev/IMG_0236.MOV"));
+		assertThat(response.getStatus()).isEqualTo(Status.CREATED.getStatusCode());
+		String path = response.getLocation().toString().replaceFirst("^(http://.*/rest/)", "");
+		File content = createAuthRequest(path, MediaType.WILDCARD, token).get(File.class);
+		assertThat(content).isFile().hasBinaryContent(Files.readAllBytes(Paths.get("C:/Dev/IMG_0236.MOV")));
 	}
 
 	@Test

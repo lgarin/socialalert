@@ -2,27 +2,18 @@ package com.bravson.socialalert.file;
 
 import org.bson.Document;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Builder;
+import lombok.Data;
 
-@NoArgsConstructor
+@Data
+@Builder
 @AllArgsConstructor
 class DerivedFileMetadata {
 	
-	@Getter
-	@Setter(AccessLevel.PROTECTED)
-	private String sourceFilename;
-
-	@Getter
-	@Setter(AccessLevel.PROTECTED)
-	private long contentLength;
-	
-	@Getter
-	@Setter(AccessLevel.PROTECTED)
-	private String contentType;
+	private final String sourceFilename;
+	private final long contentLength;
+	private final String contentType;
 	
 	public DerivedFileMetadata(Document document) {
 		contentType = document.getString("contentType");

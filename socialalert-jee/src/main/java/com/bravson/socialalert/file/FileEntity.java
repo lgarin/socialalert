@@ -4,8 +4,7 @@ import java.time.Instant;
 
 import org.bson.Document;
 
-import com.bravson.socialalert.file.picture.PictureMetadata;
-import com.bravson.socialalert.file.video.VideoMetadata;
+import com.bravson.socialalert.file.media.MediaMetadata;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
 import lombok.Getter;
@@ -35,11 +34,8 @@ public class FileEntity {
 	private final FileMetadata fileMetadata = buildFileMetadata(metadata);
 	
 	@Getter(lazy=true)
-	private final PictureMetadata pictureMetadata = buildPictureMetadata(metadata);
+	private final MediaMetadata mediaMetadata = buildMediaMetadata(metadata);
 	
-	@Getter(lazy=true)
-	private final VideoMetadata videoMetadata = buildVideoMetadata(metadata);
-
 	public FileEntity(GridFSFile file) {
 		id = file.getId().toString();
 		metadata = file.getMetadata();
@@ -53,11 +49,7 @@ public class FileEntity {
 		return new FileMetadata(metadata);
 	}
 	
-	private static PictureMetadata buildPictureMetadata(Document metadata) {
-		return new PictureMetadata(metadata);
-	}
-	
-	private static VideoMetadata buildVideoMetadata(Document metadata) {
-		return new VideoMetadata(metadata);
+	private static MediaMetadata buildMediaMetadata(Document metadata) {
+		return new MediaMetadata(metadata);
 	}
 }

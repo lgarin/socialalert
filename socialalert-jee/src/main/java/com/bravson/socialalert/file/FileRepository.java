@@ -11,12 +11,15 @@ import org.bson.BsonObjectId;
 import org.bson.Document;
 
 import com.mongodb.client.gridfs.GridFSBucket;
-import com.mongodb.client.gridfs.model.GridFSFile;
 import com.mongodb.client.gridfs.model.GridFSUploadOptions;
 import com.mongodb.client.model.Filters;
 
+import lombok.val;
+
 public abstract class FileRepository {
 
+	private static final int CHUNK_SIZE = 65536;
+	
 	private GridFSBucket fileStore;
 	
 	public FileRepository(GridFSBucket fileStore) {
@@ -24,28 +27,28 @@ public abstract class FileRepository {
 	}
 
 	public String storeMedia(MediaFileMetadata metadata, File file) throws IOException {
-		BsonObjectId id = new BsonObjectId();
-		String filename = id.getValue().toHexString();
+		val id = new BsonObjectId();
+		val filename = id.getValue().toHexString();
 		return uploadFile(filename, id, file, metadata.toBson());
 	}
 	
 	public String storeDerived(String sourceFilename, String contentType, File file) throws IOException {
-		DerivedFileMetadata metadata = new DerivedFileMetadata(sourceFilename, file.length(), contentType);
-		BsonObjectId id = new BsonObjectId();
-		String filename = metadata.getSourceFilename();
+		val metadata = new DerivedFileMetadata(sourceFilename, file.length(), contentType);
+		val id = new BsonObjectId();
+		val filename = metadata.getSourceFilename();
 		return uploadFile(filename, id, file, metadata.toBson());
 	}
 	
 	private String uploadFile(String filename, BsonObjectId id, File file, Document metadata) throws IOException {
-		GridFSUploadOptions options = new GridFSUploadOptions().metadata(metadata);
-		try (FileInputStream is = new FileInputStream(file)) {
+		val options = new GridFSUploadOptions().chunkSizeBytes(CHUNK_SIZE).metadata(metadata);
+		try (val is = new FileInputStream(file)) {
 			fileStore.uploadFromStream(id, filename, is, options);
 			return filename;
 		}
 	}
 	
 	public Optional<FileEntity> findFile(String fileId) {
-		GridFSFile file = fileStore.find(Filters.eq("filename", fileId)).first();
+		val file = fileStore.find(Filters.eq("filename", fileId)).first();
 		if (file == null) {
 			return Optional.empty();
 		}
