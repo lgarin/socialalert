@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import javax.annotation.ManagedBean;
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.imageio.ImageIO;
+import javax.inject.Inject;
 
+import com.bravson.socialalert.file.media.MediaConfiguration;
 import com.bravson.socialalert.file.media.MediaFileProcessor;
 import com.bravson.socialalert.file.media.MediaMetadata;
+import com.bravson.socialalert.file.media.MediaUtil;
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
 import com.drew.metadata.exif.ExifIFD0Directory;
@@ -29,38 +29,17 @@ import net.coobird.thumbnailator.geometry.Positions;
 
 @ManagedBean
 public class PictureFileProcessor implements MediaFileProcessor {
-	@Resource(name="pictureThumbnailPrefix")
-	private String thumbnailPrefix;
 	
-	@Resource(name="pictureThumbnailHeight")
-	private int thumbnailHeight;
-	
-	@Resource(name="pictureThumbnailWidth")
-	private int thumbnailWidth;
-	
-	@Resource(name="picturePreviewPrefix")
-	private String previewPrefix;
-	
-	@Resource(name="picturePreviewHeight")
-	private int previewHeight;
-	
-	@Resource(name="picturePreviewWidth")
-	private int previewWidth;
-	
-	@Resource(name="pictureWatermarkFile")
-	private String watermarkFile;
+	private MediaConfiguration config;
 	
 	private BufferedImage watermarkImage;
 	
-	@PostConstruct
-	protected void init() {
-		try {
-			watermarkImage = ImageIO.read(getClass().getClassLoader().getResourceAsStream(watermarkFile));
-		} catch (IOException e) {
-			throw new RuntimeException("Cannot read watermark file", e);
-		}
+	@Inject
+	public PictureFileProcessor(MediaConfiguration config) {
+		this.config = config;
+		watermarkImage = MediaUtil.readImage(config.getWatermarkFile());
 	}
-	
+
 	@Override
 	public MediaMetadata parseMetadata(File sourceFile) throws JpegProcessingException, IOException {
 		val metadata = JpegMetadataReader.readMetadata(sourceFile);
@@ -117,15 +96,15 @@ public class PictureFileProcessor implements MediaFileProcessor {
 	
 	@Override
 	public File createThumbnail(File sourceFile) throws IOException {
-		val thumbnailFile = new File(sourceFile.getParent(), thumbnailPrefix + sourceFile.getName() + "." + JPG_EXTENSION);
-		Thumbnails.of(sourceFile).watermark(Positions.CENTER, watermarkImage, 0.25f).size(thumbnailWidth, thumbnailHeight).crop(Positions.CENTER).outputFormat(JPG_EXTENSION).toFile(thumbnailFile);
+		val thumbnailFile = new File(sourceFile.getParent(), config.getThumbnailPrefix() + sourceFile.getName() + "." + JPG_EXTENSION);
+		Thumbnails.of(sourceFile).watermark(Positions.CENTER, watermarkImage, 0.25f).size(config.getThumbnailWidth(), config.getThumbnailHeight()).crop(Positions.CENTER).outputFormat(JPG_EXTENSION).toFile(thumbnailFile);
 		return thumbnailFile;
 	}
 	
 	@Override
 	public File createPreview(File sourceFile) throws IOException {
-		val previewFile = new File(sourceFile.getParent(), previewPrefix + sourceFile.getName() + "." + JPG_EXTENSION);
-		Thumbnails.of(sourceFile).watermark(Positions.CENTER, watermarkImage, 0.25f).size(previewWidth, previewHeight).outputFormat(JPG_EXTENSION).toFile(previewFile);
+		val previewFile = new File(sourceFile.getParent(), config.getPreviewPrefix() + sourceFile.getName() + "." + JPG_EXTENSION);
+		Thumbnails.of(sourceFile).watermark(Positions.CENTER, watermarkImage, 0.25f).size(config.getPreviewWidth(), config.getPreviewHeight()).outputFormat(JPG_EXTENSION).toFile(previewFile);
 		return previewFile;
 	}
 	

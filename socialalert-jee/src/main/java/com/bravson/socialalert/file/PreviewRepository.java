@@ -9,8 +9,10 @@ import com.mongodb.client.gridfs.GridFSBucket;
 @ManagedBean
 public class PreviewRepository extends FileRepository {
 	
+	private static final int CHUNK_SIZE = 64000;
+	
 	@Inject 
 	public PreviewRepository(@NamedMongoFilestore(db="socialalert", name="preview") GridFSBucket mediaStore) {
-		super(mediaStore);
+		super(mediaStore, CHUNK_SIZE);
 	}
 }

@@ -18,12 +18,13 @@ import lombok.val;
 
 public abstract class FileRepository {
 
-	private static final int CHUNK_SIZE = 65536;
+	private final int chunkSize;
 	
-	private GridFSBucket fileStore;
+	private final GridFSBucket fileStore;
 	
-	public FileRepository(GridFSBucket fileStore) {
+	public FileRepository(GridFSBucket fileStore, int chunkSize) {
 		this.fileStore = fileStore;
+		this.chunkSize = chunkSize;
 	}
 
 	public String storeMedia(MediaFileMetadata metadata, File file) throws IOException {
@@ -40,7 +41,7 @@ public abstract class FileRepository {
 	}
 	
 	private String uploadFile(String filename, BsonObjectId id, File file, Document metadata) throws IOException {
-		val options = new GridFSUploadOptions().chunkSizeBytes(CHUNK_SIZE).metadata(metadata);
+		val options = new GridFSUploadOptions().chunkSizeBytes(chunkSize).metadata(metadata);
 		try (val is = new FileInputStream(file)) {
 			fileStore.uploadFromStream(id, filename, is, options);
 			return filename;

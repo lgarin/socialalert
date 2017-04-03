@@ -16,12 +16,12 @@ import java.time.temporal.ChronoField;
 import java.util.regex.Pattern;
 
 import javax.annotation.ManagedBean;
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.imageio.ImageIO;
+import javax.inject.Inject;
 
+import com.bravson.socialalert.file.media.MediaConfiguration;
 import com.bravson.socialalert.file.media.MediaFileProcessor;
 import com.bravson.socialalert.file.media.MediaMetadata;
+import com.bravson.socialalert.file.media.MediaUtil;
 
 import io.humble.video.AudioChannel;
 import io.humble.video.AudioFormat;
@@ -53,43 +53,15 @@ public class VideoFileProcessor implements MediaFileProcessor {
 	private static final DateTimeFormatter TIMESTAMP_FORMAT = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").parseDefaulting(ChronoField.NANO_OF_SECOND, 0).toFormatter().withZone(ZoneOffset.UTC);
 	private static final Pattern LOCATION_PATTERN = Pattern.compile("([+-]\\d+.\\d+)([+-]\\d+.\\d+)([+-]\\d+.\\d+)/");
 	
-	@Resource(name="videoSnapshotDelay")
-	private long snapshotDelay;
+	private MediaConfiguration config;
 	
-	@Resource(name="pictureThumbnailPrefix")
-	private String thumbnailPrefix;
-	
-	@Resource(name="pictureThumbnailHeight")
-	private int thumbnailHeight;
-	
-	@Resource(name="pictureThumbnailWidth")
-	private int thumbnailWidth;
-	
-	@Resource(name="picturePreviewPrefix")
-	private String previewPrefix;
-	
-	@Resource(name="picturePreviewHeight")
-	private int previewHeight;
-	
-	@Resource(name="picturePreviewWidth")
-	private int previewWidth;
-	
-	@Resource(name="pictureWatermarkFile")
-	private String watermarkFile;
-	
-	@Resource(name="videoLibraryPath")
-	private String videoLibraryPath;
-
 	private BufferedImage watermarkImage;
 	
-	@PostConstruct
-	protected void init() {
-		System.setProperty("java.library.path", videoLibraryPath);
-		try {
-			watermarkImage = ImageIO.read(getClass().getClassLoader().getResourceAsStream(watermarkFile));
-		} catch (IOException e) {
-			throw new RuntimeException("Cannot read watermark file", e);
-		}
+	@Inject
+	public VideoFileProcessor(MediaConfiguration config) {
+		this.config = config;
+		System.setProperty("java.library.path", config.getVideoLibraryPath());
+		watermarkImage = MediaUtil.readImage(config.getWatermarkFile());
 	}
 	
 	private MediaPicture buildPicture(Demuxer demuxer, DemuxerStream stream) throws InterruptedException, IOException {
@@ -132,7 +104,7 @@ public class VideoFileProcessor implements MediaFileProcessor {
 	
 	@Override
 	public File createPreview(File sourceFile) throws IOException {
-		val outputFile = new File(sourceFile.getParent(), previewPrefix + sourceFile.getName() + "." + MP4_EXTENSION);
+		val outputFile = new File(sourceFile.getParent(), config.getPreviewPrefix() + sourceFile.getName() + "." + MP4_EXTENSION);
 		watermark(sourceFile, outputFile);
 		return outputFile;
 	}
@@ -144,8 +116,8 @@ public class VideoFileProcessor implements MediaFileProcessor {
 
 	@Override
 	public File createThumbnail(File sourceFile) throws IOException {
-		val thumbnailFile = new File(sourceFile.getParent(), thumbnailPrefix + sourceFile.getName() + "." + JPG_EXTENSION);
-		Thumbnails.of(createSnapshot(sourceFile)).watermark(Positions.CENTER, watermarkImage, 0.25f).size(thumbnailWidth, thumbnailHeight).crop(Positions.CENTER).outputFormat(JPG_EXTENSION).toFile(thumbnailFile);
+		val thumbnailFile = new File(sourceFile.getParent(), config.getThumbnailPrefix() + sourceFile.getName() + "." + JPG_EXTENSION);
+		Thumbnails.of(createSnapshot(sourceFile)).watermark(Positions.CENTER, watermarkImage, 0.25f).size(config.getThumbnailWidth(), config.getThumbnailHeight()).crop(Positions.CENTER).outputFormat(JPG_EXTENSION).toFile(thumbnailFile);
 		return thumbnailFile;
 	}
 	
@@ -247,7 +219,7 @@ public class VideoFileProcessor implements MediaFileProcessor {
 			val videoSource = videoGraph.addPictureSource("input", videoDecoder.getWidth(), videoDecoder.getHeight(), videoDecoder.getPixelFormat(), videoDecoder.getTimeBase(), null);
 			val watermark = videoGraph.addPictureSource("watermark", watermarkPicture.getWidth(), watermarkPicture.getHeight(), watermarkPicture.getFormat(), videoDecoder.getTimeBase(), null);
 			val videoSink = videoGraph.addPictureSink("output", videoEncoder.getPixelFormat());
-			videoGraph.open("[watermark] lutrgb='a=128' [over];[input] scale='h=-1:w=" + previewWidth + ":force_original_aspect_ratio=decrease', rotate='oh=" + previewHeight + ":ow=" + previewWidth + ":a=" + rotationAngle + "*PI/180' [vid]; [vid][over] overlay='x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2' [output]");
+			videoGraph.open("[watermark] lutrgb='a=128' [over];[input] scale='h=-1:w=" + config.getPreviewWidth() + ":force_original_aspect_ratio=decrease', rotate='oh=" + config.getPreviewHeight() + ":ow=" + config.getPreviewWidth() + ":a=" + rotationAngle + "*PI/180' [vid]; [vid][over] overlay='x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2' [output]");
 			
 			val audioGraph = FilterGraph.make();
 			val audioSource = audioGraph.addAudioSource("input", audioDecoder.getSampleRate(), audioDecoder.getChannelLayout(), audioDecoder.getSampleFormat(), audioDecoder.getTimeBase());
@@ -311,8 +283,8 @@ public class VideoFileProcessor implements MediaFileProcessor {
 
 	private Encoder createVideoEncoder(MuxerFormat format, Rational timeBase) {
 		val videoEncoder = Encoder.make(Codec.findEncodingCodecByName("libx264"));
-		videoEncoder.setWidth(previewWidth);
-		videoEncoder.setHeight(previewHeight);
+		videoEncoder.setWidth(config.getPreviewWidth());
+		videoEncoder.setHeight(config.getPreviewHeight());
 		videoEncoder.setPixelFormat(PixelFormat.Type.PIX_FMT_YUV420P);
 		videoEncoder.setTimeBase(Rational.make(timeBase.getNumerator() * 2, timeBase.getDenominator()));
 		if (format.getFlag(MuxerFormat.Flag.GLOBAL_HEADER)) {
