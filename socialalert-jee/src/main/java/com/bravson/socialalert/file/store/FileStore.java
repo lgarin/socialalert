@@ -3,34 +3,23 @@ package com.bravson.socialalert.file.store;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.math.BigInteger;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
+import java.time.temporal.Temporal;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import javax.ws.rs.core.StreamingOutput;
+
+import com.bravson.socialalert.infrastructure.util.DateUtil;
 
 @ManagedBean
 public class FileStore {
-	
-	private static final DateTimeFormatter DATE_FORMATTER = new DateTimeFormatterBuilder()
-            .parseCaseInsensitive()
-            .parseStrict()
-            .appendPattern("yyyyMMdd")
-            .parseDefaulting(ChronoField.NANO_OF_SECOND, 0)
-            .toFormatter()
-            .withZone(ZoneOffset.UTC);
-	
+
 	private static final String MD5_ALGORITHM = "MD5";
 	
 	private final Path baseDirectory;
@@ -40,7 +29,7 @@ public class FileStore {
 		baseDirectory = config.getBaseDirectory().toPath();
 	}
 	
-	public String computeMd5(File file) throws IOException {
+	public String computeMd5Hex(File file) throws IOException {
 		try {
 			return digest(file, MD5_ALGORITHM);
 		} catch (NoSuchAlgorithmException e) {
@@ -65,36 +54,32 @@ public class FileStore {
 		return new BigInteger(1, data).toString(16);
 	}
 
-	public void storeMedia(File source, String uri) throws IOException {
+	public void storeMedia(File source, String md5, Temporal timestamp, FileFormat format) throws IOException {
 		try (InputStream is = Files.newInputStream(source.toPath())) {
-			Files.copy(is, baseDirectory.resolve(uri));
+			Files.copy(is, buildAbsolutePath(md5, timestamp, format));
 		}
 	}
 	
-	private Path buildRelativePath(String md5, Instant timestamp, FileFormat format) {
-		return Paths.get(format.getSizeVariant(), DATE_FORMATTER.format(timestamp), md5 + format.getExtension());
+	private Path buildRelativePath(String md5, Temporal timestamp, FileFormat format) {
+		return Paths.get(format.getSizeVariant(), DateUtil.COMPACT_DATE_FORMATTER.format(timestamp), md5 + format.getExtension());
 	}
 	
-	private Path buildAbsolutePath(String md5, Instant timestamp, FileFormat format) {
-		return baseDirectory.resolve(buildRelativePath(md5, timestamp, format));
+	private Path buildAbsolutePath(String md5, Temporal timestamp, FileFormat format) throws IOException {
+		Path path = baseDirectory.resolve(buildRelativePath(md5, timestamp, format));
+		Files.createDirectories(path.getParent());
+		return path;
 	}
-	
-	public String buildFileUri(String md5, Instant timestamp, FileFormat format) {
-		return buildRelativePath(md5, timestamp, format).toString();
-	}
-	
-	public File buildFilePath(String md5, Instant timestamp, FileFormat format) {
-		return buildAbsolutePath(md5, timestamp, format).toFile();
-	}
-	
-	public StreamingOutput createStreamingOutput(String md5, Instant timestamp, FileFormat format) {
+
+	public File createEmptyFile(String md5, Temporal timestamp, FileFormat format) throws IOException {
 		Path path = buildAbsolutePath(md5, timestamp, format);
-		return new StreamingOutput() {
-            @Override
-            public void write(OutputStream os) throws IOException {
-            	Files.copy(path, os);
-            }
-        };
+		return Files.createFile(path).toFile();
 	}
 	
+	public File getExistingFile(String md5, Temporal timestamp, FileFormat format) throws IOException {
+		Path path = buildAbsolutePath(md5, timestamp, format);
+		if (!Files.exists(path)) {
+			throw new NoSuchFileException(path.toString());
+		}
+		return path.toFile();
+	}
 }

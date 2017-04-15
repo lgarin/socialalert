@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @AllArgsConstructor
+@Getter
 public enum MediaFileFormat implements FileFormat {
 
 	MEDIA_MOV(MOV_MEDIA_TYPE, "." + MOV_EXTENSION, MEDIA_VARIANT),
@@ -35,15 +36,12 @@ public enum MediaFileFormat implements FileFormat {
 		return MEDIA_SET.stream().filter(f -> f.getContentType().equals(contentType)).findAny();
 	}
 	
-	@Getter
 	@NonNull
 	private final String contentType;
 	
-	@Getter
 	@NonNull
 	private final String extension;
 	
-	@Getter
 	@NonNull
 	private final String sizeVariant;
 }

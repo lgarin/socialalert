@@ -1,4 +1,4 @@
-package com.bravson.socialalert.test;
+package com.bravson.socialalert.test.service;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;

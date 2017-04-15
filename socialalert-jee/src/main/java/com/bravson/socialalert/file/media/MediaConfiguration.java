@@ -14,7 +14,7 @@ import lombok.Setter;
 @Data
 @Builder
 @AllArgsConstructor(access=AccessLevel.PRIVATE)
-@NoArgsConstructor
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Setter(AccessLevel.NONE)
 public class MediaConfiguration {
 

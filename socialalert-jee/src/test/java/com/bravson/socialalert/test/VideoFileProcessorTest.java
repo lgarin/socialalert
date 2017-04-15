@@ -9,11 +9,9 @@ import com.bravson.socialalert.file.video.VideoFileProcessor;
 
 public class VideoFileProcessorTest extends Assertions {
 
-	private static MediaConfiguration createConfig() {
-		return MediaConfiguration.builder().previewHeight(640).previewWidth(960).watermarkFile("logo.jpg").videoLibraryPath("C:\\Dev").build();
-	}
+	private static MediaConfiguration config = MediaConfiguration.builder().previewHeight(640).previewWidth(960).watermarkFile("logo.jpg").videoLibraryPath("C:\\Dev").build(); 
 	
-	VideoFileProcessor processor = new VideoFileProcessor(createConfig());
+	private VideoFileProcessor processor = new VideoFileProcessor(config);
 	
 	@Test
 	public void testMediaFormat() {

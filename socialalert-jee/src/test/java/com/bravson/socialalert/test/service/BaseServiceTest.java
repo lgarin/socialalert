@@ -1,4 +1,4 @@
-package com.bravson.socialalert.test;
+package com.bravson.socialalert.test.service;
 
 import java.io.File;
 import java.io.IOException;

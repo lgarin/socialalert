@@ -1,5 +1,8 @@
 package com.bravson.socialalert.file;
 
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -12,32 +15,38 @@ import com.bravson.socialalert.file.media.MediaFileConstants;
 import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaMetadata;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 @Entity(name="MediaFile")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class FileEntity {
+@RequiredArgsConstructor
+@ToString(of="fileUri")
+@EqualsAndHashCode(of="fileUri")
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
+public class FileEntity implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Getter
 	@NonNull
 	@Id
 	private String fileUri;
 	
-	@Getter
 	@ElementCollection
 	private Set<MediaFileFormat> fileFormats;
 		
 	@Getter
+	@NonNull
 	@Embedded
 	private FileMetadata fileMetadata;
 	
 	@Getter
+	@NonNull
 	@Embedded
 	private MediaMetadata mediaMetadata;
 	
@@ -46,5 +55,24 @@ public class FileEntity {
 			return Optional.empty();
 		}
 		return fileFormats.stream().filter(f -> f.getSizeVariant().equals(MediaFileConstants.MEDIA_VARIANT)).findAny();
+	}
+
+	public boolean addMediaFormat(MediaFileFormat format) {
+		if (fileFormats == null) {
+			fileFormats = new HashSet<MediaFileFormat>();
+		}
+		return fileFormats.add(format);
+	}
+	
+	public String getMd5() {
+		return fileMetadata.getMd5();
+	}
+	
+	public Instant getTimestamp() {
+		return fileMetadata.getTimestamp();
+	}
+
+	public String getContentType() {
+		return fileMetadata.getContentType();
 	}
 }

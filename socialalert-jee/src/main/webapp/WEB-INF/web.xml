@@ -37,42 +37,32 @@
 		<env-entry-value>f1101baf-c3d6-4108-a065-1f5a59f403f8</env-entry-value>
 	</env-entry>
 	<env-entry>
-		<env-entry-name>mongoDbUrl</env-entry-name>
-		<env-entry-type>java.lang.String</env-entry-type>
-		<env-entry-value>mongodb://localhost:27017</env-entry-value>
-	</env-entry>
-	<env-entry>
 		<env-entry-name>maxUploadSize</env-entry-name>
 		<env-entry-type>java.lang.Long</env-entry-type>
 		<env-entry-value>4000000</env-entry-value>
 	</env-entry>
 	<env-entry>
-		<env-entry-name>pictureThumbnailPrefix</env-entry-name>
+		<env-entry-name>mediaBaseDirectory</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
-		<env-entry-value>thumb-</env-entry-value>
+		<env-entry-value>C:\Temp\xtra</env-entry-value>
 	</env-entry>
 	<env-entry>
-		<env-entry-name>pictureThumbnailHeight</env-entry-name>
+		<env-entry-name>mediaThumbnailHeight</env-entry-name>
 		<env-entry-type>java.lang.Integer</env-entry-type>
 		<env-entry-value>200</env-entry-value>
 	</env-entry>
 	<env-entry>
-		<env-entry-name>pictureThumbnailWidth</env-entry-name>
+		<env-entry-name>mediaThumbnailWidth</env-entry-name>
 		<env-entry-type>java.lang.Integer</env-entry-type>
 		<env-entry-value>320</env-entry-value>
 	</env-entry>
 	<env-entry>
-		<env-entry-name>picturePreviewPrefix</env-entry-name>
-		<env-entry-type>java.lang.String</env-entry-type>
-		<env-entry-value>preview-</env-entry-value>
-	</env-entry>
-	<env-entry>
-		<env-entry-name>picturePreviewHeight</env-entry-name>
+		<env-entry-name>mediaPreviewHeight</env-entry-name>
 		<env-entry-type>java.lang.Integer</env-entry-type>
 		<env-entry-value>640</env-entry-value>
 	</env-entry>
 	<env-entry>
-		<env-entry-name>picturePreviewWidth</env-entry-name>
+		<env-entry-name>mediaPreviewWidth</env-entry-name>
 		<env-entry-type>java.lang.Integer</env-entry-type>
 		<env-entry-value>960</env-entry-value>
 	</env-entry>
