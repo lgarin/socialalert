@@ -4,14 +4,14 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import org.mongodb.morphia.annotations.Embedded;
+import javax.persistence.Embeddable;
 
 import com.bravson.socialalert.infrastructure.rest.LocalDateDeserializer;
 import com.bravson.socialalert.infrastructure.rest.LocalDateSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-@Embedded
+@Embeddable
 public class UserAttributes {
 
 	private Optional<String> birthdate = Optional.empty();

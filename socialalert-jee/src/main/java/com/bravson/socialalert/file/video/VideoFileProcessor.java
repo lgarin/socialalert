@@ -1,8 +1,6 @@
 package com.bravson.socialalert.file.video;
 
 import static com.bravson.socialalert.file.media.MediaFileConstants.JPG_EXTENSION;
-import static com.bravson.socialalert.file.media.MediaFileConstants.MP4_EXTENSION;
-import static com.bravson.socialalert.file.media.MediaFileConstants.MP4_MEDIA_TYPE;
 import static com.bravson.socialalert.infrastructure.util.DateUtil.parseInstant;
 
 import java.awt.image.BufferedImage;
@@ -19,6 +17,7 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 
 import com.bravson.socialalert.file.media.MediaConfiguration;
+import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaFileProcessor;
 import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.file.media.MediaUtil;
@@ -50,7 +49,13 @@ import net.coobird.thumbnailator.geometry.Positions;
 @ManagedBean
 public class VideoFileProcessor implements MediaFileProcessor {
 
-	private static final DateTimeFormatter TIMESTAMP_FORMAT = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").parseDefaulting(ChronoField.NANO_OF_SECOND, 0).toFormatter().withZone(ZoneOffset.UTC);
+	private static final DateTimeFormatter TIMESTAMP_FORMAT = new DateTimeFormatterBuilder()
+			.parseStrict()
+			.appendPattern("yyyy-MM-dd HH:mm:ss")
+			.parseDefaulting(ChronoField.NANO_OF_SECOND, 0)
+			.toFormatter()
+			.withZone(ZoneOffset.UTC);
+	
 	private static final Pattern LOCATION_PATTERN = Pattern.compile("([+-]\\d+.\\d+)([+-]\\d+.\\d+)([+-]\\d+.\\d+)/");
 	
 	private MediaConfiguration config;
@@ -64,11 +69,12 @@ public class VideoFileProcessor implements MediaFileProcessor {
 		watermarkImage = MediaUtil.readImage(config.getWatermarkFile());
 	}
 	
-	private MediaPicture buildPicture(Demuxer demuxer, DemuxerStream stream) throws InterruptedException, IOException {
+	private static MediaPicture buildPicture(Demuxer demuxer, DemuxerStream stream, long delay) throws InterruptedException, IOException {
 		val decoder = stream.getDecoder();
 		decoder.open(null, null);
 		val picture = MediaPicture.make(decoder.getWidth(), decoder.getHeight(), decoder.getPixelFormat());
 		val packet = MediaPacket.make();
+		// TODO use delay
 		while (demuxer.read(packet) >= 0) {
 			if (packet.getStreamIndex() == stream.getIndex()) {
 				if (decodePicture(packet, decoder, picture)) {
@@ -84,7 +90,7 @@ public class VideoFileProcessor implements MediaFileProcessor {
 		return null;
 	}
 
-	private BufferedImage createSnapshot(File sourceFile) throws IOException {
+	private static BufferedImage takeSnapshot(File sourceFile, long delay) throws IOException {
 		if (!sourceFile.canRead()) {
 			throw new IOException("Cannot read file " + sourceFile);
 		}
@@ -92,7 +98,7 @@ public class VideoFileProcessor implements MediaFileProcessor {
 		try {
 			demuxer.open(sourceFile.toString(), null, false, true, null, null);
 			val stream = findStream(demuxer, MediaDescriptor.Type.MEDIA_VIDEO);
-			val picture = buildPicture(demuxer, stream);
+			val picture = buildPicture(demuxer, stream, delay);
 			val converter = MediaPictureConverterFactory.createConverter(MediaPictureConverterFactory.HUMBLE_BGR_24, picture);
 			return converter.toImage(null, picture);
 		} catch (InterruptedException e) {
@@ -103,25 +109,111 @@ public class VideoFileProcessor implements MediaFileProcessor {
 	}
 	
 	@Override
-	public File createPreview(File sourceFile) throws IOException {
-		val outputFile = new File(sourceFile.getParent(), config.getPreviewPrefix() + sourceFile.getName() + "." + MP4_EXTENSION);
-		watermark(sourceFile, outputFile);
-		return outputFile;
+	public void createPreview(File sourceFile, File outputFile) throws IOException {
+		val demuxer = Demuxer.make();
+		val format = MuxerFormat.guessFormat(null, outputFile.getName(), null);
+		val muxer = Muxer.make(outputFile.toString(), format, null);
+		
+		val inputPacket = MediaPacket.make();
+		val audioPacket = MediaPacket.make();
+		val videoPacket = MediaPacket.make();
+		
+		try {
+			demuxer.open(sourceFile.toString(), null, false, true, null, null);
+			val videoStream = findStream(demuxer, MediaDescriptor.Type.MEDIA_VIDEO);
+			val videoDecoder = videoStream.getDecoder();
+			videoDecoder.open(null, null);
+			
+			val audioStream = findStream(demuxer, MediaDescriptor.Type.MEDIA_AUDIO);
+			val audioDecoder = audioStream.getDecoder();
+			audioDecoder.open(null, null);
+			
+			val videoEncoder = createVideoEncoder(format, videoDecoder.getTimeBase());
+			val audioEncoder = createAudioEncoder(format);
+			
+			muxer.addNewStream(videoEncoder);
+			muxer.addNewStream(audioEncoder);
+			val muxerOptions = KeyValueBag.make();
+			//muxerOptions.setValue("movflags", "faststart");
+			muxerOptions.setValue("moov_size", "100000");
+			muxer.open(muxerOptions, null);
+			
+			val watermarkPicture = createWatermarkPicture();
+			
+			val metadata = videoStream.getMetaData();
+			val rotation = metadata.getValue("rotate");
+			int rotationAngle = 0;
+			if (rotation != null) {
+				rotationAngle = Integer.parseInt(rotation);
+			}
+			
+			val videoGraph = FilterGraph.make();
+			val videoSource = videoGraph.addPictureSource("input", videoDecoder.getWidth(), videoDecoder.getHeight(), videoDecoder.getPixelFormat(), videoDecoder.getTimeBase(), null);
+			val watermark = videoGraph.addPictureSource("watermark", watermarkPicture.getWidth(), watermarkPicture.getHeight(), watermarkPicture.getFormat(), videoDecoder.getTimeBase(), null);
+			val videoSink = videoGraph.addPictureSink("output", videoEncoder.getPixelFormat());
+			videoGraph.open("[watermark] lutrgb='a=128' [over];[input] scale='h=-1:w=" + config.getPreviewWidth() + ":force_original_aspect_ratio=decrease', rotate='oh=" + config.getPreviewHeight() + ":ow=" + config.getPreviewWidth() + ":a=" + rotationAngle + "*PI/180' [vid]; [vid][over] overlay='x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2' [output]");
+			
+			val audioGraph = FilterGraph.make();
+			val audioSource = audioGraph.addAudioSource("input", audioDecoder.getSampleRate(), audioDecoder.getChannelLayout(), audioDecoder.getSampleFormat(), audioDecoder.getTimeBase());
+			val audioSink = audioGraph.addAudioSink("output", audioEncoder.getSampleRate(), audioEncoder.getChannelLayout(), audioEncoder.getSampleFormat());
+			audioGraph.open("[input] aformat='sample_fmts=s16:sample_rates=44100:channel_layouts=mono' [output]");
+			
+			val sourceAudio = MediaAudio.make(audioDecoder.getFrameSize(), audioDecoder.getSampleRate(), audioDecoder.getChannels(), audioDecoder.getChannelLayout(), audioDecoder.getSampleFormat());
+			val targetAudio = MediaAudio.make(audioEncoder.getFrameSize(), audioEncoder.getSampleRate(), audioEncoder.getChannels(), audioEncoder.getChannelLayout(), audioEncoder.getSampleFormat());
+			val targetPicture = MediaPicture.make(videoEncoder.getWidth(), videoEncoder.getHeight(), videoEncoder.getPixelFormat());
+			val sourcePicture = MediaPicture.make(videoDecoder.getWidth(), videoDecoder.getHeight(), videoDecoder.getPixelFormat());
+		
+			while (demuxer.read(inputPacket) >= 0) {
+				if (inputPacket.isComplete()) {
+					if (audioStream.getIndex() == inputPacket.getStreamIndex()) {
+						if (decodeAudio(inputPacket, audioDecoder, sourceAudio)) {
+							audioSource.addAudio(sourceAudio);
+							if (audioSink.getAudio(targetAudio) >= 0) {
+								encodeAudio(muxer, audioPacket, audioEncoder, targetAudio);
+							}
+						}
+					} else if (videoStream.getIndex() == inputPacket.getStreamIndex()) {
+						if (decodePicture(inputPacket, videoDecoder, sourcePicture)) {
+							watermarkPicture.setTimeStamp(sourcePicture.getTimeStamp());
+							watermark.addPicture(watermarkPicture);
+							videoSource.addPicture(sourcePicture);
+							if (videoSink.getPicture(targetPicture) >= 0) {
+								encodePicture(muxer, videoPacket, videoEncoder, targetPicture);
+							}
+						}
+					}
+		
+				}
+			}
+			
+			encodePicture(muxer, videoPacket, videoEncoder, null);
+			encodeAudio(muxer, audioPacket, audioEncoder, null);
+			
+		} catch (InterruptedException e) {
+			throw new IOException(e);
+		} finally {
+			closeMuxer(muxer);
+			closeDemuxer(demuxer);
+		}
 	}
 	
 	@Override
-	public String getPreviewContentType() {
-		return MP4_MEDIA_TYPE;
-	}
-
-	@Override
-	public File createThumbnail(File sourceFile) throws IOException {
-		val thumbnailFile = new File(sourceFile.getParent(), config.getThumbnailPrefix() + sourceFile.getName() + "." + JPG_EXTENSION);
-		Thumbnails.of(createSnapshot(sourceFile)).watermark(Positions.CENTER, watermarkImage, 0.25f).size(config.getThumbnailWidth(), config.getThumbnailHeight()).crop(Positions.CENTER).outputFormat(JPG_EXTENSION).toFile(thumbnailFile);
-		return thumbnailFile;
+	public MediaFileFormat getPreviewFormat() {
+		return MediaFileFormat.PREVIEW_MP4;
 	}
 	
-	private DemuxerStream findStream(Demuxer demuxer, MediaDescriptor.Type type) throws IOException {
+	@Override
+	public void createThumbnail(File sourceFile, File outputFile) throws IOException {
+		Thumbnails
+			.of(takeSnapshot(sourceFile, config.getSnapshotDelay()))
+			.watermark(Positions.CENTER, watermarkImage, 0.25f)
+			.size(config.getThumbnailWidth(), config.getThumbnailHeight())
+			.crop(Positions.CENTER)
+			.outputFormat(JPG_EXTENSION)
+			.toFile(outputFile);
+	}
+	
+	private static DemuxerStream findStream(Demuxer demuxer, MediaDescriptor.Type type) throws IOException {
 		try {
 			int ns = demuxer.getNumStreams();
 			for (int i = 0; i < ns; i++) {
@@ -176,96 +268,7 @@ public class VideoFileProcessor implements MediaFileProcessor {
 		return result.build();
 	}
 	
-	private void watermark(File sourceFile, File outputFile) throws IOException {
-		
-		val demuxer = Demuxer.make();
-		val format = MuxerFormat.guessFormat(null, outputFile.getName(), null);
-		val muxer = Muxer.make(outputFile.toString(), format, null);
-		
-		val inputPacket = MediaPacket.make();
-		val audioPacket = MediaPacket.make();
-		val videoPacket = MediaPacket.make();
-		
-		try {
-			demuxer.open(sourceFile.toString(), null, false, true, null, null);
-			val videoStream = findStream(demuxer, MediaDescriptor.Type.MEDIA_VIDEO);
-			val videoDecoder = videoStream.getDecoder();
-			videoDecoder.open(null, null);
-			
-			val audioStream = findStream(demuxer, MediaDescriptor.Type.MEDIA_AUDIO);
-			val audioDecoder = audioStream.getDecoder();
-			audioDecoder.open(null, null);
-			
-			val videoEncoder = createVideoEncoder(format, videoDecoder.getTimeBase());
-			val audioEncoder = createAudioEncoder(format);
-			
-			muxer.addNewStream(videoEncoder);
-			muxer.addNewStream(audioEncoder);
-			val muxerOptions = KeyValueBag.make();
-			//muxerOptions.setValue("movflags", "faststart");
-			muxerOptions.setValue("moov_size", "100000");
-			muxer.open(muxerOptions, null);
-			
-			val watermarkPicture = createWatermarkPicture();
-			
-			val metadata = videoStream.getMetaData();
-			val rotation = metadata.getValue("rotate");
-			int rotationAngle = 0;
-			if (rotation != null) {
-				rotationAngle = Integer.parseInt(rotation);
-			}
-			
-			val videoGraph = FilterGraph.make();
-			val videoSource = videoGraph.addPictureSource("input", videoDecoder.getWidth(), videoDecoder.getHeight(), videoDecoder.getPixelFormat(), videoDecoder.getTimeBase(), null);
-			val watermark = videoGraph.addPictureSource("watermark", watermarkPicture.getWidth(), watermarkPicture.getHeight(), watermarkPicture.getFormat(), videoDecoder.getTimeBase(), null);
-			val videoSink = videoGraph.addPictureSink("output", videoEncoder.getPixelFormat());
-			videoGraph.open("[watermark] lutrgb='a=128' [over];[input] scale='h=-1:w=" + config.getPreviewWidth() + ":force_original_aspect_ratio=decrease', rotate='oh=" + config.getPreviewHeight() + ":ow=" + config.getPreviewWidth() + ":a=" + rotationAngle + "*PI/180' [vid]; [vid][over] overlay='x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2' [output]");
-			
-			val audioGraph = FilterGraph.make();
-			val audioSource = audioGraph.addAudioSource("input", audioDecoder.getSampleRate(), audioDecoder.getChannelLayout(), audioDecoder.getSampleFormat(), audioDecoder.getTimeBase());
-			val audioSink = audioGraph.addAudioSink("output", audioEncoder.getSampleRate(), audioEncoder.getChannelLayout(), audioEncoder.getSampleFormat());
-			audioGraph.open("[input] aformat='sample_fmts=s16:sample_rates=44100:channel_layouts=mono' [output]");
-			
-			val sourceAudio = MediaAudio.make(audioDecoder.getFrameSize(), audioDecoder.getSampleRate(), audioDecoder.getChannels(), audioDecoder.getChannelLayout(), audioDecoder.getSampleFormat());
-			val targetAudio = MediaAudio.make(audioEncoder.getFrameSize(), audioEncoder.getSampleRate(), audioEncoder.getChannels(), audioEncoder.getChannelLayout(), audioEncoder.getSampleFormat());
-			val targetPicture = MediaPicture.make(videoEncoder.getWidth(), videoEncoder.getHeight(), videoEncoder.getPixelFormat());
-			val sourcePicture = MediaPicture.make(videoDecoder.getWidth(), videoDecoder.getHeight(), videoDecoder.getPixelFormat());
-
-			while (demuxer.read(inputPacket) >= 0) {
-				if (inputPacket.isComplete()) {
-					if (audioStream.getIndex() == inputPacket.getStreamIndex()) {
-						if (decodeAudio(inputPacket, audioDecoder, sourceAudio)) {
-							audioSource.addAudio(sourceAudio);
-							if (audioSink.getAudio(targetAudio) >= 0) {
-								encodeAudio(muxer, audioPacket, audioEncoder, targetAudio);
-							}
-						}
-					} else if (videoStream.getIndex() == inputPacket.getStreamIndex()) {
-						if (decodePicture(inputPacket, videoDecoder, sourcePicture)) {
-							watermarkPicture.setTimeStamp(sourcePicture.getTimeStamp());
-							watermark.addPicture(watermarkPicture);
-							videoSource.addPicture(sourcePicture);
-							if (videoSink.getPicture(targetPicture) >= 0) {
-								encodePicture(muxer, videoPacket, videoEncoder, targetPicture);
-							}
-						}
-					}
-
-				}
-			}
-			
-			encodePicture(muxer, videoPacket, videoEncoder, null);
-			encodeAudio(muxer, audioPacket, audioEncoder, null);
-			
-		} catch (InterruptedException e) {
-			throw new IOException(e);
-		} finally {
-			closeMuxer(muxer);
-			closeDemuxer(demuxer);
-		}
-	}
-
-	private void closeDemuxer(Demuxer demuxer) throws IOException {
+	private static void closeDemuxer(Demuxer demuxer) throws IOException {
 		try {
 			if (demuxer.getState() == Demuxer.State.STATE_OPENED) {
 				demuxer.close();
@@ -275,7 +278,7 @@ public class VideoFileProcessor implements MediaFileProcessor {
 		}
 	}
 
-	private void closeMuxer(Muxer muxer) {
+	private static void closeMuxer(Muxer muxer) {
 		if (muxer.getState() == Muxer.State.STATE_OPENED) {
 			muxer.close();
 		}
@@ -316,7 +319,7 @@ public class VideoFileProcessor implements MediaFileProcessor {
 		return audioEncoder;
 	}
 
-	private void encodeAudio(Muxer muxer, MediaPacket audioPacket, Encoder audioEncoder, MediaAudio targetAudio) {
+	private static void encodeAudio(Muxer muxer, MediaPacket audioPacket, Encoder audioEncoder, MediaAudio targetAudio) {
 		//do {
 			audioEncoder.encodeAudio(audioPacket, targetAudio);
 		    if (audioPacket.isComplete()) {
@@ -325,7 +328,7 @@ public class VideoFileProcessor implements MediaFileProcessor {
 		//} while (audioPacket.isComplete());
 	}
 
-	private void encodePicture(Muxer muxer, MediaPacket videoPacket, Encoder videoEncoder, MediaPicture targetPicture) {
+	private static void encodePicture(Muxer muxer, MediaPacket videoPacket, Encoder videoEncoder, MediaPicture targetPicture) {
 		do {
 			videoEncoder.encodeVideo(videoPacket, targetPicture);
 		    if (videoPacket.isComplete()) {
@@ -341,7 +344,7 @@ public class VideoFileProcessor implements MediaFileProcessor {
 		return watermarkPicture;
 	}
 
-	private boolean decodePicture(MediaPacket packet, Decoder decoder, MediaPicture picture) {
+	private static boolean decodePicture(MediaPacket packet, Decoder decoder, MediaPicture picture) {
 		val size = packet == null ? 0 : packet.getSize();
 		int offset = 0;
 		int bytesRead = 0;
@@ -358,7 +361,7 @@ public class VideoFileProcessor implements MediaFileProcessor {
 		return false;
 	}
 	
-	private boolean decodeAudio(MediaPacket packet, Decoder decoder, MediaAudio audio) {
+	private static boolean decodeAudio(MediaPacket packet, Decoder decoder, MediaAudio audio) {
 		val size = packet == null ? 0 : packet.getSize();
 		int offset = 0;
 		int bytesRead = 0;

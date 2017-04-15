@@ -7,13 +7,13 @@ public interface MediaFileProcessor {
 
 	MediaMetadata parseMetadata(File inputFile) throws Exception;
 	
-	File createPreview(File inputFile) throws IOException;
+	void createPreview(File inputFile, File outputFile) throws IOException;
 	
-	String getPreviewContentType();
+	MediaFileFormat getPreviewFormat();
 	
-	File createThumbnail(File inputFile) throws IOException;
+	void createThumbnail(File inputFile, File outputFile) throws IOException;
 	
-	default String getThumbnailContentType() {
-		return MediaFileConstants.JPG_MEDIA_TYPE;
+	default MediaFileFormat getThumbnailFormat() {
+		return MediaFileFormat.THUMBNAIL_JPG;
 	}
 }

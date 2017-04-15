@@ -1,55 +1,50 @@
 package com.bravson.socialalert.file;
 
-import java.time.Instant;
+import java.util.Optional;
+import java.util.Set;
 
-import org.bson.Document;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
+import com.bravson.socialalert.file.media.MediaFileConstants;
+import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaMetadata;
-import com.mongodb.client.gridfs.model.GridFSFile;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
-import lombok.Value;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
-@Value
+@Entity(name="MediaFile")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class FileEntity {
 
 	@Getter
-	private final String id;
+	@NonNull
+	@Id
+	private String fileUri;
 	
 	@Getter
-	private final String filename;
+	@ElementCollection
+	private Set<MediaFileFormat> fileFormats;
+		
+	@Getter
+	@Embedded
+	private FileMetadata fileMetadata;
 	
 	@Getter
-	private final long length;
+	@Embedded
+	private MediaMetadata mediaMetadata;
 	
-	@Getter
-	private final Instant uploadTimestamp;
-	
-	@Getter
-	private final String md5;
-	
-	private final Document metadata;
-	
-	@Getter(lazy=true)
-	private final FileMetadata fileMetadata = buildFileMetadata(metadata);
-	
-	@Getter(lazy=true)
-	private final MediaMetadata mediaMetadata = buildMediaMetadata(metadata);
-	
-	public FileEntity(GridFSFile file) {
-		id = file.getId().toString();
-		metadata = file.getMetadata();
-		length = file.getLength();
-		filename = file.getFilename();
-		md5 = file.getMD5();
-		uploadTimestamp = file.getUploadDate().toInstant();
-	}
-
-	private static FileMetadata buildFileMetadata(Document metadata) {
-		return new FileMetadata(metadata);
-	}
-	
-	private static MediaMetadata buildMediaMetadata(Document metadata) {
-		return new MediaMetadata(metadata);
+	public Optional<MediaFileFormat> findVariantFormat(String variantName) {
+		if (fileFormats == null) {
+			return Optional.empty();
+		}
+		return fileFormats.stream().filter(f -> f.getSizeVariant().equals(MediaFileConstants.MEDIA_VARIANT)).findAny();
 	}
 }

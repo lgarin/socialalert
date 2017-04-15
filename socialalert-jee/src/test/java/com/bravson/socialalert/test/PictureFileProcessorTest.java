@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import com.bravson.socialalert.file.media.MediaConfiguration;
+import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.picture.PictureFileProcessor;
 
 public class PictureFileProcessorTest extends Assertions {
@@ -15,8 +16,8 @@ public class PictureFileProcessorTest extends Assertions {
 	PictureFileProcessor processor = new PictureFileProcessor(createConfig());
 	
 	@Test
-	public void testContentType() {
-		assertThat(processor.getPreviewContentType()).isEqualTo("image/jpeg");
-		assertThat(processor.getThumbnailContentType()).isEqualTo("image/jpeg");
+	public void testMediaFormat() {
+		assertThat(processor.getPreviewFormat()).isEqualTo(MediaFileFormat.PREVIEW_JPG);
+		assertThat(processor.getThumbnailFormat()).isEqualTo(MediaFileFormat.THUMBNAIL_JPG);
 	}
 }

@@ -2,9 +2,9 @@ package com.bravson.socialalert.file;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URI;
 import java.security.Principal;
+import java.time.Instant;
 import java.util.Optional;
 
 import javax.annotation.ManagedBean;
@@ -21,13 +21,15 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.StreamingOutput;
 
 import org.slf4j.Logger;
 
 import com.bravson.socialalert.file.media.MediaFileConstants;
+import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaFileProcessor;
+import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.file.picture.PictureFileProcessor;
+import com.bravson.socialalert.file.store.FileStore;
 import com.bravson.socialalert.file.video.VideoFileProcessor;
 
 import lombok.val;
@@ -44,16 +46,13 @@ public class FileService {
 	MediaRepository mediaRepository;
 	
 	@Inject
-	ThumbnailRepository thumbnailRepository;
-	
-	@Inject
-	PreviewRepository previewRepository;
-	
-	@Inject
 	PictureFileProcessor pictureFileProcessor;
 	
 	@Inject
 	VideoFileProcessor videoFileProcessor;
+	
+	@Inject
+	FileStore fileStore;
 	
 	@Inject
 	Principal principal;
@@ -80,35 +79,46 @@ public class FileService {
 			return Response.status(Status.REQUEST_ENTITY_TOO_LARGE).build();
 		}
 	
-		val metadata = buildMediaFileMetadata(inputFile, request, processor).orElse(null);
-		if (metadata == null) {
+		val mediaMetadata = buildMediaMetadata(inputFile, processor).orElse(null);
+		if (mediaMetadata == null) {
 			return Response.status(Status.UNSUPPORTED_MEDIA_TYPE).build();
 		}
-		val fileId = mediaRepository.storeMedia(metadata, inputFile);
 		
-		val preview = processor.createPreview(inputFile);
-		previewRepository.storeDerived(fileId, processor.getPreviewContentType(), preview);
+		val fileFormat = MediaFileFormat.fromMediaContentType(request.getContentType()).orElse(null);
+		if (fileFormat == null) {
+			return Response.status(Status.UNSUPPORTED_MEDIA_TYPE).build();
+		}
 		
-		val thumbnail = processor.createThumbnail(inputFile);
-		thumbnailRepository.storeDerived(fileId, processor.getThumbnailContentType(), thumbnail);
+		val fileMetadata = buildFileMetadata(inputFile, request);
 		
-		return Response.created(URI.create("file/download/" + fileId)).build();
+		val fileUri = fileStore.buildFileUri(fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileFormat);
+		fileStore.storeMedia(inputFile, fileUri);
+		val fileEntity = mediaRepository.storeMedia(fileUri, fileFormat, fileMetadata, mediaMetadata);
+		
+		val previewFile = fileStore.buildFilePath(fileMetadata.getMd5(), fileMetadata.getTimestamp(), processor.getPreviewFormat());
+		processor.createPreview(inputFile, previewFile);
+		fileEntity.getFileFormats().add(processor.getPreviewFormat());
+		
+		val thumbnailFile = fileStore.buildFilePath(fileMetadata.getMd5(), fileMetadata.getTimestamp(), processor.getThumbnailFormat()); 
+		processor.createThumbnail(inputFile, thumbnailFile);
+		fileEntity.getFileFormats().add(processor.getThumbnailFormat());
+		
+		return Response.created(URI.create("file/download/" + fileUri)).build();
 	}
 	
-	private Optional<MediaFileMetadata> buildMediaFileMetadata(File inputFile, HttpServletRequest request, MediaFileProcessor processor) {
-		val builder = MediaFileMetadata.builder();
+	private Optional<MediaMetadata> buildMediaMetadata(File inputFile, MediaFileProcessor processor) throws IOException {
 		try {
-			builder.mediaMetadata(processor.parseMetadata(inputFile));
+			return Optional.of(processor.parseMetadata(inputFile));
 		} catch (Exception e) {
 			logger.info("Cannot extract metadata", e);
 			return Optional.empty();
 		}
-		builder.fileMetadata(buildFileMetadata(request));
-		return Optional.of(builder.build());
 	}
 	
-	private FileMetadata buildFileMetadata(HttpServletRequest request) {
+	private FileMetadata buildFileMetadata(File file, HttpServletRequest request) throws IOException {
 		val builder = FileMetadata.builder();
+		builder.md5(fileStore.computeMd5(file));
+		builder.timestamp(Instant.now());
 		builder.contentType(request.getContentType());
 		builder.contentLength(request.getContentLengthLong());
 		builder.userId(principal.getName());
@@ -116,40 +126,39 @@ public class FileService {
 		return builder.build();
 	}
 	
-	private Response doDownload(FileRepository repository, String fileId) {
-		val file = repository.findFile(fileId).orElse(null);
-		if (file == null) {
+	private Response streamFile(String fileUri, String variantName) {
+		val fileEntity = mediaRepository.findFile(fileUri).orElse(null);
+		if (fileEntity == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
         
-		val stream = new StreamingOutput() {
-            @Override
-            public void write(OutputStream os) throws IOException {
-            	repository.retrieveFile(fileId, os);
-            }
-        };
-        
-        val response = Response.ok(stream, file.getFileMetadata().getContentType());
-		response.header("Content-Disposition", "attachment; filename=\"" + fileId + "\"");
-        response.header("Content-Length", file.getLength());
+		val fileFormat = fileEntity.findVariantFormat(variantName).orElse(null);
+		if (fileFormat == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		File file = fileStore.buildFilePath(fileEntity.getFileMetadata().getMd5(), fileEntity.getFileMetadata().getTimestamp(), fileFormat);
+		val stream = fileStore.createStreamingOutput(fileEntity.getFileMetadata().getMd5(), fileEntity.getFileMetadata().getTimestamp(), fileFormat);
+        val response = Response.ok(stream, fileEntity.getFileMetadata().getContentType());
+		response.header("Content-Disposition", "attachment; filename=\"" + fileUri + "\"");
+        response.header("Content-Length", file.length());
 		return response.build();
 	}
 
 	@GET
-	@Path("/download/{fileId}")
-	public Response download(@PathParam("fileId") String fileId) {
-		return doDownload(mediaRepository, fileId);
+	@Path("/download/{fileUri}")
+	public Response download(@PathParam("fileUri") String fileUri) {
+		return streamFile(fileUri, MediaFileConstants.MEDIA_VARIANT);
 	}
 	
 	@GET
-	@Path("/preview/{fileId}")
-	public Response preview(@PathParam("fileId") String fileId) {
-		return doDownload(previewRepository, fileId);
+	@Path("/preview/{fileUri}")
+	public Response preview(@PathParam("fileUri") String fileUri) {
+		return streamFile(fileUri, MediaFileConstants.PREVIEW_VARIANT);
 	}
 	
 	@GET
-	@Path("/thumbnail/{fileId}")
-	public Response thumbnail(@PathParam("fileId") String fileId) {
-		return doDownload(thumbnailRepository, fileId);
+	@Path("/thumbnail/{fileUri}")
+	public Response thumbnail(@PathParam("fileUri") String fileUri) {
+		return streamFile(fileUri, MediaFileConstants.THUMBNAIL_VARIANT);
 	}
 }

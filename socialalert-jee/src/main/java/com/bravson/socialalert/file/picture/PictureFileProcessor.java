@@ -1,7 +1,6 @@
 package com.bravson.socialalert.file.picture;
 
 import static com.bravson.socialalert.file.media.MediaFileConstants.JPG_EXTENSION;
-import static com.bravson.socialalert.file.media.MediaFileConstants.JPG_MEDIA_TYPE;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -13,6 +12,7 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 
 import com.bravson.socialalert.file.media.MediaConfiguration;
+import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaFileProcessor;
 import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.file.media.MediaUtil;
@@ -95,21 +95,28 @@ public class PictureFileProcessor implements MediaFileProcessor {
 	}
 	
 	@Override
-	public File createThumbnail(File sourceFile) throws IOException {
-		val thumbnailFile = new File(sourceFile.getParent(), config.getThumbnailPrefix() + sourceFile.getName() + "." + JPG_EXTENSION);
-		Thumbnails.of(sourceFile).watermark(Positions.CENTER, watermarkImage, 0.25f).size(config.getThumbnailWidth(), config.getThumbnailHeight()).crop(Positions.CENTER).outputFormat(JPG_EXTENSION).toFile(thumbnailFile);
-		return thumbnailFile;
+	public void createThumbnail(File sourceFile, File outputFile) throws IOException {
+		Thumbnails
+			.of(sourceFile)
+			.watermark(Positions.CENTER, watermarkImage, 0.25f)
+			.size(config.getThumbnailWidth(), config.getThumbnailHeight())
+			.crop(Positions.CENTER)
+			.outputFormat(JPG_EXTENSION)
+			.toFile(outputFile);
 	}
 	
 	@Override
-	public File createPreview(File sourceFile) throws IOException {
-		val previewFile = new File(sourceFile.getParent(), config.getPreviewPrefix() + sourceFile.getName() + "." + JPG_EXTENSION);
-		Thumbnails.of(sourceFile).watermark(Positions.CENTER, watermarkImage, 0.25f).size(config.getPreviewWidth(), config.getPreviewHeight()).outputFormat(JPG_EXTENSION).toFile(previewFile);
-		return previewFile;
+	public void createPreview(File sourceFile, File outputFile) throws IOException {
+		Thumbnails
+			.of(sourceFile)
+			.watermark(Positions.CENTER, watermarkImage, 0.25f)
+			.size(config.getPreviewWidth(), config.getPreviewHeight())
+			.outputFormat(JPG_EXTENSION)
+			.toFile(outputFile);
 	}
 	
 	@Override
-	public String getPreviewContentType() {
-		return JPG_MEDIA_TYPE;
+	public MediaFileFormat getPreviewFormat() {
+		return MediaFileFormat.PREVIEW_JPG;
 	}
 }

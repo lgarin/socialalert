@@ -21,27 +21,27 @@ public class MediaConfiguration {
 	@Resource(name="videoSnapshotDelay")
 	private long snapshotDelay;
 	
-	@Resource(name="pictureThumbnailPrefix")
-	private String thumbnailPrefix;
-	
-	@Resource(name="pictureThumbnailHeight")
+	@Resource(name="mediaThumbnailHeight")
 	private int thumbnailHeight;
 	
-	@Resource(name="pictureThumbnailWidth")
+	@Resource(name="mediaThumbnailWidth")
 	private int thumbnailWidth;
 	
-	@Resource(name="picturePreviewPrefix")
-	private String previewPrefix;
-	
-	@Resource(name="picturePreviewHeight")
+	@Resource(name="mediaPreviewHeight")
 	private int previewHeight;
 	
-	@Resource(name="picturePreviewWidth")
+	@Resource(name="mediaPreviewWidth")
 	private int previewWidth;
 	
-	@Resource(name="pictureWatermarkFile")
+	@Resource(name="mediaWatermarkFile")
 	private String watermarkFile;
 	
 	@Resource(name="videoLibraryPath")
 	private String videoLibraryPath;
+	
+	@Resource(name="mediaThumbnailPrefix")
+	private String thumbnailPrefix;
+	
+	@Resource(name="mediaPreviewPrefix")
+	private String previewPrefix;
 }

@@ -1,18 +1,33 @@
 package com.bravson.socialalert.file;
 
-import javax.annotation.ManagedBean;
-import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Optional;
 
-import com.bravson.socialalert.infrastructure.db.NamedMongoFilestore;
-import com.mongodb.client.gridfs.GridFSBucket;
+import javax.annotation.ManagedBean;
+import javax.persistence.EntityManager;
+
+import com.bravson.socialalert.file.media.MediaFileFormat;
+import com.bravson.socialalert.file.media.MediaMetadata;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.val;
 
 @ManagedBean
-public class MediaRepository extends FileRepository {
+@AllArgsConstructor
+public class MediaRepository {
+
+	@Getter
+	private final EntityManager entityManager;
+
+	public FileEntity storeMedia(String fileUri, MediaFileFormat format, FileMetadata fileMetadata, MediaMetadata mediaMetadata) throws IOException {
+		val entity = new FileEntity(fileUri, Collections.singleton(format), fileMetadata, mediaMetadata);
+		entityManager.persist(entity);
+		return entity;
+	}
 	
-	private static final int CHUNK_SIZE = 64000;
-	
-	@Inject 
-	public MediaRepository(@NamedMongoFilestore(db="socialalert", name="media") GridFSBucket mediaStore) {
-		super(mediaStore, CHUNK_SIZE);
+	public Optional<FileEntity> findFile(String fileUri) {
+		return Optional.ofNullable(entityManager.find(FileEntity.class, fileUri));
 	}
 }

@@ -1,11 +1,10 @@
 package com.bravson.socialalert.user;
 
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 import lombok.Getter;
 
-@Entity("groups")
 public class UserGroup {
 
 	@Id
