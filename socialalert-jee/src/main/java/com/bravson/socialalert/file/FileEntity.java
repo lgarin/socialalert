@@ -1,30 +1,28 @@
 package com.bravson.socialalert.file;
 
 import java.io.Serializable;
-import java.time.Instant;
-import java.util.HashSet;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import com.bravson.socialalert.file.media.MediaFileConstants;
 import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaMetadata;
+import com.bravson.socialalert.file.media.MediaSizeVariant;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import lombok.val;
 
 @Entity(name="MediaFile")
-@RequiredArgsConstructor
 @ToString(of="fileUri")
 @EqualsAndHashCode(of="fileUri")
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
@@ -38,41 +36,51 @@ public class FileEntity implements Serializable {
 	private String fileUri;
 	
 	@ElementCollection
-	private Set<MediaFileFormat> fileFormats;
+	private Map<MediaSizeVariant, FileMetadata> fileVariants;
 		
-	@Getter
-	@NonNull
-	@Embedded
-	private FileMetadata fileMetadata;
-	
 	@Getter
 	@NonNull
 	@Embedded
 	private MediaMetadata mediaMetadata;
 	
-	public Optional<MediaFileFormat> findVariantFormat(String variantName) {
-		if (fileFormats == null) {
+	public static FileEntity of(FileMetadata fileMetadata, MediaMetadata mediaMetadata) {
+		if (fileMetadata.getSizeVariant() != MediaSizeVariant.MEDIA) {
+			throw new IllegalArgumentException("Size variant must be " + MediaSizeVariant.MEDIA.getVariantName());
+		}
+		val entity = new FileEntity();
+		entity.fileUri = fileMetadata.buildFileUri();
+		entity.mediaMetadata = mediaMetadata;
+		entity.addVariant(fileMetadata);
+		return entity;
+	}
+	
+	public Optional<MediaFileFormat> findVariantFormat(MediaSizeVariant sizeVariant) {
+		if (fileVariants == null) {
 			return Optional.empty();
 		}
-		return fileFormats.stream().filter(f -> f.getSizeVariant().equals(MediaFileConstants.MEDIA_VARIANT)).findAny();
-	}
-
-	public boolean addMediaFormat(MediaFileFormat format) {
-		if (fileFormats == null) {
-			fileFormats = new HashSet<MediaFileFormat>();
+		val metadata = fileVariants.get(sizeVariant);
+		if (metadata == null) {
+			return Optional.empty();
 		}
-		return fileFormats.add(format);
-	}
-	
-	public String getMd5() {
-		return fileMetadata.getMd5();
-	}
-	
-	public Instant getTimestamp() {
-		return fileMetadata.getTimestamp();
+		return Optional.of(metadata.getFileFormat());
 	}
 
-	public String getContentType() {
-		return fileMetadata.getContentType();
+	public boolean addVariant(FileMetadata metadata) {
+		if (fileVariants == null) {
+			fileVariants = new EnumMap<>(MediaSizeVariant.class);
+		}
+		val sizeVariant = metadata.getSizeVariant();
+		if (fileVariants.containsKey(sizeVariant)) {
+			return false;
+		}
+		fileVariants.put(sizeVariant, metadata);
+		return true;
+	}
+	
+	public FileMetadata getMediaFileMetadata() {
+		if (fileVariants == null || !fileVariants.containsKey(MediaSizeVariant.MEDIA)) {
+			throw new IllegalStateException("No media variant defined for " + this);
+		}
+		return fileVariants.get(MediaSizeVariant.MEDIA);
 	}
 }

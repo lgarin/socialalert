@@ -2,13 +2,10 @@ package com.bravson.socialalert.file.media;
 
 import static com.bravson.socialalert.file.media.MediaFileConstants.JPG_EXTENSION;
 import static com.bravson.socialalert.file.media.MediaFileConstants.JPG_MEDIA_TYPE;
-import static com.bravson.socialalert.file.media.MediaFileConstants.MEDIA_VARIANT;
 import static com.bravson.socialalert.file.media.MediaFileConstants.MOV_EXTENSION;
 import static com.bravson.socialalert.file.media.MediaFileConstants.MOV_MEDIA_TYPE;
 import static com.bravson.socialalert.file.media.MediaFileConstants.MP4_EXTENSION;
 import static com.bravson.socialalert.file.media.MediaFileConstants.MP4_MEDIA_TYPE;
-import static com.bravson.socialalert.file.media.MediaFileConstants.PREVIEW_VARIANT;
-import static com.bravson.socialalert.file.media.MediaFileConstants.THUMBNAIL_VARIANT;
 
 import java.util.EnumSet;
 import java.util.Optional;
@@ -23,12 +20,12 @@ import lombok.NonNull;
 @Getter
 public enum MediaFileFormat implements FileFormat {
 
-	MEDIA_MOV(MOV_MEDIA_TYPE, "." + MOV_EXTENSION, MEDIA_VARIANT),
-	MEDIA_MP4(MP4_MEDIA_TYPE, "." + MP4_EXTENSION, MEDIA_VARIANT),
-	MEDIA_JPG(JPG_MEDIA_TYPE, "." + JPG_EXTENSION, MEDIA_VARIANT),
-	PREVIEW_MP4(MP4_MEDIA_TYPE, "." + MP4_EXTENSION, PREVIEW_VARIANT),
-	PREVIEW_JPG(JPG_MEDIA_TYPE, "." + JPG_EXTENSION, PREVIEW_VARIANT),
-	THUMBNAIL_JPG(JPG_MEDIA_TYPE, "." + JPG_EXTENSION, THUMBNAIL_VARIANT);
+	MEDIA_MOV(MOV_MEDIA_TYPE, "." + MOV_EXTENSION, MediaSizeVariant.MEDIA),
+	MEDIA_MP4(MP4_MEDIA_TYPE, "." + MP4_EXTENSION, MediaSizeVariant.MEDIA),
+	MEDIA_JPG(JPG_MEDIA_TYPE, "." + JPG_EXTENSION, MediaSizeVariant.MEDIA),
+	PREVIEW_MP4(MP4_MEDIA_TYPE, "." + MP4_EXTENSION, MediaSizeVariant.PREVIEW),
+	PREVIEW_JPG(JPG_MEDIA_TYPE, "." + JPG_EXTENSION, MediaSizeVariant.PREVIEW),
+	THUMBNAIL_JPG(JPG_MEDIA_TYPE, "." + JPG_EXTENSION, MediaSizeVariant.THUMBNAIL);
 	
 	private static EnumSet<MediaFileFormat> MEDIA_SET = EnumSet.of(MEDIA_MOV, MEDIA_MP4, MEDIA_JPG);
 	
@@ -43,5 +40,10 @@ public enum MediaFileFormat implements FileFormat {
 	private final String extension;
 	
 	@NonNull
-	private final String sizeVariant;
+	private final MediaSizeVariant mediaSizeVariant;
+	
+	@Override
+	public String getSizeVariant() {
+		return mediaSizeVariant.getVariantName();
+	}
 }

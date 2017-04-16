@@ -4,6 +4,8 @@ import java.time.Instant;
 
 import javax.persistence.Embeddable;
 
+import com.bravson.socialalert.file.media.MediaFileFormat;
+import com.bravson.socialalert.file.media.MediaSizeVariant;
 import com.bravson.socialalert.infrastructure.util.DateUtil;
 
 import lombok.AccessLevel;
@@ -33,8 +35,14 @@ public class FileMetadata {
 	private String userId;
 	@NonNull
 	private String ipAddress;
+	@NonNull
+	private MediaFileFormat fileFormat;
 
 	public String buildFileUri() {
 		return DateUtil.COMPACT_DATE_FORMATTER.format(timestamp) + "/" + md5;
+	}
+
+	public MediaSizeVariant getSizeVariant() {
+		return fileFormat.getMediaSizeVariant();
 	}
 }

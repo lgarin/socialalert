@@ -15,7 +15,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
 import com.bravson.socialalert.UriConstants;
-import com.bravson.socialalert.file.media.MediaFileConstants;
+import com.bravson.socialalert.file.media.MediaSizeVariant;
 import com.bravson.socialalert.file.store.FileStore;
 
 import lombok.val;
@@ -31,17 +31,18 @@ public class FileService {
 	@Inject
 	private FileStore fileStore;
 
-	private Response streamFile(String fileUri, String variantName) throws IOException {
+	private Response streamFile(String fileUri, MediaSizeVariant sizeVariant) throws IOException {
 		val fileEntity = mediaRepository.findFile(fileUri).orElse(null);
 		if (fileEntity == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
         
-		val fileFormat = fileEntity.findVariantFormat(variantName).orElse(null);
+		val fileFormat = fileEntity.findVariantFormat(sizeVariant).orElse(null);
 		if (fileFormat == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
-		File file = fileStore.getExistingFile(fileEntity.getMd5(), fileEntity.getTimestamp(), fileFormat);
+		val fileMetadata = fileEntity.getMediaFileMetadata();
+		val file = fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileFormat);
         val response = Response.ok(createStreamingOutput(file), fileFormat.getContentType());
 		response.header("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
         response.header("Content-Length", file.length());
@@ -55,18 +56,18 @@ public class FileService {
 	@GET
 	@Path("/download/{fileUri}")
 	public Response download(@PathParam("fileUri") String fileUri) throws IOException {
-		return streamFile(fileUri, MediaFileConstants.MEDIA_VARIANT);
+		return streamFile(fileUri, MediaSizeVariant.MEDIA);
 	}
 	
 	@GET
 	@Path("/preview/{fileUri}")
 	public Response preview(@PathParam("fileUri") String fileUri) throws IOException {
-		return streamFile(fileUri, MediaFileConstants.PREVIEW_VARIANT);
+		return streamFile(fileUri, MediaSizeVariant.PREVIEW);
 	}
 	
 	@GET
 	@Path("/thumbnail/{fileUri}")
 	public Response thumbnail(@PathParam("fileUri") String fileUri) throws IOException {
-		return streamFile(fileUri, MediaFileConstants.THUMBNAIL_VARIANT);
+		return streamFile(fileUri, MediaSizeVariant.THUMBNAIL);
 	}
 }

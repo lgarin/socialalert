@@ -87,21 +87,21 @@ public class UploadService {
 			return Response.status(Status.UNSUPPORTED_MEDIA_TYPE).build();
 		}
 		
-		val fileMetadata = buildFileMetadata(inputFile, request);
+		val fileMetadata = buildFileMetadata(inputFile, fileFormat, request);
 		
-		val fileUri = fileMetadata.buildFileUri();
 		fileStore.storeMedia(inputFile, fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileFormat);
-		val fileEntity = mediaRepository.storeMedia(fileUri, fileFormat, fileMetadata, mediaMetadata);
+		val fileEntity = mediaRepository.storeMedia(fileMetadata, mediaMetadata);
 		
+		// TODO delay preview creation
 		val previewFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), processor.getPreviewFormat());
 		processor.createPreview(inputFile, previewFile);
-		fileEntity.addMediaFormat(processor.getPreviewFormat());
+		fileEntity.addVariant(buildFileMetadata(previewFile, processor.getPreviewFormat(), request));
 		
 		val thumbnailFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), processor.getThumbnailFormat()); 
 		processor.createThumbnail(inputFile, thumbnailFile);
-		fileEntity.addMediaFormat(processor.getThumbnailFormat());
+		fileEntity.addVariant(buildFileMetadata(thumbnailFile, processor.getThumbnailFormat(), request));
 		
-		return Response.created(URI.create(UriConstants.FILE_SERVICE_URI + "/" + fileUri)).build();
+		return Response.created(URI.create(UriConstants.FILE_SERVICE_URI + "/" + fileEntity.getFileUri())).build();
 	}
 	
 	private Optional<MediaMetadata> buildMediaMetadata(File inputFile, MediaFileProcessor processor) throws IOException {
@@ -113,14 +113,15 @@ public class UploadService {
 		}
 	}
 	
-	private FileMetadata buildFileMetadata(File file, HttpServletRequest request) throws IOException {
-		val builder = FileMetadata.builder();
-		builder.md5(fileStore.computeMd5Hex(file));
-		builder.timestamp(Instant.now());
-		builder.contentType(request.getContentType());
-		builder.contentLength(request.getContentLengthLong());
-		builder.userId(principal.getName());
-		builder.ipAddress(request.getRemoteAddr());
-		return builder.build();
+	private FileMetadata buildFileMetadata(File file, MediaFileFormat fileFormat, HttpServletRequest request) throws IOException {
+		return FileMetadata.builder()
+			.md5(fileStore.computeMd5Hex(file))
+			.timestamp(Instant.now())
+			.contentType(request.getContentType())
+			.contentLength(request.getContentLengthLong())
+			.userId(principal.getName())
+			.ipAddress(request.getRemoteAddr())
+			.fileFormat(fileFormat)
+			.build();
 	}
 }

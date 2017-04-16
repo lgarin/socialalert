@@ -7,7 +7,6 @@ import javax.annotation.ManagedBean;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
-import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaMetadata;
 
 import lombok.AllArgsConstructor;
@@ -22,9 +21,8 @@ public class FileRepository {
 	@Getter
 	private final EntityManager entityManager;
 
-	public FileEntity storeMedia(String fileUri, MediaFileFormat format, FileMetadata fileMetadata, MediaMetadata mediaMetadata) throws IOException {
-		val entity = new FileEntity(fileUri, fileMetadata, mediaMetadata);
-		entity.addMediaFormat(format);
+	public FileEntity storeMedia(FileMetadata fileMetadata, MediaMetadata mediaMetadata) throws IOException {
+		val entity = FileEntity.of(fileMetadata, mediaMetadata);
 		entityManager.persist(entity);
 		return entity;
 	}
