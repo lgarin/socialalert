@@ -1,8 +1,8 @@
 package com.bravson.socialalert.file;
 
 import java.io.Serializable;
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.ElementCollection;
@@ -36,7 +36,7 @@ public class FileEntity implements Serializable {
 	private String fileUri;
 	
 	@ElementCollection
-	private Map<MediaSizeVariant, FileMetadata> fileVariants;
+	private List<FileMetadata> fileVariants;
 		
 	@Getter
 	@NonNull
@@ -54,33 +54,29 @@ public class FileEntity implements Serializable {
 		return entity;
 	}
 	
-	public Optional<MediaFileFormat> findVariantFormat(MediaSizeVariant sizeVariant) {
+	private Optional<FileMetadata> findFileMetadata(MediaSizeVariant sizeVariant) {
 		if (fileVariants == null) {
 			return Optional.empty();
 		}
-		val metadata = fileVariants.get(sizeVariant);
-		if (metadata == null) {
-			return Optional.empty();
-		}
-		return Optional.of(metadata.getFileFormat());
+		return fileVariants.stream().filter(v -> v.getSizeVariant() == sizeVariant).findAny();
+	}
+	
+	public Optional<MediaFileFormat> findVariantFormat(MediaSizeVariant sizeVariant) {
+		return findFileMetadata(sizeVariant).map(FileMetadata::getFileFormat);
 	}
 
 	public boolean addVariant(FileMetadata metadata) {
-		if (fileVariants == null) {
-			fileVariants = new EnumMap<>(MediaSizeVariant.class);
-		}
-		val sizeVariant = metadata.getSizeVariant();
-		if (fileVariants.containsKey(sizeVariant)) {
+		if (findFileMetadata(metadata.getSizeVariant()).isPresent()) {
 			return false;
 		}
-		fileVariants.put(sizeVariant, metadata);
+		if (fileVariants == null) {
+			fileVariants = new ArrayList<>();
+		}
+		fileVariants.add(metadata);
 		return true;
 	}
 	
 	public FileMetadata getMediaFileMetadata() {
-		if (fileVariants == null || !fileVariants.containsKey(MediaSizeVariant.MEDIA)) {
-			throw new IllegalStateException("No media variant defined for " + this);
-		}
-		return fileVariants.get(MediaSizeVariant.MEDIA);
+		return findFileMetadata(MediaSizeVariant.MEDIA).orElseThrow(IllegalStateException::new);
 	}
 }

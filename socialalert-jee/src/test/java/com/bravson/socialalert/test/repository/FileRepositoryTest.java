@@ -14,7 +14,7 @@ import lombok.val;
 
 public class FileRepositoryTest extends BaseRepositoryTest {
     
-    private FileRepository repository = new FileRepository(createEntityManager());
+    private FileRepository repository = new FileRepository(getEntityManager());
     
     @Test
     public void findNonExistingFile() {
