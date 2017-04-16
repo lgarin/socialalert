@@ -2,10 +2,12 @@ package com.bravson.socialalert.file;
 
 import java.time.Instant;
 
+import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 
 import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaSizeVariant;
+import com.bravson.socialalert.infrastructure.entity.InstantAttributeConverter;
 import com.bravson.socialalert.infrastructure.util.DateUtil;
 
 import lombok.AccessLevel;
@@ -27,10 +29,9 @@ public class FileMetadata {
 	@NonNull
 	private String md5;
 	@NonNull
+	@Convert(converter=InstantAttributeConverter.class)
 	private Instant timestamp;
 	private long contentLength;
-	@NonNull
-	private String contentType;
 	@NonNull
 	private String userId;
 	@NonNull
@@ -44,5 +45,9 @@ public class FileMetadata {
 
 	public MediaSizeVariant getSizeVariant() {
 		return fileFormat.getMediaSizeVariant();
+	}
+	
+	public String getContentType() {
+		return fileFormat.getContentType();
 	}
 }

@@ -117,7 +117,6 @@ public class UploadService {
 		return FileMetadata.builder()
 			.md5(fileStore.computeMd5Hex(file))
 			.timestamp(Instant.now())
-			.contentType(request.getContentType())
 			.contentLength(request.getContentLengthLong())
 			.userId(principal.getName())
 			.ipAddress(request.getRemoteAddr())

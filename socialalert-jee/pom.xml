@@ -50,6 +50,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate.ogm</groupId>
+			<artifactId>hibernate-ogm-core</artifactId>
+			<version>5.1.0.Final</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate.ogm</groupId>
 			<artifactId>hibernate-ogm-infinispan</artifactId>
 			<version>5.1.0.Final</version>
 			<scope>provided</scope>
