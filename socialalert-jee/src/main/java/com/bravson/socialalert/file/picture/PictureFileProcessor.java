@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 import javax.annotation.ManagedBean;
@@ -18,12 +19,14 @@ import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.file.media.MediaUtil;
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
+import com.drew.lang.GeoLocation;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDirectory;
 import com.drew.metadata.jpeg.JpegDirectory;
 
-import lombok.val;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
 
@@ -42,23 +45,23 @@ public class PictureFileProcessor implements MediaFileProcessor {
 
 	@Override
 	public MediaMetadata parseMetadata(File sourceFile) throws JpegProcessingException, IOException {
-		val metadata = JpegMetadataReader.readMetadata(sourceFile);
+		Metadata metadata = JpegMetadataReader.readMetadata(sourceFile);
 		
 		if (metadata.hasErrors()) {
-			val errorList = new ArrayList<String>();
-			for (val directory : metadata.getDirectories()) {
-			   for (val error : directory.getErrors()) {
+			ArrayList<String> errorList = new ArrayList<>();
+			for (Directory directory : metadata.getDirectories()) {
+			   for (String error : directory.getErrors()) {
 				   errorList.add(error);
 			   }
 	        }
 			throw new JpegProcessingException(errorList.stream().collect(Collectors.joining("; ")));
 		}
 		
-		val builder = MediaMetadata.builder();
+		MediaMetadata.MediaMetadataBuilder builder = MediaMetadata.builder();
 		
-		val exifTags = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+		ExifIFD0Directory exifTags = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
 		if (exifTags != null) {
-			val dateTime = exifTags.getDate(ExifIFD0Directory.TAG_DATETIME);
+			Date dateTime = exifTags.getDate(ExifIFD0Directory.TAG_DATETIME);
 			if (dateTime != null) {
 				builder.timestamp(dateTime.toInstant());
 			}
@@ -68,23 +71,23 @@ public class PictureFileProcessor implements MediaFileProcessor {
 			builder.width(exifTags.getInteger(ExifIFD0Directory.TAG_X_RESOLUTION));
 		}
 		
-		val exifSubTags = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
+		ExifSubIFDDirectory exifSubTags = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
 		if (exifSubTags != null) {
-			val dateTime = exifSubTags.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+			Date dateTime = exifSubTags.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
 			if (dateTime != null) {
 				builder.timestamp(dateTime.toInstant());
 			}
 		}
 		
-		val jpegTags = metadata.getFirstDirectoryOfType(JpegDirectory.class);
+		JpegDirectory jpegTags = metadata.getFirstDirectoryOfType(JpegDirectory.class);
 		if (jpegTags != null) {
 			builder.height(jpegTags.getInteger(JpegDirectory.TAG_IMAGE_HEIGHT));
 			builder.width(jpegTags.getInteger(JpegDirectory.TAG_IMAGE_WIDTH));
 		}
 		
-		val gpsTags = metadata.getFirstDirectoryOfType(GpsDirectory.class);
+		GpsDirectory gpsTags = metadata.getFirstDirectoryOfType(GpsDirectory.class);
 		if (gpsTags != null) {
-			val location = gpsTags.getGeoLocation();
+			GeoLocation location = gpsTags.getGeoLocation();
 			if (location != null) {
 				builder.latitude(location.getLatitude());
 				builder.longitude(location.getLongitude());

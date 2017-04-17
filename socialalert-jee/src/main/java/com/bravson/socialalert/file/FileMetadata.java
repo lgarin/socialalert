@@ -5,6 +5,8 @@ import java.time.Instant;
 import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 
+import org.hibernate.search.annotations.Field;
+
 import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaSizeVariant;
 import com.bravson.socialalert.infrastructure.entity.InstantAttributeConverter;
@@ -28,14 +30,21 @@ public class FileMetadata {
 
 	@NonNull
 	private String md5;
+	
 	@NonNull
 	@Convert(converter=InstantAttributeConverter.class)
 	private Instant timestamp;
-	private long contentLength;
+	
+	@NonNull
+	private Long contentLength;
+	
 	@NonNull
 	private String userId;
+	
 	@NonNull
+	@Field
 	private String ipAddress;
+	
 	@NonNull
 	private MediaFileFormat fileFormat;
 

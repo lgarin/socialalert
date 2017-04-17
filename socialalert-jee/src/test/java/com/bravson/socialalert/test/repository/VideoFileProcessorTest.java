@@ -11,11 +11,10 @@ import org.junit.Test;
 
 import com.bravson.socialalert.file.media.MediaConfiguration;
 import com.bravson.socialalert.file.media.MediaFileFormat;
+import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.file.picture.PictureFileProcessor;
 import com.bravson.socialalert.file.video.VideoFileProcessor;
 import com.drew.imaging.jpeg.JpegProcessingException;
-
-import lombok.val;
 
 public class VideoFileProcessorTest extends Assertions {
 
@@ -39,7 +38,7 @@ public class VideoFileProcessorTest extends Assertions {
 	
 	@Test
 	public void extractMovMetadata() throws IOException {
-		val metadata = processor.parseMetadata(new File("src/test/resources/media/IMG_0236.MOV"));
+		MediaMetadata metadata = processor.parseMetadata(new File("src/test/resources/media/IMG_0236.MOV"));
 		assertThat(metadata.getTimestamp()).isEqualTo(LocalDateTime.of(2015, 1, 7, 21, 13, 32).atOffset(ZoneOffset.UTC).toInstant());
 		assertThat(metadata.getCameraMaker()).isEqualTo("Apple");
 		assertThat(metadata.getCameraModel()).isEqualTo("iPhone 6");
@@ -52,18 +51,18 @@ public class VideoFileProcessorTest extends Assertions {
 
 	@Test
 	public void createMovThumbnail() throws IOException, JpegProcessingException {
-		val file = File.createTempFile("mov", "thumbnail.jpg");
+		File file = File.createTempFile("mov", "thumbnail.jpg");
 		processor.createThumbnail(new File("src/test/resources/media/IMG_0236.MOV"), file);
-		val metadata = new PictureFileProcessor(config).parseMetadata(file);
+		MediaMetadata metadata = new PictureFileProcessor(config).parseMetadata(file);
 		assertThat(metadata.getHeight()).isEqualTo(config.getThumbnailHeight());
 		assertThat(metadata.getWidth()).isEqualTo(config.getThumbnailWidth());
 	}
 	
 	@Test
 	public void createMovPreview() throws IOException {
-		val file = File.createTempFile("mov", "preview.mp4");
+		File file = File.createTempFile("mov", "preview.mp4");
 		processor.createPreview(new File("src/test/resources/media/IMG_0236.MOV"), file);
-		val metadata = processor.parseMetadata(file);
+		MediaMetadata metadata = processor.parseMetadata(file);
 		assertThat(metadata.getHeight()).isEqualTo(config.getPreviewHeight());
 		assertThat(metadata.getWidth()).isEqualTo(config.getPreviewWidth());
 	}

@@ -24,7 +24,7 @@ public class BaseRepositoryTest extends Assertions {
     public static void closeEntityManagerFactory() {
         entityManagerFactory.close();
     }
-    
+
     @After
     public void closeEntityManager() {
     	if (entityManager != null) {
@@ -35,9 +35,14 @@ public class BaseRepositoryTest extends Assertions {
     
     protected EntityManager getEntityManager() {
     	if (entityManager == null) {
-    		entityManager = entityManagerFactory.createEntityManager();	
+    		entityManager = entityManagerFactory.createEntityManager();
+    		entityManager.getTransaction().begin();
     	}
-    	entityManager.getTransaction().begin();
     	return entityManager;
+    }
+    
+    protected void commitTransaction() {
+    	getEntityManager().getTransaction().commit();
+    	getEntityManager().getTransaction().begin();
     }
 }

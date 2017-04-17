@@ -10,6 +10,9 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
+
 import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.file.media.MediaSizeVariant;
@@ -20,12 +23,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.ToString;
-import lombok.val;
 
 @Entity(name="MediaFile")
 @ToString(of="fileUri")
 @EqualsAndHashCode(of="fileUri")
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
+@Indexed
 public class FileEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -36,6 +39,7 @@ public class FileEntity implements Serializable {
 	private String fileUri;
 	
 	@ElementCollection
+	@IndexedEmbedded
 	private List<FileMetadata> fileVariants;
 		
 	@Getter
@@ -47,7 +51,7 @@ public class FileEntity implements Serializable {
 		if (fileMetadata.getSizeVariant() != MediaSizeVariant.MEDIA) {
 			throw new IllegalArgumentException("Size variant must be " + MediaSizeVariant.MEDIA.getVariantName());
 		}
-		val entity = new FileEntity();
+		FileEntity entity = new FileEntity();
 		entity.fileUri = fileMetadata.buildFileUri();
 		entity.mediaMetadata = mediaMetadata;
 		entity.addVariant(fileMetadata);

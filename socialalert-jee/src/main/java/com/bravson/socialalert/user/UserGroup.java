@@ -1,6 +1,5 @@
 package com.bravson.socialalert.user;
 
-import javax.persistence.Entity;
 import javax.persistence.Id;
 
 import lombok.Getter;

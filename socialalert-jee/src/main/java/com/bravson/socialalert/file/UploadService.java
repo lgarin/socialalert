@@ -31,8 +31,6 @@ import com.bravson.socialalert.file.picture.PictureFileProcessor;
 import com.bravson.socialalert.file.store.FileStore;
 import com.bravson.socialalert.file.video.VideoFileProcessor;
 
-import lombok.val;
-
 @Path("/upload")
 @ManagedBean
 @RolesAllowed("user")
@@ -77,27 +75,27 @@ public class UploadService {
 			return Response.status(Status.REQUEST_ENTITY_TOO_LARGE).build();
 		}
 	
-		val mediaMetadata = buildMediaMetadata(inputFile, processor).orElse(null);
+		MediaMetadata mediaMetadata = buildMediaMetadata(inputFile, processor).orElse(null);
 		if (mediaMetadata == null) {
 			return Response.status(Status.UNSUPPORTED_MEDIA_TYPE).build();
 		}
 		
-		val fileFormat = MediaFileFormat.fromMediaContentType(request.getContentType()).orElse(null);
+		MediaFileFormat fileFormat = MediaFileFormat.fromMediaContentType(request.getContentType()).orElse(null);
 		if (fileFormat == null) {
 			return Response.status(Status.UNSUPPORTED_MEDIA_TYPE).build();
 		}
 		
-		val fileMetadata = buildFileMetadata(inputFile, fileFormat, request);
+		FileMetadata fileMetadata = buildFileMetadata(inputFile, fileFormat, request);
 		
 		fileStore.storeMedia(inputFile, fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileFormat);
-		val fileEntity = mediaRepository.storeMedia(fileMetadata, mediaMetadata);
+		FileEntity fileEntity = mediaRepository.storeMedia(fileMetadata, mediaMetadata);
 		
 		// TODO delay preview creation
-		val previewFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), processor.getPreviewFormat());
+		File previewFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), processor.getPreviewFormat());
 		processor.createPreview(inputFile, previewFile);
 		fileEntity.addVariant(buildFileMetadata(previewFile, processor.getPreviewFormat(), request));
 		
-		val thumbnailFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), processor.getThumbnailFormat()); 
+		File thumbnailFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), processor.getThumbnailFormat()); 
 		processor.createThumbnail(inputFile, thumbnailFile);
 		fileEntity.addVariant(buildFileMetadata(thumbnailFile, processor.getThumbnailFormat(), request));
 		

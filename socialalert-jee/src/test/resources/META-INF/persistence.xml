@@ -9,6 +9,7 @@
         <class>com.bravson.socialalert.file.FileEntity</class>
         <properties>
             <property name="hibernate.ogm.datastore.provider" value="map"/>
+            <property name="hibernate.search.default.directory_provider" value="ram"/>
         </properties>
     </persistence-unit>
 </persistence>
