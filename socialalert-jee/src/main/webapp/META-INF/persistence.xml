@@ -7,7 +7,9 @@
     <persistence-unit name="socialalert" transaction-type="JTA">
         <provider>org.hibernate.ogm.jpa.HibernateOgmPersistence</provider>
         <properties>
+        	<!-- <property name="jboss.as.jpa.providerModule" value="org.hibernate.ogm:5.1"/>  -->
             <property name="hibernate.ogm.datastore.provider" value="infinispan_embedded"/>
+            <property name="hibernate.transaction.jta.platform" value="JBossTS" />
         </properties>
     </persistence-unit>
 </persistence>

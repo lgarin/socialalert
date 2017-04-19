@@ -3,11 +3,9 @@ package com.bravson.socialalert.user;
 import java.security.Principal;
 
 import javax.annotation.ManagedBean;
-import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
-import javax.json.JsonObject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -17,10 +15,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -32,50 +27,33 @@ import org.hibernate.validator.constraints.NotEmpty;
 @ManagedBean
 @RolesAllowed("user")
 public class UserService {
-
-	@Resource(name="loginUrl")
-	String loginUrl;
-	
-	@Resource(name="logoutUrl")
-	String logoutUrl;
-	
-	@Resource(name="loginClientId")
-	String loginClientId;
-	
-	@Resource(name="clientSecret")
-	String clientSecret;
-	
-	@Inject
-	Client httpClient;
 	
 	@Inject
 	Principal principal;
 	
 	@Inject
-	UserRepository userRepository;
+	AuthenticationRepository authenticationRepository;
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/login")
 	@PermitAll
-	public Response login(@Email @FormParam("email") String email, @NotEmpty @FormParam("password") String password) {
-		Form form = new Form().param("username", email).param("password", password).param("grant_type", "password").param("client_id", loginClientId).param("client_secret", clientSecret);
-		Response response = httpClient.target(loginUrl).request().post(Entity.form(form));
-		if (response.getStatus() != Status.OK.getStatusCode()) {
+	public Response login(@Email @FormParam("userId") String userId, @NotEmpty @FormParam("password") String password) {
+		String accessToken = authenticationRepository.requestAccessToken(userId, password).orElse(null);
+		if (accessToken == null) {
 			return Response.status(Status.UNAUTHORIZED).build();
 		}
-		JsonObject payload = response.readEntity(JsonObject.class);
-		return Response.status(Status.OK).entity(payload.getString("access_token")).build();
+		return Response.status(Status.OK).entity(accessToken).build();
 	}
 	
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/logout")
 	public Response logout(@NotEmpty @HeaderParam("Authorization") String authorization, @Context HttpServletRequest httpRequest) {
-		Response response = httpClient.target(logoutUrl).request().header("Authorization", authorization).get();
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			return Response.status(response.getStatus()).build();
+		Status status = authenticationRepository.invalidateAccessToken(authorization);
+		if (status != Status.OK) {
+			return Response.status(status).build();
 		}
 		httpRequest.getSession().invalidate();
 		try {
@@ -90,8 +68,8 @@ public class UserService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/current")
-	public Response current() {
-		UserInfo userInfo = userRepository.findUserInfo(principal.getName()).orElse(null);
+	public Response current(@NotEmpty @HeaderParam("Authorization") String authorization) {
+		UserInfo userInfo = authenticationRepository.findUserInfo(principal.getName(), authorization).orElse(null);
 		if (userInfo == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}

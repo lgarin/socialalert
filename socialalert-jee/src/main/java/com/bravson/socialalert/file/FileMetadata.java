@@ -33,12 +33,14 @@ public class FileMetadata {
 	
 	@NonNull
 	@Convert(converter=InstantAttributeConverter.class)
+	@Field
 	private Instant timestamp;
 	
 	@NonNull
 	private Long contentLength;
 	
 	@NonNull
+	@Field
 	private String userId;
 	
 	@NonNull
