@@ -56,11 +56,11 @@ public abstract class BaseServiceTest extends Assertions {
 	}
 	
 	protected Builder createAuthRequest(String path, String mediaType, String token) {
-		return createRequest(path, mediaType).header("Authorization", "bearer " + token);
+		return createRequest(path, mediaType).header("Authorization", token);
 	}
 	
 	protected String requestLoginToken(String email, String password) {
-		Form form = new Form("email", "test@test.com").param("password", "123");
+		Form form = new Form("userId", "test@test.com").param("password", "123");
 		return createRequest("user/login", MediaType.TEXT_PLAIN).post(Entity.form(form)).readEntity(String.class);
 	}
 	

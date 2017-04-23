@@ -8,9 +8,13 @@
         <provider>org.hibernate.ogm.jpa.HibernateOgmPersistence</provider>
         <properties>
 			<property name="jboss.as.jpa.providerModule" value="org.hibernate:5.1"/>
-			<property name="wildfly.jpa.hibernate.search.module" value="org.hibernate.search.orm:5.6.1.Final-orm51" />    
-            <property name="hibernate.ogm.datastore.provider" value="infinispan_embedded"/>
+			<property name="wildfly.jpa.hibernate.search.module" value="org.hibernate.search.orm:5.6.1.Final-orm51" />
+            <property name="hibernate.ogm.datastore.provider" value="map"/>
+            <!-- <property name="hibernate.ogm.infinispan.cachemanager_jndi_name" value="java:jboss/infinispan/container/datagrid"/> -->
             <property name="hibernate.transaction.jta.platform" value="JBossTS" />
+            <property name="hibernate.search.default.directory_provider" value="ram" />
+            <property name="hibernate.search.default.exclusive_index_use" value="false" />
+            <!-- <property name="hibernate.search.infinispan.cachemanager_jndiname" value="java:jboss/infinispan/container/datagrid"/> -->
         </properties>
     </persistence-unit>
 </persistence>

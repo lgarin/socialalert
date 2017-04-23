@@ -1,8 +1,6 @@
 package com.bravson.socialalert.test.service;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
@@ -36,21 +34,21 @@ public class UploadServiceTest extends BaseServiceTest {
 	@Test
 	public void uploadPictureWithLogin() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/file/uploadPicture", MediaType.WILDCARD, token).post(getPicture("src/main/resources/logo.jpg"));
+		Response response = createAuthRequest("/file/uploadPicture", MediaType.WILDCARD, token).post(getPicture("src/test/resources/media/IMG_0397.JPG"));
 		assertThat(response.getStatus()).isEqualTo(Status.CREATED.getStatusCode());
 		String path = response.getLocation().toString().replaceFirst("^(http://.*/rest/)", "");
 		File content = createAuthRequest(path, MediaType.WILDCARD, token).get(File.class);
-		assertThat(content).isFile().hasBinaryContent(Files.readAllBytes(Paths.get("src/main/resources/logo.jpg")));
+		assertThat(content).isFile().hasSameContentAs(new File("src/test/resources/media/IMG_0397.JPG"));
 	}
 	
 	@Test
 	public void uploadVideoWithLogin() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/file/uploadVideo", MediaType.WILDCARD, token).post(getVideo("C:/Dev/IMG_0236.MOV"));
+		Response response = createAuthRequest("/file/uploadVideo", MediaType.WILDCARD, token).post(getVideo("src/test/resources/media/IMG_0236.MOV"));
 		assertThat(response.getStatus()).isEqualTo(Status.CREATED.getStatusCode());
 		String path = response.getLocation().toString().replaceFirst("^(http://.*/rest/)", "");
 		File content = createAuthRequest(path, MediaType.WILDCARD, token).get(File.class);
-		assertThat(content).isFile().hasBinaryContent(Files.readAllBytes(Paths.get("C:/Dev/IMG_0236.MOV")));
+		assertThat(content).isFile().hasSameContentAs(new File("src/test/resources/media/IMG_0236.MOV"));
 	}
 
 	@Test

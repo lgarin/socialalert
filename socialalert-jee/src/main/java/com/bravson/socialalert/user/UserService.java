@@ -39,7 +39,7 @@ public class UserService {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/login")
 	@PermitAll
-	public Response login(@Email @FormParam("userId") String userId, @NotEmpty @FormParam("password") String password) {
+	public Response login(@NotEmpty @Email @FormParam("userId") String userId, @NotEmpty @FormParam("password") String password) {
 		String accessToken = authenticationRepository.requestAccessToken(userId, password).orElse(null);
 		if (accessToken == null) {
 			return Response.status(Status.UNAUTHORIZED).build();

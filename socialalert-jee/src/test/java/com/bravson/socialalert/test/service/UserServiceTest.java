@@ -16,7 +16,7 @@ public class UserServiceTest extends BaseServiceTest {
 
 	@Test
 	public void loginWithExistingUser() throws Exception {
-		Form form = new Form("email", "test@test.com").param("password", "123");
+		Form form = new Form("userId", "test@test.com").param("password", "123");
 		Response response = createRequest("/user/login", MediaType.TEXT_PLAIN).post(Entity.form(form));
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 		assertEquals(Status.OK.getStatusCode(), response.getStatus());
@@ -25,28 +25,28 @@ public class UserServiceTest extends BaseServiceTest {
 	
 	@Test
 	public void loginWithEmptyPassword() throws Exception {
-		Form form = new Form("email", "test@test.com").param("password", "");
+		Form form = new Form("userId", "test@test.com").param("password", "");
 		Response response = createRequest("/user/login", MediaType.TEXT_PLAIN).post(Entity.form(form));
 		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 	}
 	
 	@Test
 	public void loginWithInvalidEmail() throws Exception {
-		Form form = new Form("email", "test").param("password", "abc");
+		Form form = new Form("userId", "test").param("password", "abc");
 		Response response = createRequest("/user/login", MediaType.TEXT_PLAIN).post(Entity.form(form));
 		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 	}
 	
 	@Test
 	public void loginWithInvalidPassword() throws Exception {
-		Form form = new Form("email", "test@test.com").param("password", "abc");
+		Form form = new Form("userId", "test@test.com").param("password", "abc");
 		Response response = createRequest("/user/login", MediaType.TEXT_PLAIN).post(Entity.form(form));
 		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
 	
 	@Test
 	public void loginWithUnknownUser() throws Exception {
-		Form form = new Form("email", "xyz@test.com").param("password", "abc");
+		Form form = new Form("userId", "xyz@test.com").param("password", "abc");
 		Response response = createRequest("/user/login", MediaType.TEXT_PLAIN).post(Entity.form(form));
 		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
@@ -66,7 +66,7 @@ public class UserServiceTest extends BaseServiceTest {
 	
 	@Test
 	public void logoutWithInvalidToken() throws Exception {
-		Response response = createAuthRequest("/user/logout", MediaType.TEXT_PLAIN, "12344334").post(null);
+		Response response = createAuthRequest("/user/logout", MediaType.TEXT_PLAIN, "Bearer 12344334").post(null);
 		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
 	

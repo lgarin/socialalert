@@ -31,7 +31,7 @@ public class AuthenticationRepository {
 			return Optional.empty();
 		}
 		JsonObject payload = response.readEntity(JsonObject.class);
-		return Optional.of(payload.getString("access_token"));
+		return Optional.of("Bearer " + payload.getString("access_token"));
 	}
 	
 	public Status invalidateAccessToken(String authorization) {
