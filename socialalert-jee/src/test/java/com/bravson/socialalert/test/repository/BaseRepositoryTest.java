@@ -1,10 +1,11 @@
 package com.bravson.socialalert.test.repository;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import org.assertj.core.api.Assertions;
+import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.Search;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -13,7 +14,7 @@ public class BaseRepositoryTest extends Assertions {
 
 	private static EntityManagerFactory entityManagerFactory;
 
-	private EntityManager entityManager;
+	private FullTextEntityManager entityManager;
 	
     @BeforeClass
     public static void setUpEntityManagerFactory() {
@@ -33,9 +34,9 @@ public class BaseRepositoryTest extends Assertions {
     	}
     }
     
-    protected EntityManager getEntityManager() {
+    protected FullTextEntityManager getEntityManager() {
     	if (entityManager == null) {
-    		entityManager = entityManagerFactory.createEntityManager();
+    		entityManager = Search.getFullTextEntityManager(entityManagerFactory.createEntityManager());
     		entityManager.getTransaction().begin();
     	}
     	return entityManager;
