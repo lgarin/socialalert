@@ -19,7 +19,7 @@ public class GreeterServiceTest extends BaseServiceTest {
 		String token = requestLoginToken("test@test.com", "123");
 		Response response = createAuthRequest("/greeter/hello", MediaType.TEXT_PLAIN, token).get();
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
-		assertThat(response.readEntity(String.class)).isEqualTo("hello 4b09beae-9187-4566-b15a-b26f50dd840c");
+		assertThat(response.readEntity(String.class)).isEqualTo("hello 33935dd6-d3b9-4215-9afa-984f5f28ccfc");
 	}
 	
 	@Test
@@ -37,6 +37,6 @@ public class GreeterServiceTest extends BaseServiceTest {
 		Response response = createAuthRequest("/greeter/hello", MediaType.TEXT_PLAIN, token).get();
 		//assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
-		assertThat(response.readEntity(String.class)).isEqualTo("hello 4b09beae-9187-4566-b15a-b26f50dd840c");
+		assertThat(response.readEntity(String.class)).isEqualTo("hello 33935dd6-d3b9-4215-9afa-984f5f28ccfc");
 	}
 }

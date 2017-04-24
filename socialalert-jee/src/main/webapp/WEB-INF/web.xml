@@ -29,7 +29,7 @@
 	<env-entry>
 		<env-entry-name>userInfoUrl</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
-		<env-entry-value>http://localhost:8080/auth/realms/SocialAlert-Dev/users</env-entry-value>
+		<env-entry-value>http://localhost:8080/auth/admin/realms/SocialAlert-Dev/users</env-entry-value>
 	</env-entry>
 	<env-entry>
 		<env-entry-name>loginClientId</env-entry-name>
