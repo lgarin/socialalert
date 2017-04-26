@@ -10,7 +10,9 @@ import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -23,10 +25,15 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public abstract class BaseServiceTest extends Assertions {
 
-	protected static final String RESOURCE_PREFIX = "rest";
+	private static File baseDirectory = new File("C:/Temp/xtra");
 	
 	@Deployment(testable = false)
 	public static WebArchive createDeployment() throws IOException {
+		try {
+			FileUtils.deleteDirectory(baseDirectory);
+		} catch (IOException e) {
+			// ignore
+		}
 		
 		File[] libs = Maven.resolver()  
                 .loadPomFromFile("pom.xml").importCompileAndRuntimeDependencies().resolve().withTransitivity().as(File.class);
@@ -64,5 +71,7 @@ public abstract class BaseServiceTest extends Assertions {
 		return createRequest("user/login", MediaType.TEXT_PLAIN).post(Entity.form(form)).readEntity(String.class);
 	}
 	
-	
+	protected String getLocationPath(Response response) {
+		return response.getLocation().toString().replaceFirst("^(http://.*/rest)", "");
+	}
 }

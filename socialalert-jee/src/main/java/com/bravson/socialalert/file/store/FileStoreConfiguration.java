@@ -21,5 +21,9 @@ import lombok.Setter;
 public class FileStoreConfiguration {
 
 	@Resource(name="mediaBaseDirectory")
-	private File baseDirectory;
+	private String baseDirectory;
+	
+	public File getBaseDirectory() {
+		return new File(baseDirectory);
+	}
 }

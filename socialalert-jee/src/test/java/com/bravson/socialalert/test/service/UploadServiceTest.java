@@ -1,6 +1,8 @@
 package com.bravson.socialalert.test.service;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.function.Predicate;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
@@ -10,58 +12,67 @@ import javax.ws.rs.core.Response.Status;
 import org.junit.Test;
 
 import com.bravson.socialalert.file.media.MediaFileConstants;
+import com.google.common.io.Files;
 
 public class UploadServiceTest extends BaseServiceTest {
-
-	private Entity<String> getPlainText(String content) {
+	
+	private static Entity<String> getPlainText(String content) {
 		return Entity.entity(content, MediaType.TEXT_PLAIN_TYPE);
 	}
 	
-	private Entity<File> getPicture(String filename) {
+	private static Entity<File> getPicture(String filename) {
 		return Entity.entity(new File(filename), MediaFileConstants.JPG_MEDIA_TYPE);
 	}
 	
-	private Entity<File> getVideo(String filename) {
+	private static Entity<File> getVideo(String filename) {
 		return Entity.entity(new File(filename), MediaFileConstants.MOV_MEDIA_TYPE);
 	}
 
 	@Test
 	public void uploadPictureWithoutPrincial() throws Exception {
-		Response response = createRequest("/file/uploadPicture", MediaType.WILDCARD).post(getPicture("src/main/resources/logo.jpg"));
+		Response response = createRequest("/upload/picture", MediaType.WILDCARD).post(getPicture("src/main/resources/logo.jpg"));
 		assertThat(response.getStatus()).isEqualTo(Status.FORBIDDEN.getStatusCode());
+	}
+	
+	private static Predicate<File> contentEquals(String sourceFile) {
+		return f -> {
+			try {
+				return Files.equal(f, new File(sourceFile));
+			} catch (IOException e) {
+				return false;
+			}
+		};
 	}
 
 	@Test
 	public void uploadPictureWithLogin() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/file/uploadPicture", MediaType.WILDCARD, token).post(getPicture("src/test/resources/media/IMG_0397.JPG"));
+		Response response = createAuthRequest("/upload/picture", MediaType.WILDCARD, token).post(getPicture("src/test/resources/media/IMG_0397.JPG"));
 		assertThat(response.getStatus()).isEqualTo(Status.CREATED.getStatusCode());
-		String path = response.getLocation().toString().replaceFirst("^(http://.*/rest/)", "");
-		File content = createAuthRequest(path, MediaType.WILDCARD, token).get(File.class);
-		assertThat(content).isFile().hasSameContentAs(new File("src/test/resources/media/IMG_0397.JPG"));
+		File content = createAuthRequest(getLocationPath(response), MediaType.WILDCARD, token).get(File.class);
+		assertThat(content).isFile().matches(contentEquals("src/test/resources/media/IMG_0397.JPG"));
 	}
-	
+
 	@Test
 	public void uploadVideoWithLogin() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/file/uploadVideo", MediaType.WILDCARD, token).post(getVideo("src/test/resources/media/IMG_0236.MOV"));
+		Response response = createAuthRequest("/upload/video", MediaType.WILDCARD, token).post(getVideo("src/test/resources/media/IMG_0236.MOV"));
 		assertThat(response.getStatus()).isEqualTo(Status.CREATED.getStatusCode());
-		String path = response.getLocation().toString().replaceFirst("^(http://.*/rest/)", "");
-		File content = createAuthRequest(path, MediaType.WILDCARD, token).get(File.class);
-		assertThat(content).isFile().hasSameContentAs(new File("src/test/resources/media/IMG_0236.MOV"));
+		File content = createAuthRequest(getLocationPath(response), MediaType.WILDCARD, token).get(File.class);
+		assertThat(content).isFile().matches(contentEquals("src/test/resources/media/IMG_0236.MOV"));
 	}
 
 	@Test
 	public void uploadPictureTooLarge() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/file/uploadPicture", MediaType.WILDCARD, token).post(getPicture("C:/Dev/jdk8/javafx-src.zip"));
+		Response response = createAuthRequest("/upload/picture", MediaType.WILDCARD, token).post(getPicture("C:/Dev/jdk8/javafx-src.zip"));
 		assertThat(response.getStatus()).isEqualTo(Status.REQUEST_ENTITY_TOO_LARGE.getStatusCode());
 	}
 	
 	@Test
 	public void uploadPictureWithWrongMediaType() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/file/uploadPicture", MediaType.WILDCARD, token).post(getPlainText("test"));
+		Response response = createAuthRequest("/upload/picture", MediaType.WILDCARD, token).post(getPlainText("test"));
 		assertThat(response.getStatus()).isEqualTo(Status.UNSUPPORTED_MEDIA_TYPE.getStatusCode());
 	}
 

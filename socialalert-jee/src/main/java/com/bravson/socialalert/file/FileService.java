@@ -54,19 +54,19 @@ public class FileService {
 	}
 
 	@GET
-	@Path("/download/{fileUri}")
+	@Path("/download/{fileUri : .+}")
 	public Response download(@PathParam("fileUri") String fileUri) throws IOException {
 		return streamFile(fileUri, MediaSizeVariant.MEDIA);
 	}
 	
 	@GET
-	@Path("/preview/{fileUri}")
+	@Path("/preview/{fileUri : .+}")
 	public Response preview(@PathParam("fileUri") String fileUri) throws IOException {
 		return streamFile(fileUri, MediaSizeVariant.PREVIEW);
 	}
 	
 	@GET
-	@Path("/thumbnail/{fileUri}")
+	@Path("/thumbnail/{fileUri : .+}")
 	public Response thumbnail(@PathParam("fileUri") String fileUri) throws IOException {
 		return streamFile(fileUri, MediaSizeVariant.THUMBNAIL);
 	}

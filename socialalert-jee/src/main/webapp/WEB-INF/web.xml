@@ -72,7 +72,7 @@
 		<env-entry-value>960</env-entry-value>
 	</env-entry>
 	<env-entry>
-		<env-entry-name>pictureWatermarkFile</env-entry-name>
+		<env-entry-name>mediaWatermarkFile</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
 		<env-entry-value>logo.jpg</env-entry-value>
 	</env-entry>

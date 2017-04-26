@@ -70,6 +70,10 @@ public class UploadService {
 		return uploadMedia(inputFile, request, videoFileProcessor);
 	}
 
+	private URI createDownloadUri(FileMetadata fileMetadata) {
+		return URI.create(UriConstants.FILE_SERVICE_URI + "/download/" + fileMetadata.buildFileUri());
+	}
+	
 	private Response uploadMedia(File inputFile, HttpServletRequest request, MediaFileProcessor processor) throws IOException, ServletException {
 		if (request.getContentLengthLong() > maxUploadSize) {
 			return Response.status(Status.REQUEST_ENTITY_TOO_LARGE).build();
@@ -87,6 +91,10 @@ public class UploadService {
 		
 		FileMetadata fileMetadata = buildFileMetadata(inputFile, fileFormat, request);
 		
+		if (mediaRepository.findFile(fileMetadata.buildFileUri()).isPresent()) {
+			return Response.status(Status.CREATED).location(createDownloadUri(fileMetadata)).build();
+		}
+		
 		fileStore.storeMedia(inputFile, fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileFormat);
 		FileEntity fileEntity = mediaRepository.storeMedia(fileMetadata, mediaMetadata);
 		
@@ -99,7 +107,7 @@ public class UploadService {
 		processor.createThumbnail(inputFile, thumbnailFile);
 		fileEntity.addVariant(buildFileMetadata(thumbnailFile, processor.getThumbnailFormat(), request));
 		
-		return Response.created(URI.create(UriConstants.FILE_SERVICE_URI + "/" + fileEntity.getFileUri())).build();
+		return Response.created(createDownloadUri(fileMetadata)).build();
 	}
 	
 	private Optional<MediaMetadata> buildMediaMetadata(File inputFile, MediaFileProcessor processor) throws IOException {

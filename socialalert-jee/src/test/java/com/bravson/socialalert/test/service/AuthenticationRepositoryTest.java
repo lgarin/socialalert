@@ -40,7 +40,7 @@ public class AuthenticationRepositoryTest extends BaseServiceTest {
 	@Test
 	public void invalidateInvalidAccessToken() {
 		Status result = repository.invalidateAccessToken("Bearer abc");
-		assertThat(result).isEqualTo(Status.OK);
+		assertThat(result).isEqualTo(Status.OK); // TODO
 	}
 	
 	@Test

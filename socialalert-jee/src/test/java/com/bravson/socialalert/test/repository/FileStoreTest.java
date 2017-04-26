@@ -18,7 +18,7 @@ import com.bravson.socialalert.file.store.FileStoreConfiguration;
 
 public class FileStoreTest extends Assertions {
 
-	private static FileStoreConfiguration config = FileStoreConfiguration.builder().baseDirectory(new File("C:/Temp/test")).build();
+	private static FileStoreConfiguration config = FileStoreConfiguration.builder().baseDirectory("C:/Temp/test").build();
 	
 	private FileStore store = new FileStore(config);
 	

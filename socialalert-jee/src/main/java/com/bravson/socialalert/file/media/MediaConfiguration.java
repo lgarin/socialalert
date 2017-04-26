@@ -38,10 +38,4 @@ public class MediaConfiguration {
 	
 	@Resource(name="videoLibraryPath")
 	private String videoLibraryPath;
-	
-	@Resource(name="mediaThumbnailPrefix")
-	private String thumbnailPrefix;
-	
-	@Resource(name="mediaPreviewPrefix")
-	private String previewPrefix;
 }

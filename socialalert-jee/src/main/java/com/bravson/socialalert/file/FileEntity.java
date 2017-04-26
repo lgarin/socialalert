@@ -8,6 +8,7 @@ import java.util.Optional;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 
 import org.hibernate.search.annotations.Indexed;
@@ -38,7 +39,7 @@ public class FileEntity implements Serializable {
 	@Id
 	private String fileUri;
 	
-	@ElementCollection
+	@ElementCollection(fetch=FetchType.EAGER)
 	@IndexedEmbedded
 	private List<FileMetadata> fileVariants;
 		
