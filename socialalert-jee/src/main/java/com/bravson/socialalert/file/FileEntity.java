@@ -48,7 +48,7 @@ public class FileEntity implements Serializable {
 	@Embedded
 	private MediaMetadata mediaMetadata;
 	
-	public static FileEntity of(FileMetadata fileMetadata, MediaMetadata mediaMetadata) {
+	public static FileEntity of(@NonNull FileMetadata fileMetadata, @NonNull MediaMetadata mediaMetadata) {
 		if (fileMetadata.getSizeVariant() != MediaSizeVariant.MEDIA) {
 			throw new IllegalArgumentException("Size variant must be " + MediaSizeVariant.MEDIA.getVariantName());
 		}
@@ -66,11 +66,11 @@ public class FileEntity implements Serializable {
 		return fileVariants.stream().filter(v -> v.getSizeVariant() == sizeVariant).findAny();
 	}
 	
-	public Optional<MediaFileFormat> findVariantFormat(MediaSizeVariant sizeVariant) {
+	public Optional<MediaFileFormat> findVariantFormat(@NonNull MediaSizeVariant sizeVariant) {
 		return findFileMetadata(sizeVariant).map(FileMetadata::getFileFormat);
 	}
 
-	public boolean addVariant(FileMetadata metadata) {
+	public boolean addVariant(@NonNull FileMetadata metadata) {
 		if (findFileMetadata(metadata.getSizeVariant()).isPresent()) {
 			return false;
 		}

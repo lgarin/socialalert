@@ -1,27 +1,16 @@
 package com.bravson.socialalert.file.video;
 
-import static com.bravson.socialalert.file.media.MediaFileConstants.JPG_EXTENSION;
-import static com.bravson.socialalert.infrastructure.util.DateUtil.parseInstant;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.annotation.ManagedBean;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import com.bravson.socialalert.file.media.MediaConfiguration;
 import com.bravson.socialalert.file.media.MediaFileFormat;
-import com.bravson.socialalert.file.media.MediaFileProcessor;
-import com.bravson.socialalert.file.media.MediaMetadata;
-import com.bravson.socialalert.file.media.MediaUtil;
+import com.bravson.socialalert.infrastructure.cache.RequestScopeCache;
 
 import io.humble.video.AudioChannel;
 import io.humble.video.AudioFormat;
@@ -36,7 +25,6 @@ import io.humble.video.FilterAudioSource;
 import io.humble.video.FilterGraph;
 import io.humble.video.FilterPictureSink;
 import io.humble.video.FilterPictureSource;
-import io.humble.video.Global;
 import io.humble.video.KeyValueBag;
 import io.humble.video.MediaAudio;
 import io.humble.video.MediaDescriptor;
@@ -46,75 +34,19 @@ import io.humble.video.Muxer;
 import io.humble.video.MuxerFormat;
 import io.humble.video.PixelFormat;
 import io.humble.video.Rational;
-import io.humble.video.awt.MediaPictureConverter;
-import io.humble.video.awt.MediaPictureConverterFactory;
-import net.coobird.thumbnailator.Thumbnails;
-import net.coobird.thumbnailator.geometry.Positions;
+import lombok.NonNull;
 
 @ManagedBean
-public class VideoFileProcessor implements MediaFileProcessor {
-
-	private static final DateTimeFormatter TIMESTAMP_FORMAT = new DateTimeFormatterBuilder()
-			.parseStrict()
-			.appendPattern("yyyy-MM-dd HH:mm:ss")
-			.parseDefaulting(ChronoField.NANO_OF_SECOND, 0)
-			.toFormatter()
-			.withZone(ZoneOffset.UTC);
-	
-	private static final Pattern LOCATION_PATTERN = Pattern.compile("([+-]\\d+.\\d+)([+-]\\d+.\\d+)([+-]\\d+.\\d+)/");
-	
-	private MediaConfiguration config;
-	
-	private BufferedImage watermarkImage;
+@ApplicationScoped
+public class VideoFileProcessor extends SnapshotVideoFileProcessor {
 	
 	@Inject
-	public VideoFileProcessor(MediaConfiguration config) {
-		this.config = config;
-		System.setProperty("java.library.path", config.getVideoLibraryPath());
-		watermarkImage = MediaUtil.readImage(config.getWatermarkFile());
-	}
-	
-	private static MediaPicture buildPicture(Demuxer demuxer, DemuxerStream stream, long delay) throws InterruptedException, IOException {
-		Decoder decoder = stream.getDecoder();
-		decoder.open(null, null);
-		MediaPicture picture = MediaPicture.make(decoder.getWidth(), decoder.getHeight(), decoder.getPixelFormat());
-		MediaPacket packet = MediaPacket.make();
-		// TODO use delay
-		while (demuxer.read(packet) >= 0) {
-			if (packet.getStreamIndex() == stream.getIndex()) {
-				if (decodePicture(packet, decoder, picture)) {
-					return picture;
-				}
-			}
-		}
-
-		if (decodePicture(null, decoder, picture)) {
-			return picture;
-		}
-
-		return null;
-	}
-
-	private static BufferedImage takeSnapshot(File sourceFile, long delay) throws IOException {
-		if (!sourceFile.canRead()) {
-			throw new IOException("Cannot read file " + sourceFile);
-		}
-		Demuxer demuxer = Demuxer.make();
-		try {
-			demuxer.open(sourceFile.toString(), null, false, true, null, null);
-			DemuxerStream stream = findStream(demuxer, MediaDescriptor.Type.MEDIA_VIDEO);
-			MediaPicture picture = buildPicture(demuxer, stream, delay);
-			MediaPictureConverter converter = MediaPictureConverterFactory.createConverter(MediaPictureConverterFactory.HUMBLE_BGR_24, picture);
-			return converter.toImage(null, picture);
-		} catch (InterruptedException e) {
-			throw new IOException(e);
-		} finally {
-			closeDemuxer(demuxer);
-		}
+	public VideoFileProcessor(@NonNull MediaConfiguration config, @NonNull RequestScopeCache<File, BufferedImage> imageCache) {
+		super(config, imageCache);
 	}
 	
 	@Override
-	public void createPreview(File sourceFile, File outputFile) throws IOException {
+	public void createPreview(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
 		Demuxer demuxer = Demuxer.make();
 		MuxerFormat format = MuxerFormat.guessFormat(null, outputFile.getName(), null);
 		Muxer muxer = Muxer.make(outputFile.toString(), format, null);
@@ -125,11 +57,11 @@ public class VideoFileProcessor implements MediaFileProcessor {
 		
 		try {
 			demuxer.open(sourceFile.toString(), null, false, true, null, null);
-			DemuxerStream videoStream = findStream(demuxer, MediaDescriptor.Type.MEDIA_VIDEO);
+			DemuxerStream videoStream = VideoUtil.findStream(demuxer, MediaDescriptor.Type.MEDIA_VIDEO);
 			Decoder videoDecoder = videoStream.getDecoder();
 			videoDecoder.open(null, null);
 			
-			DemuxerStream audioStream = findStream(demuxer, MediaDescriptor.Type.MEDIA_AUDIO);
+			DemuxerStream audioStream = VideoUtil.findStream(demuxer, MediaDescriptor.Type.MEDIA_AUDIO);
 			Decoder audioDecoder = audioStream.getDecoder();
 			audioDecoder.open(null, null);
 			
@@ -143,7 +75,7 @@ public class VideoFileProcessor implements MediaFileProcessor {
 			muxerOptions.setValue("moov_size", "100000");
 			muxer.open(muxerOptions, null);
 			
-			MediaPicture watermarkPicture = createWatermarkPicture();
+			MediaPicture watermarkPicture = VideoUtil.createMediaPicture(watermarkImage);
 			
 			KeyValueBag metadata = videoStream.getMetaData();
 			String rotation = metadata.getValue("rotate");
@@ -171,19 +103,19 @@ public class VideoFileProcessor implements MediaFileProcessor {
 			while (demuxer.read(inputPacket) >= 0) {
 				if (inputPacket.isComplete()) {
 					if (audioStream.getIndex() == inputPacket.getStreamIndex()) {
-						if (decodeAudio(inputPacket, audioDecoder, sourceAudio)) {
+						if (VideoUtil.decodeAudio(inputPacket, audioDecoder, sourceAudio)) {
 							audioSource.addAudio(sourceAudio);
 							if (audioSink.getAudio(targetAudio) >= 0) {
-								encodeAudio(muxer, audioPacket, audioEncoder, targetAudio);
+								VideoUtil.encodeAudio(muxer, audioPacket, audioEncoder, targetAudio);
 							}
 						}
 					} else if (videoStream.getIndex() == inputPacket.getStreamIndex()) {
-						if (decodePicture(inputPacket, videoDecoder, sourcePicture)) {
+						if (VideoUtil.decodePicture(inputPacket, videoDecoder, sourcePicture)) {
 							watermarkPicture.setTimeStamp(sourcePicture.getTimeStamp());
 							watermark.addPicture(watermarkPicture);
 							videoSource.addPicture(sourcePicture);
 							if (videoSink.getPicture(targetPicture) >= 0) {
-								encodePicture(muxer, videoPacket, videoEncoder, targetPicture);
+								VideoUtil.encodePicture(muxer, videoPacket, videoEncoder, targetPicture);
 							}
 						}
 					}
@@ -191,14 +123,14 @@ public class VideoFileProcessor implements MediaFileProcessor {
 				}
 			}
 			
-			encodePicture(muxer, videoPacket, videoEncoder, null);
-			encodeAudio(muxer, audioPacket, audioEncoder, null);
+			VideoUtil.encodePicture(muxer, videoPacket, videoEncoder, null);
+			VideoUtil.encodeAudio(muxer, audioPacket, audioEncoder, null);
 			
 		} catch (InterruptedException e) {
 			throw new IOException(e);
 		} finally {
-			closeMuxer(muxer);
-			closeDemuxer(demuxer);
+			VideoUtil.closeMuxer(muxer);
+			VideoUtil.closeDemuxer(demuxer);
 		}
 	}
 	
@@ -207,88 +139,6 @@ public class VideoFileProcessor implements MediaFileProcessor {
 		return MediaFileFormat.PREVIEW_MP4;
 	}
 	
-	@Override
-	public void createThumbnail(File sourceFile, File outputFile) throws IOException {
-		Thumbnails
-			.of(takeSnapshot(sourceFile, config.getSnapshotDelay()))
-			.watermark(Positions.CENTER, watermarkImage, 0.25f)
-			.size(config.getThumbnailWidth(), config.getThumbnailHeight())
-			.crop(Positions.CENTER)
-			.outputFormat(JPG_EXTENSION)
-			.toFile(outputFile);
-	}
-	
-	private static DemuxerStream findStream(Demuxer demuxer, MediaDescriptor.Type type) throws IOException {
-		try {
-			int ns = demuxer.getNumStreams();
-			for (int i = 0; i < ns; i++) {
-				DemuxerStream stream = demuxer.getStream(i);
-				Decoder decoder = stream.getDecoder();
-				if (decoder != null && decoder.getCodecType() == type) {
-					return stream;
-				}
-			}
-			return null;
-		} catch (InterruptedException e) {
-			throw new IOException(e);
-		}
-	}
-
-	@Override
-	public MediaMetadata parseMetadata(File sourceFile) throws IOException {
-		MediaMetadata.MediaMetadataBuilder result = MediaMetadata.builder();
-		Demuxer demuxer = Demuxer.make();
-		try {
-			demuxer.open(sourceFile.toString(), null, false, true, null, null);
-			KeyValueBag metadata = demuxer.getMetaData();
-		    result.cameraModel(metadata.getValue("model"));
-		    result.cameraMaker(metadata.getValue("make"));
-		    if (metadata.getValue("creation_time") != null) {
-		    	result.timestamp(parseInstant(metadata.getValue("creation_time"), TIMESTAMP_FORMAT));
-		    } else if (metadata.getValue("date") != null) {
-		    	result.timestamp(parseInstant(metadata.getValue("date"), TIMESTAMP_FORMAT));
-		    }
-		    if (metadata.getValue("location") != null) {
-		    	Matcher locationMatcher = LOCATION_PATTERN.matcher(metadata.getValue("location"));
-			    if (locationMatcher.matches()) {
-			    	result.latitude(Double.parseDouble((locationMatcher.group(1))));
-			    	result.longitude(Double.parseDouble((locationMatcher.group(2))));
-			    }
-		    }
-		    
-		    result.duration(Duration.ofSeconds(demuxer.getDuration() / Global.DEFAULT_PTS_PER_SECOND));
-		    
-		    DemuxerStream stream = findStream(demuxer, MediaDescriptor.Type.MEDIA_VIDEO);
-		    if (stream != null) {
-		    	Decoder decoder = stream.getDecoder();
-		    	result.height(decoder.getHeight());
-	        	result.width(decoder.getWidth());
-		    }
-		} catch (InterruptedException e) {
-			throw new IOException(e);
-		} finally {
-			closeDemuxer(demuxer);
-		}
-		
-		return result.build();
-	}
-	
-	private static void closeDemuxer(Demuxer demuxer) throws IOException {
-		try {
-			if (demuxer.getState() == Demuxer.State.STATE_OPENED) {
-				demuxer.close();
-			}
-		} catch (InterruptedException e) {
-			throw new IOException(e);
-		}
-	}
-
-	private static void closeMuxer(Muxer muxer) {
-		if (muxer.getState() == Muxer.State.STATE_OPENED) {
-			muxer.close();
-		}
-	}
-
 	private Encoder createVideoEncoder(MuxerFormat format, Rational timeBase) {
 		Encoder videoEncoder = Encoder.make(Codec.findEncodingCodecByName("libx264"));
 		videoEncoder.setWidth(config.getPreviewWidth());
@@ -322,64 +172,5 @@ public class VideoFileProcessor implements MediaFileProcessor {
 		audioEncoder.setProperty("b", 64L);
 		audioEncoder.open(null, null);
 		return audioEncoder;
-	}
-
-	private static void encodeAudio(Muxer muxer, MediaPacket audioPacket, Encoder audioEncoder, MediaAudio targetAudio) {
-		//do {
-			audioEncoder.encodeAudio(audioPacket, targetAudio);
-		    if (audioPacket.isComplete()) {
-		      muxer.write(audioPacket, false);
-		    }
-		//} while (audioPacket.isComplete());
-	}
-
-	private static void encodePicture(Muxer muxer, MediaPacket videoPacket, Encoder videoEncoder, MediaPicture targetPicture) {
-		do {
-			videoEncoder.encodeVideo(videoPacket, targetPicture);
-		    if (videoPacket.isComplete()) {
-		      muxer.write(videoPacket, false);
-		    }
-		} while (videoPacket.isComplete());
-	}
-
-	private MediaPicture createWatermarkPicture() {
-		MediaPicture watermarkPicture = MediaPicture.make(watermarkImage.getWidth(), watermarkImage.getHeight(), PixelFormat.Type.PIX_FMT_RGBA);
-		MediaPictureConverter watermarkConverter = MediaPictureConverterFactory.createConverter(watermarkImage, watermarkPicture);
-		watermarkConverter.toPicture(watermarkPicture, watermarkImage, 0);
-		return watermarkPicture;
-	}
-
-	private static boolean decodePicture(MediaPacket packet, Decoder decoder, MediaPicture picture) {
-		int size = packet == null ? 0 : packet.getSize();
-		int offset = 0;
-		int bytesRead = 0;
-		do {
-			bytesRead += decoder.decodeVideo(picture, packet, offset);
-			if (picture.isComplete()) {
-				return true;
-			}
-			if (bytesRead <= 0) {
-				throw new RuntimeException("Could not decode video");
-			}
-			offset += bytesRead;
-		} while (offset < size);
-		return false;
-	}
-	
-	private static boolean decodeAudio(MediaPacket packet, Decoder decoder, MediaAudio audio) {
-		int size = packet == null ? 0 : packet.getSize();
-		int offset = 0;
-		int bytesRead = 0;
-		do {
-			bytesRead += decoder.decodeAudio(audio, packet, offset);
-			if (audio.isComplete()) {
-				return true;
-			}
-			if (bytesRead <= 0) {
-				throw new RuntimeException("Could not decode audio");
-			}
-			offset += bytesRead;
-		} while (offset < size);
-		return false;
 	}
 }

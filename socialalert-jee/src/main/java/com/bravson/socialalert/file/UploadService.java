@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
@@ -29,7 +30,7 @@ import com.bravson.socialalert.file.media.MediaFileProcessor;
 import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.file.picture.PictureFileProcessor;
 import com.bravson.socialalert.file.store.FileStore;
-import com.bravson.socialalert.file.video.VideoFileProcessor;
+import com.bravson.socialalert.file.video.SnapshotVideoFileProcessor;
 
 @Path("/upload")
 @ManagedBean
@@ -45,7 +46,7 @@ public class UploadService {
 	private PictureFileProcessor pictureFileProcessor;
 	
 	@Inject
-	private VideoFileProcessor videoFileProcessor;
+	private SnapshotVideoFileProcessor videoFileProcessor;
 	
 	@Inject
 	private FileStore fileStore;
@@ -79,15 +80,8 @@ public class UploadService {
 			return Response.status(Status.REQUEST_ENTITY_TOO_LARGE).build();
 		}
 	
-		MediaMetadata mediaMetadata = buildMediaMetadata(inputFile, processor).orElse(null);
-		if (mediaMetadata == null) {
-			return Response.status(Status.UNSUPPORTED_MEDIA_TYPE).build();
-		}
-		
-		MediaFileFormat fileFormat = MediaFileFormat.fromMediaContentType(request.getContentType()).orElse(null);
-		if (fileFormat == null) {
-			return Response.status(Status.UNSUPPORTED_MEDIA_TYPE).build();
-		}
+		MediaMetadata mediaMetadata = buildMediaMetadata(inputFile, processor).orElseThrow(NotSupportedException::new);
+		MediaFileFormat fileFormat = MediaFileFormat.fromMediaContentType(request.getContentType()).orElseThrow(NotSupportedException::new);
 		
 		FileMetadata fileMetadata = buildFileMetadata(inputFile, fileFormat, request);
 		
@@ -98,7 +92,6 @@ public class UploadService {
 		fileStore.storeMedia(inputFile, fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileFormat);
 		FileEntity fileEntity = mediaRepository.storeMedia(fileMetadata, mediaMetadata);
 		
-		// TODO delay preview creation
 		File previewFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), processor.getPreviewFormat());
 		processor.createPreview(inputFile, previewFile);
 		fileEntity.addVariant(buildFileMetadata(previewFile, processor.getPreviewFormat(), request));
@@ -106,6 +99,8 @@ public class UploadService {
 		File thumbnailFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), processor.getThumbnailFormat()); 
 		processor.createThumbnail(inputFile, thumbnailFile);
 		fileEntity.addVariant(buildFileMetadata(thumbnailFile, processor.getThumbnailFormat(), request));
+		
+		// TODO trigger async processing
 		
 		return Response.created(createDownloadUri(fileMetadata)).build();
 	}

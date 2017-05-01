@@ -17,6 +17,8 @@ import javax.inject.Inject;
 
 import com.bravson.socialalert.infrastructure.util.DateUtil;
 
+import lombok.NonNull;
+
 @ManagedBean
 public class FileStore {
 
@@ -25,11 +27,11 @@ public class FileStore {
 	private final Path baseDirectory;
 
 	@Inject
-	public FileStore(FileStoreConfiguration config) {
+	public FileStore(@NonNull FileStoreConfiguration config) {
 		baseDirectory = config.getBaseDirectory().toPath();
 	}
 	
-	public String computeMd5Hex(File file) throws IOException {
+	public String computeMd5Hex(@NonNull File file) throws IOException {
 		try {
 			return digest(file, MD5_ALGORITHM);
 		} catch (NoSuchAlgorithmException e) {
@@ -54,7 +56,7 @@ public class FileStore {
 		return new BigInteger(1, data).toString(16);
 	}
 
-	public void storeMedia(File source, String md5, Temporal timestamp, FileFormat format) throws IOException {
+	public void storeMedia(@NonNull File source, @NonNull String md5, @NonNull Temporal timestamp, @NonNull FileFormat format) throws IOException {
 		try (InputStream is = Files.newInputStream(source.toPath())) {
 			Files.copy(is, buildAbsolutePath(md5, timestamp, format));
 		}
@@ -70,12 +72,12 @@ public class FileStore {
 		return path;
 	}
 
-	public File createEmptyFile(String md5, Temporal timestamp, FileFormat format) throws IOException {
+	public File createEmptyFile(@NonNull String md5, @NonNull Temporal timestamp, @NonNull FileFormat format) throws IOException {
 		Path path = buildAbsolutePath(md5, timestamp, format);
 		return Files.createFile(path).toFile();
 	}
 	
-	public File getExistingFile(String md5, Temporal timestamp, FileFormat format) throws IOException {
+	public File getExistingFile(@NonNull String md5, @NonNull Temporal timestamp, @NonNull FileFormat format) throws IOException {
 		Path path = buildAbsolutePath(md5, timestamp, format);
 		if (!Files.exists(path)) {
 			throw new NoSuchFileException(path.toString());

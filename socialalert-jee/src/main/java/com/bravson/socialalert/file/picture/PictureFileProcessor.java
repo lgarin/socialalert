@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import javax.annotation.ManagedBean;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import com.bravson.socialalert.file.media.MediaConfiguration;
@@ -27,10 +28,12 @@ import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDirectory;
 import com.drew.metadata.jpeg.JpegDirectory;
 
+import lombok.NonNull;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
 
 @ManagedBean
+@ApplicationScoped
 public class PictureFileProcessor implements MediaFileProcessor {
 	
 	private MediaConfiguration config;
@@ -38,13 +41,13 @@ public class PictureFileProcessor implements MediaFileProcessor {
 	private BufferedImage watermarkImage;
 	
 	@Inject
-	public PictureFileProcessor(MediaConfiguration config) {
+	public PictureFileProcessor(@NonNull MediaConfiguration config) {
 		this.config = config;
 		watermarkImage = MediaUtil.readImage(config.getWatermarkFile());
 	}
 
 	@Override
-	public MediaMetadata parseMetadata(File sourceFile) throws JpegProcessingException, IOException {
+	public MediaMetadata parseMetadata(@NonNull File sourceFile) throws JpegProcessingException, IOException {
 		Metadata metadata = JpegMetadataReader.readMetadata(sourceFile);
 		
 		if (metadata.hasErrors()) {
@@ -98,7 +101,7 @@ public class PictureFileProcessor implements MediaFileProcessor {
 	}
 	
 	@Override
-	public void createThumbnail(File sourceFile, File outputFile) throws IOException {
+	public void createThumbnail(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
 		Thumbnails
 			.of(sourceFile)
 			.watermark(Positions.CENTER, watermarkImage, 0.25f)
@@ -109,7 +112,7 @@ public class PictureFileProcessor implements MediaFileProcessor {
 	}
 	
 	@Override
-	public void createPreview(File sourceFile, File outputFile) throws IOException {
+	public void createPreview(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
 		Thumbnails
 			.of(sourceFile)
 			.watermark(Positions.CENTER, watermarkImage, 0.25f)

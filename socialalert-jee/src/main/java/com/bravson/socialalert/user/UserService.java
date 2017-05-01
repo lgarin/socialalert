@@ -12,9 +12,11 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -40,10 +42,7 @@ public class UserService {
 	@Path("/login")
 	@PermitAll
 	public Response login(@NotEmpty @Email @FormParam("userId") String userId, @NotEmpty @FormParam("password") String password) {
-		String accessToken = authenticationRepository.requestAccessToken(userId, password).orElse(null);
-		if (accessToken == null) {
-			return Response.status(Status.UNAUTHORIZED).build();
-		}
+		String accessToken = authenticationRepository.requestAccessToken(userId, password).orElseThrow(() -> new WebApplicationException(Status.UNAUTHORIZED));
 		return Response.status(Status.OK).entity(accessToken).build();
 	}
 	
@@ -69,10 +68,7 @@ public class UserService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/current")
 	public Response current(@NotEmpty @HeaderParam("Authorization") String authorization) {
-		UserInfo userInfo = authenticationRepository.findUserInfo(principal.getName(), authorization).orElse(null);
-		if (userInfo == null) {
-			return Response.status(Status.NOT_FOUND).build();
-		}
+		UserInfo userInfo = authenticationRepository.findUserInfo(principal.getName(), authorization).orElseThrow(NotFoundException::new);
 		return Response.status(Status.OK).entity(userInfo).build();
 	}
 }

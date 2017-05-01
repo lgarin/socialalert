@@ -14,6 +14,7 @@ import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.file.picture.PictureFileProcessor;
 import com.bravson.socialalert.file.video.VideoFileProcessor;
+import com.bravson.socialalert.infrastructure.cache.RequestScopeCache;
 import com.drew.imaging.jpeg.JpegProcessingException;
 
 public class VideoFileProcessorTest extends Assertions {
@@ -28,7 +29,7 @@ public class VideoFileProcessorTest extends Assertions {
 			.videoLibraryPath("C:\\Dev")
 			.build(); 
 	
-	private VideoFileProcessor processor = new VideoFileProcessor(config);
+	private VideoFileProcessor processor = new VideoFileProcessor(config, new RequestScopeCache<>());
 	
 	@Test
 	public void testMediaFormat() {
