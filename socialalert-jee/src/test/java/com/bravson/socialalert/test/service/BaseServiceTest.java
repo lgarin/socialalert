@@ -27,11 +27,11 @@ public abstract class BaseServiceTest extends Assertions {
 
 	private static File baseDirectory = new File("C:/Temp/xtra");
 	
-	@Deployment(testable = false)
+	@Deployment(testable = true)
 	public static WebArchive createDeployment() throws IOException {
 		try {
 			FileUtils.deleteDirectory(baseDirectory);
-		} catch (IOException e) {
+		} catch (IllegalArgumentException e) {
 			// ignore
 		}
 		
@@ -40,6 +40,7 @@ public abstract class BaseServiceTest extends Assertions {
 		
 		return ShrinkWrap.create(WebArchive.class, "socialalert-jee-test.war")
 				.addPackages(true, "com/bravson/socialalert")
+				.addPackages(true, "org/assertj")
 				.addAsResource("logo.jpg")
 				.addAsLibraries(libs)
 				.addAsResource(new File("src/main/webapp/META-INF/jboss-logging.properties"), "META-INF/jboss-logging.properties")

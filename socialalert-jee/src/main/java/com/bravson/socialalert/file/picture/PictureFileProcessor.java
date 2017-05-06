@@ -28,12 +28,15 @@ import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDirectory;
 import com.drew.metadata.jpeg.JpegDirectory;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
 
 @ManagedBean
 @ApplicationScoped
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class PictureFileProcessor implements MediaFileProcessor {
 	
 	private MediaConfiguration config;

@@ -60,7 +60,7 @@ public class AsyncPreviewRepositoryTest {
 	
 	@Test
 	public void sendMessage() {
-		repository.addAsyncProcessing(() -> System.out.print("test"));
+		//repository.addAsyncProcessing(() -> System.out.print("test"));
 		
 	}
 }

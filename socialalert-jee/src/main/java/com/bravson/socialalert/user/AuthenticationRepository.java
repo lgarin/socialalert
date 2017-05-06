@@ -11,14 +11,17 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @ManagedBean
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class AuthenticationRepository {
 	
-	private final AuthenticationConfiguration config;
+	private AuthenticationConfiguration config;
 	
-	private final Client httpClient;
+	private Client httpClient;
 
 	@Inject
 	public AuthenticationRepository(@NonNull AuthenticationConfiguration config, @NonNull Client httpClient) {

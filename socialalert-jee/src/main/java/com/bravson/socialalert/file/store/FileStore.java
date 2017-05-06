@@ -17,14 +17,17 @@ import javax.inject.Inject;
 
 import com.bravson.socialalert.infrastructure.util.DateUtil;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @ManagedBean
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class FileStore {
 
 	private static final String MD5_ALGORITHM = "MD5";
 	
-	private final Path baseDirectory;
+	private Path baseDirectory;
 
 	@Inject
 	public FileStore(@NonNull FileStoreConfiguration config) {

@@ -7,6 +7,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.junit.Test;
 
 import com.bravson.socialalert.file.media.MediaFileConstants;
@@ -24,6 +25,7 @@ public class FileServiceTest extends BaseServiceTest {
 	}
 	
 	@Test
+	@RunAsClient
 	public void downloadNonExistingFile() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
 		Response response = createAuthRequest("/file/download/20170407/58b28c6b28011a1ad4180419", MediaType.WILDCARD, token).get();
@@ -31,6 +33,7 @@ public class FileServiceTest extends BaseServiceTest {
 	}
 	
 	@Test
+	@RunAsClient
 	public void downloadExistingFile() throws Exception  {
 		String token = requestLoginToken("test@test.com", "123");
 		String path = uploadPicture(token);
@@ -40,6 +43,7 @@ public class FileServiceTest extends BaseServiceTest {
 	}
 	
 	@Test
+	@RunAsClient
 	public void downloadThumbnailFile() throws Exception  {
 		String token = requestLoginToken("test@test.com", "123");
 		String path = uploadPicture(token);
@@ -49,6 +53,7 @@ public class FileServiceTest extends BaseServiceTest {
 	}
 
 	@Test
+	@RunAsClient
 	public void downloadPreviewFile() throws Exception  {
 		String token = requestLoginToken("test@test.com", "123");
 		String path = uploadPicture(token);

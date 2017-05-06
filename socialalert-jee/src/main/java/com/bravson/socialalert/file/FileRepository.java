@@ -14,14 +14,17 @@ import org.hibernate.search.query.dsl.QueryBuilder;
 
 import com.bravson.socialalert.file.media.MediaMetadata;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @ManagedBean
 @Transactional
 @ApplicationScoped
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class FileRepository {
 
-	private final FullTextEntityManager entityManager;
+	private FullTextEntityManager entityManager;
 	
 	@Inject
 	public FileRepository(FullTextEntityManager entityManager) {

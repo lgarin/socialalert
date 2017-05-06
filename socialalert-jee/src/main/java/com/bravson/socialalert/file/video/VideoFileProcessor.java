@@ -1,6 +1,5 @@
 package com.bravson.socialalert.file.video;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -10,7 +9,6 @@ import javax.inject.Inject;
 
 import com.bravson.socialalert.file.media.MediaConfiguration;
 import com.bravson.socialalert.file.media.MediaFileFormat;
-import com.bravson.socialalert.infrastructure.cache.RequestScopeCache;
 
 import io.humble.video.AudioChannel;
 import io.humble.video.AudioFormat;
@@ -34,15 +32,18 @@ import io.humble.video.Muxer;
 import io.humble.video.MuxerFormat;
 import io.humble.video.PixelFormat;
 import io.humble.video.Rational;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @ManagedBean
 @ApplicationScoped
-public class VideoFileProcessor extends SnapshotVideoFileProcessor {
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
+public class VideoFileProcessor extends BaseVideoFileProcessor {
 	
 	@Inject
-	public VideoFileProcessor(@NonNull MediaConfiguration config, @NonNull RequestScopeCache<File, BufferedImage> imageCache) {
-		super(config, imageCache);
+	public VideoFileProcessor(@NonNull MediaConfiguration config, @NonNull SnapshotCache snapshotCache) {
+		super(config, snapshotCache);
 	}
 	
 	@Override
