@@ -45,8 +45,6 @@ public abstract class BaseServiceTest extends Assertions {
 				.addAsLibraries(libs)
 				.addAsResource(new File("src/main/webapp/META-INF/jboss-logging.properties"), "META-INF/jboss-logging.properties")
 				.addAsResource(new File("src/main/webapp/META-INF/persistence.xml"), "META-INF/persistence.xml")
-				.addAsWebInfResource(new File("src/main/webapp/META-INF/persistence.xml"), "persistence.xml")
-				//.addAsWebInfResource(new File("src/main/webapp/WEB-INF/beans.xml"), "beans.xml")
 				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/web.xml"), "web.xml")
 				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/keycloak.json"), "keycloak.json")
 				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/jboss-deployment-structure.xml"), "jboss-deployment-structure.xml");

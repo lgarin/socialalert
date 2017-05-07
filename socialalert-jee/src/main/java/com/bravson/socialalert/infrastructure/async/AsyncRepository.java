@@ -22,7 +22,7 @@ public class AsyncRepository {
 	@JMSConnectionFactory(AsyncConstants.QUEUE_CONNECTION_FACTORY)
     private JMSContext context;
 
-    @Resource(lookup = AsyncConstants.ASYNC_PROCESSOR_QUEUE, name = AsyncConstants.ASYNC_PROCESSOR_QUEUE)
+    @Resource(mappedName = AsyncConstants.ASYNC_PROCESSOR_QUEUE)
     private Destination destination;
     
     public AsyncRepository(JMSContext context, Destination destination) {
@@ -31,6 +31,6 @@ public class AsyncRepository {
 	}
 
 	public void fireAsync(AsyncEvent event) {
-    	context.createProducer().send(destination, event);
+		context.createProducer().send(destination, event);
     }
 }
