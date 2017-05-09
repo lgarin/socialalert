@@ -15,6 +15,7 @@ import java.time.temporal.Temporal;
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 
+import com.bravson.socialalert.infrastructure.log.Logged;
 import com.bravson.socialalert.infrastructure.util.DateUtil;
 
 import lombok.AccessLevel;
@@ -23,6 +24,7 @@ import lombok.NonNull;
 
 @ManagedBean
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
+@Logged
 public class FileStore {
 
 	private static final String MD5_ALGORITHM = "MD5";

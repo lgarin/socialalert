@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import javax.annotation.ManagedBean;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import com.bravson.socialalert.file.media.MediaConfiguration;
@@ -18,6 +17,7 @@ import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaFileProcessor;
 import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.file.media.MediaUtil;
+import com.bravson.socialalert.infrastructure.log.Logged;
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
 import com.drew.lang.GeoLocation;
@@ -35,8 +35,8 @@ import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
 
 @ManagedBean
-@ApplicationScoped
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
+@Logged
 public class PictureFileProcessor implements MediaFileProcessor {
 	
 	private MediaConfiguration config;

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.time.Instant;
 
 import javax.annotation.ManagedBean;
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -23,7 +22,6 @@ import lombok.SneakyThrows;
 
 @ManagedBean
 @Transactional
-@ApplicationScoped
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class AsyncVideoPreviewProcessor {

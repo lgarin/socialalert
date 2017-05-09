@@ -11,12 +11,15 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.bravson.socialalert.infrastructure.log.Logged;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @ManagedBean
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
+@Logged
 public class AuthenticationRepository {
 	
 	private AuthenticationConfiguration config;

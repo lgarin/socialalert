@@ -22,10 +22,12 @@ import com.bravson.socialalert.UriConstants;
 import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaSizeVariant;
 import com.bravson.socialalert.file.store.FileStore;
+import com.bravson.socialalert.infrastructure.log.Logged;
 
 @Path("/" + UriConstants.FILE_SERVICE_URI)
 @ManagedBean
 @RolesAllowed("user")
+@Logged
 public class FileService {
 
 	@Inject

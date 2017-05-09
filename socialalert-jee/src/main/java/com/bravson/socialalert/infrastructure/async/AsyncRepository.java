@@ -2,7 +2,6 @@ package com.bravson.socialalert.infrastructure.async;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Resource;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.jms.Destination;
 import javax.jms.JMSConnectionFactory;
@@ -15,7 +14,6 @@ import lombok.NoArgsConstructor;
 
 @ManagedBean
 @Transactional
-@ApplicationScoped
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class AsyncRepository {

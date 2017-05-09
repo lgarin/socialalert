@@ -24,9 +24,12 @@ import javax.ws.rs.core.Response.Status;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.bravson.socialalert.infrastructure.log.Logged;
+
 @Path("/user")
 @ManagedBean
 @RolesAllowed("user")
+@Logged
 public class UserService {
 	
 	@Inject

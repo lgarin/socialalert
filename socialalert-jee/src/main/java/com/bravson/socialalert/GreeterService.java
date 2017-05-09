@@ -10,9 +10,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.bravson.socialalert.infrastructure.log.Logged;
+
 @Path("/greeter")
 @ManagedBean
 @RolesAllowed("user")
+@Logged
 public class GreeterService {
 
 	@Inject

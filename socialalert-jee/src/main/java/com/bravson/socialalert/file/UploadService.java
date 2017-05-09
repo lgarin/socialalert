@@ -34,10 +34,12 @@ import com.bravson.socialalert.file.store.FileStore;
 import com.bravson.socialalert.file.video.AsyncVideoPreviewEvent;
 import com.bravson.socialalert.file.video.SnapshotVideoFileProcessor;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
+import com.bravson.socialalert.infrastructure.log.Logged;
 
 @Path("/upload")
 @ManagedBean
 @RolesAllowed("user")
+@Logged
 public class UploadService {
 	@Resource(name="maxUploadSize")
 	private long maxUploadSize;
