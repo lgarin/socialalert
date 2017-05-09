@@ -1,7 +1,5 @@
 package com.bravson.socialalert.user;
 
-import java.security.Principal;
-
 import javax.annotation.ManagedBean;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
@@ -31,9 +29,6 @@ import com.bravson.socialalert.infrastructure.log.Logged;
 @RolesAllowed("user")
 @Logged
 public class UserService {
-	
-	@Inject
-	Principal principal;
 	
 	@Inject
 	AuthenticationRepository authenticationRepository;
@@ -70,7 +65,7 @@ public class UserService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/current")
 	public Response current(@NotEmpty @HeaderParam("Authorization") String authorization) {
-		UserInfo userInfo = authenticationRepository.findUserInfo(principal.getName(), authorization).orElseThrow(NotFoundException::new);
+		UserInfo userInfo = authenticationRepository.findUserInfo(authorization).orElseThrow(NotFoundException::new);
 		return Response.status(Status.OK).entity(userInfo).build();
 	}
 }

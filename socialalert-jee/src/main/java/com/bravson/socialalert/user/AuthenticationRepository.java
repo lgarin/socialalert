@@ -47,8 +47,8 @@ public class AuthenticationRepository {
 		return Status.fromStatusCode(response.getStatus());
 	}
 	
-	public Optional<UserInfo> findUserInfo(@NonNull String id, @NonNull String authorization) {
-		Response response = httpClient.target(config.getUserInfoUrl()).path(id).request().header("Authorization", authorization).get();
+	public Optional<UserInfo> findUserInfo(@NonNull String authorization) {
+		Response response = httpClient.target(config.getUserInfoUrl()).request().header("Authorization", authorization).get();
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return Optional.empty();
 		}
