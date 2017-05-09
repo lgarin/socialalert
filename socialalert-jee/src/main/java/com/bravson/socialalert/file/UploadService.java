@@ -13,6 +13,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.POST;
@@ -30,7 +31,9 @@ import com.bravson.socialalert.file.media.MediaFileProcessor;
 import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.file.picture.PictureFileProcessor;
 import com.bravson.socialalert.file.store.FileStore;
+import com.bravson.socialalert.file.video.AsyncVideoPreviewEvent;
 import com.bravson.socialalert.file.video.SnapshotVideoFileProcessor;
+import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 
 @Path("/upload")
 @ManagedBean
@@ -52,6 +55,9 @@ public class UploadService {
 	private FileStore fileStore;
 	
 	@Inject
+	private AsyncRepository asyncRepository;
+	
+	@Inject
 	private Principal principal;
 	
 	@Inject
@@ -60,14 +66,14 @@ public class UploadService {
 	@POST
 	@Consumes(MediaFileConstants.JPG_MEDIA_TYPE)
 	@Path("/picture")
-	public Response uploadPicture(File inputFile, @Context HttpServletRequest request) throws IOException, ServletException {
+	public Response uploadPicture(@NotNull File inputFile, @Context HttpServletRequest request) throws IOException, ServletException {
 		return uploadMedia(inputFile, request, pictureFileProcessor);
 	}
 	
 	@POST
 	@Consumes({MediaFileConstants.MOV_MEDIA_TYPE, MediaFileConstants.MP4_MEDIA_TYPE})
 	@Path("/video")
-	public Response uploadVideo(File inputFile, @Context HttpServletRequest request) throws IOException, ServletException {
+	public Response uploadVideo(@NotNull File inputFile, @Context HttpServletRequest request) throws IOException, ServletException {
 		return uploadMedia(inputFile, request, videoFileProcessor);
 	}
 
@@ -92,15 +98,15 @@ public class UploadService {
 		fileStore.storeMedia(inputFile, fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileFormat);
 		FileEntity fileEntity = mediaRepository.storeMedia(fileMetadata, mediaMetadata);
 		
-		File previewFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), processor.getPreviewFormat());
-		processor.createPreview(inputFile, previewFile);
-		fileEntity.addVariant(buildFileMetadata(previewFile, processor.getPreviewFormat(), request));
-		
 		File thumbnailFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), processor.getThumbnailFormat()); 
 		processor.createThumbnail(inputFile, thumbnailFile);
 		fileEntity.addVariant(buildFileMetadata(thumbnailFile, processor.getThumbnailFormat(), request));
 		
-		// TODO trigger async processing
+		File previewFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), processor.getPreviewFormat());
+		processor.createPreview(inputFile, previewFile);
+		fileEntity.addVariant(buildFileMetadata(previewFile, processor.getPreviewFormat(), request));
+		
+		asyncRepository.fireAsync(new AsyncVideoPreviewEvent(fileEntity.getFileUri()));
 		
 		return Response.created(createDownloadUri(fileMetadata)).build();
 	}
@@ -118,7 +124,7 @@ public class UploadService {
 		return FileMetadata.builder()
 			.md5(fileStore.computeMd5Hex(file))
 			.timestamp(Instant.now())
-			.contentLength(request.getContentLengthLong())
+			.contentLength(file.length())
 			.userId(principal.getName())
 			.ipAddress(request.getRemoteAddr())
 			.fileFormat(fileFormat)

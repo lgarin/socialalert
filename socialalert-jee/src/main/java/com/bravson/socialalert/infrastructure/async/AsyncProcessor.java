@@ -11,6 +11,8 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 
+import org.slf4j.Logger;
+
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName  = "connectionFactoryJndiName", propertyValue = AsyncConstants.QUEUE_CONNECTION_FACTORY),
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"), 
@@ -24,15 +26,29 @@ public class AsyncProcessor implements MessageListener {
 	@Inject 
 	@Any Event<AsyncEvent> eventTrigger;
 	
+	@Inject
+	Logger logger;
+	
 	@Override
 	public void onMessage(Message message) {
+		String messageId = getMessageId(message);
 		try {
+			logger.info("Processing message {}", messageId);
 			AsyncEvent event = message.getBody(AsyncEvent.class);
 			eventTrigger.fire(event);
-		} catch (JMSException e) {
+		} catch (Exception e) {
 			context.setRollbackOnly();
+			logger.error("Failed async processing for message " + messageId, e);
 		}
 		
+	}
+
+	private static String getMessageId(Message message) {
+		try {
+			return message.getJMSMessageID();
+		} catch (JMSException e1) {
+			return "<unknown>";
+		}
 	}
 
 }

@@ -31,7 +31,7 @@ public abstract class BaseServiceTest extends Assertions {
 	public static WebArchive createDeployment() throws IOException {
 		try {
 			FileUtils.deleteDirectory(baseDirectory);
-		} catch (IllegalArgumentException e) {
+		} catch (Exception e) {
 			// ignore
 		}
 		
@@ -65,8 +65,8 @@ public abstract class BaseServiceTest extends Assertions {
 		return createRequest(path, mediaType).header("Authorization", token);
 	}
 	
-	protected String requestLoginToken(String email, String password) {
-		Form form = new Form("userId", "test@test.com").param("password", "123");
+	protected String requestLoginToken(String userId, String password) {
+		Form form = new Form("userId", userId).param("password", password);
 		return createRequest("user/login", MediaType.TEXT_PLAIN).post(Entity.form(form)).readEntity(String.class);
 	}
 	

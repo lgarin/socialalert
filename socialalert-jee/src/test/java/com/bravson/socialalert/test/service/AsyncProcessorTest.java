@@ -40,7 +40,7 @@ public class AsyncProcessorTest extends BaseServiceTest {
 	
 	@Test
 	public void fireAsyncEvent() throws InterruptedException {
-		repository.fireAsync(new AsyncVideoPreviewEvent());
+		repository.fireAsync(new AsyncVideoPreviewEvent("test"));
 		observer.waitEvent();
 	}
 }

@@ -13,6 +13,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
+
+import org.hibernate.validator.constraints.NotEmpty;
+
 import javax.ws.rs.core.StreamingOutput;
 
 import com.bravson.socialalert.UriConstants;
@@ -55,19 +58,19 @@ public class FileService {
 
 	@GET
 	@Path("/download/{fileUri : .+}")
-	public Response download(@PathParam("fileUri") String fileUri) throws IOException {
+	public Response download(@NotEmpty @PathParam("fileUri") String fileUri) throws IOException {
 		return streamFile(fileUri, MediaSizeVariant.MEDIA);
 	}
 	
 	@GET
 	@Path("/preview/{fileUri : .+}")
-	public Response preview(@PathParam("fileUri") String fileUri) throws IOException {
+	public Response preview(@NotEmpty @PathParam("fileUri") String fileUri) throws IOException {
 		return streamFile(fileUri, MediaSizeVariant.PREVIEW);
 	}
 	
 	@GET
 	@Path("/thumbnail/{fileUri : .+}")
-	public Response thumbnail(@PathParam("fileUri") String fileUri) throws IOException {
+	public Response thumbnail(@NotEmpty @PathParam("fileUri") String fileUri) throws IOException {
 		return streamFile(fileUri, MediaSizeVariant.THUMBNAIL);
 	}
 }

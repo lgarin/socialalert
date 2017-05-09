@@ -22,7 +22,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
 @Path("/user")
@@ -41,7 +40,7 @@ public class UserService {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/login")
 	@PermitAll
-	public Response login(@NotEmpty @Email @FormParam("userId") String userId, @NotEmpty @FormParam("password") String password) {
+	public Response login(@NotEmpty @FormParam("userId") String userId, @NotEmpty @FormParam("password") String password) {
 		String accessToken = authenticationRepository.requestAccessToken(userId, password).orElseThrow(() -> new WebApplicationException(Status.UNAUTHORIZED));
 		return Response.status(Status.OK).entity(accessToken).build();
 	}

@@ -10,12 +10,14 @@ import javax.jms.JMSContext;
 import javax.transaction.Transactional;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 @ManagedBean
 @Transactional
 @ApplicationScoped
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class AsyncRepository {
 
 	@Inject
@@ -25,11 +27,6 @@ public class AsyncRepository {
     @Resource(mappedName = AsyncConstants.ASYNC_PROCESSOR_QUEUE)
     private Destination destination;
     
-    public AsyncRepository(JMSContext context, Destination destination) {
-		this.context = context;
-		this.destination = destination;
-	}
-
 	public void fireAsync(AsyncEvent event) {
 		context.createProducer().send(destination, event);
     }

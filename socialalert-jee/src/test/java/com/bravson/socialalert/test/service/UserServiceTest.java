@@ -35,8 +35,8 @@ public class UserServiceTest extends BaseServiceTest {
 	
 	@Test
 	@RunAsClient
-	public void loginWithInvalidEmail() throws Exception {
-		Form form = new Form("userId", "test").param("password", "abc");
+	public void loginWithEmptyUserId() throws Exception {
+		Form form = new Form("userId", "").param("password", "abc");
 		Response response = createRequest("/user/login", MediaType.TEXT_PLAIN).post(Entity.form(form));
 		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 	}
