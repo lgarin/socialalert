@@ -70,7 +70,7 @@ public interface VideoUtil {
 		return false;
 	}
 
-	static DemuxerStream findStream(Demuxer demuxer, MediaDescriptor.Type type) throws IOException {
+	static DemuxerStream getStream(Demuxer demuxer, MediaDescriptor.Type type) throws IOException {
 		try {
 			int ns = demuxer.getNumStreams();
 			for (int i = 0; i < ns; i++) {
@@ -80,7 +80,7 @@ public interface VideoUtil {
 					return stream;
 				}
 			}
-			return null;
+			throw new IOException("Cannot find stream " + type.name() + " in " + demuxer.getURL());
 		} catch (InterruptedException e) {
 			throw new IOException(e);
 		}

@@ -58,11 +58,11 @@ public class VideoFileProcessor extends BaseVideoFileProcessor {
 		
 		try {
 			demuxer.open(sourceFile.toString(), null, false, true, null, null);
-			DemuxerStream videoStream = VideoUtil.findStream(demuxer, MediaDescriptor.Type.MEDIA_VIDEO);
+			DemuxerStream videoStream = VideoUtil.getStream(demuxer, MediaDescriptor.Type.MEDIA_VIDEO);
 			Decoder videoDecoder = videoStream.getDecoder();
 			videoDecoder.open(null, null);
 			
-			DemuxerStream audioStream = VideoUtil.findStream(demuxer, MediaDescriptor.Type.MEDIA_AUDIO);
+			DemuxerStream audioStream = VideoUtil.getStream(demuxer, MediaDescriptor.Type.MEDIA_AUDIO);
 			Decoder audioDecoder = audioStream.getDecoder();
 			audioDecoder.open(null, null);
 			

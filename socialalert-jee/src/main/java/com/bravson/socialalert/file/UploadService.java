@@ -108,7 +108,9 @@ public class UploadService {
 		processor.createPreview(inputFile, previewFile);
 		fileEntity.addVariant(buildFileMetadata(previewFile, processor.getPreviewFormat(), request));
 		
-		asyncRepository.fireAsync(new AsyncVideoPreviewEvent(fileEntity.getFileUri()));
+		if (MediaFileFormat.VIDEO_SET.contains(fileFormat)) {
+			asyncRepository.fireAsync(new AsyncVideoPreviewEvent(fileEntity.getFileUri()));
+		}
 		
 		return Response.created(createDownloadUri(fileMetadata)).build();
 	}

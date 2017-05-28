@@ -2,10 +2,8 @@
 <jboss-deployment-structure>
    <deployment>
       <dependencies>
-      	 <module name="org.hibernate" slot="5.1" services="export" />
          <module name="org.hibernate.ogm" slot="5.1" services="export" />
-         <module name="org.hibernate.ogm.infinispan" slot="5.1" services="export" />
-         <module name="org.infinispan" slot="ispn-8.2" services="export"/>
+         <module name="org.hibernate.ogm.neo4j" slot="5.1" services="export" />
       </dependencies>
    </deployment>
 </jboss-deployment-structure>

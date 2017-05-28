@@ -14,6 +14,7 @@ import com.bravson.socialalert.file.FileMetadata;
 import com.bravson.socialalert.file.FileRepository;
 import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.store.FileStore;
+import com.bravson.socialalert.infrastructure.log.Logged;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,10 +25,11 @@ import lombok.SneakyThrows;
 @Transactional
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Logged
 public class AsyncVideoPreviewProcessor {
 
 	@Inject
-	private FileRepository mediaRepository;
+	private FileRepository fileRepository;
 	
 	@Inject
 	private FileStore fileStore;
@@ -36,7 +38,7 @@ public class AsyncVideoPreviewProcessor {
 	private VideoFileProcessor videoFileProcessor;
 	
 	public void onAsyncEvent(@Observes AsyncVideoPreviewEvent event) {
-		mediaRepository.findFile(event.getFileUri()).ifPresent(this::createPreview);
+		fileRepository.findFile(event.getFileUri()).ifPresent(this::createPreview);
 	}
 	
 	@SneakyThrows(IOException.class)

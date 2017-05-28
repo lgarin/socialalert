@@ -25,15 +25,22 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public abstract class BaseServiceTest extends Assertions {
 
-	private static File baseDirectory = new File("C:/Temp/xtra");
+	private static File baseMediaDirectory = new File("C:/Temp/xtra");
+	private static File baseDatabaseDirectory = new File("neo4j.db");
+	private static File baseSearchIndexDirectory = new File("lucene.idx");
+	
+	private static void cleanDirectories(File... directories) {
+		for (File directory : directories) {
+			try {
+				FileUtils.deleteDirectory(directory);
+			} catch (IOException e) {
+			}
+		}
+	}
 	
 	@Deployment(testable = true)
 	public static WebArchive createDeployment() throws IOException {
-		try {
-			FileUtils.deleteDirectory(baseDirectory);
-		} catch (Exception e) {
-			// ignore
-		}
+		cleanDirectories(baseSearchIndexDirectory, baseDatabaseDirectory, baseMediaDirectory);
 		
 		File[] libs = Maven.resolver()  
                 .loadPomFromFile("pom.xml").importCompileAndRuntimeDependencies().resolve().withTransitivity().as(File.class);
@@ -43,9 +50,9 @@ public abstract class BaseServiceTest extends Assertions {
 				.addPackages(true, "org/assertj")
 				.addAsResource("logo.jpg")
 				.addAsLibraries(libs)
-				.addAsResource(new File("src/main/webapp/META-INF/jboss-logging.properties"), "META-INF/jboss-logging.properties")
-				.addAsResource(new File("src/main/webapp/META-INF/persistence.xml"), "META-INF/persistence.xml")
-				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/web.xml"), "web.xml")
+				.addAsResource(new File("src/main/resources/META-INF/jboss-logging.properties"), "META-INF/jboss-logging.properties")
+				.addAsResource(new File("src/main/resources/META-INF/persistence.xml"), "META-INF/persistence.xml")
+				.setWebXML(new File("src/main/webapp/WEB-INF/web.xml"))
 				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/beans.xml"), "beans.xml")
 				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/keycloak.json"), "keycloak.json")
 				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/jboss-deployment-structure.xml"), "jboss-deployment-structure.xml");

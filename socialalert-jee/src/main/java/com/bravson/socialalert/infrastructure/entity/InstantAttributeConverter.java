@@ -1,21 +1,21 @@
 package com.bravson.socialalert.infrastructure.entity;
 
-import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Date;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
 @Converter
-public class InstantAttributeConverter implements AttributeConverter<Instant, Timestamp> {
+public class InstantAttributeConverter implements AttributeConverter<Instant, Date> {
 	
     @Override
-    public Timestamp convertToDatabaseColumn(Instant instant) {
-    	return instant == null ? null : new Timestamp(instant.toEpochMilli());
+    public Date convertToDatabaseColumn(Instant instant) {
+    	return instant == null ? null : new Date(instant.toEpochMilli());
     }
 
     @Override
-    public Instant convertToEntityAttribute(Timestamp sqlTimestamp) {
-    	return sqlTimestamp == null ? null : sqlTimestamp.toInstant();
+    public Instant convertToEntityAttribute(Date timestamp) {
+    	return timestamp == null ? null : timestamp.toInstant();
     }
 }

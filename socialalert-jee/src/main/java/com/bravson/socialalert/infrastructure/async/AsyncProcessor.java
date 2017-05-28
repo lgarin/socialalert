@@ -14,7 +14,7 @@ import javax.jms.MessageListener;
 import org.slf4j.Logger;
 
 @MessageDriven(activationConfig = {
-		@ActivationConfigProperty(propertyName  = "connectionFactoryJndiName", propertyValue = AsyncConstants.QUEUE_CONNECTION_FACTORY),
+		@ActivationConfigProperty(propertyName  = "connectionFactoryLookup", propertyValue = AsyncConstants.QUEUE_CONNECTION_FACTORY),
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"), 
         @ActivationConfigProperty(propertyName = "destination", propertyValue = AsyncConstants.ASYNC_PROCESSOR_QUEUE)
 })

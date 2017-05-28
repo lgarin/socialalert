@@ -89,7 +89,7 @@ public abstract class BaseVideoFileProcessor implements MediaFileProcessor {
 		Demuxer demuxer = Demuxer.make();
 		try {
 			demuxer.open(sourceFile.toString(), null, false, true, null, null);
-			DemuxerStream stream = VideoUtil.findStream(demuxer, MediaDescriptor.Type.MEDIA_VIDEO);
+			DemuxerStream stream = VideoUtil.getStream(demuxer, MediaDescriptor.Type.MEDIA_VIDEO);
 			MediaPicture picture = buildPicture(demuxer, stream, config.getSnapshotDelay());
 			MediaPictureConverter converter = MediaPictureConverterFactory.createConverter(MediaPictureConverterFactory.HUMBLE_BGR_24, picture);
 			return converter.toImage(null, picture);
@@ -142,12 +142,10 @@ public abstract class BaseVideoFileProcessor implements MediaFileProcessor {
 		    
 		    result.duration(Duration.ofSeconds(demuxer.getDuration() / Global.DEFAULT_PTS_PER_SECOND));
 		    
-		    DemuxerStream stream = VideoUtil.findStream(demuxer, MediaDescriptor.Type.MEDIA_VIDEO);
-		    if (stream != null) {
-		    	Decoder decoder = stream.getDecoder();
-		    	result.height(decoder.getHeight());
-	        	result.width(decoder.getWidth());
-		    }
+		    DemuxerStream stream = VideoUtil.getStream(demuxer, MediaDescriptor.Type.MEDIA_VIDEO);
+		    Decoder decoder = stream.getDecoder();
+		    result.height(decoder.getHeight());
+	        result.width(decoder.getWidth());
 		} catch (InterruptedException e) {
 			throw new IOException(e);
 		} finally {

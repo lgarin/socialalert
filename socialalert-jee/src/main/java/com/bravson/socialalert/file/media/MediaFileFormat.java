@@ -29,6 +29,8 @@ public enum MediaFileFormat implements FileFormat {
 	
 	private static EnumSet<MediaFileFormat> MEDIA_SET = EnumSet.of(MEDIA_MOV, MEDIA_MP4, MEDIA_JPG);
 	
+	public static EnumSet<MediaFileFormat> VIDEO_SET = EnumSet.of(MEDIA_MOV, MEDIA_MP4, PREVIEW_MP4);
+	
 	public static Optional<MediaFileFormat> fromMediaContentType(@NonNull String contentType) {
 		return MEDIA_SET.stream().filter(f -> f.getContentType().equals(contentType)).findAny();
 	}
