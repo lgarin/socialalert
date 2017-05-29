@@ -80,15 +80,12 @@ public class FileEntity implements Serializable {
 		fileVariants.add(metadata);
 		return true;
 	}
-	
-	public boolean replaceVariant(@NonNull FileMetadata metadata) {
-		if (!fileVariants.removeIf(v -> v.getSizeVariant() == metadata.getSizeVariant())) {
-			return false;
-		}
-		return addVariant(metadata);
-	}
-	
+
 	public FileMetadata getMediaFileMetadata() {
 		return findFileMetadata(MediaSizeVariant.MEDIA).orElseThrow(IllegalStateException::new);
+	}
+
+	public boolean isTemporary(MediaFileFormat format) {
+		return getMediaFileMetadata().isVideo() && format == MediaFileFormat.PREVIEW_JPG;
 	}
 }

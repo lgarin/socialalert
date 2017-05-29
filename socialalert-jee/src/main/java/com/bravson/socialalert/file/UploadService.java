@@ -7,7 +7,6 @@ import java.security.Principal;
 import java.time.Instant;
 import java.util.Optional;
 
-import javax.annotation.ManagedBean;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
@@ -18,7 +17,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -37,7 +35,6 @@ import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 import com.bravson.socialalert.infrastructure.log.Logged;
 
 @Path("/upload")
-@ManagedBean
 @RolesAllowed("user")
 @Logged
 public class UploadService {
@@ -64,26 +61,29 @@ public class UploadService {
 	
 	@Inject
 	private Logger logger;
+	
+	@Inject
+	private HttpServletRequest request;
 
 	@POST
 	@Consumes(MediaFileConstants.JPG_MEDIA_TYPE)
 	@Path("/picture")
-	public Response uploadPicture(@NotNull File inputFile, @Context HttpServletRequest request) throws IOException, ServletException {
-		return uploadMedia(inputFile, request, pictureFileProcessor);
+	public Response uploadPicture(@NotNull File inputFile) throws IOException, ServletException {
+		return uploadMedia(inputFile, pictureFileProcessor);
 	}
 	
 	@POST
 	@Consumes({MediaFileConstants.MOV_MEDIA_TYPE, MediaFileConstants.MP4_MEDIA_TYPE})
 	@Path("/video")
-	public Response uploadVideo(@NotNull File inputFile, @Context HttpServletRequest request) throws IOException, ServletException {
-		return uploadMedia(inputFile, request, videoFileProcessor);
+	public Response uploadVideo(@NotNull File inputFile) throws IOException, ServletException {
+		return uploadMedia(inputFile, videoFileProcessor);
 	}
 
 	private URI createDownloadUri(FileMetadata fileMetadata) {
 		return URI.create(UriConstants.FILE_SERVICE_URI + "/download/" + fileMetadata.buildFileUri());
 	}
 	
-	private Response uploadMedia(File inputFile, HttpServletRequest request, MediaFileProcessor processor) throws IOException, ServletException {
+	private Response uploadMedia(File inputFile, MediaFileProcessor processor) throws IOException, ServletException {
 		if (request.getContentLengthLong() > maxUploadSize) {
 			return Response.status(Status.REQUEST_ENTITY_TOO_LARGE).build();
 		}
@@ -91,7 +91,7 @@ public class UploadService {
 		MediaMetadata mediaMetadata = buildMediaMetadata(inputFile, processor).orElseThrow(NotSupportedException::new);
 		MediaFileFormat fileFormat = MediaFileFormat.fromMediaContentType(request.getContentType()).orElseThrow(NotSupportedException::new);
 		
-		FileMetadata fileMetadata = buildFileMetadata(inputFile, fileFormat, request);
+		FileMetadata fileMetadata = buildFileMetadata(inputFile, fileFormat);
 		
 		if (mediaRepository.findFile(fileMetadata.buildFileUri()).isPresent()) {
 			return Response.status(Status.CREATED).location(createDownloadUri(fileMetadata)).build();
@@ -102,14 +102,14 @@ public class UploadService {
 		
 		File thumbnailFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), processor.getThumbnailFormat()); 
 		processor.createThumbnail(inputFile, thumbnailFile);
-		fileEntity.addVariant(buildFileMetadata(thumbnailFile, processor.getThumbnailFormat(), request));
+		fileEntity.addVariant(buildFileMetadata(thumbnailFile, processor.getThumbnailFormat()));
 		
 		File previewFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), processor.getPreviewFormat());
 		processor.createPreview(inputFile, previewFile);
-		fileEntity.addVariant(buildFileMetadata(previewFile, processor.getPreviewFormat(), request));
+		fileEntity.addVariant(buildFileMetadata(previewFile, processor.getPreviewFormat()));
 		
-		if (MediaFileFormat.VIDEO_SET.contains(fileFormat)) {
-			asyncRepository.fireAsync(new AsyncVideoPreviewEvent(fileEntity.getFileUri()));
+		if (fileMetadata.isVideo()) {
+			asyncRepository.fireAsync(AsyncVideoPreviewEvent.of(fileEntity.getFileUri()));
 		}
 		
 		return Response.created(createDownloadUri(fileMetadata)).build();
@@ -124,7 +124,7 @@ public class UploadService {
 		}
 	}
 	
-	private FileMetadata buildFileMetadata(File file, MediaFileFormat fileFormat, HttpServletRequest request) throws IOException {
+	private FileMetadata buildFileMetadata(File file, MediaFileFormat fileFormat) throws IOException {
 		return FileMetadata.builder()
 			.md5(fileStore.computeMd5Hex(file))
 			.timestamp(Instant.now())

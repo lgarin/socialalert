@@ -1,6 +1,5 @@
 package com.bravson.socialalert.user;
 
-import javax.annotation.ManagedBean;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
@@ -25,7 +24,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 import com.bravson.socialalert.infrastructure.log.Logged;
 
 @Path("/user")
-@ManagedBean
 @RolesAllowed("user")
 @Logged
 public class UserService {

@@ -61,4 +61,8 @@ public class FileMetadata {
 	public String getContentType() {
 		return fileFormat.getContentType();
 	}
+	
+	public boolean isVideo() {
+		return MediaFileFormat.VIDEO_SET.contains(fileFormat);
+	}
 }

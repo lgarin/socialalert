@@ -47,6 +47,11 @@
 		<env-entry-value>4000000</env-entry-value>
 	</env-entry>
 	<env-entry>
+		<env-entry-name>mediaCacheMaxAge</env-entry-name>
+		<env-entry-type>java.lang.Integer</env-entry-type>
+		<env-entry-value>600</env-entry-value>
+	</env-entry>
+	<env-entry>
 		<env-entry-name>mediaBaseDirectory</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
 		<env-entry-value>C:\Temp\xtra</env-entry-value>

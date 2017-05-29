@@ -18,14 +18,15 @@ import lombok.NonNull;
 
 @AllArgsConstructor
 @Getter
-public enum MediaFileFormat implements FileFormat {
+public enum MediaFileFormat implements FileFormat, Comparable<MediaFileFormat> {
 
-	MEDIA_MOV(MOV_MEDIA_TYPE, "." + MOV_EXTENSION, MediaSizeVariant.MEDIA),
-	MEDIA_MP4(MP4_MEDIA_TYPE, "." + MP4_EXTENSION, MediaSizeVariant.MEDIA),
-	MEDIA_JPG(JPG_MEDIA_TYPE, "." + JPG_EXTENSION, MediaSizeVariant.MEDIA),
-	PREVIEW_MP4(MP4_MEDIA_TYPE, "." + MP4_EXTENSION, MediaSizeVariant.PREVIEW),
+	// values are sorted by worst to best quality
+	THUMBNAIL_JPG(JPG_MEDIA_TYPE, "." + JPG_EXTENSION, MediaSizeVariant.THUMBNAIL),
 	PREVIEW_JPG(JPG_MEDIA_TYPE, "." + JPG_EXTENSION, MediaSizeVariant.PREVIEW),
-	THUMBNAIL_JPG(JPG_MEDIA_TYPE, "." + JPG_EXTENSION, MediaSizeVariant.THUMBNAIL);
+	PREVIEW_MP4(MP4_MEDIA_TYPE, "." + MP4_EXTENSION, MediaSizeVariant.PREVIEW),
+	MEDIA_JPG(JPG_MEDIA_TYPE, "." + JPG_EXTENSION, MediaSizeVariant.MEDIA),
+	MEDIA_MOV(MOV_MEDIA_TYPE, "." + MOV_EXTENSION, MediaSizeVariant.MEDIA),
+	MEDIA_MP4(MP4_MEDIA_TYPE, "." + MP4_EXTENSION, MediaSizeVariant.MEDIA);
 	
 	private static EnumSet<MediaFileFormat> MEDIA_SET = EnumSet.of(MEDIA_MOV, MEDIA_MP4, MEDIA_JPG);
 	
