@@ -1,7 +1,10 @@
 package com.bravson.socialalert.user;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.annotation.ManagedBean;
 import javax.annotation.Resource;
+import javax.cache.expiry.Duration;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -32,4 +35,11 @@ public class AuthenticationConfiguration {
 	
 	@Resource(name="clientSecret")
 	String clientSecret;
+	
+	@Resource(name="sessionTimeout")
+	Integer sessionTimeout;
+	
+	public Duration getSessionDuration() {
+		return new Duration(TimeUnit.SECONDS, sessionTimeout);
+	}
 }

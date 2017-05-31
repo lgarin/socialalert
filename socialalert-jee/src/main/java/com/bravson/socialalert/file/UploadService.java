@@ -94,7 +94,7 @@ public class UploadService {
 		FileMetadata fileMetadata = buildFileMetadata(inputFile, fileFormat);
 		
 		if (mediaRepository.findFile(fileMetadata.buildFileUri()).isPresent()) {
-			return Response.status(Status.CREATED).location(createDownloadUri(fileMetadata)).build();
+			return Response.created(createDownloadUri(fileMetadata)).build();
 		}
 		
 		fileStore.storeMedia(inputFile, fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileFormat);
