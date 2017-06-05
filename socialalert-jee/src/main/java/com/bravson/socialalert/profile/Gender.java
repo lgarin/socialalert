@@ -1,4 +1,4 @@
-package com.bravson.socialalert.user;
+package com.bravson.socialalert.profile;
 
 public enum Gender {
 	MALE,

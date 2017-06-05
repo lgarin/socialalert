@@ -11,7 +11,7 @@ public class InstantAttributeConverter implements AttributeConverter<Instant, Da
 	
     @Override
     public Date convertToDatabaseColumn(Instant instant) {
-    	return instant == null ? null : new Date(instant.toEpochMilli());
+    	return instant == null ? null : Date.from(instant);
     }
 
     @Override

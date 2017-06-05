@@ -1,5 +1,7 @@
 package com.bravson.socialalert.user;
 
+import java.time.Instant;
+
 import javax.annotation.ManagedBean;
 import javax.cache.Cache;
 import javax.cache.CacheManager;
@@ -17,17 +19,23 @@ import lombok.NoArgsConstructor;
 @ApplicationScoped
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Logged
-public class UserSessionRepository {
+public class SessionRepository {
 
-	private Cache<String, UserInfo> onlineUserCache;
+	private Cache<String, Instant> onlineUserCache;
 	
 	@Inject 
-	public UserSessionRepository(CacheManager cacheManager, AuthenticationConfiguration authConfig) {
-		MutableConfiguration<String, UserInfo> cacheConfig = new MutableConfiguration<>();
-		cacheConfig.setTypes(String.class, UserInfo.class)
+	public SessionRepository(CacheManager cacheManager, AuthenticationConfiguration authConfig) {
+		MutableConfiguration<String, Instant> cacheConfig = new MutableConfiguration<>();
+		cacheConfig.setTypes(String.class, Instant.class)
 			.setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(authConfig.getSessionDuration()));
 		onlineUserCache = cacheManager.createCache("onlineUserCache", cacheConfig);
 	}
-	
 
+	public void addActiveUser(String userId) {
+		onlineUserCache.put(userId, Instant.now());
+	}
+
+	public boolean isUserActive(String userId) {
+		return onlineUserCache.containsKey(userId);
+	}
 }

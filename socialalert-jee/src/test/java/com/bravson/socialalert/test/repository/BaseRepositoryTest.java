@@ -23,7 +23,9 @@ public class BaseRepositoryTest extends Assertions {
 
     @AfterClass
     public static void closeEntityManagerFactory() {
-        entityManagerFactory.close();
+    	if (entityManagerFactory != null) {
+    		entityManagerFactory.close();
+    	}
     }
 
     @After
