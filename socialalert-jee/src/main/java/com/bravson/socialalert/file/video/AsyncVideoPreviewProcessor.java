@@ -29,13 +29,13 @@ import lombok.SneakyThrows;
 public class AsyncVideoPreviewProcessor {
 
 	@Inject
-	private FileRepository fileRepository;
+	FileRepository fileRepository;
 	
 	@Inject
-	private FileStore fileStore;
+	FileStore fileStore;
 	
 	@Inject
-	private VideoFileProcessor videoFileProcessor;
+	VideoFileProcessor videoFileProcessor;
 	
 	public void onAsyncEvent(@Observes AsyncVideoPreviewEvent event) {
 		fileRepository.findFile(event.getFileUri()).ifPresent(this::createPreview);

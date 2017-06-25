@@ -28,7 +28,7 @@ public class FileRepository {
 
 	@Inject
 	@NonNull
-	private FullTextEntityManager entityManager;
+	FullTextEntityManager entityManager;
 
 	public FileEntity storeMedia(@NonNull FileMetadata fileMetadata, @NonNull MediaMetadata mediaMetadata) {
 		FileEntity entity = FileEntity.of(fileMetadata, mediaMetadata);

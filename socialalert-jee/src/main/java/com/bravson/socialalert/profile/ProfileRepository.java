@@ -25,7 +25,7 @@ public class ProfileRepository {
 
 	@Inject
 	@NonNull
-	private FullTextEntityManager entityManager;
+	FullTextEntityManager entityManager;
 	
 	public Optional<ProfileEntity> findByUserId(String userId) {
 		return Optional.ofNullable(entityManager.find(ProfileEntity.class, userId));

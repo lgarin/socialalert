@@ -1,16 +1,19 @@
-package com.bravson.socialalert.user;
+package com.bravson.socialalert.user.activity;
 
 import java.time.Instant;
 
 import javax.annotation.ManagedBean;
 import javax.cache.Cache;
 import javax.cache.CacheManager;
+import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.AccessedExpiryPolicy;
+import javax.cache.spi.CachingProvider;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.user.AuthenticationConfiguration;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -21,10 +24,12 @@ import lombok.NoArgsConstructor;
 @Logged
 public class SessionRepository {
 
+	private CachingProvider cachingProvider = Caching.getCachingProvider();
+	private CacheManager cacheManager = cachingProvider.getCacheManager();
 	private Cache<String, Instant> onlineUserCache;
 	
 	@Inject 
-	public SessionRepository(CacheManager cacheManager, AuthenticationConfiguration authConfig) {
+	public SessionRepository(AuthenticationConfiguration authConfig) {
 		MutableConfiguration<String, Instant> cacheConfig = new MutableConfiguration<>();
 		cacheConfig.setTypes(String.class, Instant.class)
 			.setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(authConfig.getSessionDuration()));

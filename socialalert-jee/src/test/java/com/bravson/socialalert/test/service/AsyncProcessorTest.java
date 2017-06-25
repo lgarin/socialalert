@@ -37,10 +37,10 @@ public class AsyncProcessorTest extends BaseServiceTest {
 	}
 	
 	@Inject
-	private AsyncRepository repository;
+	AsyncRepository repository;
 	
 	@Inject
-	private AsyncEventObserver observer;
+	AsyncEventObserver observer;
 	
 	@Test
 	public void fireAsyncEvent() throws InterruptedException {

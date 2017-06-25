@@ -5,6 +5,7 @@
          <module name="org.hibernate.ogm" slot="5.1" services="export" />
          <module name="org.hibernate.ogm.neo4j" slot="5.1" services="export" />
          <module name="org.infinispan.jcache" slot="ispn-8.2" services="export" />
+         <module name="org.infinispan.cdi.embedded" slot="ispn-8.2" services="export" />
       </dependencies>
    </deployment>
 </jboss-deployment-structure>

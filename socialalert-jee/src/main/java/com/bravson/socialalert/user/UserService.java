@@ -23,6 +23,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.bravson.socialalert.infrastructure.log.Logged;
 import com.bravson.socialalert.profile.ProfileRepository;
+import com.bravson.socialalert.user.activity.UserActivity;
 
 @Path("/user")
 @RolesAllowed("user")
@@ -34,22 +35,19 @@ public class UserService {
 	
 	@Inject
 	ProfileRepository profileRepository;
-	
-	@Inject
-	SessionRepository sessionRepository;
-	
+
 	@POST
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/login")
 	@PermitAll
+	@UserActivity
 	public Response login(@NotEmpty @FormParam("userId") String userId, @NotEmpty @FormParam("password") String password) {
 		String accessToken = authenticationRepository.requestAccessToken(userId, password).orElseThrow(() -> new WebApplicationException(Status.UNAUTHORIZED));
 		if (!profileRepository.findByUserId(userId).isPresent()) {
 			UserInfo userInfo = authenticationRepository.findUserInfo(accessToken).orElseThrow(NotFoundException::new);
 			profileRepository.createProfile(userId, userInfo.getUsername(), userInfo.getCreatedTimestamp());
 		}
-		sessionRepository.addActiveUser(userId);
 		return Response.status(Status.OK).entity(accessToken).build();
 	}
 	
@@ -74,6 +72,7 @@ public class UserService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/current")
+	@UserActivity
 	public Response current(@NotEmpty @HeaderParam("Authorization") String authorization) {
 		UserInfo userInfo = authenticationRepository.findUserInfo(authorization).orElseThrow(NotFoundException::new);
 		return Response.status(Status.OK).entity(userInfo).build();

@@ -19,23 +19,23 @@ import lombok.Setter;
 public class MediaConfiguration {
 
 	@Resource(name="videoSnapshotDelay")
-	private long snapshotDelay;
+	long snapshotDelay;
 	
 	@Resource(name="mediaThumbnailHeight")
-	private int thumbnailHeight;
+	int thumbnailHeight;
 	
 	@Resource(name="mediaThumbnailWidth")
-	private int thumbnailWidth;
+	int thumbnailWidth;
 	
 	@Resource(name="mediaPreviewHeight")
-	private int previewHeight;
+	int previewHeight;
 	
 	@Resource(name="mediaPreviewWidth")
-	private int previewWidth;
+	int previewWidth;
 	
 	@Resource(name="mediaWatermarkFile")
-	private String watermarkFile;
+	String watermarkFile;
 	
 	@Resource(name="videoLibraryPath")
-	private String videoLibraryPath;
+	String videoLibraryPath;
 }

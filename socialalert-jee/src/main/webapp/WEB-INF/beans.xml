@@ -4,5 +4,6 @@
 	
 	<interceptors>
 	    <class>com.bravson.socialalert.infrastructure.log.LoggedInterceptor</class>
+	    <class>com.bravson.socialalert.user.activity.UserActivityInterceptor</class>
 	</interceptors>
 </beans>

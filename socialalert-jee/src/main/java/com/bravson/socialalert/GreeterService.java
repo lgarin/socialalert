@@ -10,14 +10,20 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.user.activity.SessionRepository;
+import com.bravson.socialalert.user.activity.UserActivity;
 
 @Path("/greeter")
 @RolesAllowed("user")
 @Logged
+@UserActivity
 public class GreeterService {
 
 	@Inject
-	private Principal principal;
+	Principal principal;
+	
+	@Inject
+	SessionRepository sessionRepository;
 	
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
@@ -25,6 +31,9 @@ public class GreeterService {
 	public String hello() {
 		if (principal == null) {
 			return "hello";
+		}
+		if (!sessionRepository.isUserActive(principal.getName())) {
+			throw new RuntimeException("User not active");
 		}
 		return "hello " + principal;
 	}

@@ -33,37 +33,40 @@ import com.bravson.socialalert.file.video.AsyncVideoPreviewEvent;
 import com.bravson.socialalert.file.video.SnapshotVideoFileProcessor;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.user.activity.UserActivity;
 
 @Path("/upload")
 @RolesAllowed("user")
 @Logged
+@UserActivity
 public class UploadService {
+	
 	@Resource(name="maxUploadSize")
-	private long maxUploadSize;
+	long maxUploadSize;
 	
 	@Inject
-	private FileRepository mediaRepository;
+	FileRepository mediaRepository;
 	
 	@Inject
-	private PictureFileProcessor pictureFileProcessor;
+	PictureFileProcessor pictureFileProcessor;
 	
 	@Inject
-	private SnapshotVideoFileProcessor videoFileProcessor;
+	SnapshotVideoFileProcessor videoFileProcessor;
 	
 	@Inject
-	private FileStore fileStore;
+	FileStore fileStore;
 	
 	@Inject
-	private AsyncRepository asyncRepository;
+	AsyncRepository asyncRepository;
 	
 	@Inject
-	private Principal principal;
+	Principal principal;
 	
 	@Inject
-	private Logger logger;
+	Logger logger;
 	
 	@Inject
-	private HttpServletRequest request;
+	HttpServletRequest request;
 
 	@POST
 	@Consumes(MediaFileConstants.JPG_MEDIA_TYPE)

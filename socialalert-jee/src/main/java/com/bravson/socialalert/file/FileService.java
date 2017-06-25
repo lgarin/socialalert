@@ -26,23 +26,25 @@ import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaSizeVariant;
 import com.bravson.socialalert.file.store.FileStore;
 import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.user.activity.UserActivity;
 
 @Path("/" + UriConstants.FILE_SERVICE_URI)
 @RolesAllowed("user")
 @Logged
+@UserActivity
 public class FileService {
 
 	@Resource(name="mediaCacheMaxAge")
-	private int mediaCacheMaxAge;
+	int mediaCacheMaxAge;
 	
 	@Inject
-	private FileRepository mediaRepository;
+	FileRepository mediaRepository;
 
 	@Inject
-	private FileStore fileStore;
+	FileStore fileStore;
 	
 	@Context
-	private Request request;
+	Request request;
 
 	private Response streamFile(String fileUri, MediaSizeVariant sizeVariant) throws IOException {
 		FileEntity fileEntity = mediaRepository.findFile(fileUri).orElse(null);

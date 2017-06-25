@@ -20,10 +20,10 @@ public class AsyncRepository {
 
 	@Inject
 	@JMSConnectionFactory(AsyncConstants.QUEUE_CONNECTION_FACTORY)
-    private JMSContext context;
+    JMSContext context;
 
     @Resource(mappedName = AsyncConstants.ASYNC_PROCESSOR_QUEUE)
-    private Destination destination;
+    Destination destination;
     
 	public void fireAsync(AsyncEvent event) {
 		context.createProducer().send(destination, event);
