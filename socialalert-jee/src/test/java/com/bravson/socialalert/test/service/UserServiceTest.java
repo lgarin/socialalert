@@ -1,9 +1,6 @@
 package com.bravson.socialalert.test.service;
 
-import static org.junit.Assert.assertEquals;
-
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -11,6 +8,8 @@ import javax.ws.rs.core.Response.Status;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.junit.Test;
 
+import com.bravson.socialalert.user.LoginParameter;
+import com.bravson.socialalert.user.LoginResponse;
 import com.bravson.socialalert.user.UserInfo;
 
 public class UserServiceTest extends BaseServiceTest {
@@ -18,42 +17,43 @@ public class UserServiceTest extends BaseServiceTest {
 	@Test
 	@RunAsClient
 	public void loginWithExistingUser() throws Exception {
-		Form form = new Form("userId", "test@test.com").param("password", "123");
-		Response response = createRequest("/user/login", MediaType.TEXT_PLAIN).post(Entity.form(form));
+		LoginParameter param = new LoginParameter("test@test.com", "123");
+		Response response = createRequest("/user/login", MediaType.APPLICATION_JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
-		assertEquals(Status.OK.getStatusCode(), response.getStatus());
-		assertThat(response.readEntity(String.class).length()).isGreaterThan(64);
+		LoginResponse result = response.readEntity(LoginResponse.class); 
+		assertThat(result).isNotNull();
+		assertThat(result.getAccessToken()).startsWith("Bearer ").matches(s -> s.length() > 64);
 	}
 	
 	@Test
 	@RunAsClient
 	public void loginWithEmptyPassword() throws Exception {
-		Form form = new Form("userId", "test@test.com").param("password", "");
-		Response response = createRequest("/user/login", MediaType.TEXT_PLAIN).post(Entity.form(form));
+		LoginParameter param = new LoginParameter("test@test.com", "");
+		Response response = createRequest("/user/login", MediaType.APPLICATION_JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 	}
 	
 	@Test
 	@RunAsClient
 	public void loginWithEmptyUserId() throws Exception {
-		Form form = new Form("userId", "").param("password", "abc");
-		Response response = createRequest("/user/login", MediaType.TEXT_PLAIN).post(Entity.form(form));
+		LoginParameter param = new LoginParameter("", "abc");
+		Response response = createRequest("/user/login", MediaType.APPLICATION_JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 	}
 	
 	@Test
 	@RunAsClient
 	public void loginWithInvalidPassword() throws Exception {
-		Form form = new Form("userId", "test@test.com").param("password", "abc");
-		Response response = createRequest("/user/login", MediaType.TEXT_PLAIN).post(Entity.form(form));
+		LoginParameter param = new LoginParameter("test@test.com", "abc");
+		Response response = createRequest("/user/login", MediaType.APPLICATION_JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
 	
 	@Test
 	@RunAsClient
 	public void loginWithUnknownUser() throws Exception {
-		Form form = new Form("userId", "xyz@test.com").param("password", "abc");
-		Response response = createRequest("/user/login", MediaType.TEXT_PLAIN).post(Entity.form(form));
+		LoginParameter param = new LoginParameter("xyz@test.com", "abc");
+		Response response = createRequest("/user/login", MediaType.APPLICATION_JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
 	

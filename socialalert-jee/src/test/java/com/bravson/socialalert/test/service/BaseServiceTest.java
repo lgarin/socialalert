@@ -8,7 +8,6 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -21,6 +20,9 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.runner.RunWith;
+
+import com.bravson.socialalert.user.LoginParameter;
+import com.bravson.socialalert.user.LoginResponse;
 
 @RunWith(Arquillian.class)
 public abstract class BaseServiceTest extends Assertions {
@@ -74,8 +76,9 @@ public abstract class BaseServiceTest extends Assertions {
 	}
 	
 	protected String requestLoginToken(String userId, String password) {
-		Form form = new Form("userId", userId).param("password", password);
-		return createRequest("user/login", MediaType.TEXT_PLAIN).post(Entity.form(form)).readEntity(String.class);
+		LoginParameter param = new LoginParameter(userId,password);
+		LoginResponse response = createRequest("user/login", MediaType.APPLICATION_JSON).post(Entity.json(param)).readEntity(LoginResponse.class);
+		return response.getAccessToken();
 	}
 	
 	protected String getLocationPath(Response response) {

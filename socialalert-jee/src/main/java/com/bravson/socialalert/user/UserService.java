@@ -5,8 +5,9 @@ import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.NotFoundException;
@@ -37,22 +38,20 @@ public class UserService {
 	ProfileRepository profileRepository;
 
 	@POST
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Produces(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/login")
 	@PermitAll
-	@UserActivity
-	public Response login(@NotEmpty @FormParam("userId") String userId, @NotEmpty @FormParam("password") String password) {
-		String accessToken = authenticationRepository.requestAccessToken(userId, password).orElseThrow(() -> new WebApplicationException(Status.UNAUTHORIZED));
-		if (!profileRepository.findByUserId(userId).isPresent()) {
+	public LoginResponse login(@Valid @NotNull LoginParameter param) {
+		String accessToken = authenticationRepository.requestAccessToken(param.getUserId(), param.getPassword()).orElseThrow(() -> new WebApplicationException(Status.UNAUTHORIZED));
+		if (!profileRepository.findByUserId(param.getUserId()).isPresent()) {
 			UserInfo userInfo = authenticationRepository.findUserInfo(accessToken).orElseThrow(NotFoundException::new);
-			profileRepository.createProfile(userId, userInfo.getUsername(), userInfo.getCreatedTimestamp());
+			profileRepository.createProfile(param.getUserId(), userInfo.getUsername(), userInfo.getCreatedTimestamp());
 		}
-		return Response.status(Status.OK).entity(accessToken).build();
+		return new LoginResponse(accessToken);
 	}
 	
 	@POST
-	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/logout")
 	public Response logout(@NotEmpty @HeaderParam("Authorization") String authorization, @Context HttpServletRequest httpRequest) {
 		Status status = authenticationRepository.invalidateAccessToken(authorization);
