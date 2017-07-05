@@ -6,6 +6,11 @@ import java.time.Instant;
 import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Latitude;
+import org.hibernate.search.annotations.Longitude;
+import org.hibernate.search.annotations.Spatial;
+
 import com.bravson.socialalert.infrastructure.entity.DurationAttributeConverter;
 import com.bravson.socialalert.infrastructure.entity.InstantAttributeConverter;
 
@@ -23,6 +28,7 @@ import lombok.Setter;
 @Embeddable
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Setter(AccessLevel.NONE)
+@Spatial
 public class MediaMetadata {
 
 	@NonNull
@@ -33,9 +39,13 @@ public class MediaMetadata {
 	private Instant timestamp;
 	@Convert(converter=DurationAttributeConverter.class)
 	private Duration duration;
+	@Longitude
 	private Double longitude;
+	@Latitude
 	private Double latitude;
+	@Field
 	private String cameraMaker;
+	@Field
 	private String cameraModel;
 
 	public boolean hasLocation() {

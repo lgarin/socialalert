@@ -1,6 +1,5 @@
-package com.bravson.socialalert.profile;
+package com.bravson.socialalert.media;
 
-import java.time.Instant;
 import java.util.Optional;
 
 import javax.annotation.ManagedBean;
@@ -9,6 +8,7 @@ import javax.transaction.Transactional;
 
 import org.hibernate.search.jpa.FullTextEntityManager;
 
+import com.bravson.socialalert.file.FileEntity;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.log.Logged;
 
@@ -22,20 +22,19 @@ import lombok.NonNull;
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Logged
-public class ProfileRepository {
+public class MediaRepository {
 
 	@Inject
 	@NonNull
 	FullTextEntityManager entityManager;
 	
-	public Optional<ProfileEntity> findByUserId(String userId) {
-		return Optional.ofNullable(entityManager.find(ProfileEntity.class, userId));
+	public Optional<MediaEntity> findMedia(@NonNull String mediaUri) {
+		return Optional.ofNullable(entityManager.find(MediaEntity.class, mediaUri));
 	}
 
-	public ProfileEntity createProfile(String userId, String username, Instant createdTimestamp, String ipAddress) {
-		ProfileEntity entity = new ProfileEntity(username, new VersionInfo(userId, ipAddress));
-		entityManager.persist(entity);
-		return entity;
+	public MediaEntity storeMedia(FileEntity file, ClaimPictureParameter parameter, String userId, String ipAddress) {
+		MediaEntity media = MediaEntity.of(file, parameter, new VersionInfo(userId, ipAddress));
+		entityManager.persist(media);
+		return media;
 	}
-
 }

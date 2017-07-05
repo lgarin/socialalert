@@ -1,7 +1,6 @@
 package com.bravson.socialalert.media;
 
 import java.io.Serializable;
-import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -19,7 +18,7 @@ public class MediaInfo implements UserContent, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private URI mediaUri;
+	private String mediaUri;
     
     private MediaType type;
     
@@ -32,10 +31,6 @@ public class MediaInfo implements UserContent, Serializable {
 	@JsonSerialize(using=InstantSerializer.class)
 	@JsonDeserialize(using=InstantDeserializer.class)
 	private Instant creation;
-	
-	@JsonSerialize(using=InstantSerializer.class)
-	@JsonDeserialize(using=InstantDeserializer.class)
-    private Instant lastUpdate;
 	 
 	@JsonSerialize(using=InstantSerializer.class)
 	@JsonDeserialize(using=InstantDeserializer.class)

@@ -36,6 +36,9 @@ public class UserService {
 	
 	@Inject
 	ProfileRepository profileRepository;
+	
+	@Inject
+	HttpServletRequest request;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -46,7 +49,7 @@ public class UserService {
 		String accessToken = authenticationRepository.requestAccessToken(param.getUserId(), param.getPassword()).orElseThrow(() -> new WebApplicationException(Status.UNAUTHORIZED));
 		if (!profileRepository.findByUserId(param.getUserId()).isPresent()) {
 			UserInfo userInfo = authenticationRepository.findUserInfo(accessToken).orElseThrow(NotFoundException::new);
-			profileRepository.createProfile(param.getUserId(), userInfo.getUsername(), userInfo.getCreatedTimestamp());
+			profileRepository.createProfile(param.getUserId(), userInfo.getUsername(), userInfo.getCreatedTimestamp(), request.getRemoteAddr());
 		}
 		return new LoginResponse(accessToken);
 	}

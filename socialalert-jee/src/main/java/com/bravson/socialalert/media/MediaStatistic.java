@@ -3,10 +3,6 @@ package com.bravson.socialalert.media;
 import javax.persistence.Embeddable;
 
 import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Latitude;
-import org.hibernate.search.annotations.Longitude;
-import org.hibernate.search.annotations.Spatial;
-import org.hibernate.search.annotations.SpatialMode;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -21,17 +17,18 @@ import lombok.Setter;
 @Embeddable
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Setter(AccessLevel.NONE)
-@Spatial(spatialMode = SpatialMode.HASH)
-public class GeoAddress {
+public class MediaStatistic {
 
-	@Latitude
-	private Double latitude;
-	@Longitude
-	private Double longitude;
 	@Field
-	private String formattedAddress;
+	private int hitCount;
+	
 	@Field
-	private String locality;
+	private int likeCount;
+	
 	@Field
-	private String country;
+	private int dislikeCount;
+	
+	@Field
+	private int commentCount;
+
 }

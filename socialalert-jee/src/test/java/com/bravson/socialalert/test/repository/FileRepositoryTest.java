@@ -27,7 +27,7 @@ public class FileRepositoryTest extends BaseRepositoryTest {
     	FileMetadata fileMetadata = FileMetadata.builder().md5("xyz").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_JPG).userId("test").ipAddress("1.1.1.1").build();
     	MediaMetadata mediaMetadata = MediaMetadata.builder().width(1200).height(1600).build();
     	FileEntity result = repository.storeMedia(fileMetadata, mediaMetadata);
-    	assertThat(result.getFileUri()).isEqualTo("19700101/xyz");
+    	assertThat(result.getId()).isEqualTo("19700101/xyz");
     }
     
     @Test

@@ -16,15 +16,15 @@ public class ProfileRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void createNonExistingProfile() {
-    	ProfileEntity entity = repository.createProfile("test", "test", Instant.now());
+    	ProfileEntity entity = repository.createProfile("test", "test", Instant.now(), "1.2.3.4");
     	assertThat(entity).isNotNull();
-    	assertThat(entity.getUserId()).isEqualTo("test");
+    	assertThat(entity.getId()).isEqualTo("test");
     }
     
     @Test(expected=EntityExistsException.class)
     public void createExistingProfile() {
-    	repository.createProfile("test", "test", Instant.now());
-    	repository.createProfile("test", "test2", Instant.now());
+    	repository.createProfile("test", "test", Instant.now(), "1.2.3.4");
+    	repository.createProfile("test", "test2", Instant.now(), "1.2.3.4");
     }
     
     @Test
@@ -35,7 +35,7 @@ public class ProfileRepositoryTest extends BaseRepositoryTest {
     
     @Test
     public void findExistingProfile() {
-    	ProfileEntity entity = repository.createProfile("test", "test", Instant.now());
+    	ProfileEntity entity = repository.createProfile("test", "test", Instant.now(), "1.2.3.4");
     	Optional<ProfileEntity> result = repository.findByUserId("test");
     	assertThat(result).isNotEmpty().hasValue(entity);
     }

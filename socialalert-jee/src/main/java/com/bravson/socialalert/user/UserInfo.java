@@ -30,4 +30,6 @@ public class UserInfo {
 	@JsonSerialize(using=InstantSerializer.class)
 	@JsonDeserialize(using=InstantDeserializer.class)
 	private Instant createdTimestamp;
+	
+	private boolean online;
 }
