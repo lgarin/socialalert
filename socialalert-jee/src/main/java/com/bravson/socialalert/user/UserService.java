@@ -23,8 +23,8 @@ import javax.ws.rs.core.Response.Status;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.bravson.socialalert.infrastructure.log.Logged;
-import com.bravson.socialalert.profile.ProfileRepository;
 import com.bravson.socialalert.user.activity.UserActivity;
+import com.bravson.socialalert.user.profile.ProfileRepository;
 
 @Path("/user")
 @RolesAllowed("user")
@@ -49,7 +49,7 @@ public class UserService {
 		String accessToken = authenticationRepository.requestAccessToken(param.getUserId(), param.getPassword()).orElseThrow(() -> new WebApplicationException(Status.UNAUTHORIZED));
 		if (!profileRepository.findByUserId(param.getUserId()).isPresent()) {
 			UserInfo userInfo = authenticationRepository.findUserInfo(accessToken).orElseThrow(NotFoundException::new);
-			profileRepository.createProfile(param.getUserId(), userInfo.getUsername(), userInfo.getCreatedTimestamp(), request.getRemoteAddr());
+			profileRepository.createProfile(userInfo, request.getRemoteAddr());
 		}
 		return new LoginResponse(accessToken);
 	}

@@ -7,8 +7,9 @@ import javax.persistence.EntityExistsException;
 
 import org.junit.Test;
 
-import com.bravson.socialalert.profile.ProfileEntity;
-import com.bravson.socialalert.profile.ProfileRepository;
+import com.bravson.socialalert.user.UserInfo;
+import com.bravson.socialalert.user.profile.ProfileEntity;
+import com.bravson.socialalert.user.profile.ProfileRepository;
 
 public class ProfileRepositoryTest extends BaseRepositoryTest {
     
@@ -16,15 +17,17 @@ public class ProfileRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void createNonExistingProfile() {
-    	ProfileEntity entity = repository.createProfile("test", "test", Instant.now(), "1.2.3.4");
+    	UserInfo userInfo = new UserInfo("test", "test", "test@test.com", Instant.now(), false);
+    	ProfileEntity entity = repository.createProfile(userInfo, "1.2.3.4");
     	assertThat(entity).isNotNull();
     	assertThat(entity.getId()).isEqualTo("test");
     }
     
     @Test(expected=EntityExistsException.class)
     public void createExistingProfile() {
-    	repository.createProfile("test", "test", Instant.now(), "1.2.3.4");
-    	repository.createProfile("test", "test2", Instant.now(), "1.2.3.4");
+    	UserInfo userInfo = new UserInfo("test", "test", "test@test.com", Instant.now(), false);
+    	repository.createProfile(userInfo, "1.2.3.4");
+    	repository.createProfile(userInfo, "1.2.3.4");
     }
     
     @Test
@@ -35,7 +38,8 @@ public class ProfileRepositoryTest extends BaseRepositoryTest {
     
     @Test
     public void findExistingProfile() {
-    	ProfileEntity entity = repository.createProfile("test", "test", Instant.now(), "1.2.3.4");
+    	UserInfo userInfo = new UserInfo("test", "test", "test@test.com", Instant.now(), false);
+    	ProfileEntity entity = repository.createProfile(userInfo, "1.2.3.4");
     	Optional<ProfileEntity> result = repository.findByUserId("test");
     	assertThat(result).isNotEmpty().hasValue(entity);
     }

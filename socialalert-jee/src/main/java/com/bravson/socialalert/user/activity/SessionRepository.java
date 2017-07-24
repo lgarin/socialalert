@@ -24,16 +24,21 @@ import lombok.NoArgsConstructor;
 @Logged
 public class SessionRepository {
 
+	private static final String ONLINE_USER_CACHE_NAME = "onlineUserCache";
+	
 	private CachingProvider cachingProvider = Caching.getCachingProvider();
 	private CacheManager cacheManager = cachingProvider.getCacheManager();
 	private Cache<String, Instant> onlineUserCache;
 	
 	@Inject 
 	public SessionRepository(AuthenticationConfiguration authConfig) {
-		MutableConfiguration<String, Instant> cacheConfig = new MutableConfiguration<>();
-		cacheConfig.setTypes(String.class, Instant.class)
-			.setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(authConfig.getSessionDuration()));
-		onlineUserCache = cacheManager.createCache("onlineUserCache", cacheConfig);
+		onlineUserCache = cacheManager.getCache(ONLINE_USER_CACHE_NAME, String.class, Instant.class);
+		if (onlineUserCache == null) {
+			MutableConfiguration<String, Instant> cacheConfig = new MutableConfiguration<>();
+			cacheConfig.setTypes(String.class, Instant.class)
+				.setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(authConfig.getSessionDuration()));
+			onlineUserCache = cacheManager.createCache(ONLINE_USER_CACHE_NAME, cacheConfig);
+		}
 	}
 
 	public void addActiveUser(String userId) {

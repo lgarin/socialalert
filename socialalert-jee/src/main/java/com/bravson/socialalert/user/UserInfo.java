@@ -12,6 +12,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 
 @Data
@@ -21,14 +22,17 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserInfo {
 
+	@NonNull
 	private String id;
 	
+	@NonNull
 	private String username;
 	
 	private String email;
 	
 	@JsonSerialize(using=InstantSerializer.class)
 	@JsonDeserialize(using=InstantDeserializer.class)
+	@NonNull
 	private Instant createdTimestamp;
 	
 	private boolean online;

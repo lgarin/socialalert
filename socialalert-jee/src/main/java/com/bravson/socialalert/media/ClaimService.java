@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import com.bravson.socialalert.file.FileEntity;
 import com.bravson.socialalert.file.FileRepository;
 import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.user.UserInfoSupplier;
 import com.bravson.socialalert.user.activity.UserActivity;
 
 import lombok.NonNull;
@@ -46,6 +47,9 @@ public class ClaimService {
 	@Inject
 	HttpServletRequest request;
 	
+	@Inject
+	UserInfoSupplier userRepository;
+	
 	@POST
 	@Path("/claim/{fileUri : .+}")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -57,7 +61,7 @@ public class ClaimService {
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		MediaEntity mediaEntity = mediaRepository.storeMedia(fileEntity, parameter, principal.getName(), request.getRemoteAddr());
-		return mediaEntity.toMediaInfo(); // TODO fill UserInfo
+		return userRepository.fillUserInfo(mediaEntity.toMediaInfo());
 		
 	}
 }

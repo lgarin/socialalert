@@ -1,6 +1,5 @@
-package com.bravson.socialalert.profile;
+package com.bravson.socialalert.user.profile;
 
-import java.time.Instant;
 import java.util.Optional;
 
 import javax.annotation.ManagedBean;
@@ -11,6 +10,7 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.user.UserInfo;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -32,8 +32,8 @@ public class ProfileRepository {
 		return Optional.ofNullable(entityManager.find(ProfileEntity.class, userId));
 	}
 
-	public ProfileEntity createProfile(String userId, String username, Instant createdTimestamp, String ipAddress) {
-		ProfileEntity entity = new ProfileEntity(username, new VersionInfo(userId, ipAddress));
+	public ProfileEntity createProfile(UserInfo userInfo, String ipAddress) {
+		ProfileEntity entity = new ProfileEntity(userInfo.getUsername(), userInfo.getEmail(), new VersionInfo(userInfo.getId(), ipAddress));
 		entityManager.persist(entity);
 		return entity;
 	}
