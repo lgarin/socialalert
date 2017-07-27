@@ -3,6 +3,7 @@ package com.bravson.socialalert.media;
 import javax.persistence.Embeddable;
 
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.Latitude;
 import org.hibernate.search.annotations.Longitude;
 import org.hibernate.search.annotations.Spatial;
@@ -21,7 +22,8 @@ import lombok.Setter;
 @Embeddable
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Setter(AccessLevel.NONE)
-@Spatial(spatialMode = SpatialMode.HASH)
+@Indexed
+@Spatial(spatialMode=SpatialMode.HASH)
 public class GeoAddress {
 
 	@Latitude

@@ -3,18 +3,19 @@ package com.bravson.socialalert.media;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 
 import com.bravson.socialalert.file.FileEntity;
-import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
+import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -26,7 +27,7 @@ import lombok.NoArgsConstructor;
 public class MediaEntity extends VersionedEntity {
 
 	@Getter
-	@OneToOne(fetch=FetchType.LAZY, mappedBy="id")
+	@ManyToOne(fetch=FetchType.LAZY, optional=false)
 	private FileEntity file;
 
 	@Getter
@@ -42,22 +43,20 @@ public class MediaEntity extends VersionedEntity {
 	private String description;
 
 	@Getter
-	@Field
 	@Embedded
 	private GeoAddress location;
 	
 	@Getter
-	@Field
 	@Embedded
 	private MediaStatistic statistic;
 	
 	@Getter
-	@Field
+	@ElementCollection(fetch=FetchType.EAGER)
 	@IndexedEmbedded
 	private List<String> categories;
 	
 	@Getter
-	@Field
+	@ElementCollection(fetch=FetchType.EAGER)
 	@IndexedEmbedded
 	private List<String> tags;
 

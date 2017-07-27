@@ -55,7 +55,9 @@ public class ClaimService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public MediaInfo claimPicture(@NotEmpty @PathParam("fileUri") String fileUri, @Valid @NonNull ClaimPictureParameter parameter) {
-		mediaRepository.findMedia(fileUri).ifPresent((m) -> new WebApplicationException(Status.CONFLICT));
+		if (mediaRepository.findMedia(fileUri).isPresent()) {
+			throw new WebApplicationException(Status.CONFLICT);
+		}
 		FileEntity fileEntity = fileRepository.findFile(fileUri).orElseThrow(() -> new WebApplicationException(Status.NOT_FOUND));
 		if (!fileEntity.getUserId().equals(principal.getName())) {
 			throw new WebApplicationException(Status.FORBIDDEN);

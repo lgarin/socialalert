@@ -33,7 +33,7 @@ public class ProfileRepository {
 	}
 
 	public ProfileEntity createProfile(UserInfo userInfo, String ipAddress) {
-		ProfileEntity entity = new ProfileEntity(userInfo.getUsername(), userInfo.getEmail(), new VersionInfo(userInfo.getId(), ipAddress));
+		ProfileEntity entity = new ProfileEntity(userInfo.getUsername(), userInfo.getEmail(), VersionInfo.of(userInfo.getId(), ipAddress));
 		entityManager.persist(entity);
 		return entity;
 	}

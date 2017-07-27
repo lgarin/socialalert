@@ -24,7 +24,7 @@ public abstract class VersionedEntity {
 	protected String id;
 	
 	@Version
-	private int version;
+	private Integer version;
 	
 	@NonNull
 	@Embedded

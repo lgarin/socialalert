@@ -43,7 +43,7 @@ public class FileEntity extends VersionedEntity {
 			throw new IllegalArgumentException("Size variant must be " + MediaSizeVariant.MEDIA.getVariantName());
 		}
 		FileEntity entity = new FileEntity();
-		entity.versionInfo = new VersionInfo(fileMetadata.getUserId(), fileMetadata.getIpAddress());
+		entity.versionInfo = VersionInfo.of(fileMetadata.getUserId(), fileMetadata.getIpAddress());
 		entity.id = fileMetadata.buildFileUri();
 		entity.mediaMetadata = mediaMetadata;
 		entity.addVariant(fileMetadata);

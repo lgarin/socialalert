@@ -10,7 +10,6 @@ import org.hibernate.search.annotations.Field;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 
 @Data
@@ -19,27 +18,25 @@ import lombok.Setter;
 @Setter(AccessLevel.NONE)
 public class VersionInfo {
 
-	@NonNull
-	@Convert(converter=InstantAttributeConverter.class)
-	@Field
-	private Instant creation;
-	
-	@NonNull
-	@Convert(converter=InstantAttributeConverter.class)
-	@Field
-	private Instant lastUpdate;
-	
 	@Field
 	private String userId;
 	
 	@Field
 	private String ipAddress;
 	
-	public VersionInfo(String userId, String ipAddress) {
-		touch(userId, ipAddress);
+	@Convert(converter=InstantAttributeConverter.class)
+	private Instant creation;
+	
+	@Convert(converter=InstantAttributeConverter.class)
+	private Instant lastUpdate;
+	
+	public static VersionInfo of(String userId, String ipAddress) {
+		VersionInfo result = new VersionInfo();
+		result.touch(userId, ipAddress);
+		return result;
 	}
 	
-	public void touch(String userId, String ipAddress) {
+	private void touch(String userId, String ipAddress) {
 		this.userId = userId;
 		this.ipAddress = ipAddress;
 		lastUpdate = Instant.now();

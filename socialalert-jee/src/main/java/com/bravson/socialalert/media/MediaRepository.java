@@ -33,7 +33,7 @@ public class MediaRepository {
 	}
 
 	public MediaEntity storeMedia(FileEntity file, ClaimPictureParameter parameter, String userId, String ipAddress) {
-		MediaEntity media = MediaEntity.of(file, parameter, new VersionInfo(userId, ipAddress));
+		MediaEntity media = MediaEntity.of(file, parameter, VersionInfo.of(userId, ipAddress));
 		entityManager.persist(media);
 		return media;
 	}
