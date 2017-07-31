@@ -26,7 +26,7 @@ import com.bravson.socialalert.user.activity.UserActivity;
 
 import lombok.NonNull;
 
-@Path("/media")
+@Path("/claim")
 @RolesAllowed("user")
 @Logged
 @UserActivity
@@ -51,7 +51,7 @@ public class ClaimService {
 	UserInfoSupplier userRepository;
 	
 	@POST
-	@Path("/claim/{fileUri : .+}")
+	@Path("/picture/{fileUri : .+}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public MediaInfo claimPicture(@NotEmpty @PathParam("fileUri") String fileUri, @Valid @NonNull ClaimPictureParameter parameter) {
