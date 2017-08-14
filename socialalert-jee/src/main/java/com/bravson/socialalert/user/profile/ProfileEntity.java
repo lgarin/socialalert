@@ -1,5 +1,6 @@
 package com.bravson.socialalert.user.profile;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 import javax.persistence.Convert;
@@ -74,6 +75,10 @@ public class ProfileEntity extends VersionedEntity {
 	}
 	
 	private UserInfo toUserInfo(boolean online) {
-		return new UserInfo(id, username, email, versionInfo.getCreation(), online);
+		return new UserInfo(id, username, email, getCreation(), online);
+	}
+	
+	public Instant getCreation() {
+		return versionInfo.getCreation();
 	}
 }

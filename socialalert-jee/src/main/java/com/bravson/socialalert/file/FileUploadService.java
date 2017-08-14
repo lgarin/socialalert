@@ -3,27 +3,18 @@ package com.bravson.socialalert.file;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.security.Principal;
 import java.time.Instant;
 import java.util.Optional;
 
+import javax.annotation.ManagedBean;
 import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
+import javax.transaction.Transactional;
 import javax.ws.rs.NotSupportedException;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 
 import com.bravson.socialalert.UriConstants;
-import com.bravson.socialalert.file.media.MediaFileConstants;
 import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaFileProcessor;
 import com.bravson.socialalert.file.media.MediaMetadata;
@@ -33,13 +24,13 @@ import com.bravson.socialalert.file.video.AsyncVideoPreviewEvent;
 import com.bravson.socialalert.file.video.SnapshotVideoFileProcessor;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 import com.bravson.socialalert.infrastructure.log.Logged;
-import com.bravson.socialalert.user.activity.UserActivity;
 
-@Path("/upload")
-@RolesAllowed("user")
+import lombok.NonNull;
+
+@ManagedBean
+@Transactional
 @Logged
-@UserActivity
-public class UploadService {
+public class FileUploadService {
 	
 	@Resource(name="maxUploadSize")
 	long maxUploadSize;
@@ -60,62 +51,47 @@ public class UploadService {
 	AsyncRepository asyncRepository;
 	
 	@Inject
-	Principal principal;
-	
-	@Inject
 	Logger logger;
-	
-	@Inject
-	HttpServletRequest request;
 
-	@POST
-	@Consumes(MediaFileConstants.JPG_MEDIA_TYPE)
-	@Path("/picture")
-	public Response uploadPicture(@NotNull File inputFile) throws IOException, ServletException {
-		return uploadMedia(inputFile, pictureFileProcessor);
+	public URI uploadPicture(@NonNull FileUploadParameter parameter) throws IOException {
+		return uploadMedia(parameter, pictureFileProcessor);
 	}
-	
-	@POST
-	@Consumes({MediaFileConstants.MOV_MEDIA_TYPE, MediaFileConstants.MP4_MEDIA_TYPE})
-	@Path("/video")
-	public Response uploadVideo(@NotNull File inputFile) throws IOException, ServletException {
-		return uploadMedia(inputFile, videoFileProcessor);
+
+	public URI uploadVideo(@NonNull FileUploadParameter parameter) throws IOException {
+		return uploadMedia(parameter, videoFileProcessor);
 	}
 
 	private URI createDownloadUri(FileMetadata fileMetadata) {
 		return URI.create(UriConstants.FILE_SERVICE_URI + "/download/" + fileMetadata.buildFileUri());
 	}
 	
-	private Response uploadMedia(File inputFile, MediaFileProcessor processor) throws IOException, ServletException {
-		if (request.getContentLengthLong() > maxUploadSize) {
-			return Response.status(Status.REQUEST_ENTITY_TOO_LARGE).build();
-		}
+	private URI uploadMedia(FileUploadParameter parameter, MediaFileProcessor processor) throws IOException {
 	
-		MediaMetadata mediaMetadata = buildMediaMetadata(inputFile, processor).orElseThrow(NotSupportedException::new);
-		MediaFileFormat fileFormat = MediaFileFormat.fromMediaContentType(request.getContentType()).orElseThrow(NotSupportedException::new);
+		MediaMetadata mediaMetadata = buildMediaMetadata(parameter.getInputFile(), processor).orElseThrow(NotSupportedException::new);
+		MediaFileFormat fileFormat = MediaFileFormat.fromMediaContentType(parameter.getContentType()).orElseThrow(NotSupportedException::new);
 		
-		FileMetadata fileMetadata = buildFileMetadata(inputFile, fileFormat);
+		FileMetadata fileMetadata = buildFileMetadata(parameter.getInputFile(), fileFormat, parameter.getUserId(), parameter.getIpAddress());
 		
 		if (mediaRepository.findFile(fileMetadata.buildFileUri()).isPresent()) {
-			return Response.created(createDownloadUri(fileMetadata)).build();
+			return createDownloadUri(fileMetadata);
 		}
 		
-		fileStore.storeMedia(inputFile, fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileFormat);
+		fileStore.storeMedia(parameter.getInputFile(), fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileMetadata.getFileFormat());
 		FileEntity fileEntity = mediaRepository.storeMedia(fileMetadata, mediaMetadata);
 		
 		File thumbnailFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), processor.getThumbnailFormat()); 
-		processor.createThumbnail(inputFile, thumbnailFile);
-		fileEntity.addVariant(buildFileMetadata(thumbnailFile, processor.getThumbnailFormat()));
+		processor.createThumbnail(parameter.getInputFile(), thumbnailFile);
+		fileEntity.addVariant(buildFileMetadata(thumbnailFile, processor.getThumbnailFormat(), parameter.getUserId(), parameter.getIpAddress()));
 		
 		File previewFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), processor.getPreviewFormat());
-		processor.createPreview(inputFile, previewFile);
-		fileEntity.addVariant(buildFileMetadata(previewFile, processor.getPreviewFormat()));
+		processor.createPreview(parameter.getInputFile(), previewFile);
+		fileEntity.addVariant(buildFileMetadata(previewFile, processor.getPreviewFormat(), parameter.getUserId(), parameter.getIpAddress()));
 		
 		if (fileMetadata.isVideo()) {
 			asyncRepository.fireAsync(AsyncVideoPreviewEvent.of(fileEntity.getId()));
 		}
 		
-		return Response.created(createDownloadUri(fileMetadata)).build();
+		return createDownloadUri(fileMetadata);
 	}
 	
 	private Optional<MediaMetadata> buildMediaMetadata(File inputFile, MediaFileProcessor processor) throws IOException {
@@ -127,13 +103,14 @@ public class UploadService {
 		}
 	}
 	
-	private FileMetadata buildFileMetadata(File file, MediaFileFormat fileFormat) throws IOException {
+	private FileMetadata buildFileMetadata(File file, MediaFileFormat fileFormat, String userId, String ipAddress) throws IOException {
+		String md5 = fileStore.computeMd5Hex(file);
 		return FileMetadata.builder()
-			.md5(fileStore.computeMd5Hex(file))
+			.md5(md5)
 			.timestamp(Instant.now())
 			.contentLength(file.length())
-			.userId(principal.getName())
-			.ipAddress(request.getRemoteAddr())
+			.userId(userId)
+			.ipAddress(ipAddress)
 			.fileFormat(fileFormat)
 			.build();
 	}

@@ -1,4 +1,4 @@
-package com.bravson.socialalert.test.service;
+package com.bravson.socialalert.test.integration;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -7,7 +7,7 @@ import javax.ws.rs.core.Response.Status;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.junit.Test;
 
-public class GreeterServiceTest extends BaseServiceTest {
+public class GreeterServiceTest extends BaseIntegrationTest {
 
 	@Test
 	@RunAsClient

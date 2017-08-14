@@ -1,4 +1,4 @@
-package com.bravson.socialalert.test.service;
+package com.bravson.socialalert.test.integration;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -13,7 +13,7 @@ import org.junit.Test;
 import com.bravson.socialalert.infrastructure.async.AsyncEvent;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 
-public class AsyncProcessorTest extends BaseServiceTest {
+public class AsyncProcessorTest extends BaseIntegrationTest {
 	
 	public static class TestEvent implements AsyncEvent {
 		private static final long serialVersionUID = 1L;

@@ -1,4 +1,4 @@
-package com.bravson.socialalert.test.service;
+package com.bravson.socialalert.test.integration;
 
 import java.io.File;
 import java.util.Arrays;
@@ -17,7 +17,7 @@ import com.bravson.socialalert.media.ClaimPictureParameter;
 import com.bravson.socialalert.media.GeoAddress;
 import com.bravson.socialalert.media.MediaInfo;
 
-public class ClaimServiceTest extends BaseServiceTest {
+public class MediaClaimTest extends BaseIntegrationTest {
 
 	private static Entity<ClaimPictureParameter> getClaimPictureParameter() {
 		ClaimPictureParameter param = new ClaimPictureParameter();

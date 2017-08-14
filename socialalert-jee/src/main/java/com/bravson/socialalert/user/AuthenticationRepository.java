@@ -42,9 +42,9 @@ public class AuthenticationRepository {
 		return Optional.of("Bearer " + payload.getString("access_token"));
 	}
 	
-	public Status invalidateAccessToken(@NonNull String authorization) {
+	public boolean invalidateAccessToken(@NonNull String authorization) {
 		Response response = httpClient.target(config.getLogoutUrl()).request().header("Authorization", authorization).get();
-		return Status.fromStatusCode(response.getStatus());
+		return response.getStatus() == Status.OK.getStatusCode();
 	}
 	
 	public Optional<UserInfo> findUserInfo(@NonNull String authorization) {

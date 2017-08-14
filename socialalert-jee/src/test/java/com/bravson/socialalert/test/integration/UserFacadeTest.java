@@ -1,4 +1,4 @@
-package com.bravson.socialalert.test.service;
+package com.bravson.socialalert.test.integration;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
@@ -12,7 +12,7 @@ import com.bravson.socialalert.user.LoginParameter;
 import com.bravson.socialalert.user.LoginResponse;
 import com.bravson.socialalert.user.UserInfo;
 
-public class UserServiceTest extends BaseServiceTest {
+public class UserFacadeTest extends BaseIntegrationTest {
 
 	@Test
 	@RunAsClient

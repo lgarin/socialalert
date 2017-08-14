@@ -1,33 +1,20 @@
 package com.bravson.socialalert.user;
 
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.inject.Inject;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import java.util.Optional;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+import javax.ws.rs.NotFoundException;
 
 import com.bravson.socialalert.infrastructure.log.Logged;
-import com.bravson.socialalert.user.activity.UserActivity;
+import com.bravson.socialalert.user.profile.ProfileEntity;
 import com.bravson.socialalert.user.profile.ProfileRepository;
 
-@Path("/user")
-@RolesAllowed("user")
+import lombok.NonNull;
+
+@ManagedBean
+@Transactional
 @Logged
 public class UserService {
 	
@@ -36,47 +23,40 @@ public class UserService {
 	
 	@Inject
 	ProfileRepository profileRepository;
-	
-	@Inject
-	HttpServletRequest request;
 
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/login")
-	@PermitAll
-	public LoginResponse login(@Valid @NotNull LoginParameter param) {
-		String accessToken = authenticationRepository.requestAccessToken(param.getUserId(), param.getPassword()).orElseThrow(() -> new WebApplicationException(Status.UNAUTHORIZED));
-		if (!profileRepository.findByUserId(param.getUserId()).isPresent()) {
-			UserInfo userInfo = authenticationRepository.findUserInfo(accessToken).orElseThrow(NotFoundException::new);
-			profileRepository.createProfile(userInfo, request.getRemoteAddr());
+	private ProfileEntity getOrCreateProfile(String accessToken, String userId, String ipAddress) {
+		Optional<ProfileEntity> profile = profileRepository.findByUserId(userId);
+		if (profile.isPresent()) {
+			return profile.get();
 		}
-		return new LoginResponse(accessToken);
+		return authenticationRepository.findUserInfo(accessToken)
+				.map(userInfo -> profileRepository.createProfile(userInfo, ipAddress))
+				.orElseThrow(NotFoundException::new);
 	}
 	
-	@POST
-	@Path("/logout")
-	public Response logout(@NotEmpty @HeaderParam("Authorization") String authorization, @Context HttpServletRequest httpRequest) {
-		Status status = authenticationRepository.invalidateAccessToken(authorization);
-		if (status != Status.OK) {
-			return Response.status(status).build();
-		}
-		httpRequest.getSession().invalidate();
-		try {
-			httpRequest.logout();
-		} catch (ServletException e) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-		}
-		
-		return Response.status(Status.NO_CONTENT).build();
+	private LoginResponse toLoginResponse(String accessToken, String userId, String ipAddress) {
+		ProfileEntity profile = getOrCreateProfile(accessToken, userId, ipAddress);
+		return LoginResponse.builder()
+				.accessToken(accessToken)
+				.username(profile.getUsername())
+				.email(profile.getEmail())
+				.country(profile.getCountry())
+				.language(profile.getLanguage())
+				.imageUri(profile.getImageUri())
+				.creation(profile.getCreation())
+				.build();
 	}
 	
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/current")
-	@UserActivity
-	public Response current(@NotEmpty @HeaderParam("Authorization") String authorization) {
-		UserInfo userInfo = authenticationRepository.findUserInfo(authorization).orElseThrow(NotFoundException::new);
-		return Response.status(Status.OK).entity(userInfo).build();
+	public Optional<LoginResponse> login(@NonNull LoginParameter param, @NonNull String ipAddress) {
+		return authenticationRepository.requestAccessToken(param.getUserId(), param.getPassword())
+				.map(token -> toLoginResponse(token, param.getUserId(), ipAddress));
+	}
+	
+	public boolean logout(@NonNull  String authorization) {
+		return authenticationRepository.invalidateAccessToken(authorization);
+	}
+
+	public Optional<UserInfo> findUserInfo(@NonNull  String authorization) {
+		return authenticationRepository.findUserInfo(authorization);
 	}
 }

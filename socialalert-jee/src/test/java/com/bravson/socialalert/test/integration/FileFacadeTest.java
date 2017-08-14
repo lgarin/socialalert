@@ -1,4 +1,4 @@
-package com.bravson.socialalert.test.service;
+package com.bravson.socialalert.test.integration;
 
 import java.io.File;
 
@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import com.bravson.socialalert.file.media.MediaFileConstants;
 
-public class FileServiceTest extends BaseServiceTest {
+public class FileFacadeTest extends BaseIntegrationTest {
 
 	private static Entity<File> getPicture(String filename) {
 		return Entity.entity(new File(filename), MediaFileConstants.JPG_MEDIA_TYPE);

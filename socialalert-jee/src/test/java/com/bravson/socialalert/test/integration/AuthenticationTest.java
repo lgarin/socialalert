@@ -1,10 +1,9 @@
-package com.bravson.socialalert.test.service;
+package com.bravson.socialalert.test.integration;
 
 import java.time.Instant;
 import java.util.Optional;
 
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response.Status;
 
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.junit.Test;
@@ -13,7 +12,7 @@ import com.bravson.socialalert.user.AuthenticationConfiguration;
 import com.bravson.socialalert.user.AuthenticationRepository;
 import com.bravson.socialalert.user.UserInfo;
 
-public class AuthenticationRepositoryTest extends BaseServiceTest {
+public class AuthenticationTest extends BaseIntegrationTest {
 
 	private static AuthenticationConfiguration config = AuthenticationConfiguration
 			.builder()
@@ -43,16 +42,16 @@ public class AuthenticationRepositoryTest extends BaseServiceTest {
 	@Test
 	@RunAsClient
 	public void invalidateInvalidAccessToken() {
-		Status result = repository.invalidateAccessToken("Bearer abc");
-		assertThat(result).isEqualTo(Status.OK); // TODO
+		boolean result = repository.invalidateAccessToken("Bearer abc");
+		assertThat(result).isTrue(); // TODO
 	}
 	
 	@Test
 	@RunAsClient
 	public void invalidateValidAccessToken() {
 		Optional<String> token = repository.requestAccessToken("test@test.com", "123");
-		Status result = repository.invalidateAccessToken(token.get());
-		assertThat(result).isEqualTo(Status.OK);
+		boolean result = repository.invalidateAccessToken(token.get());
+		assertThat(result).isTrue();
 	}
 	
 	@Test

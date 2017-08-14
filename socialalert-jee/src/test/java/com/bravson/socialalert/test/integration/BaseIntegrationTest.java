@@ -1,4 +1,4 @@
-package com.bravson.socialalert.test.service;
+package com.bravson.socialalert.test.integration;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +25,7 @@ import com.bravson.socialalert.user.LoginParameter;
 import com.bravson.socialalert.user.LoginResponse;
 
 @RunWith(Arquillian.class)
-public abstract class BaseServiceTest extends Assertions {
+public abstract class BaseIntegrationTest extends Assertions {
 
 	private static File baseMediaDirectory = new File("C:/Temp/xtra");
 	private static File baseDatabaseDirectory = new File("neo4j.db");
