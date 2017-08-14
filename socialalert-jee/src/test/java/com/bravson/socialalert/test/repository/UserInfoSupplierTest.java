@@ -17,7 +17,7 @@ import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.media.MediaInfo;
 import com.bravson.socialalert.media.UserContent;
 import com.bravson.socialalert.user.UserInfoSupplier;
-import com.bravson.socialalert.user.activity.SessionRepository;
+import com.bravson.socialalert.user.activity.OnlineUserRepository;
 import com.bravson.socialalert.user.profile.ProfileEntity;
 import com.bravson.socialalert.user.profile.ProfileRepository;
 
@@ -28,7 +28,7 @@ public class UserInfoSupplierTest extends Assertions {
 	ProfileRepository profileRepository;
 	
 	@Mock
-	SessionRepository sessionRepository;
+	OnlineUserRepository sessionRepository;
 	
 	@InjectMocks
 	UserInfoSupplier userInfoSupplier;

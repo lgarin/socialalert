@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @ApplicationScoped
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Logged
-public class SessionRepository {
+public class OnlineUserRepository {
 
 	private static final String ONLINE_USER_CACHE_NAME = "onlineUserCache";
 	
@@ -31,7 +31,7 @@ public class SessionRepository {
 	private Cache<String, Instant> onlineUserCache;
 	
 	@Inject 
-	public SessionRepository(AuthenticationConfiguration authConfig) {
+	public OnlineUserRepository(AuthenticationConfiguration authConfig) {
 		onlineUserCache = cacheManager.getCache(ONLINE_USER_CACHE_NAME, String.class, Instant.class);
 		if (onlineUserCache == null) {
 			MutableConfiguration<String, Instant> cacheConfig = new MutableConfiguration<>();

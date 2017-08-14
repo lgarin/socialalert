@@ -10,20 +10,21 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.bravson.socialalert.infrastructure.log.Logged;
-import com.bravson.socialalert.user.activity.SessionRepository;
+import com.bravson.socialalert.user.activity.OnlineUserRepository;
 import com.bravson.socialalert.user.activity.UserActivity;
 
 @Path("/greeter")
 @RolesAllowed("user")
 @Logged
 @UserActivity
+@Deprecated
 public class GreeterService {
 
 	@Inject
 	Principal principal;
 	
 	@Inject
-	SessionRepository sessionRepository;
+	OnlineUserRepository sessionRepository;
 	
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)

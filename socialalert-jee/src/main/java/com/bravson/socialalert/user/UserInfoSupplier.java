@@ -10,7 +10,7 @@ import javax.inject.Inject;
 
 import com.bravson.socialalert.infrastructure.log.Logged;
 import com.bravson.socialalert.media.UserContent;
-import com.bravson.socialalert.user.activity.SessionRepository;
+import com.bravson.socialalert.user.activity.OnlineUserRepository;
 import com.bravson.socialalert.user.profile.ProfileEntity;
 import com.bravson.socialalert.user.profile.ProfileRepository;
 
@@ -28,7 +28,7 @@ public class UserInfoSupplier {
 
 	@Inject
 	@NonNull
-	SessionRepository sessionRepository;
+	OnlineUserRepository onlineUserRepository;
 	
 	@Inject
 	@NonNull
@@ -48,7 +48,7 @@ public class UserInfoSupplier {
 	}
 	
 	private Function<ProfileEntity, UserInfo> getUserInfoMapper(UserContent content) {
-		if (sessionRepository.isUserActive(content.getCreatorId())) {
+		if (onlineUserRepository.isUserActive(content.getCreatorId())) {
 			return ProfileEntity::toOnlineUserInfo;
 		} else {
 			return ProfileEntity::toOfflineUserInfo;

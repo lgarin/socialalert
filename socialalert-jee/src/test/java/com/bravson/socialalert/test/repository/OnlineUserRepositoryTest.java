@@ -4,13 +4,13 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import com.bravson.socialalert.user.AuthenticationConfiguration;
-import com.bravson.socialalert.user.activity.SessionRepository;
+import com.bravson.socialalert.user.activity.OnlineUserRepository;
 
-public class SessionRepositoryTest extends Assertions {
+public class OnlineUserRepositoryTest extends Assertions {
 
 	private static AuthenticationConfiguration authConfig = AuthenticationConfiguration.builder().sessionTimeout(1).build();
 	
-	private static SessionRepository repository = new SessionRepository(authConfig);
+	private static OnlineUserRepository repository = new OnlineUserRepository(authConfig);
 	
 	@Test
 	public void addNewUser() {

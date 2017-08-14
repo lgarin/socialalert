@@ -43,7 +43,7 @@ public class AsyncVideoPreviewProcessor {
 	
 	@SneakyThrows(IOException.class)
 	private void createPreview(FileEntity fileEntity) {
-		FileMetadata fileMetadata = fileEntity.getMediaFileMetadata();
+		FileMetadata fileMetadata = fileEntity.getFileMetadata();
 		File inputFile = fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileMetadata.getFileFormat());
 		File previewFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), videoFileProcessor.getPreviewFormat());
 		videoFileProcessor.createPreview(inputFile, previewFile);

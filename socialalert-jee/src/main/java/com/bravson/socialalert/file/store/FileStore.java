@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.temporal.Temporal;
@@ -61,7 +62,7 @@ public class FileStore {
 		return new BigInteger(1, data).toString(16);
 	}
 
-	public void storeMedia(@NonNull File source, @NonNull String md5, @NonNull Temporal timestamp, @NonNull FileFormat format) throws IOException {
+	public void storeFile(@NonNull File source, @NonNull String md5, @NonNull Temporal timestamp, @NonNull FileFormat format) throws IOException {
 		try (InputStream is = Files.newInputStream(source.toPath())) {
 			Files.copy(is, buildAbsolutePath(md5, timestamp, format));
 		}
@@ -80,6 +81,12 @@ public class FileStore {
 	public File createEmptyFile(@NonNull String md5, @NonNull Temporal timestamp, @NonNull FileFormat format) throws IOException {
 		Path path = buildAbsolutePath(md5, timestamp, format);
 		return Files.createFile(path).toFile();
+	}
+	
+	public File changeFileFormat(@NonNull String md5, @NonNull Temporal timestamp, @NonNull FileFormat oldFormat, @NonNull FileFormat newFormat) throws IOException {
+		Path oldPath = buildAbsolutePath(md5, timestamp, oldFormat);
+		Path newPath = buildAbsolutePath(md5, timestamp, newFormat);
+		return Files.move(oldPath, newPath, StandardCopyOption.ATOMIC_MOVE).toFile();
 	}
 	
 	public File getExistingFile(@NonNull String md5, @NonNull Temporal timestamp, @NonNull FileFormat format) throws IOException {

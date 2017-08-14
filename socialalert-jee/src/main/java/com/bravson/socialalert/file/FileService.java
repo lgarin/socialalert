@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Optional;
 
 import javax.annotation.ManagedBean;
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
@@ -14,16 +13,18 @@ import com.bravson.socialalert.file.media.MediaSizeVariant;
 import com.bravson.socialalert.file.store.FileStore;
 import com.bravson.socialalert.infrastructure.log.Logged;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @ManagedBean
 @Transactional
 @Logged
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class FileService {
 
-	@Resource(name="mediaCacheMaxAge")
-	int mediaCacheMaxAge;
-	
 	@Inject
 	FileRepository mediaRepository;
 
@@ -40,14 +41,9 @@ public class FileService {
 		if (fileFormat == null) {
 			return Optional.empty();
 		}
-		FileMetadata fileMetadata = fileEntity.getMediaFileMetadata();
+		FileMetadata fileMetadata = fileEntity.getFileMetadata();
 		File file = fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileFormat);
-        Integer maxAge = fileEntity.isTemporary(fileFormat) ? null : mediaCacheMaxAge;
-		return Optional.of(toFileResponse(file, fileFormat, maxAge));
-	}
-	
-	private FileResponse toFileResponse(File file, MediaFileFormat format, Integer maxAge) {
-		return FileResponse.builder().file(file).contentType(format.getContentType()).etag(format.name()).maxAge(maxAge).build();
+		return Optional.of(new FileResponse(file, fileFormat, fileEntity.isTemporary(fileFormat)));
 	}
 
 	public Optional<FileResponse> download(@NonNull String fileUri) throws IOException {

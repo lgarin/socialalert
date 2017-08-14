@@ -94,13 +94,13 @@ public class MediaEntity extends VersionedEntity {
 		info.setLikeCount(statistic.getLikeCount());
 		info.setDislikeCount(statistic.getDislikeCount());
 		info.setCommentCount(statistic.getCommentCount());
-		info.setCreatorId(file.getMediaFileMetadata().getUserId());
+		info.setCreatorId(file.getFileMetadata().getUserId());
 		info.setCameraMaker(file.getMediaMetadata().getCameraMaker());
 		info.setCameraModel(file.getMediaMetadata().getCameraModel());
 		info.setHeight(file.getMediaMetadata().getHeight());
 		info.setWidth(file.getMediaMetadata().getWidth());
 		info.setDuration(file.getMediaMetadata().getDuration());
-		info.setTimestamp(file.getMediaFileMetadata().getTimestamp());
+		info.setTimestamp(file.getFileMetadata().getTimestamp());
 		return info;
 	}
 }

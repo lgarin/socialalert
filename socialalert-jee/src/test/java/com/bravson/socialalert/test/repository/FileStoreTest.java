@@ -42,19 +42,19 @@ public class FileStoreTest extends Assertions {
 	
 	@Test
 	public void storeExistingFile() throws IOException {
-		store.storeMedia(new File("src/main/resources/logo.jpg"), "38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.MEDIA_JPG);
+		store.storeFile(new File("src/main/resources/logo.jpg"), "38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.MEDIA_JPG);
 		assertThat(new File(config.getBaseDirectory(), "media/20170415/38c4297b9099b466eab20fea521ee2f6.jpg")).exists();
 	}
 	
 	@Test(expected=NoSuchFileException.class)
 	public void storeNonExistingFile() throws IOException {
-		store.storeMedia(new File("src/main/resources/xyz.jpg"), "38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.MEDIA_JPG);
+		store.storeFile(new File("src/main/resources/xyz.jpg"), "38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.MEDIA_JPG);
 	}
 	
 	@Test(expected=FileAlreadyExistsException.class)
 	public void storeFileTwice() throws IOException {
-		store.storeMedia(new File("src/main/resources/logo.jpg"), "38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.MEDIA_JPG);
-		store.storeMedia(new File("src/main/resources/logo.jpg"), "38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.MEDIA_JPG);
+		store.storeFile(new File("src/main/resources/logo.jpg"), "38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.MEDIA_JPG);
+		store.storeFile(new File("src/main/resources/logo.jpg"), "38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.MEDIA_JPG);
 	}
 	
 	@Test

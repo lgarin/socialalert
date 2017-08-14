@@ -72,16 +72,16 @@ public class FileEntity extends VersionedEntity {
 		return true;
 	}
 
-	public FileMetadata getMediaFileMetadata() {
+	public FileMetadata getFileMetadata() {
 		return findFileMetadata(MediaSizeVariant.MEDIA).orElseThrow(IllegalStateException::new);
 	}
 
 	public boolean isTemporary(MediaFileFormat format) {
-		return getMediaFileMetadata().isVideo() && format == MediaFileFormat.PREVIEW_JPG;
+		return getFileMetadata().isVideo() && format == MediaFileFormat.PREVIEW_JPG;
 	}
 
 	public boolean isVideo() {
-		return getMediaFileMetadata().isVideo();
+		return getFileMetadata().isVideo();
 	}
 	
 	public String getUserId() {

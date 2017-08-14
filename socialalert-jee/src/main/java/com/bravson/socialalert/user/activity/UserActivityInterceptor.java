@@ -12,7 +12,7 @@ import javax.interceptor.InvocationContext;
 public class UserActivityInterceptor {
 
 	@Inject
-	SessionRepository sessionRepository;
+	OnlineUserRepository onlineUserRepository;
 	
 	@Inject
 	Principal principal;
@@ -20,7 +20,7 @@ public class UserActivityInterceptor {
 	@AroundInvoke
     public Object updateUserActivity(InvocationContext invocationContext) throws Exception {
 		if (principal != null) {
-			sessionRepository.addActiveUser(principal.getName());
+			onlineUserRepository.addActiveUser(principal.getName());
 		}
 		return invocationContext.proceed();
 	}

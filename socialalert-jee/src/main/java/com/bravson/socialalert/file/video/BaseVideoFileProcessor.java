@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.bravson.socialalert.file.media.MediaConfiguration;
+import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaFileProcessor;
 import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.file.media.MediaUtil;
@@ -108,7 +109,7 @@ public abstract class BaseVideoFileProcessor implements MediaFileProcessor {
 	}
 	
 	@Override
-	public void createThumbnail(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
+	public MediaFileFormat createThumbnail(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
 		Thumbnails
 			.of(getSnapshot(sourceFile))
 			.watermark(Positions.CENTER, watermarkImage, 0.25f)
@@ -116,6 +117,7 @@ public abstract class BaseVideoFileProcessor implements MediaFileProcessor {
 			.crop(Positions.CENTER)
 			.outputFormat(JPG_EXTENSION)
 			.toFile(outputFile);
+		return getThumbnailFormat();
 	}
 	
 	@Override

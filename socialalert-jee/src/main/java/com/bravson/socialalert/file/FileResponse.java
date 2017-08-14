@@ -2,6 +2,8 @@ package com.bravson.socialalert.file;
 
 import java.io.File;
 
+import com.bravson.socialalert.file.media.MediaFileFormat;
+
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -14,10 +16,7 @@ public class FileResponse {
 	private File file;
 	
 	@NonNull
-	private String contentType;
+	private MediaFileFormat format;
 	
-	@NonNull
-	private String etag;
-	
-	private Integer maxAge;
+	private boolean temporary;
 }

@@ -47,7 +47,7 @@ public class VideoFileProcessor extends BaseVideoFileProcessor {
 	}
 	
 	@Override
-	public void createPreview(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
+	public MediaFileFormat createPreview(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
 		Demuxer demuxer = Demuxer.make();
 		MuxerFormat format = MuxerFormat.guessFormat(null, outputFile.getName(), null);
 		Muxer muxer = Muxer.make(outputFile.toString(), format, null);
@@ -133,6 +133,8 @@ public class VideoFileProcessor extends BaseVideoFileProcessor {
 			VideoUtil.closeMuxer(muxer);
 			VideoUtil.closeDemuxer(demuxer);
 		}
+		
+		return getPreviewFormat();
 	}
 	
 	@Override

@@ -29,13 +29,14 @@ public class SnapshotVideoFileProcessor extends BaseVideoFileProcessor {
 	}
 	
 	@Override
-	public void createPreview(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
+	public MediaFileFormat createPreview(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
 		Thumbnails
 			.of(getSnapshot(sourceFile))
 			.watermark(Positions.CENTER, watermarkImage, 0.25f)
 			.size(config.getPreviewWidth(), config.getPreviewHeight())
 			.outputFormat(JPG_EXTENSION)
 			.toFile(outputFile);
+		return getPreviewFormat();
 	}
 	
 	@Override

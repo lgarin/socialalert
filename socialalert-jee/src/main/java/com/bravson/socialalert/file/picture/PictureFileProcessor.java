@@ -104,7 +104,7 @@ public class PictureFileProcessor implements MediaFileProcessor {
 	}
 	
 	@Override
-	public void createThumbnail(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
+	public MediaFileFormat createThumbnail(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
 		Thumbnails
 			.of(sourceFile)
 			.watermark(Positions.CENTER, watermarkImage, 0.25f)
@@ -112,16 +112,18 @@ public class PictureFileProcessor implements MediaFileProcessor {
 			.crop(Positions.CENTER)
 			.outputFormat(JPG_EXTENSION)
 			.toFile(outputFile);
+		return getThumbnailFormat();
 	}
 	
 	@Override
-	public void createPreview(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
+	public MediaFileFormat createPreview(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
 		Thumbnails
 			.of(sourceFile)
 			.watermark(Positions.CENTER, watermarkImage, 0.25f)
 			.size(config.getPreviewWidth(), config.getPreviewHeight())
 			.outputFormat(JPG_EXTENSION)
 			.toFile(outputFile);
+		return getPreviewFormat();
 	}
 	
 	@Override

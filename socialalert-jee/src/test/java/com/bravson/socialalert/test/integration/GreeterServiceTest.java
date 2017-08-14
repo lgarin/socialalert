@@ -7,6 +7,7 @@ import javax.ws.rs.core.Response.Status;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.junit.Test;
 
+@Deprecated
 public class GreeterServiceTest extends BaseIntegrationTest {
 
 	@Test
