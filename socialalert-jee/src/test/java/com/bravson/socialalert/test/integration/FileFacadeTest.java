@@ -19,7 +19,7 @@ public class FileFacadeTest extends BaseIntegrationTest {
 	}
 	
 	private String uploadPicture(String token) {
-		Response upload = createAuthRequest("/upload/picture", MediaType.WILDCARD, token).post(getPicture("src/test/resources/media/IMG_0397.JPG"));
+		Response upload = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token).post(getPicture("src/test/resources/media/IMG_0397.JPG"));
 		assertThat(upload.getStatus()).isEqualTo(Status.CREATED.getStatusCode());
 		return getLocationPath(upload);
 	}

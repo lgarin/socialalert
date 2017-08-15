@@ -26,12 +26,14 @@ import lombok.NonNull;
 public class FileService {
 
 	@Inject
+	@NonNull
 	FileRepository mediaRepository;
 
 	@Inject
+	@NonNull
 	FileStore fileStore;
 
-	private Optional<FileResponse> streamFile(String fileUri, MediaSizeVariant sizeVariant) throws IOException {
+	private Optional<FileResponse> createFileResponse(String fileUri, MediaSizeVariant sizeVariant) throws IOException {
 		FileEntity fileEntity = mediaRepository.findFile(fileUri).orElse(null);
 		if (fileEntity == null) {
 			return Optional.empty();
@@ -47,14 +49,14 @@ public class FileService {
 	}
 
 	public Optional<FileResponse> download(@NonNull String fileUri) throws IOException {
-		return streamFile(fileUri, MediaSizeVariant.MEDIA);
+		return createFileResponse(fileUri, MediaSizeVariant.MEDIA);
 	}
 	
 	public Optional<FileResponse> preview(@NonNull String fileUri) throws IOException {
-		return streamFile(fileUri, MediaSizeVariant.PREVIEW);
+		return createFileResponse(fileUri, MediaSizeVariant.PREVIEW);
 	}
 	
 	public Optional<FileResponse> thumbnail(@NonNull String fileUri) throws IOException {
-		return streamFile(fileUri, MediaSizeVariant.THUMBNAIL);
+		return createFileResponse(fileUri, MediaSizeVariant.THUMBNAIL);
 	}
 }

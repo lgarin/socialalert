@@ -1,11 +1,14 @@
 package com.bravson.socialalert.file.store;
 
-import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.Value;
 
-@AllArgsConstructor
+@Value
+@ToString(of="extension")
 public class TempFileFormat implements FileFormat {
 
 	private final FileFormat sourceFormat;
+	private final String extension = "." + System.currentTimeMillis() + ".tmp"; 
 	
 	@Override
 	public String getContentType() {
@@ -14,7 +17,7 @@ public class TempFileFormat implements FileFormat {
 	
 	@Override
 	public String getExtension() {
-		return "." + System.currentTimeMillis() + ".tmp"; 
+		return extension; 
 	}
 	
 	@Override

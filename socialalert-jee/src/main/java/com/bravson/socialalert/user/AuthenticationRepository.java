@@ -14,23 +14,23 @@ import javax.ws.rs.core.Response.Status;
 import com.bravson.socialalert.infrastructure.log.Logged;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @ManagedBean
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Logged
 public class AuthenticationRepository {
 	
-	private AuthenticationConfiguration config;
-	
-	private Client httpClient;
-
 	@Inject
-	public AuthenticationRepository(@NonNull AuthenticationConfiguration config, @NonNull Client httpClient) {
-		this.config = config;
-		this.httpClient = httpClient;
-	}
+	@NonNull
+	AuthenticationConfiguration config;
+	
+	@Inject
+	@NonNull
+	Client httpClient;
 
 	public Optional<String> requestAccessToken(@NonNull String userId, @NonNull String password) {
 		Form form = new Form().param("username", userId).param("password", password).param("grant_type", "password").param("client_id", config.getLoginClientId()).param("client_secret", config.getClientSecret());

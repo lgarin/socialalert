@@ -11,17 +11,24 @@ import com.bravson.socialalert.infrastructure.log.Logged;
 import com.bravson.socialalert.user.profile.ProfileEntity;
 import com.bravson.socialalert.user.profile.ProfileRepository;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @ManagedBean
 @Transactional
 @Logged
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class UserService {
 	
 	@Inject
+	@NonNull
 	AuthenticationRepository authenticationRepository;
 	
 	@Inject
+	@NonNull
 	ProfileRepository profileRepository;
 
 	private ProfileEntity getOrCreateProfile(String accessToken, String userId, String ipAddress) {

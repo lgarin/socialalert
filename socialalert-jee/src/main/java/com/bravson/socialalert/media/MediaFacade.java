@@ -38,10 +38,10 @@ public class MediaFacade {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public MediaInfo claimPicture(@NotEmpty @PathParam("fileUri") String fileUri, @Valid @NonNull ClaimPictureParameter parameter) {
-		return mediaClaimService.claimPicture(toMediaParameter(fileUri), parameter);
+		return mediaClaimService.claimPicture(toMediaClaimParameter(fileUri), parameter);
 	}
 	
-	private MediaClaimParameter toMediaParameter(String fileUri) {
+	private MediaClaimParameter toMediaClaimParameter(String fileUri) {
 		return MediaClaimParameter.builder().fileUri(fileUri).userId(principal.getName()).ipAddress(httpRequest.getRemoteAddr()).build();
 	}
 }

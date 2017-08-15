@@ -42,7 +42,7 @@ public class MediaFileStore {
 	@NonNull
 	FileStore fileStore;
 	
-	public FileMetadata buildFileMetadata(File file, MediaFileFormat fileFormat, String userId, String ipAddress) throws IOException {
+	public FileMetadata buildFileMetadata(@NonNull File file, @NonNull MediaFileFormat fileFormat, @NonNull String userId, @NonNull String ipAddress) throws IOException {
 		String md5 = fileStore.computeMd5Hex(file);
 		return FileMetadata.builder()
 			.md5(md5)
@@ -54,12 +54,12 @@ public class MediaFileStore {
 			.build();
 	}
 	
-	public MediaMetadata buildMediaMetadata(File inputFile, MediaFileFormat fileFormat) throws Exception {
+	public MediaMetadata buildMediaMetadata(@NonNull File inputFile, @NonNull MediaFileFormat fileFormat) throws Exception {
 		MediaFileProcessor processor =  MediaFileFormat.VIDEO_SET.contains(fileFormat) ? videoFileProcessor : pictureFileProcessor;
 		return processor.parseMetadata(inputFile);
 	}
 	
-	public FileMetadata storeVariant(File inputFile, FileMetadata fileMetadata, MediaSizeVariant sizeVariant) throws IOException {
+	public FileMetadata storeVariant(@NonNull File inputFile, @NonNull FileMetadata fileMetadata, @NonNull MediaSizeVariant sizeVariant) throws IOException {
 		switch (sizeVariant) {
 		case MEDIA:
 			return storeMedia(inputFile, fileMetadata);
@@ -74,9 +74,9 @@ public class MediaFileStore {
 	private FileMetadata storedDerivedMedia(File inputFile, FileMetadata fileMetadata, MediaSizeVariant sizeVariant) throws IOException {
 		MediaFileProcessor processor = fileMetadata.isVideo() ? videoFileProcessor : pictureFileProcessor;
 		TempFileFormat tempFormat = new TempFileFormat(processor.getFormat(sizeVariant));
-		File outputFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), tempFormat);
-		MediaFileFormat fileFormat = processor.createVariant(inputFile, outputFile, sizeVariant);
-		fileStore.changeFileFormat(fileMetadata.getMd5(), fileMetadata.getTimestamp(), tempFormat, fileFormat);
+		File tempFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), tempFormat);
+		MediaFileFormat fileFormat = processor.createVariant(inputFile, tempFile, sizeVariant);
+		File outputFile = fileStore.changeFileFormat(fileMetadata.getMd5(), fileMetadata.getTimestamp(), tempFormat, fileFormat);
 		return buildFileMetadata(outputFile, fileFormat, fileMetadata.getUserId(), fileMetadata.getIpAddress());
 	}
 
