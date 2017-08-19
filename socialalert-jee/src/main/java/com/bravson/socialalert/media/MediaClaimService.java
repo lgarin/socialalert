@@ -8,8 +8,6 @@ import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response.Status;
 
-import org.slf4j.Logger;
-
 import com.bravson.socialalert.file.FileEntity;
 import com.bravson.socialalert.file.FileRepository;
 import com.bravson.socialalert.infrastructure.log.Logged;
@@ -27,9 +25,6 @@ public class MediaClaimService {
 	
 	@Inject
 	MediaRepository mediaRepository;
-	
-	@Inject
-	Logger logger;
 	
 	@Inject
 	UserInfoSupplier userRepository;

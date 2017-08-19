@@ -15,8 +15,10 @@ import com.bravson.socialalert.file.FileMetadata;
 import com.bravson.socialalert.file.MediaFileStore;
 import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaMetadata;
+import com.bravson.socialalert.file.media.MediaSizeVariant;
 import com.bravson.socialalert.file.picture.PictureFileProcessor;
 import com.bravson.socialalert.file.store.FileStore;
+import com.bravson.socialalert.file.store.TempFileFormat;
 import com.bravson.socialalert.file.video.SnapshotVideoFileProcessor;
 
 import static org.mockito.Mockito.*;
@@ -89,5 +91,47 @@ public class MediaFileStoreTest extends BaseServiceTest {
 		verifyNoMoreInteractions(fileStore, pictureFileProcessor);
 	}
 	
-	// TODO add test for storeVariant
+	@Test
+	public void storeMedia() throws Exception {
+		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
+		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_JPG).userId("test").ipAddress("1.2.3.4").build();
+		
+		FileMetadata result = mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.MEDIA);
+		assertThat(result).isSameAs(fileMetadata);
+		
+		verify(fileStore).storeFile(inputFile, fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileMetadata.getFileFormat());
+		verifyNoMoreInteractions(fileStore, videoFileProcessor, pictureFileProcessor);
+	}
+	
+	@Test
+	public void storeThumbnail() throws Exception {
+		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
+		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_JPG).userId("test").ipAddress("1.2.3.4").build();
+		File tempFile = new File("src/test/resources/media/temp.jpg");
+		File outputFile = new File("src/test/resources/media/out.jpg");
+		
+		when(fileStore.createEmptyFile(eq(fileMetadata.getMd5()), eq(fileMetadata.getTimestamp()), any(TempFileFormat.class))).thenReturn(tempFile);
+		when(pictureFileProcessor.createVariant(inputFile, tempFile, MediaSizeVariant.THUMBNAIL)).thenReturn(MediaFileFormat.THUMBNAIL_JPG);
+		when(fileStore.changeFileFormat(eq(fileMetadata.getMd5()), eq(fileMetadata.getTimestamp()), any(TempFileFormat.class), eq(MediaFileFormat.THUMBNAIL_JPG))).thenReturn(outputFile);
+		when(fileStore.computeMd5Hex(outputFile)).thenReturn("456");
+		
+		FileMetadata result = mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);
+		assertThat(result).isEqualTo(FileMetadata.builder().md5("456").fileFormat(MediaFileFormat.THUMBNAIL_JPG).userId(fileMetadata.getUserId()).ipAddress(fileMetadata.getIpAddress()).contentLength(0L).timestamp(result.getTimestamp()).build());
+	}
+	
+	@Test
+	public void storePreview() throws Exception {
+		File inputFile = new File("src/test/resources/media/IMG_0236.MOV");
+		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_MOV).userId("test").ipAddress("1.2.3.4").build();
+		File tempFile = new File("src/test/resources/media/temp.jpg");
+		File outputFile = new File("src/test/resources/media/out.jpg");
+		
+		when(fileStore.createEmptyFile(eq(fileMetadata.getMd5()), eq(fileMetadata.getTimestamp()), any(TempFileFormat.class))).thenReturn(tempFile);
+		when(videoFileProcessor.createVariant(inputFile, tempFile, MediaSizeVariant.PREVIEW)).thenReturn(MediaFileFormat.PREVIEW_JPG);
+		when(fileStore.changeFileFormat(eq(fileMetadata.getMd5()), eq(fileMetadata.getTimestamp()), any(TempFileFormat.class), eq(MediaFileFormat.PREVIEW_JPG))).thenReturn(outputFile);
+		when(fileStore.computeMd5Hex(outputFile)).thenReturn("456");
+		
+		FileMetadata result = mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.PREVIEW);
+		assertThat(result).isEqualTo(FileMetadata.builder().md5("456").fileFormat(MediaFileFormat.PREVIEW_JPG).userId(fileMetadata.getUserId()).ipAddress(fileMetadata.getIpAddress()).contentLength(0L).timestamp(result.getTimestamp()).build());
+	}
 }

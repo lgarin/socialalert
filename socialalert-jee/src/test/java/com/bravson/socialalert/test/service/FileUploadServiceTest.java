@@ -58,7 +58,7 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).build();
 		when(mediaFileStore.buildMediaMetadata(inputFile, fileFormat)).thenReturn(mediaMetadata);
 		
-		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(1000L).fileFormat(fileFormat).userId(userId).ipAddress(ipAddress).build();
+		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(fileFormat).userId(userId).ipAddress(ipAddress).build();
 		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat, userId, ipAddress)).thenReturn(fileMetadata);
 		
 		FileEntity fileEntity = FileEntity.of(fileMetadata, mediaMetadata);
@@ -81,7 +81,7 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).timestamp(Instant.EPOCH).build();
 		when(mediaFileStore.buildMediaMetadata(inputFile, fileFormat)).thenReturn(mediaMetadata);
 		
-		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(1000L).fileFormat(fileFormat).userId(userId).ipAddress(ipAddress).build();
+		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(fileFormat).userId(userId).ipAddress(ipAddress).build();
 		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat, userId, ipAddress)).thenReturn(fileMetadata);
 		
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.empty());
