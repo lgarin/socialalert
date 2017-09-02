@@ -1,7 +1,6 @@
 package com.bravson.socialalert.user;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.function.Function;
 
 import javax.annotation.ManagedBean;
@@ -34,9 +33,18 @@ public class UserInfoSupplier {
 	@NonNull
 	ProfileRepository profileRepository;
 	
+	private Function<ProfileEntity, UserInfo> getUserInfoMapper(UserContent content) {
+		if (onlineUserRepository.isUserActive(content.getCreatorId())) {
+			return ProfileEntity::toOnlineUserInfo;
+		} else {
+			return ProfileEntity::toOfflineUserInfo;
+		}
+	}
+	
 	public <T extends UserContent> T fillUserInfo(@NonNull T content) {
-		Optional<ProfileEntity> profile = profileRepository.findByUserId(content.getCreatorId());
-		profile.map(getUserInfoMapper(content)).ifPresent(content::setCreator);
+		profileRepository.findByUserId(content.getCreatorId())
+			.map(getUserInfoMapper(content))
+			.ifPresent(content::setCreator);
 		return content;
 	}
 	
@@ -45,13 +53,5 @@ public class UserInfoSupplier {
 			fillUserInfo(content);
 		}
 		return collection;
-	}
-	
-	private Function<ProfileEntity, UserInfo> getUserInfoMapper(UserContent content) {
-		if (onlineUserRepository.isUserActive(content.getCreatorId())) {
-			return ProfileEntity::toOnlineUserInfo;
-		} else {
-			return ProfileEntity::toOfflineUserInfo;
-		}
 	}
 }

@@ -31,14 +31,14 @@ public class UserService {
 	@NonNull
 	ProfileRepository profileRepository;
 
-	private ProfileEntity getOrCreateProfile(String accessToken, String userId, String ipAddress) {
-		Optional<ProfileEntity> profile = profileRepository.findByUserId(userId);
-		if (profile.isPresent()) {
-			return profile.get();
-		}
+	private ProfileEntity createProfile(String accessToken, String userId, String ipAddress) {
 		return authenticationRepository.findUserInfo(accessToken)
 				.map(userInfo -> profileRepository.createProfile(userInfo, ipAddress))
 				.orElseThrow(NotFoundException::new);
+	}
+	
+	private ProfileEntity getOrCreateProfile(String accessToken, String userId, String ipAddress) {
+		return profileRepository.findByUserId(userId).orElseGet(() -> createProfile(accessToken, userId, ipAddress));
 	}
 	
 	private LoginResponse toLoginResponse(String accessToken, String userId, String ipAddress) {
