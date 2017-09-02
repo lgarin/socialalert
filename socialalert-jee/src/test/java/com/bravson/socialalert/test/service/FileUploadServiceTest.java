@@ -1,6 +1,7 @@
 package com.bravson.socialalert.test.service;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -89,9 +90,9 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		FileEntity fileEntity = FileEntity.of(fileMetadata, mediaMetadata);
 		when(mediaRepository.storeMedia(fileMetadata, mediaMetadata)).thenReturn(fileEntity);
 		
-		when(mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.MEDIA)).thenReturn(fileMetadata);
-		when(mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.PREVIEW)).thenReturn(fileMetadata);
-		when(mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL)).thenReturn(fileMetadata);
+		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.MEDIA);
+		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);
+		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.PREVIEW);
 		
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).userId(userId).ipAddress(ipAddress).build();
 		FileMetadata result = fileUploadService.uploadMedia(param);
@@ -133,9 +134,9 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		FileEntity fileEntity = FileEntity.of(fileMetadata, mediaMetadata);
 		when(mediaRepository.storeMedia(fileMetadata, mediaMetadata)).thenReturn(fileEntity);
 		
-		when(mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.MEDIA)).thenReturn(fileMetadata);
-		when(mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.PREVIEW)).thenReturn(fileMetadata);
-		when(mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL)).thenReturn(fileMetadata);
+		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.MEDIA);
+		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);
+		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.PREVIEW);
 		
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.MOV_MEDIA_TYPE).userId(userId).ipAddress(ipAddress).build();
 		FileMetadata result = fileUploadService.uploadMedia(param);
