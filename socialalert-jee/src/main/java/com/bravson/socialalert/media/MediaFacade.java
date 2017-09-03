@@ -17,8 +17,10 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.bravson.socialalert.user.activity.UserActivity;
 
+import io.swagger.annotations.Api;
 import lombok.NonNull;
 
+@Api
 @Path("/media/claim")
 @RolesAllowed("user")
 @UserActivity

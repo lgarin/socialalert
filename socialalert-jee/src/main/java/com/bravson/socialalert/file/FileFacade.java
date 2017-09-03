@@ -3,6 +3,7 @@ package com.bravson.socialalert.file;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.nio.file.Files;
 import java.security.Principal;
 
@@ -18,6 +19,7 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
@@ -27,14 +29,23 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.core.UriInfo;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.bravson.socialalert.UriConstants;
 import com.bravson.socialalert.file.media.MediaFileConstants;
 import com.bravson.socialalert.user.activity.UserActivity;
 
-@Path("/" + UriConstants.FILE_SERVICE_URI)
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.ResponseHeader;
+
+@Api(tags={"file"})
+@Path("/file")
 @RolesAllowed("user")
 @UserActivity
 public class FileFacade {
@@ -54,6 +65,9 @@ public class FileFacade {
 	@Context
 	Request request;
 	
+	@Context
+	UriInfo uriInfo;
+	
 	@Inject
 	FileService fileService;
 	
@@ -68,7 +82,7 @@ public class FileFacade {
 		EntityTag entityTag = new EntityTag(fileResponse.getFormat().name());
 		ResponseBuilder response = request.evaluatePreconditions(entityTag);
 		if (response == null) {
-			response = Response.ok(createStreamingOutput(fileResponse.getFile()), fileResponse.getFormat().getContentType());
+			response = Response.ok(createStreamingOutput(fileResponse.getFile()));
 			response.tag(entityTag);
 			response.header("Content-Disposition", "attachment; filename=\"" + fileResponse.getFile().getName() + "\"");
 	        response.header("Content-Length", fileResponse.getFile().length());
@@ -85,38 +99,69 @@ public class FileFacade {
 	
 	@GET
 	@Path("/download/{fileUri : .+}")
-	public Response download(@NotEmpty @PathParam("fileUri") String fileUri) throws IOException {
+	@ApiOperation(value="Download a file in the same format as it has been uploaded.", authorizations= {@Authorization("user")})
+	@ApiResponses(value= {
+			@ApiResponse(code = 200, message = "File will be streamed."),
+			@ApiResponse(code = 404, message = "No media exists with this uri.") })
+	public Response download(
+			@ApiParam(value="The relative file uri.", required=true)
+			@NotEmpty @PathParam("fileUri") String fileUri) throws IOException {
 		return createStreamResponse(fileService.download(fileUri).orElseThrow(NotFoundException::new));
 	}
 	
 	@GET
 	@Path("/preview/{fileUri : .+}")
-	public Response preview(@NotEmpty @PathParam("fileUri") String fileUri) throws IOException {
+	@ApiOperation(value="Download a file in the preview format.", authorizations= {@Authorization("user")},
+		produces=MediaFileConstants.JPG_MEDIA_TYPE + " or " + MediaFileConstants.MP4_MEDIA_TYPE, 
+		notes="For video media, the preview is initialy a still picture and the video preview is only created after a delay.")
+	@ApiResponses(value= {
+			@ApiResponse(code = 200, message = "File will be streamed."),
+			@ApiResponse(code = 404, message = "No media exists with this uri.") })
+	public Response preview(
+			@ApiParam(value="The relative file uri.", required=true)
+			@NotEmpty @PathParam("fileUri") String fileUri) throws IOException {
 		return createStreamResponse(fileService.preview(fileUri).orElseThrow(NotFoundException::new));
 	}
 	
 	@GET
 	@Path("/thumbnail/{fileUri : .+}")
+	@Produces(MediaFileConstants.JPG_MEDIA_TYPE)
+	@ApiOperation(value="Download a jpeg thumbnail of the media.", authorizations= {@Authorization("user")})
+	@ApiResponses(value= {
+			@ApiResponse(code = 200, message = "File will be streamed."),
+			@ApiResponse(code = 404, message = "No media exists with this uri.") })
 	public Response thumbnail(@NotEmpty @PathParam("fileUri") String fileUri) throws IOException {
 		return createStreamResponse(fileService.thumbnail(fileUri).orElseThrow(NotFoundException::new));
 	}
 	
 	private Response createUploadResponse(FileMetadata metadata) {
-		URI fileUri = URI.create(UriConstants.FILE_SERVICE_URI + "/download/" + metadata.buildFileUri());
+		URI fileUri = uriInfo.getBaseUriBuilder().path(FileFacade.class).path("download").path(metadata.buildFileUri()).build();
 		return Response.created(fileUri).build();
 	}
 	
 	@POST
 	@Consumes(MediaFileConstants.JPG_MEDIA_TYPE)
 	@Path("/upload/picture")
-	public Response uploadPicture(@NotNull File inputFile) throws IOException, ServletException {
+	@ApiOperation(value="Upload a picture file.", authorizations= {@Authorization("user")})
+	@ApiResponses(value = { 
+		      @ApiResponse(code = 201, message = "The picture is ready to be claimed.", 
+		                   responseHeaders = @ResponseHeader(name = "Location", description = "The media url", response = URL.class)),
+		      @ApiResponse(code = 413, message = "The file is too large."),
+		      @ApiResponse(code = 415, message = "The media is not in the expected format.")})
+	public Response uploadPicture(@ApiParam(required=true) @NotNull File inputFile) throws IOException, ServletException {
 		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile)));
 	}
 	
 	@POST
 	@Consumes({MediaFileConstants.MOV_MEDIA_TYPE, MediaFileConstants.MP4_MEDIA_TYPE})
 	@Path("/upload/video")
-	public Response uploadVideo(@NotNull File inputFile) throws IOException, ServletException {
+	@ApiOperation(value="Upload a video file.", authorizations= {@Authorization("user")})
+	@ApiResponses(value = { 
+		      @ApiResponse(code = 201, message = "The video is ready to be claimed.", 
+		                   responseHeaders = @ResponseHeader(name = "Location", description = "The media url", response = URL.class)),
+		      @ApiResponse(code = 413, message = "The file is too large."),
+		      @ApiResponse(code = 415, message = "The media is not in the expected format.")})
+	public Response uploadVideo(@ApiParam(required=true) @NotNull File inputFile) throws IOException, ServletException {
 		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile)));
 	}
 

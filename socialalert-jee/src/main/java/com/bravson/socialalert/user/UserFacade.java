@@ -24,6 +24,13 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.bravson.socialalert.user.activity.UserActivity;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
+@Api(tags= {"user"})
 @Path("/user")
 @RolesAllowed("user")
 public class UserFacade {
@@ -39,13 +46,21 @@ public class UserFacade {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/login")
 	@PermitAll
-	public LoginResponse login(@Valid @NotNull LoginParameter param) {
+	@ApiOperation(value="Login an existing user.")
+	@ApiResponses(value= {
+		@ApiResponse(code = 200, message = "Login successfull."),
+		@ApiResponse(code = 401, message = "Login failed.") })
+	public LoginResponse login(@ApiParam(required=true) @Valid @NotNull LoginParameter param) {
 		return userService.login(param, request.getRemoteAddr()).orElseThrow(() -> new WebApplicationException(Status.UNAUTHORIZED));
 	}
 	
 	@POST
 	@Path("/logout")
-	public Response logout(@NotEmpty @HeaderParam("Authorization") String authorization, @Context HttpServletRequest httpRequest) throws ServletException {
+	@ApiOperation(value="Logout an existing user.")
+	@ApiResponses(value= {
+			@ApiResponse(code = 204, message = "Logout successfull."),
+			@ApiResponse(code = 400, message = "Logout failed.") })
+	public Response logout(@ApiParam(value="The authorization token returned by the login function", required=true) @NotEmpty @HeaderParam("Authorization") String authorization, @Context HttpServletRequest httpRequest) throws ServletException {
 		if (!userService.logout(authorization)) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
@@ -58,7 +73,11 @@ public class UserFacade {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/current")
 	@UserActivity
-	public UserInfo current(@NotEmpty @HeaderParam("Authorization") String authorization) {
+	@ApiOperation(value="Read information about the currently logged in user.")
+	@ApiResponses(value= {
+			@ApiResponse(code = 200, message = "Current user returned with success."),
+			@ApiResponse(code = 404, message = "Current user could not be found.") })
+	public UserInfo current(@ApiParam(value="The authorization token returned by the login function", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		return userService.findUserInfo(authorization).orElseThrow(NotFoundException::new);
 	}
 }
