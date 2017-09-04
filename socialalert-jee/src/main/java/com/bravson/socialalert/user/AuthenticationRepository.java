@@ -1,10 +1,16 @@
 package com.bravson.socialalert.user;
 
+import java.io.ByteArrayInputStream;
+import java.util.Base64;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonReader;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
@@ -24,6 +30,8 @@ import lombok.NonNull;
 @Logged
 public class AuthenticationRepository {
 	
+	private static final Pattern JWT_TOKEN_PATTERN = Pattern.compile("^Bearer [A-Z0-9_\\-]+\\.([A-Z0-9_\\-]+)\\.[A-Z0-9_\\-]+$", Pattern.CASE_INSENSITIVE); 
+	
 	@Inject
 	@NonNull
 	AuthenticationConfiguration config;
@@ -31,6 +39,19 @@ public class AuthenticationRepository {
 	@Inject
 	@NonNull
 	Client httpClient;
+	
+	public Optional<String> extractUserId(@NonNull String accessToken) {
+		Matcher matcher = JWT_TOKEN_PATTERN.matcher(accessToken);
+		if (matcher.matches()) {
+			byte[] body = Base64.getDecoder().decode(matcher.group(1));
+			try (JsonReader reader = Json.createReader(new ByteArrayInputStream(body))) {
+				return Optional.ofNullable(reader.readObject().getString("sub"));
+			} catch (Exception e) {
+				return Optional.empty();
+			}
+		}
+		return Optional.empty();
+	}
 
 	public Optional<String> requestAccessToken(@NonNull String userId, @NonNull String password) {
 		Form form = new Form().param("username", userId).param("password", password).param("grant_type", "password").param("client_id", config.getLoginClientId()).param("client_secret", config.getClientSecret());

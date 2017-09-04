@@ -31,18 +31,18 @@ public class UserService {
 	@NonNull
 	ProfileRepository profileRepository;
 
-	private ProfileEntity createProfile(String accessToken, String userId, String ipAddress) {
+	private ProfileEntity createProfile(String accessToken, String ipAddress) {
 		return authenticationRepository.findUserInfo(accessToken)
 				.map(userInfo -> profileRepository.createProfile(userInfo, ipAddress))
 				.orElseThrow(NotFoundException::new);
 	}
 	
 	private ProfileEntity getOrCreateProfile(String accessToken, String userId, String ipAddress) {
-		return profileRepository.findByUserId(userId).orElseGet(() -> createProfile(accessToken, userId, ipAddress));
+		return profileRepository.findByUserId(userId).orElseGet(() -> createProfile(accessToken, ipAddress));
 	}
 	
-	private LoginResponse toLoginResponse(String accessToken, String userId, String ipAddress) {
-		ProfileEntity profile = getOrCreateProfile(accessToken, userId, ipAddress);
+	private LoginResponse toLoginResponse(String accessToken, String ipAddress) {
+		ProfileEntity profile = getOrCreateProfile(accessToken, authenticationRepository.extractUserId(accessToken).get(), ipAddress);
 		return LoginResponse.builder()
 				.accessToken(accessToken)
 				.username(profile.getUsername())
@@ -56,7 +56,7 @@ public class UserService {
 	
 	public Optional<LoginResponse> login(@NonNull LoginParameter param, @NonNull String ipAddress) {
 		return authenticationRepository.requestAccessToken(param.getUserId(), param.getPassword())
-				.map(token -> toLoginResponse(token, param.getUserId(), ipAddress));
+				.map(token -> toLoginResponse(token, ipAddress));
 	}
 	
 	public boolean logout(@NonNull  String authorization) {
