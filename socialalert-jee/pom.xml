@@ -191,5 +191,19 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		<profile>
+			<id>test-profile</id>
+			 <build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-war-plugin</artifactId>
+						<configuration>
+							<warSourceDirectory>${basedir}/src/main/test-webapp</warSourceDirectory>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 </project>
