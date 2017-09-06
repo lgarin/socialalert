@@ -84,6 +84,10 @@ public class FileEntity extends VersionedEntity {
 		return getFileMetadata().isVideo();
 	}
 	
+	public boolean isPicture() {
+		return getFileMetadata().isPicture();
+	}
+	
 	public String getUserId() {
 		return versionInfo.getUserId();
 	}

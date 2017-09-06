@@ -32,6 +32,8 @@ public enum MediaFileFormat implements FileFormat, Comparable<MediaFileFormat> {
 	
 	public static EnumSet<MediaFileFormat> VIDEO_SET = EnumSet.of(MEDIA_MOV, MEDIA_MP4, PREVIEW_MP4);
 	
+	public static EnumSet<MediaFileFormat> PICTURE_SET = EnumSet.of(MEDIA_JPG, PREVIEW_JPG, THUMBNAIL_JPG);
+	
 	public static Optional<MediaFileFormat> fromMediaContentType(@NonNull String contentType) {
 		return MEDIA_SET.stream().filter(f -> f.getContentType().equals(contentType)).findAny();
 	}

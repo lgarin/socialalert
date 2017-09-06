@@ -65,4 +65,8 @@ public class FileMetadata {
 	public boolean isVideo() {
 		return MediaFileFormat.VIDEO_SET.contains(fileFormat);
 	}
+	
+	public boolean isPicture() {
+		return MediaFileFormat.PICTURE_SET.contains(fileFormat);
+	}
 }

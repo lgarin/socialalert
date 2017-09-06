@@ -33,7 +33,7 @@ public class MediaClaimService {
 		if (mediaRepository.findMedia(mediaParameter.getFileUri()).isPresent()) {
 			throw new ClientErrorException(Status.CONFLICT);
 		}
-		FileEntity fileEntity = fileRepository.findFile(mediaParameter.getFileUri()).orElseThrow(NotFoundException::new);
+		FileEntity fileEntity = fileRepository.findFile(mediaParameter.getFileUri()).filter(FileEntity::isPicture).orElseThrow(NotFoundException::new);
 		if (!fileEntity.getUserId().equals(mediaParameter.getUserId())) {
 			throw new ForbiddenException();
 		}

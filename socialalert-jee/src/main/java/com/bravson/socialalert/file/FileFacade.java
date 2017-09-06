@@ -142,26 +142,26 @@ public class FileFacade {
 	@POST
 	@Consumes(MediaFileConstants.JPG_MEDIA_TYPE)
 	@Path("/upload/picture")
-	@ApiOperation(value="Upload a picture file.", authorizations= {@Authorization("user")})
+	@ApiOperation(value="Upload a picture file.", authorizations= {@Authorization("auth")}, code=201)
 	@ApiResponses(value = { 
 		      @ApiResponse(code = 201, message = "The picture is ready to be claimed.", 
 		                   responseHeaders = @ResponseHeader(name = "Location", description = "The media url", response = URL.class)),
 		      @ApiResponse(code = 413, message = "The file is too large."),
 		      @ApiResponse(code = 415, message = "The media is not in the expected format.")})
-	public Response uploadPicture(@ApiParam(required=true) @NotNull File inputFile) throws IOException, ServletException {
+	public Response uploadPicture(@ApiParam(value="the file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile) throws IOException, ServletException {
 		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile)));
 	}
 	
 	@POST
 	@Consumes({MediaFileConstants.MOV_MEDIA_TYPE, MediaFileConstants.MP4_MEDIA_TYPE})
 	@Path("/upload/video")
-	@ApiOperation(value="Upload a video file.", authorizations= {@Authorization("user")})
+	@ApiOperation(value="Upload a video file.", authorizations= {@Authorization("auth")}, code=201)
 	@ApiResponses(value = { 
 		      @ApiResponse(code = 201, message = "The video is ready to be claimed.", 
 		                   responseHeaders = @ResponseHeader(name = "Location", description = "The media url", response = URL.class)),
 		      @ApiResponse(code = 413, message = "The file is too large."),
 		      @ApiResponse(code = 415, message = "The media is not in the expected format.")})
-	public Response uploadVideo(@ApiParam(required=true) @NotNull File inputFile) throws IOException, ServletException {
+	public Response uploadVideo(@ApiParam(value="the file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile) throws IOException, ServletException {
 		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile)));
 	}
 
