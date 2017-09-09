@@ -35,6 +35,7 @@ public class FileEntity extends VersionedEntity {
 	@Getter
 	@NonNull
 	@Embedded
+	@IndexedEmbedded
 	private MediaMetadata mediaMetadata;
 	
 	

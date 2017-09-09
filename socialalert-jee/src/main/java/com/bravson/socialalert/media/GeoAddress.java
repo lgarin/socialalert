@@ -23,12 +23,12 @@ import lombok.Setter;
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Setter(AccessLevel.NONE)
 @Indexed
-@Spatial(spatialMode=SpatialMode.HASH)
+@Spatial(name="coordinates", spatialMode=SpatialMode.HASH)
 public class GeoAddress {
 
-	@Latitude
+	@Latitude(of="coordinates")
 	private Double latitude;
-	@Longitude
+	@Longitude(of="coordinates")
 	private Double longitude;
 	@Field
 	private String formattedAddress;

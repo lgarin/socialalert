@@ -5,6 +5,8 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 
+import org.hibernate.search.annotations.IndexedEmbedded;
+
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -28,5 +30,6 @@ public abstract class VersionedEntity {
 	
 	@NonNull
 	@Embedded
+	@IndexedEmbedded
 	protected VersionInfo versionInfo;
 }

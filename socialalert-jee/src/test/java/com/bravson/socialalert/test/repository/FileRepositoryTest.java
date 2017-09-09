@@ -41,7 +41,7 @@ public class FileRepositoryTest extends BaseRepositoryTest {
     
     @Test
     public void queryEmptyRepositoryByIpAddressPattern() {
-    	List<FileEntity> result = repository.findByIpAddressPattern("1.1");
+    	List<FileEntity> result = repository.findByIpAddressPattern("1.1.*");
     	assertThat(result).isEmpty();
     }
     
@@ -49,8 +49,9 @@ public class FileRepositoryTest extends BaseRepositoryTest {
     public void queryByIpAddressPattern() {
     	FileMetadata fileMetadata = FileMetadata.builder().md5("xyz").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_JPG).userId("test").ipAddress("1.1.1.1").build();
     	MediaMetadata mediaMetadata = MediaMetadata.builder().width(1200).height(1600).build();
-    	FileEntity entity = repository.storeMedia(fileMetadata, mediaMetadata);
-    	commitTransaction();
+    	FileEntity entity = FileEntity.of(fileMetadata, mediaMetadata);
+    	persistAndIndex(entity);
+    	
     	List<FileEntity> result = repository.findByIpAddressPattern("1.1.*");
     	assertThat(result).containsOnly(entity);
     }

@@ -1,6 +1,6 @@
 package com.bravson.socialalert.media;
 
-public enum MediaType {
+public enum MediaKind {
 
 	PICTURE,
 	VIDEO;

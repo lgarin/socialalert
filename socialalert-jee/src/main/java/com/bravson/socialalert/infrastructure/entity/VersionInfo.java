@@ -6,6 +6,7 @@ import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -16,6 +17,7 @@ import lombok.Setter;
 @Embeddable
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Setter(AccessLevel.NONE)
+@Indexed
 public class VersionInfo {
 
 	@Field
@@ -25,6 +27,7 @@ public class VersionInfo {
 	private String ipAddress;
 	
 	@Convert(converter=InstantAttributeConverter.class)
+	@Field
 	private Instant creation;
 	
 	@Convert(converter=InstantAttributeConverter.class)

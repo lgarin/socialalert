@@ -31,7 +31,6 @@ public class BaseRepositoryTest extends Assertions {
     @After
     public void closeEntityManager() {
     	if (entityManager != null) {
-    		entityManager.getTransaction().rollback();
     		entityManager.close();
     	}
     }
@@ -39,13 +38,13 @@ public class BaseRepositoryTest extends Assertions {
     protected FullTextEntityManager getEntityManager() {
     	if (entityManager == null) {
     		entityManager = Search.getFullTextEntityManager(entityManagerFactory.createEntityManager());
-    		entityManager.getTransaction().begin();
     	}
     	return entityManager;
     }
     
-    protected void commitTransaction() {
-    	getEntityManager().getTransaction().commit();
-    	getEntityManager().getTransaction().begin();
+    protected void persistAndIndex(Object entity) {
+    	getEntityManager().persist(entity);
+    	getEntityManager().index(entity);
+    	getEntityManager().flushToIndexes();
     }
 }

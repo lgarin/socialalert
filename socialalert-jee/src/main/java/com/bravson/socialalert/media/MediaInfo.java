@@ -22,7 +22,7 @@ public class MediaInfo implements UserContent {
 
 	private String mediaUri;
     
-    private MediaType type;
+    private MediaKind kind;
     
     private String creatorId;
 

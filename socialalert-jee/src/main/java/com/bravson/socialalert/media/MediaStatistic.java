@@ -3,6 +3,7 @@ package com.bravson.socialalert.media;
 import javax.persistence.Embeddable;
 
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,6 +18,7 @@ import lombok.Setter;
 @Embeddable
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Setter(AccessLevel.NONE)
+@Indexed
 public class MediaStatistic {
 
 	@Field

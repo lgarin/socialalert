@@ -6,6 +6,7 @@ import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
 
 import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaSizeVariant;
@@ -26,9 +27,11 @@ import lombok.Setter;
 @Embeddable
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Setter(AccessLevel.NONE)
+@Indexed
 public class FileMetadata {
 
 	@NonNull
+	@Field
 	private String md5;
 	
 	@NonNull
@@ -37,6 +40,7 @@ public class FileMetadata {
 	private Instant timestamp;
 	
 	@NonNull
+	@Field
 	private Long contentLength;
 	
 	@NonNull
@@ -48,6 +52,7 @@ public class FileMetadata {
 	private String ipAddress;
 	
 	@NonNull
+	@Field
 	private MediaFileFormat fileFormat;
 
 	public String buildFileUri() {

@@ -13,6 +13,7 @@
         <properties>
             <property name="hibernate.ogm.datastore.provider" value="map"/>
             <property name="hibernate.search.default.directory_provider" value="ram"/>
+           	<property name="hibernate.hbm2ddl.auto" value="create"/>
         </properties>
     </persistence-unit>
 </persistence>

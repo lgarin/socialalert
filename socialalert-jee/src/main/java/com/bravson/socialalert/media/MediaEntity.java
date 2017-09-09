@@ -9,9 +9,16 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
+import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
+import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
+import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.AnalyzerDef;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.TokenFilterDef;
+import org.hibernate.search.annotations.TokenizerDef;
 
 import com.bravson.socialalert.file.FileEntity;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
@@ -24,6 +31,12 @@ import lombok.NoArgsConstructor;
 @Entity(name="Media")
 @Indexed
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
+@AnalyzerDef(name = "languageAnalyzer",
+tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
+filters = {
+  @TokenFilterDef(factory = LowerCaseFilterFactory.class),
+  @TokenFilterDef(factory = SnowballPorterFilterFactory.class)
+})
 public class MediaEntity extends VersionedEntity {
 
 	@Getter
@@ -32,39 +45,46 @@ public class MediaEntity extends VersionedEntity {
 
 	@Getter
 	@Field
-	private MediaType type;
+	private MediaKind kind;
 	
 	@Getter
 	@Field
+	@Analyzer(definition="languageAnalyzer")
     private String title;
 	
 	@Getter
 	@Field
+	@Analyzer(definition="languageAnalyzer")
 	private String description;
 
 	@Getter
 	@Embedded
+	@IndexedEmbedded
 	private GeoAddress location;
 	
 	@Getter
 	@Embedded
+	@IndexedEmbedded
 	private MediaStatistic statistic;
 	
 	@Getter
 	@ElementCollection(fetch=FetchType.EAGER)
 	@IndexedEmbedded
+	@Field
 	private List<String> categories;
 	
 	@Getter
 	@ElementCollection(fetch=FetchType.EAGER)
 	@IndexedEmbedded
+	@Field
+	@Analyzer(definition="languageAnalyzer")
 	private List<String> tags;
 
 	public static MediaEntity of(FileEntity file, ClaimMediaParameter parameter, VersionInfo versionInfo) {
 		MediaEntity entity = new MediaEntity();
 		entity.versionInfo = versionInfo;
 		entity.id = file.getId();
-		entity.type = file.isVideo() ? MediaType.VIDEO : MediaType.PICTURE;
+		entity.kind = file.isVideo() ? MediaKind.VIDEO : MediaKind.PICTURE;
 		entity.file = file;
 		entity.title = parameter.getTitle();
 		entity.description = parameter.getDescription();
@@ -78,7 +98,7 @@ public class MediaEntity extends VersionedEntity {
 	public MediaInfo toMediaInfo() {
 		MediaInfo info = new MediaInfo();
 		info.setMediaUri(file.getId());
-		info.setType(type);
+		info.setKind(kind);
 		info.setTitle(title);
 		info.setDescription(description);
 		info.setTags(new ArrayList<>(tags));
