@@ -32,7 +32,7 @@ public class MediaRepository {
 		return Optional.ofNullable(entityManager.find(MediaEntity.class, mediaUri));
 	}
 
-	public MediaEntity storeMedia(FileEntity file, ClaimPictureParameter parameter, String userId, String ipAddress) {
+	public MediaEntity storeMedia(FileEntity file, ClaimMediaParameter parameter, String userId, String ipAddress) {
 		MediaEntity media = MediaEntity.of(file, parameter, VersionInfo.of(userId, ipAddress));
 		entityManager.persist(media);
 		return media;

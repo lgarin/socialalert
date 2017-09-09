@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
-public class ClaimPictureParameter {
+public class ClaimMediaParameter {
 	@NotEmpty @Size(max=MediaConstants.MAX_TITLE_LENGTH)
 	private String title;
 	

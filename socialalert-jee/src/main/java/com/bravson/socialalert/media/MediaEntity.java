@@ -60,7 +60,7 @@ public class MediaEntity extends VersionedEntity {
 	@IndexedEmbedded
 	private List<String> tags;
 
-	public static MediaEntity of(FileEntity file, ClaimPictureParameter parameter, VersionInfo versionInfo) {
+	public static MediaEntity of(FileEntity file, ClaimMediaParameter parameter, VersionInfo versionInfo) {
 		MediaEntity entity = new MediaEntity();
 		entity.versionInfo = versionInfo;
 		entity.id = file.getId();
@@ -83,7 +83,6 @@ public class MediaEntity extends VersionedEntity {
 		info.setDescription(description);
 		info.setTags(new ArrayList<>(tags));
 		info.setCategories(new ArrayList<>(categories));
-		info.setCreation(versionInfo.getCreation());
 		if (location != null) {
 			info.setCountry(location.getCountry());
 			info.setLocality(location.getLocality());
@@ -95,12 +94,13 @@ public class MediaEntity extends VersionedEntity {
 		info.setDislikeCount(statistic.getDislikeCount());
 		info.setCommentCount(statistic.getCommentCount());
 		info.setCreatorId(file.getFileMetadata().getUserId());
+		info.setTimestamp(file.getFileMetadata().getTimestamp());
 		info.setCameraMaker(file.getMediaMetadata().getCameraMaker());
 		info.setCameraModel(file.getMediaMetadata().getCameraModel());
 		info.setHeight(file.getMediaMetadata().getHeight());
 		info.setWidth(file.getMediaMetadata().getWidth());
 		info.setDuration(file.getMediaMetadata().getDuration());
-		info.setTimestamp(file.getFileMetadata().getTimestamp());
+		info.setCreation(file.getMediaMetadata().getTimestamp());
 		return info;
 	}
 }

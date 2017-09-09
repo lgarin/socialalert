@@ -26,7 +26,7 @@ import io.swagger.annotations.Authorization;
 import lombok.NonNull;
 
 @Api(tags= {"media"})
-@Path("/media/claim")
+@Path("/media")
 @RolesAllowed("user")
 @UserActivity
 public class MediaFacade {
@@ -41,20 +41,20 @@ public class MediaFacade {
 	MediaClaimService mediaClaimService;
 	
 	@POST
-	@Path("/picture/{fileUri : .+}")
+	@Path("/claim/{fileUri : .+}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(value="Claim a picture which has been uploaded recently.", authorizations= {@Authorization("auth")})
+	@ApiOperation(value="Claim a media which has been uploaded recently.", authorizations= {@Authorization("auth")})
 	@ApiResponses(value= {
 			@ApiResponse(code = 200, message = "File will be streamed."),
 			@ApiResponse(code = 403, message = "This media does not belong to the current user."),
 			@ApiResponse(code = 404, message = "No picture exists with this uri."),
 			@ApiResponse(code = 409, message = "This media exists has already been claimed.")})
-	public MediaInfo claimPicture(@ApiParam(required=true) @NotEmpty @PathParam("fileUri") String fileUri, @Valid @NonNull ClaimPictureParameter parameter) {
-		return mediaClaimService.claimPicture(toMediaClaimParameter(fileUri), parameter);
+	public MediaInfo claimMedia(@ApiParam(required=true) @NotEmpty @PathParam("fileUri") String fileUri, @Valid @NonNull ClaimMediaParameter parameter) {
+		return mediaClaimService.claimMedia(toClaimFileParameter(fileUri), parameter);
 	}
 	
-	private MediaClaimParameter toMediaClaimParameter(String fileUri) {
-		return MediaClaimParameter.builder().fileUri(fileUri).userId(principal.getName()).ipAddress(httpRequest.getRemoteAddr()).build();
+	private ClaimFileParameter toClaimFileParameter(String fileUri) {
+		return ClaimFileParameter.builder().fileUri(fileUri).userId(principal.getName()).ipAddress(httpRequest.getRemoteAddr()).build();
 	}
 }

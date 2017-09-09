@@ -29,15 +29,15 @@ public class MediaClaimService {
 	@Inject
 	UserInfoSupplier userRepository;
 	
-	public MediaInfo claimPicture(MediaClaimParameter mediaParameter, @NonNull ClaimPictureParameter pictureParameter) {
-		if (mediaRepository.findMedia(mediaParameter.getFileUri()).isPresent()) {
+	public MediaInfo claimMedia(ClaimFileParameter fileParameter, @NonNull ClaimMediaParameter mediaParameter) {
+		if (mediaRepository.findMedia(fileParameter.getFileUri()).isPresent()) {
 			throw new ClientErrorException(Status.CONFLICT);
 		}
-		FileEntity fileEntity = fileRepository.findFile(mediaParameter.getFileUri()).filter(FileEntity::isPicture).orElseThrow(NotFoundException::new);
-		if (!fileEntity.getUserId().equals(mediaParameter.getUserId())) {
+		FileEntity fileEntity = fileRepository.findFile(fileParameter.getFileUri()).orElseThrow(NotFoundException::new);
+		if (!fileEntity.getUserId().equals(fileParameter.getUserId())) {
 			throw new ForbiddenException();
 		}
-		MediaEntity mediaEntity = mediaRepository.storeMedia(fileEntity, pictureParameter, mediaParameter.getUserId(), mediaParameter.getIpAddress());
+		MediaEntity mediaEntity = mediaRepository.storeMedia(fileEntity, mediaParameter, fileParameter.getUserId(), fileParameter.getIpAddress());
 		return userRepository.fillUserInfo(mediaEntity.toMediaInfo());
 	}
 }

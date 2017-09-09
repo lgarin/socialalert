@@ -6,7 +6,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public final class MediaClaimParameter {
+public final class ClaimFileParameter {
 
 	@NonNull
 	private String fileUri;
