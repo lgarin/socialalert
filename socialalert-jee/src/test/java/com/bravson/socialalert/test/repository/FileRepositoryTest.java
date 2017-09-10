@@ -11,6 +11,7 @@ import com.bravson.socialalert.file.FileMetadata;
 import com.bravson.socialalert.file.FileRepository;
 import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaMetadata;
+import com.bravson.socialalert.user.profile.ProfileEntity;
 
 public class FileRepositoryTest extends BaseRepositoryTest {
     
@@ -26,7 +27,7 @@ public class FileRepositoryTest extends BaseRepositoryTest {
     public void persistValidFile() {
     	FileMetadata fileMetadata = FileMetadata.builder().md5("xyz").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_JPG).userId("test").ipAddress("1.1.1.1").build();
     	MediaMetadata mediaMetadata = MediaMetadata.builder().width(1200).height(1600).build();
-    	FileEntity result = repository.storeMedia(fileMetadata, mediaMetadata);
+    	FileEntity result = repository.storeMedia(fileMetadata, mediaMetadata, persistAndIndex(new ProfileEntity("test")));
     	assertThat(result.getId()).isEqualTo("19700101/xyz");
     }
     
@@ -34,7 +35,7 @@ public class FileRepositoryTest extends BaseRepositoryTest {
     public void findExistingFile() {
     	FileMetadata fileMetadata = FileMetadata.builder().md5("xyz").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_JPG).userId("test").ipAddress("1.1.1.1").build();
     	MediaMetadata mediaMetadata = MediaMetadata.builder().width(1200).height(1600).build();
-    	repository.storeMedia(fileMetadata, mediaMetadata);
+    	repository.storeMedia(fileMetadata, mediaMetadata, persistAndIndex(new ProfileEntity("test")));
     	Optional<FileEntity> result = repository.findFile("19700101/xyz");
     	assertThat(result).isNotEmpty();
     }
@@ -49,7 +50,8 @@ public class FileRepositoryTest extends BaseRepositoryTest {
     public void queryByIpAddressPattern() {
     	FileMetadata fileMetadata = FileMetadata.builder().md5("xyz").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_JPG).userId("test").ipAddress("1.1.1.1").build();
     	MediaMetadata mediaMetadata = MediaMetadata.builder().width(1200).height(1600).build();
-    	FileEntity entity = FileEntity.of(fileMetadata, mediaMetadata);
+    	FileEntity entity = new FileEntity(fileMetadata, mediaMetadata);
+    	entity.setUserProfile(persistAndIndex(new ProfileEntity("test")));
     	persistAndIndex(entity);
     	
     	List<FileEntity> result = repository.findByIpAddressPattern("1.1.*");

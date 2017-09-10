@@ -8,9 +8,6 @@ import java.util.Optional;
 import org.junit.Test;
 
 import com.bravson.socialalert.file.FileEntity;
-import com.bravson.socialalert.file.FileMetadata;
-import com.bravson.socialalert.file.media.MediaFileFormat;
-import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.media.ClaimMediaParameter;
 import com.bravson.socialalert.media.GeoAddress;
@@ -21,6 +18,7 @@ import com.bravson.socialalert.media.MediaRepository;
 import com.bravson.socialalert.media.PagingParameter;
 import com.bravson.socialalert.media.QueryResult;
 import com.bravson.socialalert.media.SearchMediaParameter;
+import com.bravson.socialalert.user.profile.ProfileEntity;
 
 public class MediaRepositoryTest extends BaseRepositoryTest {
     
@@ -32,14 +30,13 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	assertThat(result).isEmpty();
     }
     
-    private MediaEntity storeMedia(ClaimMediaParameter claimParameter) throws InterruptedException {
-    	FileMetadata fileMetadata = FileMetadata.builder().fileFormat(MediaFileFormat.MEDIA_JPG).contentLength(1000L).md5("abc").timestamp(Instant.EPOCH).userId("test").ipAddress("1.2.3.4").build();
-    	MediaMetadata mediaMetadata = MediaMetadata.builder().width(1000).height(800).build();
-    	FileEntity file = FileEntity.of(fileMetadata, mediaMetadata);
-    	persistAndIndex(file);
-    	MediaEntity media = MediaEntity.of(file, claimParameter, VersionInfo.of(file.getUserId(), file.getFileMetadata().getIpAddress()));
-    	persistAndIndex(media);
-		return media;
+    private MediaEntity storeMedia(MediaEntity mediaEntity) {
+		ProfileEntity profileEntity = new ProfileEntity(mediaEntity.getUserId());
+		FileEntity fileEntity = new FileEntity(mediaEntity.getId());
+		fileEntity.setUserProfile(persistAndIndex(profileEntity));
+		mediaEntity.setFile(persistAndIndex(fileEntity));
+		mediaEntity.setUserProfile(profileEntity);
+		return persistAndIndex(mediaEntity);
 	}
     
     private MediaEntity storeDefaultMedia() throws InterruptedException {
@@ -49,8 +46,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
 		claimParameter.setTags(Arrays.asList("tag1", "tag2"));
 		claimParameter.setCategories(Arrays.asList("cat1", "cat2"));
 		claimParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
-    	MediaEntity media = storeMedia(claimParameter);
-		return media;
+		return storeMedia(new MediaEntity("abc", MediaKind.PICTURE, claimParameter, VersionInfo.of("test", "1.2.3.4")));
 	}
     
     @Test

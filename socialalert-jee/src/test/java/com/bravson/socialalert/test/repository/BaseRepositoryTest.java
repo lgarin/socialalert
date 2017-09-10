@@ -42,9 +42,10 @@ public class BaseRepositoryTest extends Assertions {
     	return entityManager;
     }
     
-    protected void persistAndIndex(Object entity) {
+    protected <T> T persistAndIndex(T entity) {
     	getEntityManager().persist(entity);
     	getEntityManager().index(entity);
     	getEntityManager().flushToIndexes();
+    	return entity;
     }
 }

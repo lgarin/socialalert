@@ -66,6 +66,10 @@ public class ProfileEntity extends VersionedEntity {
 		this.versionInfo = versionInfo;
 	}
 	
+	public ProfileEntity(@NonNull String id) {
+		this.id = id;
+	}
+	
 	public UserInfo toOnlineUserInfo() {
 		return toUserInfo(true);
 	}

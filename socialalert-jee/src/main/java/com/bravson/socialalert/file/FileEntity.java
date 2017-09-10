@@ -8,6 +8,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
@@ -15,13 +16,15 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.file.media.MediaSizeVariant;
-import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
+import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
+import com.bravson.socialalert.user.profile.ProfileEntity;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 
 @Entity(name="File")
 @Indexed
@@ -38,17 +41,23 @@ public class FileEntity extends VersionedEntity {
 	@IndexedEmbedded
 	private MediaMetadata mediaMetadata;
 	
+	@Getter
+	@Setter
+	@ManyToOne(fetch=FetchType.LAZY, optional=false)
+	private ProfileEntity userProfile;
 	
-	public static FileEntity of(@NonNull FileMetadata fileMetadata, @NonNull MediaMetadata mediaMetadata) {
+	public FileEntity(@NonNull FileMetadata fileMetadata, @NonNull MediaMetadata mediaMetadata) {
 		if (fileMetadata.getSizeVariant() != MediaSizeVariant.MEDIA) {
 			throw new IllegalArgumentException("Size variant must be " + MediaSizeVariant.MEDIA.getVariantName());
 		}
-		FileEntity entity = new FileEntity();
-		entity.versionInfo = VersionInfo.of(fileMetadata.getUserId(), fileMetadata.getIpAddress());
-		entity.id = fileMetadata.buildFileUri();
-		entity.mediaMetadata = mediaMetadata;
-		entity.addVariant(fileMetadata);
-		return entity;
+		this.versionInfo = VersionInfo.of(fileMetadata.getUserId(), fileMetadata.getIpAddress());
+		this.id = fileMetadata.buildFileUri();
+		this.mediaMetadata = mediaMetadata;
+		addVariant(fileMetadata);
+	}
+	
+	public FileEntity(@NonNull String id) {
+		this.id = id;
 	}
 	
 	private Optional<FileMetadata> findFileMetadata(MediaSizeVariant sizeVariant) {

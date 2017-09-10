@@ -23,10 +23,12 @@ import org.hibernate.search.annotations.TokenizerDef;
 import com.bravson.socialalert.file.FileEntity;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
+import com.bravson.socialalert.user.profile.ProfileEntity;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity(name="Media")
 @Indexed
@@ -40,8 +42,14 @@ filters = {
 public class MediaEntity extends VersionedEntity {
 
 	@Getter
+	@Setter
 	@ManyToOne(fetch=FetchType.LAZY, optional=false)
 	private FileEntity file;
+	
+	@Getter
+	@Setter
+	@ManyToOne(fetch=FetchType.LAZY, optional=false)
+	private ProfileEntity userProfile;
 
 	@Getter
 	@Field
@@ -80,19 +88,16 @@ public class MediaEntity extends VersionedEntity {
 	@Analyzer(definition="languageAnalyzer")
 	private List<String> tags;
 
-	public static MediaEntity of(FileEntity file, ClaimMediaParameter parameter, VersionInfo versionInfo) {
-		MediaEntity entity = new MediaEntity();
-		entity.versionInfo = versionInfo;
-		entity.id = file.getId();
-		entity.kind = file.isVideo() ? MediaKind.VIDEO : MediaKind.PICTURE;
-		entity.file = file;
-		entity.title = parameter.getTitle();
-		entity.description = parameter.getDescription();
-		entity.statistic = new MediaStatistic();
-		entity.location = parameter.getLocation();
-		entity.categories = new ArrayList<>(parameter.getCategories());
-		entity.tags = new ArrayList<>(parameter.getTags());
-		return entity;
+	public MediaEntity(String fileUri, MediaKind kind, ClaimMediaParameter parameter, VersionInfo versionInfo) {
+		this.versionInfo = versionInfo;
+		this.id = fileUri;
+		this.kind = kind;
+		this.title = parameter.getTitle();
+		this.description = parameter.getDescription();
+		this.statistic = new MediaStatistic();
+		this.location = parameter.getLocation();
+		this.categories = new ArrayList<>(parameter.getCategories());
+		this.tags = new ArrayList<>(parameter.getTags());
 	}
 	
 	public MediaInfo toMediaInfo() {
@@ -122,5 +127,9 @@ public class MediaEntity extends VersionedEntity {
 		info.setDuration(file.getMediaMetadata().getDuration());
 		info.setCreation(file.getMediaMetadata().getTimestamp());
 		return info;
+	}
+	
+	public String getUserId() {
+		return versionInfo.getUserId();
 	}
 }

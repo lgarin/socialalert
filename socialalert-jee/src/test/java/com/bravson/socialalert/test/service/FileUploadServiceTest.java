@@ -12,6 +12,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotSupportedException;
 
 import org.junit.Test;
@@ -31,6 +32,8 @@ import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.file.media.MediaSizeVariant;
 import com.bravson.socialalert.file.video.AsyncVideoPreviewEvent;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
+import com.bravson.socialalert.user.profile.ProfileEntity;
+import com.bravson.socialalert.user.profile.ProfileRepository;
 
 public class FileUploadServiceTest extends BaseServiceTest {
 
@@ -45,6 +48,9 @@ public class FileUploadServiceTest extends BaseServiceTest {
 	
 	@Mock
 	AsyncRepository asyncRepository;
+	
+	@Mock
+	ProfileRepository profileRepository;
 	
 	@Mock
 	Logger logger;
@@ -62,7 +68,7 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(fileFormat).userId(userId).ipAddress(ipAddress).build();
 		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat, userId, ipAddress)).thenReturn(fileMetadata);
 		
-		FileEntity fileEntity = FileEntity.of(fileMetadata, mediaMetadata);
+		FileEntity fileEntity = new FileEntity(fileMetadata, mediaMetadata);
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.of(fileEntity));
 		
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).userId(userId).ipAddress(ipAddress).build();
@@ -87,8 +93,11 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.empty());
 		
-		FileEntity fileEntity = FileEntity.of(fileMetadata, mediaMetadata);
-		when(mediaRepository.storeMedia(fileMetadata, mediaMetadata)).thenReturn(fileEntity);
+		ProfileEntity profileEntity = new ProfileEntity(userId);
+		when(profileRepository.findByUserId(userId)).thenReturn(Optional.of(profileEntity));
+		
+		FileEntity fileEntity = new FileEntity(fileMetadata, mediaMetadata);
+		when(mediaRepository.storeMedia(fileMetadata, mediaMetadata, profileEntity)).thenReturn(fileEntity);
 		
 		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.MEDIA);
 		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);
@@ -99,6 +108,27 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		
 		assertThat(result).isEqualTo(fileMetadata);
 		verifyZeroInteractions(asyncRepository, logger);
+	}
+	
+	@Test
+	public void uploadNewPictureWithUnknowProfile() throws Exception {
+		String userId = "test";
+		String ipAddress = "1.2.3.4";
+		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
+		MediaFileFormat fileFormat = MediaFileFormat.MEDIA_JPG;
+		
+		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).timestamp(Instant.EPOCH).build();
+		when(mediaFileStore.buildMediaMetadata(inputFile, fileFormat)).thenReturn(mediaMetadata);
+		
+		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(fileFormat).userId(userId).ipAddress(ipAddress).build();
+		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat, userId, ipAddress)).thenReturn(fileMetadata);
+		
+		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.empty());
+		
+		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).userId(userId).ipAddress(ipAddress).build();
+		assertThatExceptionOfType(ForbiddenException.class).isThrownBy(() -> fileUploadService.uploadMedia(param));
+		
+		verifyZeroInteractions(mediaFileStore, asyncRepository, logger);
 	}
 	
 	@Test
@@ -131,8 +161,11 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.empty());
 		
-		FileEntity fileEntity = FileEntity.of(fileMetadata, mediaMetadata);
-		when(mediaRepository.storeMedia(fileMetadata, mediaMetadata)).thenReturn(fileEntity);
+		ProfileEntity profileEntity = new ProfileEntity(userId);
+		when(profileRepository.findByUserId(userId)).thenReturn(Optional.of(profileEntity));
+		
+		FileEntity fileEntity = new FileEntity(fileMetadata, mediaMetadata);
+		when(mediaRepository.storeMedia(fileMetadata, mediaMetadata, profileEntity)).thenReturn(fileEntity);
 		
 		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.MEDIA);
 		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);

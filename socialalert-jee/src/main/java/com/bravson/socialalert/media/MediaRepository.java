@@ -38,7 +38,9 @@ public class MediaRepository {
 	}
 
 	public MediaEntity storeMedia(@NonNull FileEntity file, @NonNull ClaimMediaParameter parameter, @NonNull  String userId, @NonNull  String ipAddress) {
-		MediaEntity media = MediaEntity.of(file, parameter, VersionInfo.of(userId, ipAddress));
+		MediaEntity media = new MediaEntity(file.getId(), file.isVideo() ? MediaKind.VIDEO : MediaKind.PICTURE, parameter, VersionInfo.of(userId, ipAddress));
+		media.setFile(file);
+		media.setUserProfile(file.getUserProfile());
 		entityManager.persist(media);
 		return media;
 	}

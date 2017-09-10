@@ -13,6 +13,7 @@ import org.hibernate.search.query.dsl.QueryBuilder;
 
 import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.user.profile.ProfileEntity;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -30,8 +31,9 @@ public class FileRepository {
 	@NonNull
 	FullTextEntityManager entityManager;
 
-	public FileEntity storeMedia(@NonNull FileMetadata fileMetadata, @NonNull MediaMetadata mediaMetadata) {
-		FileEntity entity = FileEntity.of(fileMetadata, mediaMetadata);
+	public FileEntity storeMedia(@NonNull FileMetadata fileMetadata, @NonNull MediaMetadata mediaMetadata, @NonNull ProfileEntity userProfile) {
+		FileEntity entity = new FileEntity(fileMetadata, mediaMetadata);
+		entity.setUserProfile(userProfile);
 		entityManager.persist(entity);
 		return entity;
 	}

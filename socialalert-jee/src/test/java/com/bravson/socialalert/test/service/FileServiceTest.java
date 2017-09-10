@@ -50,7 +50,7 @@ public class FileServiceTest extends BaseServiceTest {
 		MediaFileFormat format = MediaFileFormat.MEDIA_JPG;
 		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).build();
 		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(1000L).fileFormat(format).userId("test").ipAddress("1.2.3.4").build();
-		FileEntity entity = FileEntity.of(fileMetadata, mediaMetadata);
+		FileEntity entity = new FileEntity(fileMetadata, mediaMetadata);
 		
 		when(mediaRepository.findFile(fileUri)).thenReturn(Optional.of(entity));
 		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileMetadata.getFileFormat())).thenReturn(outputFile);
@@ -64,7 +64,7 @@ public class FileServiceTest extends BaseServiceTest {
 		String fileUri = "abc";
 		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).build();
 		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(1000L).fileFormat(MediaFileFormat.MEDIA_JPG).userId("test").ipAddress("1.2.3.4").build();
-		FileEntity entity = FileEntity.of(fileMetadata, mediaMetadata);
+		FileEntity entity = new FileEntity(fileMetadata, mediaMetadata);
 		when(mediaRepository.findFile(fileUri)).thenReturn(Optional.of(entity));
 		
 		Optional<FileResponse> result = fileService.preview(fileUri);
@@ -81,7 +81,7 @@ public class FileServiceTest extends BaseServiceTest {
 		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).build();
 		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(1000L).fileFormat(MediaFileFormat.MEDIA_JPG).userId("test").ipAddress("1.2.3.4").build();
 		FileMetadata thumbnailMetadata = FileMetadata.builder().md5("456").timestamp(Instant.MAX).contentLength(1000L).fileFormat(format).userId("test").ipAddress("1.2.3.4").build();
-		FileEntity entity = FileEntity.of(fileMetadata, mediaMetadata);
+		FileEntity entity = new FileEntity(fileMetadata, mediaMetadata);
 		entity.addVariant(thumbnailMetadata);
 		
 		when(mediaRepository.findFile(fileUri)).thenReturn(Optional.of(entity));
