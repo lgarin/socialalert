@@ -14,6 +14,7 @@ import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.AnalyzerDef;
+import org.hibernate.search.annotations.DynamicBoost;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
@@ -39,6 +40,7 @@ filters = {
   @TokenFilterDef(factory = LowerCaseFilterFactory.class),
   @TokenFilterDef(factory = SnowballPorterFilterFactory.class)
 })
+@DynamicBoost(impl=MediaBoostStrategy.class)
 public class MediaEntity extends VersionedEntity {
 
 	@Getter

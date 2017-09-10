@@ -47,7 +47,21 @@ public class MediaRepository {
 	
 	@SuppressWarnings("unchecked")
 	public QueryResult<MediaEntity> searchMedia(@NonNull SearchMediaParameter parameter, @NonNull PagingParameter paging) {
-		QueryBuilder builder = entityManager.getSearchFactory().buildQueryBuilder().forEntity(MediaEntity.class).get();
+		QueryBuilder builder = createQueryBuilder();
+		FullTextQuery query = createSearchQuery(parameter, paging, builder);
+		List<MediaEntity> list = query
+				.setSort(builder.sort().byScore().createSort())
+				.setFirstResult(paging.getPageNumber() * paging.getPageSize())
+				.setMaxResults(paging.getPageSize())
+				.getResultList();
+		return new QueryResult<>(list, query.getResultSize(), paging);
+	}
+
+	private QueryBuilder createQueryBuilder() {
+		return entityManager.getSearchFactory().buildQueryBuilder().forEntity(MediaEntity.class).get();
+	}
+
+	private FullTextQuery createSearchQuery(SearchMediaParameter parameter, PagingParameter paging, QueryBuilder builder) {
 		BooleanJunction<?> junction = builder.bool();
 		junction = junction.must(builder.range().onField("versionInfo.creation").below(paging.getTimestamp()).createQuery()).disableScoring();
 		if (parameter.getMaxAge() != null) {
@@ -65,12 +79,6 @@ public class MediaRepository {
 		if (parameter.getMediaKind() != null) {
 			junction = junction.must(builder.keyword().onField("kind").matching(parameter.getMediaKind()).createQuery());
 		}
-		FullTextQuery query = entityManager.createFullTextQuery(junction.createQuery(), MediaEntity.class);
-		List<MediaEntity> list = query
-				.setSort(builder.sort().byScore().createSort())
-				.setFirstResult(paging.getPageNumber() * paging.getPageSize())
-				.setMaxResults(paging.getPageSize())
-				.getResultList();
-		return new QueryResult<>(list, query.getResultSize(), paging);
+		return entityManager.createFullTextQuery(junction.createQuery(), MediaEntity.class);
 	}
 }

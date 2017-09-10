@@ -33,4 +33,7 @@ public class MediaStatistic {
 	@Field
 	private int commentCount;
 
+	public double computeBoost() {
+		return Math.log(Math.max(2.0, hitCount)) * Math.sqrt(Math.max(2.0, likeCount - dislikeCount));
+	}
 }
