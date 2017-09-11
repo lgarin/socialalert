@@ -60,7 +60,7 @@ public class UserFacade {
 	@ApiResponses(value= {
 			@ApiResponse(code = 204, message = "Logout successfull."),
 			@ApiResponse(code = 400, message = "Logout failed.") })
-	public Response logout(@ApiParam(value="The authorization token returned by the login function", required=true) @NotEmpty @HeaderParam("Authorization") String authorization, @Context HttpServletRequest httpRequest) throws ServletException {
+	public Response logout(@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization, @Context HttpServletRequest httpRequest) throws ServletException {
 		if (!userService.logout(authorization)) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
@@ -77,7 +77,7 @@ public class UserFacade {
 	@ApiResponses(value= {
 			@ApiResponse(code = 200, message = "Current user returned with success."),
 			@ApiResponse(code = 404, message = "Current user could not be found.") })
-	public UserInfo current(@ApiParam(value="The authorization token returned by the login function", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+	public UserInfo current(@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		return userService.findUserInfo(authorization).orElseThrow(NotFoundException::new);
 	}
 }

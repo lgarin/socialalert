@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -24,7 +25,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
 
 @Api(tags= {"media"})
 @Path("/media")
@@ -48,13 +48,16 @@ public class MediaFacade {
 	@Path("/claim/{fileUri : .+}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(value="Claim a media which has been uploaded recently.", authorizations= {@Authorization("auth")})
+	@ApiOperation(value="Claim a media which has been uploaded recently.")
 	@ApiResponses(value= {
 			@ApiResponse(code = 200, message = "File will be streamed."),
 			@ApiResponse(code = 403, message = "This media does not belong to the current user."),
 			@ApiResponse(code = 404, message = "No picture exists with this uri."),
 			@ApiResponse(code = 409, message = "This media exists has already been claimed.")})
-	public MediaInfo claimMedia(@ApiParam(required=true) @NotEmpty @PathParam("fileUri") String fileUri, @Valid @NotNull ClaimMediaParameter parameter) {
+	public MediaInfo claimMedia(
+			@ApiParam(value="The relative file uri.", required=true) @NotEmpty @PathParam("fileUri") String fileUri,
+			@Valid @NotNull ClaimMediaParameter parameter,
+			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		return mediaClaimService.claimMedia(toClaimFileParameter(fileUri), parameter);
 	}
 	
@@ -63,10 +66,14 @@ public class MediaFacade {
 	}
 	
 	@GET
-	@Path("search")
+	@Path("/search")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public QueryResult<MediaInfo> searchMedia(@Valid @NotNull SearchMediaParameter parameter, @Valid @NotNull PagingParameter paging) {
+	@ApiOperation(value="Search claimed media based on any combination of the provided parameters.")
+	public QueryResult<MediaInfo> searchMedia(
+			@ApiParam(value="The search parameters.", required=true) @Valid @NotNull SearchMediaParameter parameter,
+			@ApiParam(value="Used for paging the results.", required=true) @Valid @NotNull PagingParameter paging,
+			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		return mediaSearchService.searchMedia(parameter, paging);
 	}
 }
