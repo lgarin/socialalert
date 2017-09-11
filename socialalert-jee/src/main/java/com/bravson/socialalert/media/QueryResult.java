@@ -34,6 +34,6 @@ public class QueryResult<T> {
 	}
 	
 	public <S> QueryResult<S> map(Function<T, S> mapper) {
-		return new QueryResult<>(content.stream().map(mapper).collect(Collectors.toList()), pageCount, nextPage);
+		return new QueryResult<>(content.stream().map(mapper).collect(Collectors.toList()), pageNumber, pageCount, nextPage);
 	}
 }

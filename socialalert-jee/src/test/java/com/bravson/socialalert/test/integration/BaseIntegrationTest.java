@@ -7,7 +7,6 @@ import java.net.URL;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -63,12 +62,8 @@ public abstract class BaseIntegrationTest extends Assertions {
 	@ArquillianResource
 	protected URL deploymentUrl;
 	
-	protected WebTarget createTarget() {
-		return ClientBuilder.newClient().target(deploymentUrl.toString() + "rest/");
-	}
-	
 	protected Builder createRequest(String path, String mediaType) {
-		return createTarget().path(path).request(mediaType);
+		return ClientBuilder.newClient().target(deploymentUrl.toString() + "rest" + path).request(mediaType);
 	}
 	
 	protected Builder createAuthRequest(String path, String mediaType, String token) {
@@ -77,7 +72,7 @@ public abstract class BaseIntegrationTest extends Assertions {
 	
 	protected String requestLoginToken(String userId, String password) {
 		LoginParameter param = new LoginParameter(userId,password);
-		LoginResponse response = createRequest("user/login", MediaType.APPLICATION_JSON).post(Entity.json(param)).readEntity(LoginResponse.class);
+		LoginResponse response = createRequest("/user/login", MediaType.APPLICATION_JSON).post(Entity.json(param)).readEntity(LoginResponse.class);
 		return response.getAccessToken();
 	}
 	
