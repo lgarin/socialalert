@@ -23,7 +23,7 @@ import com.bravson.socialalert.media.MediaClaimService;
 import com.bravson.socialalert.media.MediaEntity;
 import com.bravson.socialalert.media.MediaInfo;
 import com.bravson.socialalert.media.MediaRepository;
-import com.bravson.socialalert.user.UserInfoSupplier;
+import com.bravson.socialalert.user.UserInfoService;
 
 public class MediaClaimServiceTest extends BaseServiceTest {
 
@@ -37,7 +37,7 @@ public class MediaClaimServiceTest extends BaseServiceTest {
 	MediaRepository mediaRepository;
 	
 	@Mock
-	UserInfoSupplier userRepository;
+	UserInfoService userService;
 	
 	@Mock
 	MediaEntity mediaEntity;
@@ -62,7 +62,7 @@ public class MediaClaimServiceTest extends BaseServiceTest {
 		Throwable exception = catchThrowable(() -> mediaClaimService.claimMedia(fileParameter, mediaParameter));
 		assertThat(exception).isInstanceOf(NotFoundException.class);
 		
-		verifyNoMoreInteractions(userRepository, fileEntity, mediaEntity);
+		verifyNoMoreInteractions(userService, fileEntity, mediaEntity);
 	}
 	
 	@Test
@@ -81,7 +81,7 @@ public class MediaClaimServiceTest extends BaseServiceTest {
 		Throwable exception = catchThrowable(() -> mediaClaimService.claimMedia(fileParameter, mediaParameter));
 		assertThat(exception).isInstanceOfSatisfying(WebApplicationException.class, e -> assertThat(e.getResponse().getStatus()).isEqualTo(409));
 		
-		verifyNoMoreInteractions(fileRepository, userRepository, fileEntity, mediaEntity);
+		verifyNoMoreInteractions(fileRepository, userService, fileEntity, mediaEntity);
 	}
 	
 	@Test
@@ -102,7 +102,7 @@ public class MediaClaimServiceTest extends BaseServiceTest {
 		Throwable exception = catchThrowable(() -> mediaClaimService.claimMedia(fileParameter, mediaParameter));
 		assertThat(exception).isInstanceOf(ForbiddenException.class);
 		
-		verifyNoMoreInteractions(userRepository, mediaEntity);
+		verifyNoMoreInteractions(userService, mediaEntity);
 	}
 	
 	@Test
@@ -123,7 +123,7 @@ public class MediaClaimServiceTest extends BaseServiceTest {
 		when(fileEntity.getUserId()).thenReturn("test");
 		when(mediaRepository.storeMedia(fileEntity, mediaParameter, "test", "1.2.3.4")).thenReturn(mediaEntity);
 		when(mediaEntity.toMediaInfo()).thenReturn(mediaInfo);
-		when(userRepository.fillUserInfo(mediaInfo)).thenReturn(mediaInfo);
+		when(userService.fillUserInfo(mediaInfo)).thenReturn(mediaInfo);
 		
 		MediaInfo result = mediaClaimService.claimMedia(fileParameter, mediaParameter);
 		assertThat(result).isSameAs(mediaInfo);

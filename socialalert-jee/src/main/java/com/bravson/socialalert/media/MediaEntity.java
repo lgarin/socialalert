@@ -2,12 +2,15 @@ package com.bravson.socialalert.media;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
@@ -24,6 +27,7 @@ import org.hibernate.search.annotations.TokenizerDef;
 import com.bravson.socialalert.file.FileEntity;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
+import com.bravson.socialalert.media.approval.MediaApprovalEntity;
 import com.bravson.socialalert.user.profile.ProfileEntity;
 
 import lombok.AccessLevel;
@@ -45,14 +49,19 @@ public class MediaEntity extends VersionedEntity {
 
 	@Getter
 	@Setter
-	@ManyToOne(fetch=FetchType.LAZY, optional=false)
+	@OneToOne(fetch=FetchType.LAZY, optional=false)
 	private FileEntity file;
 	
 	@Getter
 	@Setter
 	@ManyToOne(fetch=FetchType.LAZY, optional=false)
 	private ProfileEntity userProfile;
-
+	
+	@Getter
+	@Setter
+	@OneToMany(fetch=FetchType.LAZY, mappedBy="media")
+	private Set<MediaApprovalEntity> approvalSet;
+	
 	@Getter
 	@Field
 	private MediaKind kind;
@@ -89,7 +98,7 @@ public class MediaEntity extends VersionedEntity {
 	@Field
 	@Analyzer(definition="languageAnalyzer")
 	private List<String> tags;
-
+	
 	public MediaEntity(String fileUri, MediaKind kind, ClaimMediaParameter parameter, VersionInfo versionInfo) {
 		this.versionInfo = versionInfo;
 		this.id = fileUri;
@@ -102,8 +111,19 @@ public class MediaEntity extends VersionedEntity {
 		this.tags = new ArrayList<>(parameter.getTags());
 	}
 	
+	public MediaEntity(String mediaUri) {
+		this.id = mediaUri;
+	}
+	
 	public MediaInfo toMediaInfo() {
-		MediaInfo info = new MediaInfo();
+		return fillMediaInfo(new MediaInfo());
+	}
+	
+	public MediaDetail toMediaDetail() {
+		return fillMediaInfo(new MediaDetail());
+	}
+
+	private <T extends MediaInfo> T fillMediaInfo(T info) {
 		info.setMediaUri(file.getId());
 		info.setKind(kind);
 		info.setTitle(title);
@@ -133,5 +153,9 @@ public class MediaEntity extends VersionedEntity {
 	
 	public String getUserId() {
 		return versionInfo.getUserId();
+	}
+
+	public void increaseHitCount() {
+		statistic.increaseHitCount();
 	}
 }

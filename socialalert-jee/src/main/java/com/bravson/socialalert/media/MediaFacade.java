@@ -51,6 +51,9 @@ public class MediaFacade {
 	@Inject
 	MediaSearchService mediaSearchService;
 	
+	@Inject
+	MediaService mediaService;
+	
 	@POST
 	@Path("/claim/{fileUri : .+}")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -110,5 +113,16 @@ public class MediaFacade {
 		}
 		PagingParameter paging = new PagingParameter(Instant.ofEpochMilli(pagingTimestamp), pageNumber, pageSize);
 		return mediaSearchService.searchMedia(parameter, paging);
+	}
+	
+	@POST
+	@Path("/view/{mediaUri : .+}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public MediaDetail viewMediaDetail(
+			@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
+			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+		
+		return mediaService.viewMediaDetail(mediaUri, principal.getName());
 	}
 }

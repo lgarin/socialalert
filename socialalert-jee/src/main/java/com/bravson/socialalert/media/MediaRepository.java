@@ -6,6 +6,7 @@ import java.util.Optional;
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
@@ -80,5 +81,14 @@ public class MediaRepository {
 			junction = junction.must(builder.keyword().onField("kind").matching(parameter.getMediaKind()).createQuery());
 		}
 		return entityManager.createFullTextQuery(junction.createQuery(), MediaEntity.class);
+	}
+
+	@Transactional(value=TxType.REQUIRES_NEW)
+	public void increaseHitCountAtomicaly(String mediaUri) {
+		// TODO improve
+		findMedia(mediaUri).ifPresent(MediaEntity::increaseHitCount);
+		if (entityManager.getTransaction().isActive()) {
+			entityManager.flush();
+		}
 	}
 }

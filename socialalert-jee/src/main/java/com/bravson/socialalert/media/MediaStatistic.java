@@ -36,4 +36,8 @@ public class MediaStatistic {
 	public double computeBoost() {
 		return Math.log(Math.max(2.0, hitCount)) * Math.sqrt(Math.max(2.0, likeCount - dislikeCount));
 	}
+
+	public void increaseHitCount() {
+		hitCount++;
+	}
 }

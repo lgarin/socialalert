@@ -73,7 +73,6 @@ public class MediaClaimTest extends BaseIntegrationTest {
 		assertThat(result.getLikeCount()).isEqualTo(0);
 		assertThat(result.getCategories()).containsExactly("cat1");
 		assertThat(result.getTags()).containsExactly("tag1", "tag2");
-		assertThat(result.getUserApprovalModifier()).isNull();
 	}
 	
 	private static Entity<File> getVideo(String filename) {
@@ -113,6 +112,5 @@ public class MediaClaimTest extends BaseIntegrationTest {
 		assertThat(result.getLikeCount()).isEqualTo(0);
 		assertThat(result.getCategories()).containsExactly("cat1");
 		assertThat(result.getTags()).containsExactly("tag1", "tag2");
-		assertThat(result.getUserApprovalModifier()).isNull();
 	}
 }

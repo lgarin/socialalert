@@ -39,7 +39,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
 		return persistAndIndex(mediaEntity);
 	}
     
-    private MediaEntity storeDefaultMedia() throws InterruptedException {
+    private MediaEntity storeDefaultMedia() {
 		ClaimMediaParameter claimParameter = new ClaimMediaParameter();
 		claimParameter.setTitle("Test title");
 		claimParameter.setDescription("Test desc");
@@ -50,7 +50,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
 	}
     
     @Test
-    public void findNewlyCreatedMedia() throws InterruptedException {
+    public void findNewlyCreatedMedia() {
     	MediaEntity media = storeDefaultMedia();
     	
     	Optional<MediaEntity> result = repository.findMedia(media.getId());
@@ -69,7 +69,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     }
     
     @Test
-    public void searchAllMediaWithNonEmptyIndex() throws InterruptedException {
+    public void searchAllMediaWithNonEmptyIndex() {
     	MediaEntity media = storeDefaultMedia();
     	
     	SearchMediaParameter parameter = new SearchMediaParameter();
@@ -83,7 +83,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     }
     
     @Test
-    public void searchMediaWithMatchingKeyword() throws InterruptedException {
+    public void searchMediaWithMatchingKeyword() {
     	MediaEntity media = storeDefaultMedia();
     	
     	SearchMediaParameter parameter = new SearchMediaParameter();
@@ -98,7 +98,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     }
     
     @Test
-    public void searchMediaWithMatchingTag() throws InterruptedException {
+    public void searchMediaWithMatchingTag() {
     	MediaEntity media = storeDefaultMedia();
     	
     	SearchMediaParameter parameter = new SearchMediaParameter();
@@ -113,7 +113,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     }
     
     @Test
-    public void searchMediaWithFuzzyMatchingKeyword() throws InterruptedException {
+    public void searchMediaWithFuzzyMatchingKeyword() {
     	MediaEntity media = storeDefaultMedia();
     	
     	SearchMediaParameter parameter = new SearchMediaParameter();
@@ -128,7 +128,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     }
     
     @Test
-    public void searchMediaWithoutMatchingKeyword() throws InterruptedException {
+    public void searchMediaWithoutMatchingKeyword() {
     	storeDefaultMedia();
     	
     	SearchMediaParameter parameter = new SearchMediaParameter();
@@ -143,7 +143,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     }
     
     @Test
-    public void searchMediaInsideArea() throws InterruptedException {
+    public void searchMediaInsideArea() {
     	MediaEntity media = storeDefaultMedia();
     	
     	SearchMediaParameter parameter = new SearchMediaParameter();
@@ -158,7 +158,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     }
     
     @Test
-    public void searchMediaOutsideArea() throws InterruptedException {
+    public void searchMediaOutsideArea() {
     	storeDefaultMedia();
     	
     	SearchMediaParameter parameter = new SearchMediaParameter();
@@ -173,7 +173,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     }
     
     @Test
-    public void searchMediaWithAllCategories() throws InterruptedException {
+    public void searchMediaWithAllCategories() {
     	MediaEntity media = storeDefaultMedia();
     	
     	SearchMediaParameter parameter = new SearchMediaParameter();
@@ -188,7 +188,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     }
     
     @Test
-    public void searchMediaWithTooManyCategories() throws InterruptedException {
+    public void searchMediaWithTooManyCategories() {
     	MediaEntity media = storeDefaultMedia();
     	
     	SearchMediaParameter parameter = new SearchMediaParameter();
@@ -203,7 +203,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     }
     
     @Test
-    public void searchMediaWithWrongCategories() throws InterruptedException {
+    public void searchMediaWithWrongCategories() {
     	storeDefaultMedia();
     	
     	SearchMediaParameter parameter = new SearchMediaParameter();
@@ -218,7 +218,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     }
     
     @Test
-    public void searchPictureWithinAgeLimit() throws InterruptedException {
+    public void searchPictureWithinAgeLimit() {
     	MediaEntity media = storeDefaultMedia();
     	
     	SearchMediaParameter parameter = new SearchMediaParameter();
@@ -231,5 +231,15 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	assertThat(result.getPageNumber()).isEqualTo(0);
     	assertThat(result.getNextPage()).isNull();
     	assertThat(result.getContent()).containsExactly(media);
+    }
+    
+    @Test
+    public void incrementHitCount() {
+    	MediaEntity media = storeDefaultMedia();
+    	
+    	repository.increaseHitCountAtomicaly(media.getId());
+    	
+    	media = repository.findMedia(media.getId()).get();
+    	assertThat(media.getStatistic().getHitCount()).isEqualTo(1);
     }
 }

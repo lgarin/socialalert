@@ -23,7 +23,7 @@ import lombok.NonNull;
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Logged
-public class UserInfoSupplier {
+public class UserInfoService {
 
 	@Inject
 	@NonNull

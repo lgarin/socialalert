@@ -4,7 +4,7 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 
 import com.bravson.socialalert.infrastructure.log.Logged;
-import com.bravson.socialalert.user.UserInfoSupplier;
+import com.bravson.socialalert.user.UserInfoService;
 
 import lombok.NonNull;
 
@@ -16,11 +16,11 @@ public class MediaSearchService {
 	MediaRepository mediaRepository;
 	
 	@Inject
-	UserInfoSupplier userRepository;
+	UserInfoService userService;
 
 	public QueryResult<MediaInfo> searchMedia(@NonNull SearchMediaParameter parameter, @NonNull PagingParameter paging) {
 		QueryResult<MediaInfo> result = mediaRepository.searchMedia(parameter, paging).map(MediaEntity::toMediaInfo);
-		userRepository.fillUserInfo(result.getContent());
+		userService.fillUserInfo(result.getContent());
 		return result;
 	}
 }

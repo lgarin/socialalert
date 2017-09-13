@@ -73,8 +73,6 @@ public class MediaInfo implements UserContent {
 	
 	private List<String> tags;
 	
-	private ApprovalModifier userApprovalModifier;
-	
 	private UserInfo creator;
 
 }

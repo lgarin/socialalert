@@ -16,31 +16,31 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.media.MediaInfo;
 import com.bravson.socialalert.media.UserContent;
-import com.bravson.socialalert.user.UserInfoSupplier;
+import com.bravson.socialalert.user.UserInfoService;
 import com.bravson.socialalert.user.activity.OnlineUserRepository;
 import com.bravson.socialalert.user.profile.ProfileEntity;
 import com.bravson.socialalert.user.profile.ProfileRepository;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserInfoSupplierTest extends Assertions {
+public class UserInfoServiceTest extends Assertions {
 
 	@Mock
 	ProfileRepository profileRepository;
 	
 	@Mock
-	OnlineUserRepository sessionRepository;
+	OnlineUserRepository onlineUserRepository;
 	
 	@InjectMocks
-	UserInfoSupplier userInfoSupplier;
+	UserInfoService userService;
 	
 	@Test
 	public void fillOnlineUser() {
 		ProfileEntity profile = new ProfileEntity("test", "test@test.com", VersionInfo.of("test", "1.2.3.4"));
 		when(profileRepository.findByUserId(profile.getId())).thenReturn(Optional.of(profile));
-		when(sessionRepository.isUserActive(profile.getId())).thenReturn(true);
+		when(onlineUserRepository.isUserActive(profile.getId())).thenReturn(true);
 		MediaInfo content = new MediaInfo();
 		content.setCreatorId(profile.getId());
-		UserContent result = userInfoSupplier.fillUserInfo(content);
+		UserContent result = userService.fillUserInfo(content);
 		assertThat(result).isSameAs(content);
 		assertThat(result.getCreator()).isEqualTo(profile.toOnlineUserInfo());
 	}
@@ -49,10 +49,10 @@ public class UserInfoSupplierTest extends Assertions {
 	public void fillOfflineUser() {
 		ProfileEntity profile = new ProfileEntity("test", "test@test.com", VersionInfo.of("test", "1.2.3.4"));
 		when(profileRepository.findByUserId(profile.getId())).thenReturn(Optional.of(profile));
-		when(sessionRepository.isUserActive(profile.getId())).thenReturn(false);
+		when(onlineUserRepository.isUserActive(profile.getId())).thenReturn(false);
 		MediaInfo content = new MediaInfo();
 		content.setCreatorId(profile.getId());
-		UserContent result = userInfoSupplier.fillUserInfo(content);
+		UserContent result = userService.fillUserInfo(content);
 		assertThat(result).isSameAs(content);
 		assertThat(result.getCreator()).isEqualTo(profile.toOfflineUserInfo());
 	}
@@ -63,7 +63,7 @@ public class UserInfoSupplierTest extends Assertions {
 		when(profileRepository.findByUserId(profileId)).thenReturn(Optional.empty());
 		MediaInfo content = new MediaInfo();
 		content.setCreatorId(profileId);
-		UserContent result = userInfoSupplier.fillUserInfo(content);
+		UserContent result = userService.fillUserInfo(content);
 		assertThat(result).isSameAs(content);
 		assertThat(result.getCreator()).isNull();
 	}
@@ -82,12 +82,12 @@ public class UserInfoSupplierTest extends Assertions {
 		List<MediaInfo> contentList = Arrays.asList(content1, content2, content3);
 		
 		when(profileRepository.findByUserId(profile1.getId())).thenReturn(Optional.of(profile1));
-		when(sessionRepository.isUserActive(profile1.getId())).thenReturn(false);
+		when(onlineUserRepository.isUserActive(profile1.getId())).thenReturn(false);
 		when(profileRepository.findByUserId(profile2.getId())).thenReturn(Optional.of(profile2));
-		when(sessionRepository.isUserActive(profile2.getId())).thenReturn(true);
+		when(onlineUserRepository.isUserActive(profile2.getId())).thenReturn(true);
 		when(profileRepository.findByUserId(content3.getCreatorId())).thenReturn(Optional.empty());
 		
-		List<MediaInfo> result = userInfoSupplier.fillUserInfo(contentList);
+		List<MediaInfo> result = userService.fillUserInfo(contentList);
 		
 		assertThat(result).isSameAs(contentList);
 		assertThat(result.get(0).getCreator()).isEqualTo(profile1.toOfflineUserInfo());

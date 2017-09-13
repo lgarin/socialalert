@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response.Status;
 import com.bravson.socialalert.file.FileEntity;
 import com.bravson.socialalert.file.FileRepository;
 import com.bravson.socialalert.infrastructure.log.Logged;
-import com.bravson.socialalert.user.UserInfoSupplier;
+import com.bravson.socialalert.user.UserInfoService;
 
 import lombok.NonNull;
 
@@ -27,7 +27,7 @@ public class MediaClaimService {
 	MediaRepository mediaRepository;
 	
 	@Inject
-	UserInfoSupplier userRepository;
+	UserInfoService userService;
 	
 	public MediaInfo claimMedia(ClaimFileParameter fileParameter, @NonNull ClaimMediaParameter mediaParameter) {
 		if (mediaRepository.findMedia(fileParameter.getFileUri()).isPresent()) {
@@ -38,6 +38,6 @@ public class MediaClaimService {
 			throw new ForbiddenException();
 		}
 		MediaEntity mediaEntity = mediaRepository.storeMedia(fileEntity, mediaParameter, fileParameter.getUserId(), fileParameter.getIpAddress());
-		return userRepository.fillUserInfo(mediaEntity.toMediaInfo());
+		return userService.fillUserInfo(mediaEntity.toMediaInfo());
 	}
 }
