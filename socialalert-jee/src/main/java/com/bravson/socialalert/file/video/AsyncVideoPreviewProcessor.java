@@ -55,8 +55,6 @@ public class AsyncVideoPreviewProcessor {
 			.md5(fileStore.computeMd5Hex(file))
 			.timestamp(Instant.now())
 			.contentLength(file.length())
-			.userId(inputFileMetadata.getUserId())
-			.ipAddress(inputFileMetadata.getIpAddress())
 			.fileFormat(fileFormat)
 			.build();
 	}

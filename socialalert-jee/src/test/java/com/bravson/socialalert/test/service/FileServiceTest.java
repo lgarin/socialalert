@@ -20,6 +20,7 @@ import com.bravson.socialalert.file.FileService;
 import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.file.store.FileStore;
+import com.bravson.socialalert.user.UserAccess;
 
 public class FileServiceTest extends BaseServiceTest {
 
@@ -49,8 +50,8 @@ public class FileServiceTest extends BaseServiceTest {
 		File outputFile = new File("outfile");
 		MediaFileFormat format = MediaFileFormat.MEDIA_JPG;
 		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).build();
-		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(1000L).fileFormat(format).userId("test").ipAddress("1.2.3.4").build();
-		FileEntity entity = new FileEntity(fileMetadata, mediaMetadata);
+		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(1000L).fileFormat(format).build();
+		FileEntity entity = new FileEntity(fileMetadata, mediaMetadata, UserAccess.of("test", "1.2.3.4"));
 		
 		when(mediaRepository.findFile(fileUri)).thenReturn(Optional.of(entity));
 		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileMetadata.getFileFormat())).thenReturn(outputFile);
@@ -63,8 +64,8 @@ public class FileServiceTest extends BaseServiceTest {
 	public void downloadMissingPreview() throws IOException {
 		String fileUri = "abc";
 		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).build();
-		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(1000L).fileFormat(MediaFileFormat.MEDIA_JPG).userId("test").ipAddress("1.2.3.4").build();
-		FileEntity entity = new FileEntity(fileMetadata, mediaMetadata);
+		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(1000L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
+		FileEntity entity = new FileEntity(fileMetadata, mediaMetadata, UserAccess.of("test", "1.2.3.4"));
 		when(mediaRepository.findFile(fileUri)).thenReturn(Optional.of(entity));
 		
 		Optional<FileResponse> result = fileService.preview(fileUri);
@@ -79,9 +80,9 @@ public class FileServiceTest extends BaseServiceTest {
 		File outputFile = new File("outfile");
 		MediaFileFormat format = MediaFileFormat.THUMBNAIL_JPG;
 		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).build();
-		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(1000L).fileFormat(MediaFileFormat.MEDIA_JPG).userId("test").ipAddress("1.2.3.4").build();
-		FileMetadata thumbnailMetadata = FileMetadata.builder().md5("456").timestamp(Instant.MAX).contentLength(1000L).fileFormat(format).userId("test").ipAddress("1.2.3.4").build();
-		FileEntity entity = new FileEntity(fileMetadata, mediaMetadata);
+		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(1000L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
+		FileMetadata thumbnailMetadata = FileMetadata.builder().md5("456").timestamp(Instant.MAX).contentLength(1000L).fileFormat(format).build();
+		FileEntity entity = new FileEntity(fileMetadata, mediaMetadata, UserAccess.of("test", "1.2.3.4"));
 		entity.addVariant(thumbnailMetadata);
 		
 		when(mediaRepository.findFile(fileUri)).thenReturn(Optional.of(entity));

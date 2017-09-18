@@ -42,15 +42,7 @@ public class FileMetadata {
 	@NonNull
 	@Field
 	private Long contentLength;
-	
-	@NonNull
-	@Field
-	private String userId;
-	
-	@NonNull
-	@Field
-	private String ipAddress;
-	
+
 	@NonNull
 	@Field
 	private MediaFileFormat fileFormat;

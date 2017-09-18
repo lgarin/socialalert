@@ -42,14 +42,12 @@ public class MediaFileStore {
 	@NonNull
 	FileStore fileStore;
 	
-	public FileMetadata buildFileMetadata(@NonNull File file, @NonNull MediaFileFormat fileFormat, @NonNull String userId, @NonNull String ipAddress) throws IOException {
+	public FileMetadata buildFileMetadata(@NonNull File file, @NonNull MediaFileFormat fileFormat) throws IOException {
 		String md5 = fileStore.computeMd5Hex(file);
 		return FileMetadata.builder()
 			.md5(md5)
 			.timestamp(Instant.now())
 			.contentLength(file.length())
-			.userId(userId)
-			.ipAddress(ipAddress)
 			.fileFormat(fileFormat)
 			.build();
 	}
@@ -77,7 +75,7 @@ public class MediaFileStore {
 		File tempFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), tempFormat);
 		MediaFileFormat fileFormat = processor.createVariant(inputFile, tempFile, sizeVariant);
 		File outputFile = fileStore.changeFileFormat(fileMetadata.getMd5(), fileMetadata.getTimestamp(), tempFormat, fileFormat);
-		return buildFileMetadata(outputFile, fileFormat, fileMetadata.getUserId(), fileMetadata.getIpAddress());
+		return buildFileMetadata(outputFile, fileFormat);
 	}
 
 	private FileMetadata storeMedia(File inputFile, FileMetadata fileMetadata) throws IOException {

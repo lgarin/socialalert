@@ -15,10 +15,4 @@ public final class FileUploadParameter {
 	
 	@NonNull 
 	private String contentType;
-	
-	@NonNull 
-	private String userId;
-	
-	@NonNull 
-	private String ipAddress;
 }

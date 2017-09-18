@@ -35,6 +35,7 @@ import javax.ws.rs.core.UriInfo;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.bravson.socialalert.file.media.MediaFileConstants;
+import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.activity.UserActivity;
 
 import io.swagger.annotations.Api;
@@ -153,7 +154,7 @@ public class FileFacade {
 	public Response uploadPicture(
 			@ApiParam(value="The file content must be included in the body of the HTTP request.", name="body", required=true) @NotNull File inputFile,
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException, ServletException {
-		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile)));
+		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), UserAccess.of(principal.getName(), httpRequest.getRemoteAddr())));
 	}
 	
 	@POST
@@ -168,13 +169,13 @@ public class FileFacade {
 	public Response uploadVideo(
 			@ApiParam(value="The file content must be included in the body of the HTTP request.", name="body", required=true) @NotNull File inputFile,
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException, ServletException {
-		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile)));
+		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), UserAccess.of(principal.getName(), httpRequest.getRemoteAddr())));
 	}
 
 	private FileUploadParameter createUploadParameter(File inputFile) {
 		if (inputFile.length() > maxUploadSize) {
 			throw new WebApplicationException(Status.REQUEST_ENTITY_TOO_LARGE);
 		}
-		return FileUploadParameter.builder().inputFile(inputFile).contentType(httpRequest.getContentType()).userId(principal.getName()).ipAddress(httpRequest.getRemoteAddr()).build();
+		return FileUploadParameter.builder().inputFile(inputFile).contentType(httpRequest.getContentType()).build();
 	}
 }

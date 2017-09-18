@@ -40,27 +40,23 @@ public class MediaFileStoreTest extends BaseServiceTest {
 	@Test
 	public void buildFileMetadata() throws IOException {
 		String md5 = "1234";
-		String userId = "test";
-		String ipAddress = "1.2.3.4";
 		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
 		MediaFileFormat fileFormat = MediaFileFormat.MEDIA_JPG;
 		
 		when(fileStore.computeMd5Hex(inputFile)).thenReturn(md5);
 		
-		FileMetadata result = mediaFileStore.buildFileMetadata(inputFile, fileFormat, userId, ipAddress);
-		assertThat(result).isEqualTo(FileMetadata.builder().md5(md5).timestamp(result.getTimestamp()).fileFormat(fileFormat).contentLength(2_100_375L).ipAddress(ipAddress).userId(userId).build());
+		FileMetadata result = mediaFileStore.buildFileMetadata(inputFile, fileFormat);
+		assertThat(result).isEqualTo(FileMetadata.builder().md5(md5).timestamp(result.getTimestamp()).fileFormat(fileFormat).contentLength(2_100_375L).build());
 	}
 	
 	@Test
 	public void buildFileMetadataPropagatesException() throws IOException {
-		String userId = "test";
-		String ipAddress = "1.2.3.4";
 		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
 		MediaFileFormat fileFormat = MediaFileFormat.MEDIA_JPG;
 		
 		when(fileStore.computeMd5Hex(inputFile)).thenThrow(IOException.class);
 		
-		assertThatThrownBy(() -> mediaFileStore.buildFileMetadata(inputFile, fileFormat, userId, ipAddress)).isInstanceOf(IOException.class);
+		assertThatThrownBy(() -> mediaFileStore.buildFileMetadata(inputFile, fileFormat)).isInstanceOf(IOException.class);
 	}
 	
 	@Test
@@ -94,7 +90,7 @@ public class MediaFileStoreTest extends BaseServiceTest {
 	@Test
 	public void storeMedia() throws Exception {
 		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
-		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_JPG).userId("test").ipAddress("1.2.3.4").build();
+		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
 		
 		FileMetadata result = mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.MEDIA);
 		assertThat(result).isSameAs(fileMetadata);
@@ -106,7 +102,7 @@ public class MediaFileStoreTest extends BaseServiceTest {
 	@Test
 	public void storeThumbnail() throws Exception {
 		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
-		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_JPG).userId("test").ipAddress("1.2.3.4").build();
+		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
 		File tempFile = new File("src/test/resources/media/temp.jpg");
 		File outputFile = new File("src/test/resources/media/out.jpg");
 		
@@ -116,13 +112,13 @@ public class MediaFileStoreTest extends BaseServiceTest {
 		when(fileStore.computeMd5Hex(outputFile)).thenReturn("456");
 		
 		FileMetadata result = mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);
-		assertThat(result).isEqualTo(FileMetadata.builder().md5("456").fileFormat(MediaFileFormat.THUMBNAIL_JPG).userId(fileMetadata.getUserId()).ipAddress(fileMetadata.getIpAddress()).contentLength(0L).timestamp(result.getTimestamp()).build());
+		assertThat(result).isEqualTo(FileMetadata.builder().md5("456").fileFormat(MediaFileFormat.THUMBNAIL_JPG).contentLength(0L).timestamp(result.getTimestamp()).build());
 	}
 	
 	@Test
 	public void storePreview() throws Exception {
 		File inputFile = new File("src/test/resources/media/IMG_0236.MOV");
-		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_MOV).userId("test").ipAddress("1.2.3.4").build();
+		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_MOV).build();
 		File tempFile = new File("src/test/resources/media/temp.jpg");
 		File outputFile = new File("src/test/resources/media/out.jpg");
 		
@@ -132,6 +128,6 @@ public class MediaFileStoreTest extends BaseServiceTest {
 		when(fileStore.computeMd5Hex(outputFile)).thenReturn("456");
 		
 		FileMetadata result = mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.PREVIEW);
-		assertThat(result).isEqualTo(FileMetadata.builder().md5("456").fileFormat(MediaFileFormat.PREVIEW_JPG).userId(fileMetadata.getUserId()).ipAddress(fileMetadata.getIpAddress()).contentLength(0L).timestamp(result.getTimestamp()).build());
+		assertThat(result).isEqualTo(FileMetadata.builder().md5("456").fileFormat(MediaFileFormat.PREVIEW_JPG).contentLength(0L).timestamp(result.getTimestamp()).build());
 	}
 }

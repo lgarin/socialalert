@@ -11,6 +11,7 @@ import com.bravson.socialalert.file.FileMetadata;
 import com.bravson.socialalert.file.FileRepository;
 import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaMetadata;
+import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.profile.ProfileEntity;
 
 public class FileRepositoryTest extends BaseRepositoryTest {
@@ -25,17 +26,19 @@ public class FileRepositoryTest extends BaseRepositoryTest {
     
     @Test
     public void persistValidFile() {
-    	FileMetadata fileMetadata = FileMetadata.builder().md5("xyz").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_JPG).userId("test").ipAddress("1.1.1.1").build();
+    	FileMetadata fileMetadata = FileMetadata.builder().md5("xyz").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
     	MediaMetadata mediaMetadata = MediaMetadata.builder().width(1200).height(1600).build();
-    	FileEntity result = repository.storeMedia(fileMetadata, mediaMetadata, persistAndIndex(new ProfileEntity("test")));
+    	UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+    	FileEntity result = repository.storeMedia(fileMetadata, mediaMetadata, persistAndIndex(new ProfileEntity("test")), userAccess);
     	assertThat(result.getId()).isEqualTo("19700101/xyz");
     }
     
     @Test
     public void findExistingFile() {
-    	FileMetadata fileMetadata = FileMetadata.builder().md5("xyz").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_JPG).userId("test").ipAddress("1.1.1.1").build();
+    	FileMetadata fileMetadata = FileMetadata.builder().md5("xyz").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
     	MediaMetadata mediaMetadata = MediaMetadata.builder().width(1200).height(1600).build();
-    	repository.storeMedia(fileMetadata, mediaMetadata, persistAndIndex(new ProfileEntity("test")));
+    	UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+    	repository.storeMedia(fileMetadata, mediaMetadata, persistAndIndex(new ProfileEntity("test")), userAccess);
     	Optional<FileEntity> result = repository.findFile("19700101/xyz");
     	assertThat(result).isNotEmpty();
     }
@@ -48,9 +51,10 @@ public class FileRepositoryTest extends BaseRepositoryTest {
     
     @Test
     public void queryByIpAddressPattern() {
-    	FileMetadata fileMetadata = FileMetadata.builder().md5("xyz").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_JPG).userId("test").ipAddress("1.1.1.1").build();
+    	FileMetadata fileMetadata = FileMetadata.builder().md5("xyz").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
     	MediaMetadata mediaMetadata = MediaMetadata.builder().width(1200).height(1600).build();
-    	FileEntity entity = new FileEntity(fileMetadata, mediaMetadata);
+    	UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+    	FileEntity entity = new FileEntity(fileMetadata, mediaMetadata, userAccess);
     	entity.setUserProfile(persistAndIndex(new ProfileEntity("test")));
     	persistAndIndex(entity);
     	

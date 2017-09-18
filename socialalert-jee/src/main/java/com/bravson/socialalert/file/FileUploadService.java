@@ -18,6 +18,7 @@ import com.bravson.socialalert.file.media.MediaSizeVariant;
 import com.bravson.socialalert.file.video.AsyncVideoPreviewEvent;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.profile.ProfileEntity;
 import com.bravson.socialalert.user.profile.ProfileRepository;
 
@@ -48,25 +49,25 @@ public class FileUploadService {
 	@Inject
 	Logger logger;
 
-	public FileMetadata uploadMedia(@NonNull FileUploadParameter parameter) throws IOException {
+	public FileMetadata uploadMedia(@NonNull FileUploadParameter parameter, @NonNull UserAccess userAccess) throws IOException {
 		MediaFileFormat fileFormat = MediaFileFormat.fromMediaContentType(parameter.getContentType()).orElseThrow(NotSupportedException::new);
 		MediaMetadata mediaMetadata = buildMediaMetadata(parameter.getInputFile(), fileFormat).orElseThrow(NotSupportedException::new);
 		
-		FileMetadata fileMetadata = mediaFileStore.buildFileMetadata(parameter.getInputFile(), fileFormat, parameter.getUserId(), parameter.getIpAddress());
+		FileMetadata fileMetadata = mediaFileStore.buildFileMetadata(parameter.getInputFile(), fileFormat);
 		
 		if (mediaRepository.findFile(fileMetadata.buildFileUri()).isPresent()) {
 			return fileMetadata;
 		}
 		
-		storeNewFile(parameter.getInputFile(), fileMetadata, mediaMetadata);
+		storeNewFile(parameter.getInputFile(), fileMetadata, mediaMetadata, userAccess);
 		
 		return fileMetadata;
 	}
 
-	private FileEntity storeNewFile(File inputFile, FileMetadata fileMetadata, MediaMetadata mediaMetadata) throws IOException {
-		ProfileEntity profileEntity = profileRepository.findByUserId(fileMetadata.getUserId()).orElseThrow(ForbiddenException::new);
+	private FileEntity storeNewFile(File inputFile, FileMetadata fileMetadata, MediaMetadata mediaMetadata, UserAccess userAccess) throws IOException {
+		ProfileEntity profileEntity = profileRepository.findByUserId(userAccess.getUserId()).orElseThrow(ForbiddenException::new);
 		mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.MEDIA);
-		FileEntity fileEntity = mediaRepository.storeMedia(fileMetadata, mediaMetadata, profileEntity);
+		FileEntity fileEntity = mediaRepository.storeMedia(fileMetadata, mediaMetadata, profileEntity, userAccess);
 		
 		FileMetadata thumbnailMetadata = mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);
 		fileEntity.addVariant(thumbnailMetadata);

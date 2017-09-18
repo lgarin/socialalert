@@ -150,7 +150,7 @@ public class MediaEntity extends VersionedEntity {
 		info.setLikeCount(statistic.getLikeCount());
 		info.setDislikeCount(statistic.getDislikeCount());
 		info.setCommentCount(statistic.getCommentCount());
-		info.setCreatorId(getFile().getFileMetadata().getUserId());
+		info.setCreatorId(getFile().getUserId());
 		info.setTimestamp(getFile().getFileMetadata().getTimestamp());
 		info.setCameraMaker(getFile().getMediaMetadata().getCameraMaker());
 		info.setCameraModel(getFile().getMediaMetadata().getCameraModel());

@@ -18,6 +18,7 @@ import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.file.media.MediaSizeVariant;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
+import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.profile.ProfileEntity;
 
 import lombok.AccessLevel;
@@ -46,11 +47,11 @@ public class FileEntity extends VersionedEntity {
 	@ManyToOne(fetch=FetchType.LAZY, optional=false)
 	private ProfileEntity userProfile;
 	
-	public FileEntity(@NonNull FileMetadata fileMetadata, @NonNull MediaMetadata mediaMetadata) {
+	public FileEntity(@NonNull FileMetadata fileMetadata, @NonNull MediaMetadata mediaMetadata, @NonNull UserAccess userAccess) {
 		if (fileMetadata.getSizeVariant() != MediaSizeVariant.MEDIA) {
 			throw new IllegalArgumentException("Size variant must be " + MediaSizeVariant.MEDIA.getVariantName());
 		}
-		this.versionInfo = VersionInfo.of(fileMetadata.getUserId(), fileMetadata.getIpAddress());
+		this.versionInfo = VersionInfo.of(userAccess.getUserId(), userAccess.getIpAddress());
 		this.id = fileMetadata.buildFileUri();
 		this.mediaMetadata = mediaMetadata;
 		addVariant(fileMetadata);

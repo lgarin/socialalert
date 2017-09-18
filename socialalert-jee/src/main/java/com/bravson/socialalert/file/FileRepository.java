@@ -13,6 +13,7 @@ import org.hibernate.search.query.dsl.QueryBuilder;
 
 import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.profile.ProfileEntity;
 
 import lombok.AccessLevel;
@@ -31,8 +32,8 @@ public class FileRepository {
 	@NonNull
 	FullTextEntityManager entityManager;
 
-	public FileEntity storeMedia(@NonNull FileMetadata fileMetadata, @NonNull MediaMetadata mediaMetadata, @NonNull ProfileEntity userProfile) {
-		FileEntity entity = new FileEntity(fileMetadata, mediaMetadata);
+	public FileEntity storeMedia(@NonNull FileMetadata fileMetadata, @NonNull MediaMetadata mediaMetadata, @NonNull ProfileEntity userProfile, @NonNull UserAccess userAccess) {
+		FileEntity entity = new FileEntity(fileMetadata, mediaMetadata, userAccess);
 		entity.setUserProfile(userProfile);
 		entityManager.persist(entity);
 		return entity;
@@ -45,7 +46,7 @@ public class FileRepository {
 	@SuppressWarnings("unchecked")
 	public List<FileEntity> findByIpAddressPattern(@NonNull String ipAddressPattern) {
 		QueryBuilder queryBuilder = entityManager.getSearchFactory().buildQueryBuilder().forEntity(FileEntity.class).get();
-		Query query = queryBuilder.keyword().wildcard().onField("fileVariants.ipAddress").matching(ipAddressPattern).createQuery();
+		Query query = queryBuilder.keyword().wildcard().onField("versionInfo.ipAddress").matching(ipAddressPattern).createQuery();
 		return entityManager.createFullTextQuery(query, FileEntity.class).getResultList();
 	}
 }
