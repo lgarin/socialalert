@@ -13,9 +13,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.media.MediaInfo;
 import com.bravson.socialalert.media.UserContent;
+import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.UserInfoService;
 import com.bravson.socialalert.user.activity.OnlineUserRepository;
 import com.bravson.socialalert.user.profile.ProfileEntity;
@@ -35,7 +35,7 @@ public class UserInfoServiceTest extends Assertions {
 	
 	@Test
 	public void fillOnlineUser() {
-		ProfileEntity profile = new ProfileEntity("test", "test@test.com", VersionInfo.of("test", "1.2.3.4"));
+		ProfileEntity profile = new ProfileEntity("test", "test@test.com", UserAccess.of("test", "1.2.3.4"));
 		when(profileRepository.findByUserId(profile.getId())).thenReturn(Optional.of(profile));
 		when(onlineUserRepository.isUserActive(profile.getId())).thenReturn(true);
 		MediaInfo content = new MediaInfo();
@@ -47,7 +47,7 @@ public class UserInfoServiceTest extends Assertions {
 	
 	@Test
 	public void fillOfflineUser() {
-		ProfileEntity profile = new ProfileEntity("test", "test@test.com", VersionInfo.of("test", "1.2.3.4"));
+		ProfileEntity profile = new ProfileEntity("test", "test@test.com", UserAccess.of("test", "1.2.3.4"));
 		when(profileRepository.findByUserId(profile.getId())).thenReturn(Optional.of(profile));
 		when(onlineUserRepository.isUserActive(profile.getId())).thenReturn(false);
 		MediaInfo content = new MediaInfo();
@@ -70,8 +70,8 @@ public class UserInfoServiceTest extends Assertions {
 	
 	@Test
 	public void fillUserCollection() {
-		ProfileEntity profile1 = new ProfileEntity("test1", "test1@test.com", VersionInfo.of("test1", "1.2.3.4"));
-		ProfileEntity profile2 = new ProfileEntity("test2", "test2@test.com", VersionInfo.of("test2", "1.2.3.4"));
+		ProfileEntity profile1 = new ProfileEntity("test1", "test1@test.com", UserAccess.of("test1", "1.2.3.4"));
+		ProfileEntity profile2 = new ProfileEntity("test2", "test2@test.com", UserAccess.of("test2", "1.2.3.4"));
 		
 		MediaInfo content1 = new MediaInfo();
 		content1.setCreatorId(profile1.getId());

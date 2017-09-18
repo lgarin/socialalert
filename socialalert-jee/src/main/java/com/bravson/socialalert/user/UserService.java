@@ -55,15 +55,15 @@ public class UserService {
 	}
 	
 	public Optional<LoginResponse> login(@NonNull LoginParameter param, @NonNull String ipAddress) {
-		return authenticationRepository.requestAccessToken(param.getUserId(), param.getPassword())
+		return authenticationRepository.requestAccessToken(param.getUsername(), param.getPassword())
 				.map(token -> toLoginResponse(token, ipAddress));
 	}
 	
-	public boolean logout(@NonNull  String authorization) {
+	public boolean logout(@NonNull String authorization) {
 		return authenticationRepository.invalidateAccessToken(authorization);
 	}
 
-	public Optional<UserInfo> findUserInfo(@NonNull  String authorization) {
+	public Optional<UserInfo> findUserInfo(@NonNull String authorization) {
 		return authenticationRepository.findUserInfo(authorization);
 	}
 }

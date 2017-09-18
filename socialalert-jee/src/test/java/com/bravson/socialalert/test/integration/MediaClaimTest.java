@@ -16,14 +16,14 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.junit.Test;
 
 import com.bravson.socialalert.file.media.MediaFileConstants;
-import com.bravson.socialalert.media.ClaimMediaParameter;
+import com.bravson.socialalert.media.UpsertMediaParameter;
 import com.bravson.socialalert.media.GeoAddress;
 import com.bravson.socialalert.media.MediaInfo;
 
 public class MediaClaimTest extends BaseIntegrationTest {
 
-	private static Entity<ClaimMediaParameter> getClaimMediaParameter() {
-		ClaimMediaParameter param = new ClaimMediaParameter();
+	private static Entity<UpsertMediaParameter> getClaimMediaParameter() {
+		UpsertMediaParameter param = new UpsertMediaParameter();
 		param.setTitle("Test title");
 		param.setDescription("Test desc");
 		param.setTags(Arrays.asList("tag1", "tag2"));

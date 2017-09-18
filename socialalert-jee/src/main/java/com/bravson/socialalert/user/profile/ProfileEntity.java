@@ -11,6 +11,7 @@ import org.hibernate.search.annotations.Indexed;
 import com.bravson.socialalert.infrastructure.entity.LocalDateAttributeConverter;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
+import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.UserInfo;
 
 import lombok.AccessLevel;
@@ -59,11 +60,11 @@ public class ProfileEntity extends VersionedEntity {
 	@Setter
 	private String biography;
 	
-	public ProfileEntity(@NonNull String username, @NonNull String email, @NonNull VersionInfo versionInfo) {
-		this.id = versionInfo.getUserId();
+	public ProfileEntity(@NonNull String username, @NonNull String email, @NonNull UserAccess userAccess) {
+		this.id = userAccess.getUserId();
 		this.username = username;
 		this.email = email;
-		this.versionInfo = versionInfo;
+		this.versionInfo = VersionInfo.of(userAccess.getUserId(), userAccess.getIpAddress());
 	}
 	
 	public ProfileEntity(@NonNull String id) {

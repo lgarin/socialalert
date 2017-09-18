@@ -39,7 +39,7 @@ public class VersionInfo {
 		return result;
 	}
 	
-	private void touch(String userId, String ipAddress) {
+	public void touch(String userId, String ipAddress) {
 		this.userId = userId;
 		this.ipAddress = ipAddress;
 		lastUpdate = Instant.now();

@@ -1,5 +1,6 @@
 package com.bravson.socialalert.user.session;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,8 +16,10 @@ import lombok.NoArgsConstructor;
 @SessionScoped
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Logged
-public class UserSessionService {
+public class UserSessionService implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	private Set<String> viewedMedia = new HashSet<>();
 	
 	public boolean addViewedMedia(String mediaUri) {

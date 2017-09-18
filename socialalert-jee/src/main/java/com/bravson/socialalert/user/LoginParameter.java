@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class LoginParameter {
 	@NotEmpty
-	private final String userId;
+	private final String username;
 	
 	@NotEmpty
 	private final String password;

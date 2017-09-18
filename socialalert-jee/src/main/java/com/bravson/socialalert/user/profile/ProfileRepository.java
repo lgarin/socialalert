@@ -8,8 +8,8 @@ import javax.transaction.Transactional;
 
 import org.hibernate.search.jpa.FullTextEntityManager;
 
-import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.UserInfo;
 
 import lombok.AccessLevel;
@@ -33,7 +33,7 @@ public class ProfileRepository {
 	}
 
 	public ProfileEntity createProfile(UserInfo userInfo, String ipAddress) {
-		ProfileEntity entity = new ProfileEntity(userInfo.getUsername(), userInfo.getEmail(), VersionInfo.of(userInfo.getId(), ipAddress));
+		ProfileEntity entity = new ProfileEntity(userInfo.getUsername(), userInfo.getEmail(), UserAccess.of(userInfo.getId(), ipAddress));
 		entityManager.persist(entity);
 		return entity;
 	}

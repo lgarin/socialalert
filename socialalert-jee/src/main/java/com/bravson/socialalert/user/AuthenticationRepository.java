@@ -53,8 +53,8 @@ public class AuthenticationRepository {
 		return Optional.empty();
 	}
 
-	public Optional<String> requestAccessToken(@NonNull String userId, @NonNull String password) {
-		Form form = new Form().param("username", userId).param("password", password).param("grant_type", "password").param("client_id", config.getLoginClientId()).param("client_secret", config.getClientSecret());
+	public Optional<String> requestAccessToken(@NonNull String username, @NonNull String password) {
+		Form form = new Form().param("username", username).param("password", password).param("grant_type", "password").param("client_id", config.getLoginClientId()).param("client_secret", config.getClientSecret());
 		Response response = httpClient.target(config.getLoginUrl()).request().post(Entity.form(form));
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return Optional.empty();

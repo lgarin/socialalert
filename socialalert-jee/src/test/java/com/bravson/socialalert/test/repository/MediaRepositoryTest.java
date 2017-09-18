@@ -8,8 +8,7 @@ import java.util.Optional;
 import org.junit.Test;
 
 import com.bravson.socialalert.file.FileEntity;
-import com.bravson.socialalert.infrastructure.entity.VersionInfo;
-import com.bravson.socialalert.media.ClaimMediaParameter;
+import com.bravson.socialalert.media.UpsertMediaParameter;
 import com.bravson.socialalert.media.GeoAddress;
 import com.bravson.socialalert.media.GeoArea;
 import com.bravson.socialalert.media.MediaEntity;
@@ -18,6 +17,7 @@ import com.bravson.socialalert.media.MediaRepository;
 import com.bravson.socialalert.media.PagingParameter;
 import com.bravson.socialalert.media.QueryResult;
 import com.bravson.socialalert.media.SearchMediaParameter;
+import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.profile.ProfileEntity;
 
 public class MediaRepositoryTest extends BaseRepositoryTest {
@@ -40,13 +40,13 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
 	}
     
     private MediaEntity storeDefaultMedia() {
-		ClaimMediaParameter claimParameter = new ClaimMediaParameter();
+		UpsertMediaParameter claimParameter = new UpsertMediaParameter();
 		claimParameter.setTitle("Test title");
 		claimParameter.setDescription("Test desc");
 		claimParameter.setTags(Arrays.asList("tag1", "tag2"));
 		claimParameter.setCategories(Arrays.asList("cat1", "cat2"));
 		claimParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
-		return storeMedia(new MediaEntity("abc", MediaKind.PICTURE, claimParameter, VersionInfo.of("test", "1.2.3.4")));
+		return storeMedia(new MediaEntity("abc", MediaKind.PICTURE, claimParameter, UserAccess.of("test", "1.2.3.4")));
 	}
     
     @Test

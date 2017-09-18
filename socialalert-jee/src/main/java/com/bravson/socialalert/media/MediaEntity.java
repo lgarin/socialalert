@@ -28,6 +28,7 @@ import com.bravson.socialalert.file.FileEntity;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
 import com.bravson.socialalert.media.approval.MediaApprovalEntity;
+import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.profile.ProfileEntity;
 
 import lombok.AccessLevel;
@@ -99,20 +100,29 @@ public class MediaEntity extends VersionedEntity {
 	@Analyzer(definition="languageAnalyzer")
 	private List<String> tags;
 	
-	public MediaEntity(String fileUri, MediaKind kind, ClaimMediaParameter parameter, VersionInfo versionInfo) {
-		this.versionInfo = versionInfo;
+	public MediaEntity(String fileUri, MediaKind kind, UpsertMediaParameter parameter, UserAccess userAccess) {
+		this.versionInfo = VersionInfo.of(userAccess.getUserId(), userAccess.getIpAddress());
 		this.id = fileUri;
 		this.kind = kind;
+		this.statistic = new MediaStatistic();
+		setMetaInformation(parameter);
+	}
+	
+	public MediaEntity(String mediaUri) {
+		this.id = mediaUri;
+	}
+	
+	private void setMetaInformation(UpsertMediaParameter parameter) {
 		this.title = parameter.getTitle();
 		this.description = parameter.getDescription();
-		this.statistic = new MediaStatistic();
 		this.location = parameter.getLocation();
 		this.categories = new ArrayList<>(parameter.getCategories());
 		this.tags = new ArrayList<>(parameter.getTags());
 	}
 	
-	public MediaEntity(String mediaUri) {
-		this.id = mediaUri;
+	public void update(UpsertMediaParameter parameter, UserAccess userAccess) {
+		setMetaInformation(parameter);
+		versionInfo.touch(userAccess.getUserId(), userAccess.getIpAddress());
 	}
 	
 	public MediaInfo toMediaInfo() {
@@ -124,7 +134,7 @@ public class MediaEntity extends VersionedEntity {
 	}
 
 	private <T extends MediaInfo> T fillMediaInfo(T info) {
-		info.setMediaUri(file.getId());
+		info.setMediaUri(getFile().getId());
 		info.setKind(kind);
 		info.setTitle(title);
 		info.setDescription(description);
@@ -140,14 +150,14 @@ public class MediaEntity extends VersionedEntity {
 		info.setLikeCount(statistic.getLikeCount());
 		info.setDislikeCount(statistic.getDislikeCount());
 		info.setCommentCount(statistic.getCommentCount());
-		info.setCreatorId(file.getFileMetadata().getUserId());
-		info.setTimestamp(file.getFileMetadata().getTimestamp());
-		info.setCameraMaker(file.getMediaMetadata().getCameraMaker());
-		info.setCameraModel(file.getMediaMetadata().getCameraModel());
-		info.setHeight(file.getMediaMetadata().getHeight());
-		info.setWidth(file.getMediaMetadata().getWidth());
-		info.setDuration(file.getMediaMetadata().getDuration());
-		info.setCreation(file.getMediaMetadata().getTimestamp());
+		info.setCreatorId(getFile().getFileMetadata().getUserId());
+		info.setTimestamp(getFile().getFileMetadata().getTimestamp());
+		info.setCameraMaker(getFile().getMediaMetadata().getCameraMaker());
+		info.setCameraModel(getFile().getMediaMetadata().getCameraModel());
+		info.setHeight(getFile().getMediaMetadata().getHeight());
+		info.setWidth(getFile().getMediaMetadata().getWidth());
+		info.setDuration(getFile().getMediaMetadata().getDuration());
+		info.setCreation(getFile().getMediaMetadata().getTimestamp());
 		return info;
 	}
 	

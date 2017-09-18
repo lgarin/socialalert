@@ -1,5 +1,6 @@
 package com.bravson.socialalert.infrastructure.log;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import javax.interceptor.AroundInvoke;
@@ -12,7 +13,9 @@ import org.slf4j.LoggerFactory;
 
 @Logged
 @Interceptor
-public class LoggedInterceptor {
+public class LoggedInterceptor implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 
 	@AroundInvoke
     public Object logMethodEntry(InvocationContext invocationContext) throws Exception {

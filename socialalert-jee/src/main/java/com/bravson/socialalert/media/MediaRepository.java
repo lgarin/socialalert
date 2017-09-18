@@ -15,8 +15,8 @@ import org.hibernate.search.query.dsl.QueryBuilder;
 import org.hibernate.search.query.dsl.Unit;
 
 import com.bravson.socialalert.file.FileEntity;
-import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.user.UserAccess;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -38,8 +38,8 @@ public class MediaRepository {
 		return Optional.ofNullable(entityManager.find(MediaEntity.class, mediaUri));
 	}
 
-	public MediaEntity storeMedia(@NonNull FileEntity file, @NonNull ClaimMediaParameter parameter, @NonNull  String userId, @NonNull  String ipAddress) {
-		MediaEntity media = new MediaEntity(file.getId(), file.isVideo() ? MediaKind.VIDEO : MediaKind.PICTURE, parameter, VersionInfo.of(userId, ipAddress));
+	public MediaEntity storeMedia(@NonNull FileEntity file, @NonNull UpsertMediaParameter parameter, @NonNull UserAccess userAccess) {
+		MediaEntity media = new MediaEntity(file.getId(), file.isVideo() ? MediaKind.VIDEO : MediaKind.PICTURE, parameter, userAccess);
 		media.setFile(file);
 		media.setUserProfile(file.getUserProfile());
 		entityManager.persist(media);
@@ -85,10 +85,7 @@ public class MediaRepository {
 
 	@Transactional(value=TxType.REQUIRES_NEW)
 	public void increaseHitCountAtomicaly(String mediaUri) {
-		// TODO improve
+		// TODO improve performance + handle OptimisticLockException
 		findMedia(mediaUri).ifPresent(MediaEntity::increaseHitCount);
-		if (entityManager.getTransaction().isActive()) {
-			entityManager.flush();
-		}
 	}
 }

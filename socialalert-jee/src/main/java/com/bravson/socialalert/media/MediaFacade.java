@@ -25,6 +25,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.activity.UserActivity;
 
 import io.swagger.annotations.Api;
@@ -46,7 +47,7 @@ public class MediaFacade {
 	HttpServletRequest httpRequest;
 	
 	@Inject
-	MediaClaimService mediaClaimService;
+	MediaUpsertService mediaUpsertService;
 	
 	@Inject
 	MediaSearchService mediaSearchService;
@@ -60,19 +61,31 @@ public class MediaFacade {
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value="Claim a media which has been uploaded recently.")
 	@ApiResponses(value= {
-			@ApiResponse(code = 200, message = "File will be streamed."),
+			@ApiResponse(code = 200, message = "This media has been successfully claimed."),
 			@ApiResponse(code = 403, message = "This media does not belong to the current user."),
 			@ApiResponse(code = 404, message = "No picture exists with this uri."),
 			@ApiResponse(code = 409, message = "This media exists has already been claimed.")})
 	public MediaInfo claimMedia(
 			@ApiParam(value="The relative file uri.", required=true) @NotEmpty @PathParam("fileUri") String fileUri,
-			@Valid @NotNull ClaimMediaParameter parameter,
+			@Valid @NotNull UpsertMediaParameter parameter,
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
-		return mediaClaimService.claimMedia(toClaimFileParameter(fileUri), parameter);
+		return mediaUpsertService.claimMedia(fileUri, parameter, UserAccess.of(principal.getName(), httpRequest.getRemoteAddr()));
 	}
 	
-	private ClaimFileParameter toClaimFileParameter(String fileUri) {
-		return ClaimFileParameter.builder().fileUri(fileUri).userId(principal.getName()).ipAddress(httpRequest.getRemoteAddr()).build();
+	@POST
+	@Path("/update/{mediaUri : .+}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value="Update the meta information about a media.")
+	@ApiResponses(value= {
+			@ApiResponse(code = 200, message = "The metainformation have been successfully updated."),
+			@ApiResponse(code = 403, message = "This media does not belong to the current user."),
+			@ApiResponse(code = 404, message = "No media exists with this uri.")})
+	public MediaInfo updateMedia(
+			@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
+			@Valid @NotNull UpsertMediaParameter parameter,
+			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+		return mediaUpsertService.updateMedia(mediaUri, parameter, UserAccess.of(principal.getName(), httpRequest.getRemoteAddr()));
 	}
 	
 	@GET
@@ -115,7 +128,7 @@ public class MediaFacade {
 		return mediaSearchService.searchMedia(parameter, paging);
 	}
 	
-	@POST
+	@GET
 	@Path("/view/{mediaUri : .+}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)

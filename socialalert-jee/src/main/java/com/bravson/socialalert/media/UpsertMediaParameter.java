@@ -13,7 +13,7 @@ import lombok.NonNull;
 
 @Data
 @NoArgsConstructor
-public class ClaimMediaParameter {
+public class UpsertMediaParameter {
 	@NotEmpty @Size(max=MediaConstants.MAX_TITLE_LENGTH)
 	@NonNull
 	private String title;
