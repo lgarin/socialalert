@@ -130,12 +130,54 @@ public class MediaFacade {
 	
 	@GET
 	@Path("/view/{mediaUri : .+}")
-	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value="View the media details. If it is the first call for this media in the user session, then the hit count will be increased by one.")
+	@ApiResponses(value= {
+			@ApiResponse(code = 200, message = "The detail is available in the response."),
+			@ApiResponse(code = 404, message = "No media exists with this uri.")})
 	public MediaDetail viewMediaDetail(
 			@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		
 		return mediaService.viewMediaDetail(mediaUri, principal.getName());
+	}
+	
+	@POST
+	@Path("/approval/like/{mediaUri : .+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value="Set the approval modifier of the media to 'like'.")
+	@ApiResponses(value= {
+			@ApiResponse(code = 200, message = "The new status is available in the response."),
+			@ApiResponse(code = 404, message = "No media exists with this uri.")})
+	public MediaDetail likeMedia(
+			@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
+			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+		return mediaService.setApprovalModifier(mediaUri, ApprovalModifier.LIKE, principal.getName());
+	}
+	
+	@POST
+	@Path("/approval/dislike/{mediaUri : .+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value="Set the approval modifier of the media to 'dislike'.")
+	@ApiResponses(value= {
+			@ApiResponse(code = 200, message = "The new status is available in the response."),
+			@ApiResponse(code = 404, message = "No media exists with this uri.")})
+	public MediaDetail dislikeMedia(
+			@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
+			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+		return mediaService.setApprovalModifier(mediaUri, ApprovalModifier.DISLIKE, principal.getName());
+	}
+	
+	@POST
+	@Path("/approval/reset/{mediaUri : .+}")
+	@ApiOperation(value="Set the approval modifier of the media to 'null'.")
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiResponses(value= {
+			@ApiResponse(code = 200, message = "The new status is available in the response."),
+			@ApiResponse(code = 404, message = "No media exists with this uri.")})
+	public MediaDetail resetMediaApproval(
+			@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
+			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+		return mediaService.setApprovalModifier(mediaUri, null, principal.getName());
 	}
 }

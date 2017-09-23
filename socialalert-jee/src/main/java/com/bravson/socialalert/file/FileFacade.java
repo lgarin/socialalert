@@ -152,7 +152,7 @@ public class FileFacade {
 		      @ApiResponse(code = 413, message = "The file is too large."),
 		      @ApiResponse(code = 415, message = "The media is not in the expected format.")})
 	public Response uploadPicture(
-			@ApiParam(value="The file content must be included in the body of the HTTP request.", name="body", required=true) @NotNull File inputFile,
+			@ApiParam(value="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile,
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException, ServletException {
 		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), UserAccess.of(principal.getName(), httpRequest.getRemoteAddr())));
 	}
@@ -167,7 +167,7 @@ public class FileFacade {
 		      @ApiResponse(code = 413, message = "The file is too large."),
 		      @ApiResponse(code = 415, message = "The media is not in the expected format.")})
 	public Response uploadVideo(
-			@ApiParam(value="The file content must be included in the body of the HTTP request.", name="body", required=true) @NotNull File inputFile,
+			@ApiParam(value="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile,
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException, ServletException {
 		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), UserAccess.of(principal.getName(), httpRequest.getRemoteAddr())));
 	}

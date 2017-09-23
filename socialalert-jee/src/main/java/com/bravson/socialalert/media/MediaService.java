@@ -2,6 +2,7 @@ package com.bravson.socialalert.media;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 
 import com.bravson.socialalert.infrastructure.log.Logged;
@@ -14,6 +15,7 @@ import lombok.NonNull;
 
 @ManagedBean
 @Logged
+@Transactional
 public class MediaService {
 
 	@Inject
@@ -35,13 +37,25 @@ public class MediaService {
 		}
 		
 		MediaDetail detail = mediaRepository.findMedia(mediaUri)
-				.orElseThrow(NotFoundException::new)
-				.toMediaDetail();
+			.orElseThrow(NotFoundException::new)
+			.toMediaDetail();
 		
 		approvalRepository.find(mediaUri, userId)
 			.map(MediaApprovalEntity::getModifier)
 			.ifPresent(detail::setUserApprovalModifier);
 		
+		return userService.fillUserInfo(detail);
+	}
+
+	public MediaDetail setApprovalModifier(@NonNull String mediaUri, ApprovalModifier modifier, @NonNull String userId) {
+		MediaDetail detail = mediaRepository.findMedia(mediaUri)
+			.orElseThrow(NotFoundException::new)
+			.toMediaDetail();
+		
+		approvalRepository.changeApproval(mediaUri, userId, modifier)
+			.map(MediaApprovalEntity::getModifier)
+			.ifPresent(detail::setUserApprovalModifier);
+	
 		return userService.fillUserInfo(detail);
 	}
 }

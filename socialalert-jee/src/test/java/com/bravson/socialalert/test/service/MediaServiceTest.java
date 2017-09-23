@@ -83,4 +83,51 @@ public class MediaServiceTest extends BaseServiceTest {
 		assertThatThrownBy(() -> mediaService.viewMediaDetail(mediaUri, userId)).isInstanceOf(NotFoundException.class);
 		verifyNoMoreInteractions(approvalRepository, userService);
 	}
+	
+	@Test
+	public void likeMedia() {
+		String userId = "user1";
+		String mediaUri = "uri1";
+		ApprovalModifier modifier = ApprovalModifier.LIKE;
+		MediaEntity mediaEntity = mock(MediaEntity.class);
+		MediaDetail mediaDetail = new MediaDetail();
+		MediaApprovalEntity approvalEntity = new MediaApprovalEntity(mediaUri, userId);
+		approvalEntity.setModifier(modifier);
+		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.of(mediaEntity));
+		when(mediaEntity.toMediaDetail()).thenReturn(mediaDetail);
+		when(userService.fillUserInfo(mediaDetail)).thenReturn(mediaDetail);
+		when(approvalRepository.changeApproval(mediaUri, userId, modifier)).thenReturn(Optional.of(approvalEntity));
+		
+		MediaDetail result = mediaService.setApprovalModifier(mediaUri, modifier, userId);
+		assertThat(result).isEqualTo(mediaDetail);
+		assertThat(result.getUserApprovalModifier()).isEqualTo(modifier);
+	}
+	
+	@Test
+	public void resetMediaApproval() {
+		String userId = "user1";
+		String mediaUri = "uri1";
+		ApprovalModifier modifier = null;
+		MediaEntity mediaEntity = mock(MediaEntity.class);
+		MediaDetail mediaDetail = new MediaDetail();
+		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.of(mediaEntity));
+		when(mediaEntity.toMediaDetail()).thenReturn(mediaDetail);
+		when(userService.fillUserInfo(mediaDetail)).thenReturn(mediaDetail);
+		when(approvalRepository.changeApproval(mediaUri, userId, modifier)).thenReturn(Optional.empty());
+		
+		MediaDetail result = mediaService.setApprovalModifier(mediaUri, modifier, userId);
+		assertThat(result).isEqualTo(mediaDetail);
+		assertThat(result.getUserApprovalModifier()).isEqualTo(modifier);
+	}
+	
+	@Test
+	public void dislikeNonExistingMedia() {
+		String userId = "user1";
+		String mediaUri = "uri1";
+		ApprovalModifier modifier = ApprovalModifier.DISLIKE;
+		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.empty());
+		
+		assertThatThrownBy(() -> mediaService.setApprovalModifier(mediaUri, modifier, userId)).isInstanceOf(NotFoundException.class);
+		verifyNoMoreInteractions(approvalRepository, userService);
+	}
 }

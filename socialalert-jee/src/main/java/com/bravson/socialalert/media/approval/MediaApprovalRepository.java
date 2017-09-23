@@ -27,15 +27,15 @@ public class MediaApprovalRepository {
 	@NonNull
 	FullTextEntityManager entityManager;
 	
-	public MediaApprovalEntity changeApproval(String mediaUri, String userId, ApprovalModifier modifier) {
+	public Optional<MediaApprovalEntity> changeApproval(String mediaUri, String userId, ApprovalModifier modifier) {
 		find(mediaUri, userId).ifPresent(entityManager::remove);
 		if (modifier == null) {
-			return null;
+			return Optional.empty();
 		}
 		MediaApprovalEntity entity = new MediaApprovalEntity(mediaUri, userId);
 		entity.setModifier(modifier);
 		entityManager.persist(entity);
-		return entity;
+		return Optional.of(entity);
 	}
 	
 	public Optional<MediaApprovalEntity> find(String mediaUri, String userId) {
