@@ -21,24 +21,24 @@ import lombok.NonNull;
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Logged
-public class MediaApprovalRepository {
+public class CommentApprovalRepository {
 
 	@Inject
 	@NonNull
 	FullTextEntityManager entityManager;
 	
-	public Optional<MediaApprovalEntity> changeApproval(@NonNull String mediaUri, @NonNull String userId, ApprovalModifier modifier) {
-		find(mediaUri, userId).ifPresent(entityManager::remove);
+	public Optional<CommentApprovalEntity> changeApproval(@NonNull String commentId, @NonNull String userId, ApprovalModifier modifier) {
+		find(commentId, userId).ifPresent(entityManager::remove);
 		if (modifier == null) {
 			return Optional.empty();
 		}
-		MediaApprovalEntity entity = new MediaApprovalEntity(mediaUri, userId);
+		CommentApprovalEntity entity = new CommentApprovalEntity(commentId, userId);
 		entity.setModifier(modifier);
 		entityManager.persist(entity);
 		return Optional.of(entity);
 	}
 	
-	public Optional<MediaApprovalEntity> find(@NonNull String mediaUri, @NonNull String userId) {
-		return Optional.ofNullable(entityManager.find(MediaApprovalEntity.class, new MediaApprovalKey(mediaUri, userId)));
+	public Optional<CommentApprovalEntity> find(@NonNull String commentId, @NonNull String userId) {
+		return Optional.ofNullable(entityManager.find(CommentApprovalEntity.class, new CommentApprovalKey(commentId, userId)));
 	}
 }

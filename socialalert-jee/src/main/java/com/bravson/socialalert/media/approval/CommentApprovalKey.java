@@ -16,12 +16,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter(AccessLevel.PROTECTED)
-public class MediaApprovalKey implements Serializable {
+public class CommentApprovalKey implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
 	@NonNull
-	private String mediaUri;
+	private String commentId;
 	
 	@NonNull
 	private String userId;

@@ -2,6 +2,8 @@ package com.bravson.socialalert.media;
 
 import java.time.Duration;
 
+import com.bravson.socialalert.domain.location.GeoArea;
+
 import lombok.Data;
 
 @Data

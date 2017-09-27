@@ -7,8 +7,8 @@ import javax.ws.rs.core.Response.Status;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.junit.Test;
 
+import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.media.MediaInfo;
-import com.bravson.socialalert.media.QueryResult;
 
 public class MediaSearchTest extends BaseIntegrationTest {
 

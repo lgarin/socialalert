@@ -14,6 +14,8 @@ import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.hibernate.search.query.dsl.Unit;
 
+import com.bravson.socialalert.domain.paging.PagingParameter;
+import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.file.FileEntity;
 import com.bravson.socialalert.infrastructure.log.Logged;
 import com.bravson.socialalert.user.UserAccess;
@@ -84,7 +86,7 @@ public class MediaRepository {
 	}
 
 	@Transactional(value=TxType.REQUIRES_NEW)
-	public void increaseHitCountAtomicaly(String mediaUri) {
+	public void increaseHitCountAtomicaly(@NonNull String mediaUri) {
 		// TODO improve performance + handle OptimisticLockException
 		findMedia(mediaUri).ifPresent(MediaEntity::increaseHitCount);
 	}

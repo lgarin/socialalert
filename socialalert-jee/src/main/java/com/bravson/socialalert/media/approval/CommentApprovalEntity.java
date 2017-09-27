@@ -12,7 +12,7 @@ import javax.persistence.MapsId;
 
 import com.bravson.socialalert.domain.approval.ApprovalModifier;
 import com.bravson.socialalert.infrastructure.entity.InstantAttributeConverter;
-import com.bravson.socialalert.media.MediaEntity;
+import com.bravson.socialalert.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.user.profile.ProfileEntity;
 
 import lombok.AccessLevel;
@@ -21,10 +21,10 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 
-@Entity(name="MediaApproval")
-@IdClass(MediaApprovalKey.class)
+@Entity(name="CommentApproval")
+@IdClass(CommentApprovalKey.class)
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
-public class MediaApprovalEntity {
+public class CommentApprovalEntity {
 
 	@Id
 	@Getter
@@ -34,7 +34,7 @@ public class MediaApprovalEntity {
 	@Id
 	@Getter
 	@NonNull
-	private String mediaUri;
+	private String commentId;
 	
 	@Getter
 	@ManyToOne(fetch=FetchType.LAZY)
@@ -51,11 +51,11 @@ public class MediaApprovalEntity {
 	
 	@Getter
 	@ManyToOne(fetch=FetchType.LAZY)
-	@MapsId("mediaUri")
-	private MediaEntity media;
-	
-	public MediaApprovalEntity(@NonNull String mediaUri, @NonNull String userId) {
-		this.mediaUri = mediaUri;
+	@MapsId("commentId")
+	private MediaCommentEntity comment;
+
+	public CommentApprovalEntity(@NonNull String commentId, @NonNull String userId) {
+		this.commentId = commentId;
 		this.userId = userId;
 		this.creation = Instant.now();
 	}

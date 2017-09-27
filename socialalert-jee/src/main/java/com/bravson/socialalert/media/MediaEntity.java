@@ -12,22 +12,18 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
-import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
-import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.AnalyzerDef;
 import org.hibernate.search.annotations.DynamicBoost;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
-import org.hibernate.search.annotations.TokenFilterDef;
-import org.hibernate.search.annotations.TokenizerDef;
 
+import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.file.FileEntity;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
 import com.bravson.socialalert.media.approval.MediaApprovalEntity;
+import com.bravson.socialalert.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.profile.ProfileEntity;
 
@@ -39,12 +35,6 @@ import lombok.Setter;
 @Entity(name="Media")
 @Indexed
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
-@AnalyzerDef(name = "languageAnalyzer",
-tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
-filters = {
-  @TokenFilterDef(factory = LowerCaseFilterFactory.class),
-  @TokenFilterDef(factory = SnowballPorterFilterFactory.class)
-})
 @DynamicBoost(impl=MediaBoostStrategy.class)
 public class MediaEntity extends VersionedEntity {
 
@@ -62,6 +52,11 @@ public class MediaEntity extends VersionedEntity {
 	@Setter
 	@OneToMany(fetch=FetchType.LAZY, mappedBy="media")
 	private Set<MediaApprovalEntity> approvalSet;
+	
+	@Getter
+	@Setter
+	@OneToMany(fetch=FetchType.LAZY, mappedBy="media")
+	private Set<MediaCommentEntity> commentSet;
 	
 	@Getter
 	@Field

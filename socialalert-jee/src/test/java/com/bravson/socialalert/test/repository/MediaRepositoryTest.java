@@ -7,15 +7,15 @@ import java.util.Optional;
 
 import org.junit.Test;
 
+import com.bravson.socialalert.domain.location.GeoAddress;
+import com.bravson.socialalert.domain.location.GeoArea;
+import com.bravson.socialalert.domain.paging.PagingParameter;
+import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.file.FileEntity;
 import com.bravson.socialalert.media.UpsertMediaParameter;
-import com.bravson.socialalert.media.GeoAddress;
-import com.bravson.socialalert.media.GeoArea;
 import com.bravson.socialalert.media.MediaEntity;
 import com.bravson.socialalert.media.MediaKind;
 import com.bravson.socialalert.media.MediaRepository;
-import com.bravson.socialalert.media.PagingParameter;
-import com.bravson.socialalert.media.QueryResult;
 import com.bravson.socialalert.media.SearchMediaParameter;
 import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.profile.ProfileEntity;

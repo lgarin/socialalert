@@ -1,5 +1,7 @@
 package com.bravson.socialalert.media;
 
+import com.bravson.socialalert.domain.approval.ApprovalModifier;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

@@ -15,9 +15,9 @@ import org.assertj.core.data.Offset;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.junit.Test;
 
+import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.file.media.MediaFileConstants;
 import com.bravson.socialalert.media.UpsertMediaParameter;
-import com.bravson.socialalert.media.GeoAddress;
 import com.bravson.socialalert.media.MediaInfo;
 
 public class MediaClaimTest extends BaseIntegrationTest {

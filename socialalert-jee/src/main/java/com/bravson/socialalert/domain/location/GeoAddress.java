@@ -1,4 +1,4 @@
-package com.bravson.socialalert.media;
+package com.bravson.socialalert.domain.location;
 
 import javax.persistence.Embeddable;
 

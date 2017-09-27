@@ -13,9 +13,9 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.file.FileEntity;
 import com.bravson.socialalert.file.FileRepository;
-import com.bravson.socialalert.media.GeoAddress;
 import com.bravson.socialalert.media.MediaEntity;
 import com.bravson.socialalert.media.MediaInfo;
 import com.bravson.socialalert.media.MediaRepository;

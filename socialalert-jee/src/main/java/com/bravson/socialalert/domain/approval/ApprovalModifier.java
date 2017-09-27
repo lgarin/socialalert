@@ -1,4 +1,6 @@
-package com.bravson.socialalert.media;
+package com.bravson.socialalert.domain.approval;
+
+import com.bravson.socialalert.media.ActivityType;
 
 public enum ApprovalModifier {
 
@@ -44,17 +46,7 @@ public enum ApprovalModifier {
 			return 0;
 		}
 	}
-	
-	public static int computeApprovalDelta(ApprovalModifier oldModifier, ApprovalModifier newModifier) {
-		if (newModifier == LIKE && oldModifier == DISLIKE) {
-			return 2;
-		} else if (oldModifier == LIKE && newModifier == DISLIKE) {
-			return -2;
-		} else {
-			return computeLikeDelta(oldModifier, newModifier);
-		}
-	}
-	
+
 	public abstract ActivityType toMediaActivtiyType();
 	
 	public abstract ActivityType toCommentActivtiyType();

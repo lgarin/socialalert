@@ -11,6 +11,8 @@
         <class>com.bravson.socialalert.user.profile.ProfileEntity</class>
         <class>com.bravson.socialalert.media.MediaEntity</class>
         <class>com.bravson.socialalert.media.approval.MediaApprovalEntity</class>
+        <class>com.bravson.socialalert.media.comment.MediaCommentEntity</class>
+        <class>com.bravson.socialalert.media.approval.CommentApprovalEntity</class>
         <properties>
             <property name="hibernate.ogm.datastore.provider" value="map"/>
             <property name="hibernate.search.default.directory_provider" value="ram"/>

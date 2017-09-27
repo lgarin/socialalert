@@ -3,6 +3,8 @@ package com.bravson.socialalert.media;
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 
+import com.bravson.socialalert.domain.paging.PagingParameter;
+import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.infrastructure.log.Logged;
 import com.bravson.socialalert.user.UserInfoService;
 

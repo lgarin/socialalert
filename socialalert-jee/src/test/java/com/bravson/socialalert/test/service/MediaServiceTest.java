@@ -4,11 +4,12 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import com.bravson.socialalert.media.ApprovalModifier;
+import com.bravson.socialalert.domain.approval.ApprovalModifier;
 import com.bravson.socialalert.media.MediaDetail;
 import com.bravson.socialalert.media.MediaEntity;
 import com.bravson.socialalert.media.MediaRepository;
 import com.bravson.socialalert.media.MediaService;
+import com.bravson.socialalert.media.MediaStatistic;
 import com.bravson.socialalert.media.approval.MediaApprovalEntity;
 import com.bravson.socialalert.media.approval.MediaApprovalRepository;
 import com.bravson.socialalert.user.UserInfoService;
@@ -90,11 +91,13 @@ public class MediaServiceTest extends BaseServiceTest {
 		String mediaUri = "uri1";
 		ApprovalModifier modifier = ApprovalModifier.LIKE;
 		MediaEntity mediaEntity = mock(MediaEntity.class);
+		MediaStatistic mediaStatistic = new MediaStatistic();
 		MediaDetail mediaDetail = new MediaDetail();
 		MediaApprovalEntity approvalEntity = new MediaApprovalEntity(mediaUri, userId);
 		approvalEntity.setModifier(modifier);
 		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.of(mediaEntity));
 		when(mediaEntity.toMediaDetail()).thenReturn(mediaDetail);
+		when(mediaEntity.getStatistic()).thenReturn(mediaStatistic);
 		when(userService.fillUserInfo(mediaDetail)).thenReturn(mediaDetail);
 		when(approvalRepository.changeApproval(mediaUri, userId, modifier)).thenReturn(Optional.of(approvalEntity));
 		
@@ -109,9 +112,11 @@ public class MediaServiceTest extends BaseServiceTest {
 		String mediaUri = "uri1";
 		ApprovalModifier modifier = null;
 		MediaEntity mediaEntity = mock(MediaEntity.class);
+		MediaStatistic mediaStatistic = new MediaStatistic();
 		MediaDetail mediaDetail = new MediaDetail();
 		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.of(mediaEntity));
 		when(mediaEntity.toMediaDetail()).thenReturn(mediaDetail);
+		when(mediaEntity.getStatistic()).thenReturn(mediaStatistic);
 		when(userService.fillUserInfo(mediaDetail)).thenReturn(mediaDetail);
 		when(approvalRepository.changeApproval(mediaUri, userId, modifier)).thenReturn(Optional.empty());
 		

@@ -85,6 +85,12 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+		    <groupId>org.hibernate.hql</groupId>
+		    <artifactId>hibernate-hql-lucene</artifactId>
+		    <version>1.4.0.Final</version>
+		    <scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-client</artifactId>
 			<version>3.0.23.Final</version>

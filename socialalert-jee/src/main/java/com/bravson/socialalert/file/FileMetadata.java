@@ -5,6 +5,7 @@ import java.time.Instant;
 import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 
+import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 
@@ -31,7 +32,7 @@ import lombok.Setter;
 public class FileMetadata {
 
 	@NonNull
-	@Field
+	@Field(analyze=Analyze.NO)
 	private String md5;
 	
 	@NonNull

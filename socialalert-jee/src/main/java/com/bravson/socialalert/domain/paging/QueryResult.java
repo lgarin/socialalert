@@ -1,4 +1,4 @@
-package com.bravson.socialalert.media;
+package com.bravson.socialalert.domain.paging;
 
 import java.util.List;
 import java.util.function.Function;

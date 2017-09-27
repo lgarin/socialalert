@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -25,6 +26,12 @@ import javax.ws.rs.core.MediaType;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.bravson.socialalert.domain.approval.ApprovalModifier;
+import com.bravson.socialalert.domain.location.GeoArea;
+import com.bravson.socialalert.domain.paging.PagingParameter;
+import com.bravson.socialalert.domain.paging.QueryResult;
+import com.bravson.socialalert.media.comment.MediaCommentInfo;
+import com.bravson.socialalert.media.comment.MediaCommentService;
 import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.activity.UserActivity;
 
@@ -54,6 +61,9 @@ public class MediaFacade {
 	
 	@Inject
 	MediaService mediaService;
+	
+	@Inject
+	MediaCommentService commentService;
 	
 	@POST
 	@Path("/claim/{fileUri : .+}")
@@ -179,5 +189,20 @@ public class MediaFacade {
 			@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		return mediaService.setApprovalModifier(mediaUri, null, principal.getName());
+	}
+	
+	@POST
+	@Path("/comment/{mediaUri : .+}")
+	@ApiOperation(value="Comment the specified media.")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiResponses(value= {
+			@ApiResponse(code = 200, message = "The comment has been created."),
+			@ApiResponse(code = 404, message = "No media exists with this uri.")})
+	public MediaCommentInfo commentMedia(
+			@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
+			@ApiParam(value="The comment text.", required=false) @FormParam("comment") String comment,
+			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+		return commentService.createComment(mediaUri, comment, UserAccess.of(principal.getName(), httpRequest.getRemoteAddr()));
 	}
 }

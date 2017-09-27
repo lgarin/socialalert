@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 
+import com.bravson.socialalert.domain.approval.ApprovalModifier;
 import com.bravson.socialalert.infrastructure.log.Logged;
 import com.bravson.socialalert.media.approval.MediaApprovalEntity;
 import com.bravson.socialalert.media.approval.MediaApprovalRepository;
@@ -48,14 +49,15 @@ public class MediaService {
 	}
 
 	public MediaDetail setApprovalModifier(@NonNull String mediaUri, ApprovalModifier modifier, @NonNull String userId) {
-		MediaDetail detail = mediaRepository.findMedia(mediaUri)
-			.orElseThrow(NotFoundException::new)
-			.toMediaDetail();
+		MediaEntity mediaEntity = mediaRepository.findMedia(mediaUri).orElseThrow(NotFoundException::new);
 		
-		approvalRepository.changeApproval(mediaUri, userId, modifier)
-			.map(MediaApprovalEntity::getModifier)
-			.ifPresent(detail::setUserApprovalModifier);
-	
+		ApprovalModifier oldModifier = approvalRepository.find(mediaUri, userId).map(MediaApprovalEntity::getModifier).orElse(null);
+		ApprovalModifier newModifier = approvalRepository.changeApproval(mediaUri, userId, modifier).map(MediaApprovalEntity::getModifier).orElse(null);
+
+		mediaEntity.getStatistic().updateApprovalCount(oldModifier, newModifier);
+		
+		MediaDetail detail = mediaEntity.toMediaDetail();
+		detail.setUserApprovalModifier(newModifier);
 		return userService.fillUserInfo(detail);
 	}
 }

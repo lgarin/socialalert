@@ -7,6 +7,8 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.bravson.socialalert.domain.location.GeoAddress;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

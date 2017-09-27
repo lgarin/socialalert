@@ -5,6 +5,8 @@ import javax.persistence.Embeddable;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 
+import com.bravson.socialalert.domain.approval.ApprovalModifier;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +18,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @Embeddable
-@NoArgsConstructor(access=AccessLevel.PROTECTED)
+@NoArgsConstructor()
 @Setter(AccessLevel.NONE)
 @Indexed
 public class MediaStatistic {
@@ -39,5 +41,14 @@ public class MediaStatistic {
 
 	public void increaseHitCount() {
 		hitCount++;
+	}
+
+	public void updateApprovalCount(ApprovalModifier oldModifier, ApprovalModifier newModifier) {
+		likeCount += ApprovalModifier.computeLikeDelta(oldModifier, newModifier);
+		dislikeCount += ApprovalModifier.computeDislikeDelta(oldModifier, newModifier);
+	}
+	
+	public void increateCommentCount() {
+		commentCount++;
 	}
 }

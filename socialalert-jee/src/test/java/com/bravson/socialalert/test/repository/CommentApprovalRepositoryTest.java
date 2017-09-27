@@ -5,16 +5,16 @@ import java.util.Optional;
 import org.junit.Test;
 
 import com.bravson.socialalert.domain.approval.ApprovalModifier;
-import com.bravson.socialalert.media.approval.MediaApprovalEntity;
-import com.bravson.socialalert.media.approval.MediaApprovalRepository;
+import com.bravson.socialalert.media.approval.CommentApprovalEntity;
+import com.bravson.socialalert.media.approval.CommentApprovalRepository;
 
-public class MediaApprovalRepositoryTest extends BaseRepositoryTest {
+public class CommentApprovalRepositoryTest extends BaseRepositoryTest {
     
-    private MediaApprovalRepository repository = new MediaApprovalRepository(getEntityManager());
+    private CommentApprovalRepository repository = new CommentApprovalRepository(getEntityManager());
 
     @Test
     public void createNewApproval() {
-    	Optional<MediaApprovalEntity> result = repository.changeApproval("mediaUri1", "userId1", ApprovalModifier.LIKE);
+    	Optional<CommentApprovalEntity> result = repository.changeApproval("commentId1", "userId1", ApprovalModifier.LIKE);
     	assertThat(result).isPresent();
     	assertThat(result.get().getModifier()).isEqualTo(ApprovalModifier.LIKE);
     }
@@ -22,7 +22,7 @@ public class MediaApprovalRepositoryTest extends BaseRepositoryTest {
     @Test
     public void changeExistingApproval() {
     	repository.changeApproval("mediaUri1", "userId1", ApprovalModifier.LIKE);
-    	Optional<MediaApprovalEntity> result = repository.changeApproval("mediaUri1", "userId1", ApprovalModifier.DISLIKE);
+    	Optional<CommentApprovalEntity> result = repository.changeApproval("commentId1", "userId1", ApprovalModifier.DISLIKE);
     	assertThat(result).isPresent();
     	assertThat(result.get().getModifier()).isEqualTo(ApprovalModifier.DISLIKE);
     }
@@ -30,7 +30,7 @@ public class MediaApprovalRepositoryTest extends BaseRepositoryTest {
     @Test
     public void resetExistingApproval() {
     	repository.changeApproval("mediaUri1", "userId1", ApprovalModifier.LIKE);
-    	Optional<MediaApprovalEntity> result = repository.changeApproval("mediaUri1", "userId1", null);
+    	Optional<CommentApprovalEntity> result = repository.changeApproval("commentId1", "userId1", null);
     	assertThat(result).isEmpty();
     }
 }
