@@ -1,8 +1,11 @@
 package com.bravson.socialalert.test.service;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
+import java.util.Collections;
 import java.util.Optional;
 
 import javax.ws.rs.NotFoundException;
@@ -11,6 +14,8 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import com.bravson.socialalert.domain.paging.PagingParameter;
+import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.media.MediaEntity;
 import com.bravson.socialalert.media.MediaRepository;
 import com.bravson.socialalert.media.comment.MediaCommentEntity;
@@ -19,8 +24,6 @@ import com.bravson.socialalert.media.comment.MediaCommentRepository;
 import com.bravson.socialalert.media.comment.MediaCommentService;
 import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.UserInfoService;
-
-import static org.mockito.Mockito.*;
 
 public class MediaCommentServiceTest extends BaseServiceTest {
 
@@ -65,6 +68,30 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.empty());
 		
 		assertThatThrownBy(() -> commentService.createComment(mediaUri, comment, userAccess)).isInstanceOf(NotFoundException.class);
+		verifyZeroInteractions(commentRepository, userService);
+	}
+	
+	@Test
+	public void listCommentsForExitingMedia() {
+		String mediaUri = "uri1";
+		PagingParameter paging = new PagingParameter(Instant.now(), 0, 10);
+		MediaEntity mediaEntity = mock(MediaEntity.class);
+		QueryResult<MediaCommentEntity> entityResult = new QueryResult<>(Collections.emptyList(), 0, paging);
+		
+		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.of(mediaEntity));
+		when(commentRepository.listByMediaUri(mediaUri, paging)).thenReturn(entityResult);
+		
+		QueryResult<MediaCommentInfo> result = commentService.listComments(mediaUri, paging);
+		assertThat(result.getContent()).isEmpty();
+	}
+	
+	@Test
+	public void listCommentsForNonExitingMedia() {
+		String mediaUri = "uri1";
+		
+		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.empty());
+		
+		assertThatThrownBy(() -> commentService.listComments(mediaUri, new PagingParameter(Instant.now(), 0, 10))).isInstanceOf(NotFoundException.class);
 		verifyZeroInteractions(commentRepository, userService);
 	}
 }

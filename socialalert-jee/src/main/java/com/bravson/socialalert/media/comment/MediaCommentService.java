@@ -5,6 +5,8 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 
+import com.bravson.socialalert.domain.paging.PagingParameter;
+import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.infrastructure.log.Logged;
 import com.bravson.socialalert.media.MediaRepository;
 import com.bravson.socialalert.user.UserAccess;
@@ -30,5 +32,12 @@ public class MediaCommentService {
 		mediaRepository.findMedia(mediaUri).orElseThrow(NotFoundException::new);
 		MediaCommentEntity entity = commentRepository.create(mediaUri, comment, userAccess);
 		return userService.fillUserInfo(entity.toMediaCommentInfo());
+	}
+
+	public QueryResult<MediaCommentInfo> listComments(@NonNull String mediaUri, @NonNull PagingParameter paging) {
+		mediaRepository.findMedia(mediaUri).orElseThrow(NotFoundException::new);
+		QueryResult<MediaCommentInfo> result = commentRepository.listByMediaUri(mediaUri, paging).map(MediaCommentEntity::toMediaCommentInfo);
+		userService.fillUserInfo(result.getContent());
+		return result;
 	}
 }

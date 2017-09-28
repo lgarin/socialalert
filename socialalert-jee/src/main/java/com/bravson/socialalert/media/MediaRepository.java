@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
+import org.hibernate.annotations.QueryHints;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.query.dsl.BooleanJunction;
@@ -56,6 +57,7 @@ public class MediaRepository {
 				.setSort(builder.sort().byScore().createSort())
 				.setFirstResult(paging.getPageNumber() * paging.getPageSize())
 				.setMaxResults(paging.getPageSize())
+				.setHint(QueryHints.READ_ONLY, true)
 				.getResultList();
 		return new QueryResult<>(list, query.getResultSize(), paging);
 	}

@@ -7,8 +7,14 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.hibernate.annotations.QueryHints;
 import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.FullTextQuery;
+import org.hibernate.search.query.dsl.BooleanJunction;
+import org.hibernate.search.query.dsl.QueryBuilder;
 
+import com.bravson.socialalert.domain.paging.PagingParameter;
+import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.infrastructure.log.Logged;
 import com.bravson.socialalert.user.UserAccess;
 
@@ -28,6 +34,10 @@ public class MediaCommentRepository {
 	@NonNull
 	FullTextEntityManager entityManager;
 	
+	private QueryBuilder createQueryBuilder() {
+		return entityManager.getSearchFactory().buildQueryBuilder().forEntity(MediaCommentEntity.class).get();
+	}
+	
 	public MediaCommentEntity create(@NonNull String mediaUri, @NonNull String comment, @NonNull UserAccess userAccess) {
 		MediaCommentEntity entity = new MediaCommentEntity(mediaUri, comment, userAccess);
 		entityManager.persist(entity);
@@ -39,9 +49,20 @@ public class MediaCommentRepository {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<MediaCommentEntity> listByMediaUri(@NonNull String mediaUri) {
-		return entityManager.createQuery("from MediaComment c where c.mediaUri = :mediaUri")
-				.setParameter("mediaUri", mediaUri)
+	public QueryResult<MediaCommentEntity> listByMediaUri(@NonNull String mediaUri, @NonNull PagingParameter paging) {
+		QueryBuilder builder = createQueryBuilder();
+		BooleanJunction<?> junction = builder.bool();
+		junction = junction.must(builder.range().onField("versionInfo.creation").below(paging.getTimestamp()).createQuery()).disableScoring();
+		junction = junction.must(builder.keyword().onField("mediaUri").matching(mediaUri).createQuery()).disableScoring();
+		FullTextQuery query = entityManager.createFullTextQuery(junction.createQuery(), MediaCommentEntity.class)
+				.setFirstResult(paging.getPageNumber() * paging.getPageSize())
+				.setMaxResults(paging.getPageSize());
+		List<MediaCommentEntity> list = query
+				.setSort(builder.sort().byField("versionInfo.creation").desc().createSort())
+				.setFirstResult(paging.getPageNumber() * paging.getPageSize())
+				.setMaxResults(paging.getPageSize())
+				.setHint(QueryHints.READ_ONLY, true)
 				.getResultList();
+		return new QueryResult<>(list, query.getResultSize(), paging);
 	}
 }

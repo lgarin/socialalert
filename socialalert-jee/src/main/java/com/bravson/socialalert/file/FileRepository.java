@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.apache.lucene.search.Query;
+import org.hibernate.annotations.QueryHints;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.query.dsl.QueryBuilder;
 
@@ -47,6 +48,6 @@ public class FileRepository {
 	public List<FileEntity> findByIpAddressPattern(@NonNull String ipAddressPattern) {
 		QueryBuilder queryBuilder = entityManager.getSearchFactory().buildQueryBuilder().forEntity(FileEntity.class).get();
 		Query query = queryBuilder.keyword().wildcard().onField("versionInfo.ipAddress").matching(ipAddressPattern).createQuery();
-		return entityManager.createFullTextQuery(query, FileEntity.class).getResultList();
+		return entityManager.createFullTextQuery(query, FileEntity.class).setHint(QueryHints.READ_ONLY, true).getResultList();
 	}
 }

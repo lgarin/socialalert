@@ -14,7 +14,6 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -194,15 +193,35 @@ public class MediaFacade {
 	@POST
 	@Path("/comment/{mediaUri : .+}")
 	@ApiOperation(value="Comment the specified media.")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiResponses(value= {
 			@ApiResponse(code = 200, message = "The comment has been created."),
 			@ApiResponse(code = 404, message = "No media exists with this uri.")})
 	public MediaCommentInfo commentMedia(
 			@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
-			@ApiParam(value="The comment text.", required=false) @FormParam("comment") String comment,
+			@ApiParam(value="The comment text.", required=false) String comment,
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		return commentService.createComment(mediaUri, comment, UserAccess.of(principal.getName(), httpRequest.getRemoteAddr()));
+	}
+	
+	@GET
+	@Path("/comments/{mediaUri : .+}")
+	@ApiOperation(value="List the comments for the specified media.")
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiResponses(value= {
+			@ApiResponse(code = 200, message = "The comment has been created."),
+			@ApiResponse(code = 404, message = "No media exists with this uri.")})
+	public QueryResult<MediaCommentInfo> listComments(@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
+			@ApiParam(value="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
+			@ApiParam(value="Sets the page number to return.", required=false) @DefaultValue("0") @Min(0) @QueryParam("pageNumber") int pageNumber,
+			@ApiParam(value="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize,
+			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+		
+		if (pagingTimestamp == null) {
+			pagingTimestamp = System.currentTimeMillis();
+		}
+		PagingParameter paging = new PagingParameter(Instant.ofEpochMilli(pagingTimestamp), pageNumber, pageSize);
+		return commentService.listComments(mediaUri, paging);
 	}
 }
