@@ -2,7 +2,6 @@ package com.bravson.socialalert.media.approval;
 
 import java.time.Instant;
 
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -11,7 +10,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
 import com.bravson.socialalert.domain.approval.ApprovalModifier;
-import com.bravson.socialalert.infrastructure.entity.InstantAttributeConverter;
 import com.bravson.socialalert.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.user.profile.ProfileEntity;
 
@@ -46,7 +44,7 @@ public class CommentApprovalEntity {
 	private ApprovalModifier modifier;
 	
 	@Getter
-	@Convert(converter=InstantAttributeConverter.class)
+	@NonNull
 	private Instant creation;
 	
 	@Getter

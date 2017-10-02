@@ -3,7 +3,6 @@ package com.bravson.socialalert.file.media;
 import java.time.Duration;
 import java.time.Instant;
 
-import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 
 import org.hibernate.search.annotations.Field;
@@ -12,9 +11,6 @@ import org.hibernate.search.annotations.Latitude;
 import org.hibernate.search.annotations.Longitude;
 import org.hibernate.search.annotations.Spatial;
 import org.hibernate.search.annotations.SpatialMode;
-
-import com.bravson.socialalert.infrastructure.entity.DurationAttributeConverter;
-import com.bravson.socialalert.infrastructure.entity.InstantAttributeConverter;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -35,12 +31,14 @@ import lombok.Setter;
 public class MediaMetadata {
 
 	@NonNull
+	@Field
 	private Integer width;
 	@NonNull
+	@Field
 	private Integer height;
-	@Convert(converter=InstantAttributeConverter.class)
+	@Field
 	private Instant timestamp;
-	@Convert(converter=DurationAttributeConverter.class)
+	@Field
 	private Duration duration;
 	@Longitude(of="coordinates")
 	private Double longitude;

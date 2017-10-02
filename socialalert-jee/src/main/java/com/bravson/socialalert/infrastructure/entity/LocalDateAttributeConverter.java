@@ -7,7 +7,7 @@ import java.util.Date;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
-@Converter
+@Converter(autoApply=true)
 public class LocalDateAttributeConverter implements AttributeConverter<LocalDate, Date> {
 	
     @Override

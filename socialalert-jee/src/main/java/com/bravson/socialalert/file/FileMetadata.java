@@ -2,7 +2,6 @@ package com.bravson.socialalert.file;
 
 import java.time.Instant;
 
-import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 
 import org.hibernate.search.annotations.Analyze;
@@ -11,7 +10,6 @@ import org.hibernate.search.annotations.Indexed;
 
 import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaSizeVariant;
-import com.bravson.socialalert.infrastructure.entity.InstantAttributeConverter;
 import com.bravson.socialalert.infrastructure.util.DateUtil;
 
 import lombok.AccessLevel;
@@ -36,7 +34,6 @@ public class FileMetadata {
 	private String md5;
 	
 	@NonNull
-	@Convert(converter=InstantAttributeConverter.class)
 	@Field
 	private Instant timestamp;
 	

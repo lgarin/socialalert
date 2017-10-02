@@ -11,6 +11,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -200,7 +201,7 @@ public class MediaFacade {
 			@ApiResponse(code = 404, message = "No media exists with this uri.")})
 	public MediaCommentInfo commentMedia(
 			@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
-			@ApiParam(value="The comment text.", required=false) String comment,
+			@ApiParam(value="The comment text.", required=true) @NotEmpty @Size(max=MediaConstants.MAX_COMMENT_LENGTH) String comment,
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		return commentService.createComment(mediaUri, comment, UserAccess.of(principal.getName(), httpRequest.getRemoteAddr()));
 	}
@@ -210,7 +211,7 @@ public class MediaFacade {
 	@ApiOperation(value="List the comments for the specified media.")
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiResponses(value= {
-			@ApiResponse(code = 200, message = "The comment has been created."),
+			@ApiResponse(code = 200, message = "The comments have been retrieved successfuly."),
 			@ApiResponse(code = 404, message = "No media exists with this uri.")})
 	public QueryResult<MediaCommentInfo> listComments(@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@ApiParam(value="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,

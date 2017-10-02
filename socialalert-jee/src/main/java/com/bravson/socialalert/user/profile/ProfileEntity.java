@@ -3,7 +3,6 @@ package com.bravson.socialalert.user.profile;
 import java.time.Instant;
 import java.time.LocalDate;
 
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 
 import org.hibernate.search.annotations.Analyze;
@@ -11,7 +10,6 @@ import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 
-import com.bravson.socialalert.infrastructure.entity.LocalDateAttributeConverter;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
 import com.bravson.socialalert.user.UserAccess;
@@ -42,7 +40,6 @@ public class ProfileEntity extends VersionedEntity {
 	
 	@Getter
 	@Setter
-	@Convert(converter=LocalDateAttributeConverter.class)
 	@Field
 	private LocalDate birthdate;
 	

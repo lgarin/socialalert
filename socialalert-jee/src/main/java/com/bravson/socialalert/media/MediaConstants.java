@@ -7,4 +7,5 @@ public interface MediaConstants {
 	int MAX_CATEGORY_COUNT = 8;
 	int LIKE_WEIGHT = 2;
 	int DISLIKE_WEIGHT = -LIKE_WEIGHT;
+	int MAX_COMMENT_LENGTH = 2000;
 }

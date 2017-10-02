@@ -2,7 +2,6 @@ package com.bravson.socialalert.infrastructure.entity;
 
 import java.time.Instant;
 
-import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 
 import org.hibernate.search.annotations.Field;
@@ -26,11 +25,9 @@ public class VersionInfo {
 	@Field
 	private String ipAddress;
 	
-	@Convert(converter=InstantAttributeConverter.class)
 	@Field
 	private Instant creation;
 	
-	@Convert(converter=InstantAttributeConverter.class)
 	private Instant lastUpdate;
 	
 	public static VersionInfo of(String userId, String ipAddress) {

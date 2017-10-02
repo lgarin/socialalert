@@ -5,7 +5,7 @@ import java.time.Duration;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
-@Converter
+@Converter(autoApply=true)
 public class DurationAttributeConverter implements AttributeConverter<Duration, Long> {
 	
     @Override

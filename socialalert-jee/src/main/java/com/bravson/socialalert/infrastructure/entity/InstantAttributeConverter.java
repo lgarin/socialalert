@@ -6,7 +6,7 @@ import java.util.Date;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
-@Converter
+@Converter(autoApply=true)
 public class InstantAttributeConverter implements AttributeConverter<Instant, Date> {
 	
     @Override
