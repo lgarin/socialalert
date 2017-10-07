@@ -3,9 +3,7 @@ package com.bravson.socialalert.file;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.apache.lucene.search.Query;
 import org.hibernate.annotations.QueryHints;
@@ -13,7 +11,7 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.query.dsl.QueryBuilder;
 
 import com.bravson.socialalert.file.media.MediaMetadata;
-import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.infrastructure.layer.Repository;
 import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.profile.ProfileEntity;
 
@@ -22,11 +20,9 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@ManagedBean
-@Transactional
+@Repository
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Logged
 public class FileRepository {
 
 	@Inject

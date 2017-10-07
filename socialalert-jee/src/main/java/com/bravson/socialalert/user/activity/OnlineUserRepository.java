@@ -2,26 +2,25 @@ package com.bravson.socialalert.user.activity;
 
 import java.time.Instant;
 
-import javax.annotation.ManagedBean;
 import javax.cache.Cache;
 import javax.cache.CacheManager;
 import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.AccessedExpiryPolicy;
 import javax.cache.spi.CachingProvider;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
-import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.infrastructure.layer.Repository;
 import com.bravson.socialalert.user.AuthenticationConfiguration;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@ManagedBean
-@ApplicationScoped
+@Repository
+@Transactional(TxType.SUPPORTS)
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
-@Logged
 public class OnlineUserRepository {
 
 	private static final String ONLINE_USER_CACHE_NAME = "onlineUserCache";

@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotSupportedException;
 
@@ -17,7 +15,7 @@ import com.bravson.socialalert.file.media.MediaMetadata;
 import com.bravson.socialalert.file.media.MediaSizeVariant;
 import com.bravson.socialalert.file.video.AsyncVideoPreviewEvent;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
-import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.infrastructure.layer.Service;
 import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.profile.ProfileEntity;
 import com.bravson.socialalert.user.profile.ProfileRepository;
@@ -27,9 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@ManagedBean
-@Transactional
-@Logged
+@Service
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class FileUploadService {

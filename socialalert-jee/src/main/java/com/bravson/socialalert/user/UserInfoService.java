@@ -3,11 +3,11 @@ package com.bravson.socialalert.user;
 import java.util.Collection;
 import java.util.function.Function;
 
-import javax.annotation.ManagedBean;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
-import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.infrastructure.layer.Service;
 import com.bravson.socialalert.media.UserContent;
 import com.bravson.socialalert.user.activity.OnlineUserRepository;
 import com.bravson.socialalert.user.profile.ProfileEntity;
@@ -18,11 +18,10 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@ManagedBean
-@ApplicationScoped
+@Service
+@Transactional(TxType.SUPPORTS)
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Logged
 public class UserInfoService {
 
 	@Inject

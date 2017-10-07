@@ -3,9 +3,7 @@ package com.bravson.socialalert.media.comment;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.hibernate.annotations.QueryHints;
 import org.hibernate.search.jpa.FullTextEntityManager;
@@ -15,7 +13,7 @@ import org.hibernate.search.query.dsl.QueryBuilder;
 
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
-import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.infrastructure.layer.Repository;
 import com.bravson.socialalert.user.UserAccess;
 
 import lombok.AccessLevel;
@@ -23,11 +21,9 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@ManagedBean
-@Transactional
+@Repository
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Logged
 public class MediaCommentRepository {
 
 	@Inject

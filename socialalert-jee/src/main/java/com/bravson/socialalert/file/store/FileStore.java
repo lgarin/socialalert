@@ -13,19 +13,20 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.temporal.Temporal;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
-import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.infrastructure.layer.Service;
 import com.bravson.socialalert.infrastructure.util.DateUtil;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@ManagedBean
+@Service
+@Transactional(TxType.SUPPORTS)
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
-@Logged
 public class FileStore {
 
 	private static final String MD5_ALGORITHM = "MD5";

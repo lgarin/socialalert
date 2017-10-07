@@ -1,12 +1,10 @@
 package com.bravson.socialalert.media;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 
 import com.bravson.socialalert.domain.approval.ApprovalModifier;
-import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.infrastructure.layer.Service;
 import com.bravson.socialalert.media.approval.MediaApprovalEntity;
 import com.bravson.socialalert.media.approval.MediaApprovalRepository;
 import com.bravson.socialalert.user.UserInfoService;
@@ -14,9 +12,7 @@ import com.bravson.socialalert.user.session.UserSessionService;
 
 import lombok.NonNull;
 
-@ManagedBean
-@Logged
-@Transactional
+@Service
 public class MediaService {
 
 	@Inject

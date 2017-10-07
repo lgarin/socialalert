@@ -6,28 +6,29 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.infrastructure.layer.Repository;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@ManagedBean
+@Repository
+@Transactional(TxType.SUPPORTS)
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Logged
 public class AuthenticationRepository {
 	
 	private static final Pattern JWT_TOKEN_PATTERN = Pattern.compile("^Bearer [A-Z0-9_\\-]+\\.([A-Z0-9_\\-]+)\\.[A-Z0-9_\\-]+$", Pattern.CASE_INSENSITIVE); 

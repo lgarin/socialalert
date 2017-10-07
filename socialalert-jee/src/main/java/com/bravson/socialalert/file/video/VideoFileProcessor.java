@@ -3,12 +3,13 @@ package com.bravson.socialalert.file.video;
 import java.io.File;
 import java.io.IOException;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import com.bravson.socialalert.file.media.MediaConfiguration;
 import com.bravson.socialalert.file.media.MediaFileFormat;
-import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.infrastructure.layer.Service;
 
 import io.humble.video.AudioChannel;
 import io.humble.video.AudioFormat;
@@ -36,9 +37,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@ManagedBean
+@Service
+@Transactional(TxType.SUPPORTS)
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
-@Logged
 public class VideoFileProcessor extends BaseVideoFileProcessor {
 	
 	@Inject

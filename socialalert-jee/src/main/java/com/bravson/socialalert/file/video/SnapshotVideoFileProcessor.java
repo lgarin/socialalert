@@ -5,12 +5,13 @@ import static com.bravson.socialalert.file.media.MediaFileConstants.JPG_EXTENSIO
 import java.io.File;
 import java.io.IOException;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import com.bravson.socialalert.file.media.MediaConfiguration;
 import com.bravson.socialalert.file.media.MediaFileFormat;
-import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.infrastructure.layer.Service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -18,9 +19,9 @@ import lombok.NonNull;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
 
-@ManagedBean
+@Service
+@Transactional(TxType.SUPPORTS)
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
-@Logged
 public class SnapshotVideoFileProcessor extends BaseVideoFileProcessor {
 
 	@Inject

@@ -1,8 +1,6 @@
 package com.bravson.socialalert.media;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
@@ -10,15 +8,13 @@ import javax.ws.rs.core.Response.Status;
 
 import com.bravson.socialalert.file.FileEntity;
 import com.bravson.socialalert.file.FileRepository;
-import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.infrastructure.layer.Service;
 import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.UserInfoService;
 
 import lombok.NonNull;
 
-@ManagedBean
-@Transactional
-@Logged
+@Service
 public class MediaUpsertService {
 
 	@Inject

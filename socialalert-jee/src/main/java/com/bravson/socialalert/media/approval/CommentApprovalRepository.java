@@ -2,25 +2,21 @@ package com.bravson.socialalert.media.approval;
 
 import java.util.Optional;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.hibernate.search.jpa.FullTextEntityManager;
 
 import com.bravson.socialalert.domain.approval.ApprovalModifier;
-import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.infrastructure.layer.Repository;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@ManagedBean
-@Transactional
+@Repository
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Logged
 public class CommentApprovalRepository {
 
 	@Inject

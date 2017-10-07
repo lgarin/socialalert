@@ -4,18 +4,19 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.ManagedBean;
 import javax.enterprise.context.SessionScoped;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
-import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.infrastructure.layer.Service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@ManagedBean
+@Service
+@Transactional(TxType.SUPPORTS)
 @SessionScoped
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
-@Logged
 public class UserSessionService implements Serializable {
 
 	private static final long serialVersionUID = 1L;

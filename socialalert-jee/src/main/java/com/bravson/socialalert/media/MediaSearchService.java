@@ -1,17 +1,18 @@
 package com.bravson.socialalert.media;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
-import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.infrastructure.layer.Service;
 import com.bravson.socialalert.user.UserInfoService;
 
 import lombok.NonNull;
 
-@ManagedBean
-@Logged
+@Service
+@Transactional(TxType.SUPPORTS)
 public class MediaSearchService {
 	
 	@Inject

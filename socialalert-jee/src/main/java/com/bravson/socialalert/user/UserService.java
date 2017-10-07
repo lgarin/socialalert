@@ -2,12 +2,10 @@ package com.bravson.socialalert.user;
 
 import java.util.Optional;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 
-import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.infrastructure.layer.Service;
 import com.bravson.socialalert.user.profile.ProfileEntity;
 import com.bravson.socialalert.user.profile.ProfileRepository;
 
@@ -16,9 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@ManagedBean
-@Transactional
-@Logged
+@Service
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class UserService {

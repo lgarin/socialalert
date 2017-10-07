@@ -3,7 +3,6 @@ package com.bravson.socialalert.media;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
@@ -18,7 +17,7 @@ import org.hibernate.search.query.dsl.Unit;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.file.FileEntity;
-import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.infrastructure.layer.Repository;
 import com.bravson.socialalert.user.UserAccess;
 
 import lombok.AccessLevel;
@@ -26,11 +25,9 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@ManagedBean
-@Transactional
+@Repository
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Logged
 public class MediaRepository {
 
 	@Inject

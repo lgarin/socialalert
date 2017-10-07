@@ -1,21 +1,19 @@
 package com.bravson.socialalert.media.comment;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
-import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.infrastructure.layer.Service;
 import com.bravson.socialalert.media.MediaRepository;
 import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.UserInfoService;
 
 import lombok.NonNull;
 
-@ManagedBean
-@Logged
+@Service
 public class MediaCommentService {
 
 	@Inject

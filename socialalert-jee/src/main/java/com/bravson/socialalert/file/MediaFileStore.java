@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaFileProcessor;
@@ -16,18 +14,16 @@ import com.bravson.socialalert.file.picture.PictureFileProcessor;
 import com.bravson.socialalert.file.store.FileStore;
 import com.bravson.socialalert.file.store.TempFileFormat;
 import com.bravson.socialalert.file.video.SnapshotVideoFileProcessor;
-import com.bravson.socialalert.infrastructure.log.Logged;
+import com.bravson.socialalert.infrastructure.layer.Service;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@ManagedBean
-@Transactional
+@Service
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Logged
 public class MediaFileStore {
 
 	@Inject
