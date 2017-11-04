@@ -11,14 +11,20 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.Transient;
 
+import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.DynamicBoost;
+import org.hibernate.search.annotations.Facet;
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 
 import com.bravson.socialalert.domain.location.GeoAddress;
+import com.bravson.socialalert.domain.location.GeoHashHelper;
 import com.bravson.socialalert.file.FileEntity;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
@@ -85,7 +91,8 @@ public class MediaEntity extends VersionedEntity {
 	@Getter
 	@ElementCollection(fetch=FetchType.EAGER)
 	@IndexedEmbedded
-	@Field
+	@Fields({@Field, @Field(name="categories_facet", analyze=Analyze.NO)})
+	@Facet(forField="categories_facet")
 	private List<String> categories;
 	
 	@Getter
@@ -94,6 +101,62 @@ public class MediaEntity extends VersionedEntity {
 	@Field
 	@Analyzer(definition="languageAnalyzer")
 	private List<String> tags;
+	
+	@Transient
+	@Field(analyze=Analyze.NO)
+	@Facet
+	private String geoHash1;
+	@Transient
+	@Field(analyze=Analyze.NO)
+	@Facet
+	private String geoHash2;
+	@Transient
+	@Field(analyze=Analyze.NO)
+	@Facet
+	private String geoHash3;
+	@Transient
+	@Field(analyze=Analyze.NO)
+	@Facet
+	private String geoHash4;
+	@Transient
+	@Field(analyze=Analyze.NO)
+	@Facet
+	private String geoHash5;
+	@Transient
+	@Field(analyze=Analyze.NO)
+	@Facet
+	private String geoHash6;
+	@Transient
+	@Field(analyze=Analyze.NO)
+	@Facet
+	private String geoHash7;
+	@Transient
+	@Field(analyze=Analyze.NO)
+	@Facet
+	private String geoHash8;
+	
+	@PrePersist
+	private void updateGeoHashes() {
+		if (location != null && location.getLatitude() != null && location.getLongitude() != null) {
+			geoHash1 = GeoHashHelper.computeGeoHash(location.getLatitude(), location.getLongitude(), 1);
+			geoHash2 = GeoHashHelper.computeGeoHash(location.getLatitude(), location.getLongitude(), 2);
+			geoHash3 = GeoHashHelper.computeGeoHash(location.getLatitude(), location.getLongitude(), 3);
+			geoHash4 = GeoHashHelper.computeGeoHash(location.getLatitude(), location.getLongitude(), 4);
+			geoHash5 = GeoHashHelper.computeGeoHash(location.getLatitude(), location.getLongitude(), 5);
+			geoHash6 = GeoHashHelper.computeGeoHash(location.getLatitude(), location.getLongitude(), 6);
+			geoHash7 = GeoHashHelper.computeGeoHash(location.getLatitude(), location.getLongitude(), 7);
+			geoHash8 = GeoHashHelper.computeGeoHash(location.getLatitude(), location.getLongitude(), 8);
+		} else {
+			geoHash1 = null;
+			geoHash2 = null;
+			geoHash3 = null;
+			geoHash4 = null;
+			geoHash5 = null;
+			geoHash6 = null;
+			geoHash7 = null;
+			geoHash8 = null;
+		}
+	}
 	
 	public MediaEntity(String fileUri, MediaKind kind, UpsertMediaParameter parameter, UserAccess userAccess) {
 		this.versionInfo = VersionInfo.of(userAccess.getUserId(), userAccess.getIpAddress());

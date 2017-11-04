@@ -27,7 +27,7 @@ import javax.ws.rs.core.MediaType;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.bravson.socialalert.domain.approval.ApprovalModifier;
-import com.bravson.socialalert.domain.location.GeoArea;
+import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.media.comment.MediaCommentInfo;
@@ -104,9 +104,10 @@ public class MediaFacade {
 	@ApiOperation(value="Search claimed media based on any combination of the provided parameters.")
 	public QueryResult<MediaInfo> searchMedia(
 			@ApiParam(value="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
-			@ApiParam(value="Define the area for the returned media.", required=false) @QueryParam("latitude") Double latitude,
-			@ApiParam(value="Define the area for the returned media.", required=false) @QueryParam("longitude") Double longitude,
-			@ApiParam(value="Define the area for the returned media.", required=false) @Min(0) @QueryParam("radius") Double radius,
+			@ApiParam(value="Define the area for the returned media.", required=false) @QueryParam("minLatitude") Double minLatitude,
+			@ApiParam(value="Define the area for the returned media.", required=false) @QueryParam("maxLatitude") Double maxLatitude,
+			@ApiParam(value="Define the area for the returned media.", required=false) @QueryParam("minLongitude") Double minLongitude,
+			@ApiParam(value="Define the area for the returned media.", required=false) @QueryParam("maxLongitude") Double maxLongitude,
 			@ApiParam(value="Define the keywords for searching the media.", required=false) @QueryParam("keywords") String keywords,
 			@ApiParam(value="Define the maximum age in milliseconds of the returned media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
 			@ApiParam(value="Define the category for searching the media.", required=false) @QueryParam("category") String category,
@@ -116,11 +117,11 @@ public class MediaFacade {
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
-		if (latitude != null || longitude != null || radius != null) {
-			if (latitude == null || longitude == null || radius == null) {
-				throw new BadRequestException("latitude, longitude and radius must be set together");
+		if (minLatitude != null || maxLatitude != null || minLongitude != null || maxLongitude != null) {
+			if (minLatitude == null || maxLatitude == null || minLongitude == null || maxLongitude == null) {
+				throw new BadRequestException("minLatitude, maxLatitude, minLongitude and maxLongitude must be set together");
 			}
-			parameter.setArea(GeoArea.builder().latitude(latitude).longitude(longitude).radius(radius).build());
+			parameter.setArea(GeoBox.builder().minLat(minLatitude).maxLat(maxLatitude).minLon(minLongitude).maxLon(maxLongitude).build());
 		}
 		if (keywords != null) {
 			parameter.setKeywords(keywords);

@@ -3,20 +3,22 @@ package com.bravson.socialalert.test.repository;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
 
 import com.bravson.socialalert.domain.location.GeoAddress;
-import com.bravson.socialalert.domain.location.GeoArea;
+import com.bravson.socialalert.domain.location.GeoBox;
+import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.file.FileEntity;
-import com.bravson.socialalert.media.UpsertMediaParameter;
 import com.bravson.socialalert.media.MediaEntity;
 import com.bravson.socialalert.media.MediaKind;
 import com.bravson.socialalert.media.MediaRepository;
 import com.bravson.socialalert.media.SearchMediaParameter;
+import com.bravson.socialalert.media.UpsertMediaParameter;
 import com.bravson.socialalert.user.UserAccess;
 import com.bravson.socialalert.user.profile.ProfileEntity;
 
@@ -147,7 +149,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	MediaEntity media = storeDefaultMedia();
     	
     	SearchMediaParameter parameter = new SearchMediaParameter();
-    	parameter.setArea(GeoArea.builder().longitude(7.5).latitude(47).radius(10).build());
+    	parameter.setArea(GeoBox.builder().minLon(7.4).maxLon(7.6).minLat(46).maxLat(48).build());
     	PagingParameter paging = new PagingParameter(Instant.now(), 0, 10);
     	QueryResult<MediaEntity> result = repository.searchMedia(parameter, paging);
     	assertThat(result).isNotNull();
@@ -162,7 +164,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	storeDefaultMedia();
     	
     	SearchMediaParameter parameter = new SearchMediaParameter();
-    	parameter.setArea(GeoArea.builder().longitude(7.5).latitude(47).radius(6.7).build());
+    	parameter.setArea(GeoBox.builder().minLon(7.4).maxLon(7.5).minLat(46.1).maxLat(46.2).build());
     	PagingParameter paging = new PagingParameter(Instant.now(), 0, 10);
     	QueryResult<MediaEntity> result = repository.searchMedia(parameter, paging);
     	assertThat(result).isNotNull();
@@ -241,5 +243,17 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	
     	media = repository.findMedia(media.getId()).get();
     	assertThat(media.getStatistic().getHitCount()).isEqualTo(1);
+    }
+
+    @Test
+    public void groupPicturesByGeoHash() {
+    	MediaEntity media = storeDefaultMedia();
+
+    	SearchMediaParameter parameter = new SearchMediaParameter();
+    	parameter.setArea(GeoBox.builder().minLon(7.4).maxLon(7.6).minLat(46).maxLat(48).build());
+    	QueryResult<MediaEntity> r = repository.searchMedia(parameter, new PagingParameter(Instant.now(), 0, 10));
+    	assertThat(r.getContent()).containsExactly(media);
+    	List<GeoStatistic> result = repository.groupByGeoHash(parameter);
+    	assertThat(result).hasSize(1);
     }
 }

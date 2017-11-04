@@ -1,7 +1,9 @@
 package com.bravson.socialalert.media;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -12,8 +14,14 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
-import org.hibernate.search.query.dsl.Unit;
+import org.hibernate.search.query.facet.Facet;
+import org.hibernate.search.query.facet.FacetSortOrder;
+import org.hibernate.search.query.facet.FacetingRequest;
+import org.hibernate.search.spatial.impl.SpatialHashFilter;
 
+import com.bravson.socialalert.domain.location.GeoBox;
+import com.bravson.socialalert.domain.location.GeoHashHelper;
+import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.file.FileEntity;
@@ -49,7 +57,7 @@ public class MediaRepository {
 	@SuppressWarnings("unchecked")
 	public QueryResult<MediaEntity> searchMedia(@NonNull SearchMediaParameter parameter, @NonNull PagingParameter paging) {
 		QueryBuilder builder = createQueryBuilder();
-		FullTextQuery query = createSearchQuery(parameter, paging, builder);
+		FullTextQuery query = createSearchQuery(parameter, paging.getTimestamp(), builder);
 		List<MediaEntity> list = query
 				.setSort(builder.sort().byScore().createSort())
 				.setFirstResult(paging.getPageNumber() * paging.getPageSize())
@@ -63,14 +71,16 @@ public class MediaRepository {
 		return entityManager.getSearchFactory().buildQueryBuilder().forEntity(MediaEntity.class).get();
 	}
 
-	private FullTextQuery createSearchQuery(SearchMediaParameter parameter, PagingParameter paging, QueryBuilder builder) {
+	private FullTextQuery createSearchQuery(SearchMediaParameter parameter, Instant pagingTimestamp, QueryBuilder builder) {
 		BooleanJunction<?> junction = builder.bool();
-		junction = junction.must(builder.range().onField("versionInfo.creation").below(paging.getTimestamp()).createQuery()).disableScoring();
+		junction = junction.must(builder.range().onField("versionInfo.creation").below(pagingTimestamp).createQuery()).disableScoring();
 		if (parameter.getMaxAge() != null) {
-			junction = junction.must(builder.range().onField("versionInfo.creation").above(paging.getTimestamp().minus(parameter.getMaxAge())).createQuery());
+			junction = junction.must(builder.range().onField("versionInfo.creation").above(pagingTimestamp.minus(parameter.getMaxAge())).createQuery());
 		}
 		if (parameter.getArea() != null) {
-			junction = junction.must(builder.spatial().onField("location.coordinates").within(parameter.getArea().getRadius(), Unit.KM).ofLatitude(parameter.getArea().getLatitude()).andLongitude(parameter.getArea().getLongitude()).createQuery());
+			List<String> geoHashList = GeoHashHelper.computeGeoHashList(parameter.getArea());
+			int precision = geoHashList.stream().mapToInt(String::length).max().getAsInt();
+			junction.filteredBy(new SpatialHashFilter(geoHashList, "geoHash" + precision));
 		}
 		if (parameter.getCategory() != null) {
 			junction = junction.must(builder.keyword().onField("categories").matching(parameter.getCategory()).createQuery());
@@ -88,5 +98,27 @@ public class MediaRepository {
 	public void increaseHitCountAtomicaly(@NonNull String mediaUri) {
 		// TODO improve performance + handle OptimisticLockException
 		findMedia(mediaUri).ifPresent(MediaEntity::increaseHitCount);
+	}
+
+	public List<GeoStatistic> groupByGeoHash(@NonNull SearchMediaParameter parameter) {
+		int precision = Math.max(GeoHashHelper.computeGeoHashPrecision(parameter.getArea()) + 2, 8);
+		QueryBuilder builder = createQueryBuilder();
+		FullTextQuery query = createSearchQuery(parameter, Instant.now(), builder);
+		
+		FacetingRequest geoHashFacet = builder.facet()
+			    .name("geoHashFacet")
+			    .onField("geoHash" + precision)
+			    .discrete()
+			    .orderedBy(FacetSortOrder.COUNT_DESC)
+			    .includeZeroCounts(false)
+			    .maxFacetCount(-1)
+			    .createFacetingRequest();
+		
+		return query.getFacetManager().enableFaceting(geoHashFacet).getFacets("geoHashFacet").stream().map(MediaRepository::toGeoStatistic).collect(Collectors.toList());
+	}
+
+	private static GeoStatistic toGeoStatistic(Facet geoHashFacet) {
+		GeoBox box = GeoHashHelper.computeBoundingBox(geoHashFacet.getValue());
+		return GeoStatistic.builder().count(geoHashFacet.getCount()).longitude(box.getCenterLongitude()).latitude(box.getCenterLongitude()).build();
 	}
 }

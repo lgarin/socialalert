@@ -1,5 +1,9 @@
 package com.bravson.socialalert.test.repository;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.LogManager;
+
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
@@ -17,7 +21,12 @@ public class BaseRepositoryTest extends Assertions {
 	private FullTextEntityManager entityManager;
 	
     @BeforeClass
-    public static void setUpEntityManagerFactory() {
+    public static void setUpEntityManagerFactory() throws SecurityException, IOException {
+    	 final LogManager logManager = LogManager.getLogManager();
+         try (final InputStream is = BaseRepositoryTest.class.getResourceAsStream("/logging.properties")) {
+             logManager.readConfiguration(is);
+         }
+    	
         entityManagerFactory = Persistence.createEntityManagerFactory("socialalert");
     }
 

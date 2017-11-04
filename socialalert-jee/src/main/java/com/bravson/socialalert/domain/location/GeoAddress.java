@@ -23,7 +23,7 @@ import lombok.Setter;
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Setter(AccessLevel.NONE)
 @Indexed
-@Spatial(name="coordinates", spatialMode=SpatialMode.HASH)
+@Spatial(name="coordinates", spatialMode=SpatialMode.RANGE)
 public class GeoAddress {
 
 	@Latitude(of="coordinates")
