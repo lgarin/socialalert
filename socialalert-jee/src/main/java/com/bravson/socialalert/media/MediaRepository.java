@@ -119,6 +119,6 @@ public class MediaRepository {
 
 	private static GeoStatistic toGeoStatistic(Facet geoHashFacet) {
 		GeoBox box = GeoHashHelper.computeBoundingBox(geoHashFacet.getValue());
-		return GeoStatistic.builder().count(geoHashFacet.getCount()).longitude(box.getCenterLongitude()).latitude(box.getCenterLongitude()).build();
+		return GeoStatistic.builder().count(geoHashFacet.getCount()).minLat(box.getMinLat()).maxLat(box.getMaxLat()).minLon(box.getMinLon()).maxLon(box.getMaxLon()).build();
 	}
 }

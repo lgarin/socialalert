@@ -62,4 +62,20 @@ public class MediaSearchTest extends BaseIntegrationTest {
 		Response response = createAuthRequest("/media/search?keywords=Test+Test2+Test3", MediaType.APPLICATION_JSON, token).get();
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 	}
+	
+	@Test
+	@RunAsClient
+	public void mapMediaCount() {
+		String token = requestLoginToken("test@test.com", "123");
+		Response response = createAuthRequest("/media/mapCount?kind=PICTURE&minLatitude=45.5&maxLatitude=46.5&minLongitude=7.5&maxLongitude=7.6", MediaType.APPLICATION_JSON, token).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+	
+	@Test
+	@RunAsClient
+	public void mapMediaCountWithInvalidArea() {
+		String token = requestLoginToken("test@test.com", "123");
+		Response response = createAuthRequest("/media/mapCount?minLatitude=45.5&minLongitude=7.5&maxLongitude=7.6", MediaType.APPLICATION_JSON, token).get();
+		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+	}
 }

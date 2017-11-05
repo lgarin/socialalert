@@ -1,9 +1,12 @@
 package com.bravson.socialalert.media;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
+import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.infrastructure.layer.Service;
@@ -25,5 +28,9 @@ public class MediaSearchService {
 		QueryResult<MediaInfo> result = mediaRepository.searchMedia(parameter, paging).map(MediaEntity::toMediaInfo);
 		userService.fillUserInfo(result.getContent());
 		return result;
+	}
+	
+	public List<GeoStatistic> groupByGeoHash(@NonNull SearchMediaParameter parameter) {
+		return mediaRepository.groupByGeoHash(parameter);
 	}
 }

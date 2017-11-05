@@ -3,6 +3,7 @@ package com.bravson.socialalert.media;
 import java.security.Principal;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
@@ -28,6 +29,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.bravson.socialalert.domain.approval.ApprovalModifier;
 import com.bravson.socialalert.domain.location.GeoBox;
+import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.media.comment.MediaCommentInfo;
@@ -117,6 +119,9 @@ public class MediaFacade {
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
+		if (mediaKind != null) {
+			parameter.setMediaKind(mediaKind);
+		}
 		if (minLatitude != null || maxLatitude != null || minLongitude != null || maxLongitude != null) {
 			if (minLatitude == null || maxLatitude == null || minLongitude == null || maxLongitude == null) {
 				throw new BadRequestException("minLatitude, maxLatitude, minLongitude and maxLongitude must be set together");
@@ -225,5 +230,38 @@ public class MediaFacade {
 		}
 		PagingParameter paging = new PagingParameter(Instant.ofEpochMilli(pagingTimestamp), pageNumber, pageSize);
 		return commentService.listComments(mediaUri, paging);
+	}
+	
+	@GET
+	@Path("/mapCount")
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value="Group count claimed media in the given area based on their geo hash.")
+	public List<GeoStatistic> mapMediaMatchCount(@ApiParam(value="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
+			@ApiParam(value="Define the area for the returned media.", required=true) @QueryParam("minLatitude") @NotNull Double minLatitude,
+			@ApiParam(value="Define the area for the returned media.", required=true) @QueryParam("maxLatitude") @NotNull Double maxLatitude,
+			@ApiParam(value="Define the area for the returned media.", required=true) @QueryParam("minLongitude") @NotNull Double minLongitude,
+			@ApiParam(value="Define the area for the returned media.", required=true) @QueryParam("maxLongitude") @NotNull Double maxLongitude,
+			@ApiParam(value="Define the keywords for searching the media.", required=false) @QueryParam("keywords") String keywords,
+			@ApiParam(value="Define the maximum age in milliseconds of the returned media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
+			@ApiParam(value="Define the category for searching the media.", required=false) @QueryParam("category") String category,
+			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+		
+		SearchMediaParameter parameter = new SearchMediaParameter();
+		if (mediaKind != null) {
+			parameter.setMediaKind(mediaKind);
+		}
+		
+		parameter.setArea(GeoBox.builder().minLat(minLatitude).maxLat(maxLatitude).minLon(minLongitude).maxLon(maxLongitude).build());
+		
+		if (keywords != null) {
+			parameter.setKeywords(keywords);
+		}
+		if (maxAge != null) {
+			parameter.setMaxAge(Duration.ofMillis(maxAge));
+		}
+		if (category != null) {
+			parameter.setCategory(category);
+		}
+		return mediaSearchService.groupByGeoHash(parameter);
 	}
 }
