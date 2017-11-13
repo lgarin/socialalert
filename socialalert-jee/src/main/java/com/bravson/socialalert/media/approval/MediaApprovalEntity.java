@@ -11,7 +11,6 @@ import javax.persistence.MapsId;
 
 import com.bravson.socialalert.domain.approval.ApprovalModifier;
 import com.bravson.socialalert.media.MediaEntity;
-import com.bravson.socialalert.user.profile.ProfileEntity;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,12 +32,7 @@ public class MediaApprovalEntity {
 	@Getter
 	@NonNull
 	private String mediaUri;
-	
-	@Getter
-	@ManyToOne(fetch=FetchType.LAZY)
-	@MapsId("userId")
-	private ProfileEntity userProfile;
-	
+
 	@Getter
 	@Setter
 	private ApprovalModifier modifier;
@@ -51,7 +45,7 @@ public class MediaApprovalEntity {
 	@ManyToOne(fetch=FetchType.LAZY)
 	@MapsId("mediaUri")
 	private MediaEntity media;
-	
+
 	public MediaApprovalEntity(@NonNull String mediaUri, @NonNull String userId) {
 		this.mediaUri = mediaUri;
 		this.userId = userId;

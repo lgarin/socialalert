@@ -31,7 +31,7 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void findExistingComment() {
-    	String mediaUri = "uri1";
+    	String mediaUri = "uri2";
     	UserAccess userAccess = UserAccess.of("usr1", "1.2.3.4");
     	String comment = "test comment";
     	MediaCommentEntity entity = persistAndIndex(new MediaCommentEntity(mediaUri, comment, userAccess));
@@ -47,7 +47,7 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     
     @Test
     public void listByMediaUri() throws InterruptedException {
-    	String mediaUri = "uri1";
+    	String mediaUri = "uri3";
     	UserAccess userAccess = UserAccess.of("usr1", "1.2.3.4");
     	persistAndIndex(new MediaCommentEntity(mediaUri, "comment 1", userAccess));
     	MediaCommentEntity entity2 = persistAndIndex(new MediaCommentEntity(mediaUri, "comment 2", userAccess));
@@ -64,7 +64,7 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     
     @Test
     public void listByInvalidMediaUri() throws InterruptedException {
-    	String mediaUri = "uri1";
+    	String mediaUri = "uri4";
     	UserAccess userAccess = UserAccess.of("usr1", "1.2.3.4");
     	persistAndIndex(new MediaCommentEntity(mediaUri, "comment 1", userAccess));
     	persistAndIndex(new MediaCommentEntity(mediaUri, "comment 2", userAccess));

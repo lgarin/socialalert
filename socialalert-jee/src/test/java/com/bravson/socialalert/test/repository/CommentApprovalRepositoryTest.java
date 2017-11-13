@@ -33,4 +33,5 @@ public class CommentApprovalRepositoryTest extends BaseRepositoryTest {
     	Optional<CommentApprovalEntity> result = repository.changeApproval("commentId1", "userId1", null);
     	assertThat(result).isEmpty();
     }
+    
 }

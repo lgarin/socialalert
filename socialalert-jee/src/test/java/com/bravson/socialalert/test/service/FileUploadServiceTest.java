@@ -1,8 +1,8 @@
 package com.bravson.socialalert.test.service;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -33,8 +33,6 @@ import com.bravson.socialalert.file.media.MediaSizeVariant;
 import com.bravson.socialalert.file.video.AsyncVideoPreviewEvent;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 import com.bravson.socialalert.user.UserAccess;
-import com.bravson.socialalert.user.profile.ProfileEntity;
-import com.bravson.socialalert.user.profile.ProfileRepository;
 
 public class FileUploadServiceTest extends BaseServiceTest {
 
@@ -49,9 +47,6 @@ public class FileUploadServiceTest extends BaseServiceTest {
 	
 	@Mock
 	AsyncRepository asyncRepository;
-	
-	@Mock
-	ProfileRepository profileRepository;
 	
 	@Mock
 	Logger logger;
@@ -94,11 +89,8 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.empty());
 		
-		ProfileEntity profileEntity = new ProfileEntity(userId);
-		when(profileRepository.findByUserId(userId)).thenReturn(Optional.of(profileEntity));
-		
 		FileEntity fileEntity = new FileEntity(fileMetadata, mediaMetadata, UserAccess.of(userId, ipAddress));
-		when(mediaRepository.storeMedia(fileMetadata, mediaMetadata, profileEntity, UserAccess.of(userId, ipAddress))).thenReturn(fileEntity);
+		when(mediaRepository.storeMedia(fileMetadata, mediaMetadata, UserAccess.of(userId, ipAddress))).thenReturn(fileEntity);
 		
 		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.MEDIA);
 		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);
@@ -162,11 +154,8 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.empty());
 		
-		ProfileEntity profileEntity = new ProfileEntity(userId);
-		when(profileRepository.findByUserId(userId)).thenReturn(Optional.of(profileEntity));
-		
 		FileEntity fileEntity = new FileEntity(fileMetadata, mediaMetadata, UserAccess.of(userId, ipAddress));
-		when(mediaRepository.storeMedia(fileMetadata, mediaMetadata, profileEntity, UserAccess.of(userId, ipAddress))).thenReturn(fileEntity);
+		when(mediaRepository.storeMedia(fileMetadata, mediaMetadata, UserAccess.of(userId, ipAddress))).thenReturn(fileEntity);
 		
 		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.MEDIA);
 		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);

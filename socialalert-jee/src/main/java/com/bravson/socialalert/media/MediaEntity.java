@@ -2,14 +2,11 @@ package com.bravson.socialalert.media;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Transient;
@@ -28,10 +25,7 @@ import com.bravson.socialalert.domain.location.GeoHashHelper;
 import com.bravson.socialalert.file.FileEntity;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
-import com.bravson.socialalert.media.approval.MediaApprovalEntity;
-import com.bravson.socialalert.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.user.UserAccess;
-import com.bravson.socialalert.user.profile.ProfileEntity;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -48,21 +42,6 @@ public class MediaEntity extends VersionedEntity {
 	@Setter
 	@OneToOne(fetch=FetchType.LAZY, optional=false)
 	private FileEntity file;
-	
-	@Getter
-	@Setter
-	@ManyToOne(fetch=FetchType.LAZY, optional=false)
-	private ProfileEntity userProfile;
-	
-	@Getter
-	@Setter
-	@OneToMany(fetch=FetchType.LAZY, mappedBy="media")
-	private Set<MediaApprovalEntity> approvalSet;
-	
-	@Getter
-	@Setter
-	@OneToMany(fetch=FetchType.LAZY, mappedBy="media")
-	private Set<MediaCommentEntity> commentSet;
 	
 	@Getter
 	@Field

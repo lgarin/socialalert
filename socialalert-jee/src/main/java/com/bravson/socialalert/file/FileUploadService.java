@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Optional;
 
 import javax.inject.Inject;
-import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotSupportedException;
 
 import org.slf4j.Logger;
@@ -17,8 +16,6 @@ import com.bravson.socialalert.file.video.AsyncVideoPreviewEvent;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 import com.bravson.socialalert.infrastructure.layer.Service;
 import com.bravson.socialalert.user.UserAccess;
-import com.bravson.socialalert.user.profile.ProfileEntity;
-import com.bravson.socialalert.user.profile.ProfileRepository;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -40,9 +37,6 @@ public class FileUploadService {
 	AsyncRepository asyncRepository;
 	
 	@Inject
-	ProfileRepository profileRepository;
-	
-	@Inject
 	Logger logger;
 
 	public FileMetadata uploadMedia(@NonNull FileUploadParameter parameter, @NonNull UserAccess userAccess) throws IOException {
@@ -61,9 +55,8 @@ public class FileUploadService {
 	}
 
 	private FileEntity storeNewFile(File inputFile, FileMetadata fileMetadata, MediaMetadata mediaMetadata, UserAccess userAccess) throws IOException {
-		ProfileEntity profileEntity = profileRepository.findByUserId(userAccess.getUserId()).orElseThrow(ForbiddenException::new);
 		mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.MEDIA);
-		FileEntity fileEntity = mediaRepository.storeMedia(fileMetadata, mediaMetadata, profileEntity, userAccess);
+		FileEntity fileEntity = mediaRepository.storeMedia(fileMetadata, mediaMetadata, userAccess);
 		
 		FileMetadata thumbnailMetadata = mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);
 		fileEntity.addVariant(thumbnailMetadata);

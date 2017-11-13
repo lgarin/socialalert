@@ -6,6 +6,7 @@ import javax.persistence.Embeddable;
 
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.SortableField;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -26,6 +27,7 @@ public class VersionInfo {
 	private String ipAddress;
 	
 	@Field
+	@SortableField
 	private Instant creation;
 	
 	private Instant lastUpdate;

@@ -8,7 +8,6 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
 
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
@@ -19,13 +18,11 @@ import com.bravson.socialalert.file.media.MediaSizeVariant;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
 import com.bravson.socialalert.user.UserAccess;
-import com.bravson.socialalert.user.profile.ProfileEntity;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Setter;
 
 @Entity(name="File")
 @Indexed
@@ -41,12 +38,7 @@ public class FileEntity extends VersionedEntity {
 	@Embedded
 	@IndexedEmbedded
 	private MediaMetadata mediaMetadata;
-	
-	@Getter
-	@Setter
-	@ManyToOne(fetch=FetchType.LAZY, optional=false)
-	private ProfileEntity userProfile;
-	
+
 	public FileEntity(@NonNull FileMetadata fileMetadata, @NonNull MediaMetadata mediaMetadata, @NonNull UserAccess userAccess) {
 		if (fileMetadata.getSizeVariant() != MediaSizeVariant.MEDIA) {
 			throw new IllegalArgumentException("Size variant must be " + MediaSizeVariant.MEDIA.getVariantName());

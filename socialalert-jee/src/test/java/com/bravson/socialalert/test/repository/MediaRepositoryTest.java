@@ -20,7 +20,6 @@ import com.bravson.socialalert.media.MediaRepository;
 import com.bravson.socialalert.media.SearchMediaParameter;
 import com.bravson.socialalert.media.UpsertMediaParameter;
 import com.bravson.socialalert.user.UserAccess;
-import com.bravson.socialalert.user.profile.ProfileEntity;
 
 public class MediaRepositoryTest extends BaseRepositoryTest {
     
@@ -33,11 +32,8 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     }
     
     private MediaEntity storeMedia(MediaEntity mediaEntity) {
-		ProfileEntity profileEntity = new ProfileEntity(mediaEntity.getUserId());
 		FileEntity fileEntity = new FileEntity(mediaEntity.getId());
-		fileEntity.setUserProfile(persistAndIndex(profileEntity));
 		mediaEntity.setFile(persistAndIndex(fileEntity));
-		mediaEntity.setUserProfile(profileEntity);
 		return persistAndIndex(mediaEntity);
 	}
     

@@ -11,7 +11,6 @@ import javax.persistence.MapsId;
 
 import com.bravson.socialalert.domain.approval.ApprovalModifier;
 import com.bravson.socialalert.media.comment.MediaCommentEntity;
-import com.bravson.socialalert.user.profile.ProfileEntity;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,11 +32,6 @@ public class CommentApprovalEntity {
 	@Getter
 	@NonNull
 	private String commentId;
-	
-	@Getter
-	@ManyToOne(fetch=FetchType.LAZY)
-	@MapsId("userId")
-	private ProfileEntity userProfile;
 	
 	@Getter
 	@Setter
