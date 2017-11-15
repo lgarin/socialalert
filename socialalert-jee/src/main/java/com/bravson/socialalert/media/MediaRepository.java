@@ -47,7 +47,7 @@ public class MediaRepository {
 	}
 
 	public MediaEntity storeMedia(@NonNull FileEntity file, @NonNull UpsertMediaParameter parameter, @NonNull UserAccess userAccess) {
-		MediaEntity media = new MediaEntity(file.getId(), file.isVideo() ? MediaKind.VIDEO : MediaKind.PICTURE, parameter, userAccess);
+		MediaEntity media = new MediaEntity(file, parameter, userAccess);
 		media.setFile(file);
 		entityManager.persist(media);
 		return media;

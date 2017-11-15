@@ -2,24 +2,19 @@ package com.bravson.socialalert.test.repository;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
 
-import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
-import com.bravson.socialalert.file.FileEntity;
 import com.bravson.socialalert.media.MediaEntity;
 import com.bravson.socialalert.media.MediaKind;
 import com.bravson.socialalert.media.MediaRepository;
 import com.bravson.socialalert.media.SearchMediaParameter;
-import com.bravson.socialalert.media.UpsertMediaParameter;
-import com.bravson.socialalert.user.UserAccess;
 
 public class MediaRepositoryTest extends BaseRepositoryTest {
     
@@ -30,22 +25,6 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	Optional<MediaEntity> result = repository.findMedia("xyz");
     	assertThat(result).isEmpty();
     }
-    
-    private MediaEntity storeMedia(MediaEntity mediaEntity) {
-		FileEntity fileEntity = new FileEntity(mediaEntity.getId());
-		mediaEntity.setFile(persistAndIndex(fileEntity));
-		return persistAndIndex(mediaEntity);
-	}
-    
-    private MediaEntity storeDefaultMedia() {
-		UpsertMediaParameter claimParameter = new UpsertMediaParameter();
-		claimParameter.setTitle("Test title");
-		claimParameter.setDescription("Test desc");
-		claimParameter.setTags(Arrays.asList("tag1", "tag2"));
-		claimParameter.setCategories(Arrays.asList("cat1", "cat2"));
-		claimParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
-		return storeMedia(new MediaEntity("abc", MediaKind.PICTURE, claimParameter, UserAccess.of("test", "1.2.3.4")));
-	}
     
     @Test
     public void findNewlyCreatedMedia() {

@@ -137,10 +137,11 @@ public class MediaEntity extends VersionedEntity {
 		}
 	}
 	
-	public MediaEntity(String fileUri, MediaKind kind, UpsertMediaParameter parameter, UserAccess userAccess) {
+	public MediaEntity(FileEntity file, UpsertMediaParameter parameter, UserAccess userAccess) {
 		this.versionInfo = VersionInfo.of(userAccess.getUserId(), userAccess.getIpAddress());
-		this.id = fileUri;
-		this.kind = kind;
+		this.file = file;
+		this.id = file.getId();
+		this.kind = file.isVideo() ? MediaKind.VIDEO : MediaKind.PICTURE;
 		this.statistic = new MediaStatistic();
 		setMetaInformation(parameter);
 	}

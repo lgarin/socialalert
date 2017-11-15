@@ -2,11 +2,12 @@ package com.bravson.socialalert.media.comment;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
@@ -14,6 +15,7 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 
 import com.bravson.socialalert.domain.approval.ApprovalModifier;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
+import com.bravson.socialalert.media.MediaEntity;
 import com.bravson.socialalert.user.UserAccess;
 
 import lombok.AccessLevel;
@@ -25,8 +27,8 @@ import lombok.ToString;
 
 @Entity(name="MediaComment")
 @Indexed
-@ToString(of="commentId")
-@EqualsAndHashCode(of="commentId")
+@ToString(of="id")
+@EqualsAndHashCode(of="id")
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class MediaCommentEntity {
 	
@@ -34,18 +36,13 @@ public class MediaCommentEntity {
 	@Id
 	@GenericGenerator(name="system-uuid", strategy = "uuid")
 	@GeneratedValue(generator="system-uuid")
-	private String commentId;
+	private String id;
 	
 	@Getter
-	@NonNull
-	@Field(analyze=Analyze.NO)
-	private String mediaUri;
-	/*
-	@Getter
 	@ManyToOne(fetch=FetchType.LAZY)
-	@MapsId("mediaUri")
+	@IndexedEmbedded(includePaths= {"id"})
 	private MediaEntity media;
-	*/
+	
 	@Getter
 	@NonNull
 	@Field
@@ -66,11 +63,11 @@ public class MediaCommentEntity {
 	private VersionInfo versionInfo;
 	
 	public MediaCommentEntity(@NonNull String commentId) {
-		this.commentId = commentId;
+		this.id = commentId;
 	}
 	
-	public MediaCommentEntity(@NonNull String mediaUri, @NonNull String comment, @NonNull UserAccess userAccess) {
-		this.mediaUri = mediaUri;
+	public MediaCommentEntity(@NonNull MediaEntity media, @NonNull String comment, @NonNull UserAccess userAccess) {
+		this.media = media;
 		this.comment = comment;
 		versionInfo = VersionInfo.of(userAccess.getUserId(), userAccess.getIpAddress());
 	}
@@ -84,9 +81,13 @@ public class MediaCommentEntity {
 		return versionInfo.getUserId();
 	}
 	
+	public String getMediaUri() {
+		return getMedia().getId();
+	}
+	
 	public MediaCommentInfo toMediaCommentInfo() {
 		MediaCommentInfo result = new MediaCommentInfo();
-		result.setCommentId(commentId);
+		result.setId(id);
 		result.setComment(comment);
 		result.setCreatorId(versionInfo.getUserId());
 		result.setCreation(versionInfo.getCreation());

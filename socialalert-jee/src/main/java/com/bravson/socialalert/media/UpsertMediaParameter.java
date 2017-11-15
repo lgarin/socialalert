@@ -9,19 +9,22 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.bravson.socialalert.domain.location.GeoAddress;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class UpsertMediaParameter {
 	@NotEmpty @Size(max=MediaConstants.MAX_TITLE_LENGTH)
 	@NonNull
 	private String title;
 	
 	@NotEmpty @Size(max=MediaConstants.MAX_DESCRIPTION_LENGTH)
-	@NonNull
 	private String description;
 	
 	@NotNull @Size(max=MediaConstants.MAX_CATEGORY_COUNT)

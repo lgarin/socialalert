@@ -7,6 +7,8 @@ import org.junit.Test;
 import com.bravson.socialalert.domain.approval.ApprovalModifier;
 import com.bravson.socialalert.media.approval.CommentApprovalEntity;
 import com.bravson.socialalert.media.approval.CommentApprovalRepository;
+import com.bravson.socialalert.media.comment.MediaCommentEntity;
+import com.bravson.socialalert.user.UserAccess;
 
 public class CommentApprovalRepositoryTest extends BaseRepositoryTest {
     
@@ -14,23 +16,26 @@ public class CommentApprovalRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void createNewApproval() {
-    	Optional<CommentApprovalEntity> result = repository.changeApproval("commentId1", "userId1", ApprovalModifier.LIKE);
+    	MediaCommentEntity comment = persistAndIndex(new MediaCommentEntity(storeDefaultMedia(), "testComment", UserAccess.of("testUser", "1.2.3.4")));
+    	Optional<CommentApprovalEntity> result = repository.changeApproval(comment, "userId1", ApprovalModifier.LIKE);
     	assertThat(result).isPresent();
     	assertThat(result.get().getModifier()).isEqualTo(ApprovalModifier.LIKE);
     }
 
     @Test
     public void changeExistingApproval() {
-    	repository.changeApproval("mediaUri1", "userId1", ApprovalModifier.LIKE);
-    	Optional<CommentApprovalEntity> result = repository.changeApproval("commentId1", "userId1", ApprovalModifier.DISLIKE);
+    	MediaCommentEntity comment = persistAndIndex(new MediaCommentEntity(storeDefaultMedia(), "testComment", UserAccess.of("testUser", "1.2.3.4")));
+    	repository.changeApproval(comment, "userId1", ApprovalModifier.LIKE);
+    	Optional<CommentApprovalEntity> result = repository.changeApproval(comment, "userId1", ApprovalModifier.DISLIKE);
     	assertThat(result).isPresent();
     	assertThat(result.get().getModifier()).isEqualTo(ApprovalModifier.DISLIKE);
     }
     
     @Test
     public void resetExistingApproval() {
-    	repository.changeApproval("mediaUri1", "userId1", ApprovalModifier.LIKE);
-    	Optional<CommentApprovalEntity> result = repository.changeApproval("commentId1", "userId1", null);
+    	MediaCommentEntity comment = persistAndIndex(new MediaCommentEntity(storeDefaultMedia(), "testComment", UserAccess.of("testUser", "1.2.3.4")));
+    	repository.changeApproval(comment, "userId1", ApprovalModifier.LIKE);
+    	Optional<CommentApprovalEntity> result = repository.changeApproval(comment, "userId1", null);
     	assertThat(result).isEmpty();
     }
     

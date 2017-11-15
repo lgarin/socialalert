@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
+import com.bravson.socialalert.media.MediaEntity;
 import com.bravson.socialalert.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.media.comment.MediaCommentRepository;
 import com.bravson.socialalert.user.UserAccess;
@@ -17,12 +18,12 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     
     @Test
     public void createNewComment() {
-    	String mediaUri = "uri1";
     	UserAccess userAccess = UserAccess.of("usr1", "1.2.3.4");
     	String comment = "test comment";
-    	MediaCommentEntity result = repository.create(mediaUri, comment, userAccess);
-    	assertThat(result.getCommentId()).isNotBlank();
-    	assertThat(result.getMediaUri()).isEqualTo(mediaUri);
+    	MediaEntity media = storeDefaultMedia();
+    	MediaCommentEntity result = repository.create(media.getId(), comment, userAccess);
+    	assertThat(result.getId()).isNotBlank();
+    	assertThat(result.getMediaUri()).isEqualTo(media.getId());
     	assertThat(result.getUserId()).isEqualTo(userAccess.getUserId());
     	assertThat(result.getComment()).isEqualTo(comment);
     	assertThat(result.getLikeCount()).isEqualTo(0);
@@ -34,8 +35,8 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     	String mediaUri = "uri2";
     	UserAccess userAccess = UserAccess.of("usr1", "1.2.3.4");
     	String comment = "test comment";
-    	MediaCommentEntity entity = persistAndIndex(new MediaCommentEntity(mediaUri, comment, userAccess));
-    	Optional<MediaCommentEntity> result = repository.find(entity.getCommentId());
+    	MediaCommentEntity entity = persistAndIndex(new MediaCommentEntity(new MediaEntity(mediaUri), comment, userAccess));
+    	Optional<MediaCommentEntity> result = repository.find(entity.getId());
     	assertThat(result).hasValue(entity);
     }
     
@@ -49,11 +50,11 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     public void listByMediaUri() throws InterruptedException {
     	String mediaUri = "uri3";
     	UserAccess userAccess = UserAccess.of("usr1", "1.2.3.4");
-    	persistAndIndex(new MediaCommentEntity(mediaUri, "comment 1", userAccess));
-    	MediaCommentEntity entity2 = persistAndIndex(new MediaCommentEntity(mediaUri, "comment 2", userAccess));
+    	persistAndIndex(new MediaCommentEntity(new MediaEntity(mediaUri), "comment 1", userAccess));
+    	MediaCommentEntity entity2 = persistAndIndex(new MediaCommentEntity(new MediaEntity(mediaUri), "comment 2", userAccess));
     	Instant instant = Instant.now();
     	Thread.sleep(10);
-    	persistAndIndex(new MediaCommentEntity(mediaUri, "comment 3", userAccess));
+    	persistAndIndex(new MediaCommentEntity(new MediaEntity(mediaUri), "comment 3", userAccess));
     	
     	QueryResult<MediaCommentEntity> result = repository.listByMediaUri(mediaUri, new PagingParameter(instant, 0, 1));
     	assertThat(result.getPageCount()).isEqualTo(2);
@@ -66,9 +67,9 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     public void listByInvalidMediaUri() throws InterruptedException {
     	String mediaUri = "uri4";
     	UserAccess userAccess = UserAccess.of("usr1", "1.2.3.4");
-    	persistAndIndex(new MediaCommentEntity(mediaUri, "comment 1", userAccess));
-    	persistAndIndex(new MediaCommentEntity(mediaUri, "comment 2", userAccess));
-    	persistAndIndex(new MediaCommentEntity(mediaUri, "comment 3", userAccess));
+    	persistAndIndex(new MediaCommentEntity(new MediaEntity(mediaUri), "comment 1", userAccess));
+    	persistAndIndex(new MediaCommentEntity(new MediaEntity(mediaUri), "comment 2", userAccess));
+    	persistAndIndex(new MediaCommentEntity(new MediaEntity(mediaUri), "comment 3", userAccess));
     	
     	QueryResult<MediaCommentEntity> result = repository.listByMediaUri("xyz", new PagingParameter(Instant.now(), 0, 10));
     	assertThat(result.getPageCount()).isEqualTo(0);

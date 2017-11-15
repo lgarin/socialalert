@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.junit.Test;
 
 import com.bravson.socialalert.domain.approval.ApprovalModifier;
+import com.bravson.socialalert.media.MediaEntity;
 import com.bravson.socialalert.media.approval.MediaApprovalEntity;
 import com.bravson.socialalert.media.approval.MediaApprovalRepository;
 
@@ -14,23 +15,26 @@ public class MediaApprovalRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void createNewApproval() {
-    	Optional<MediaApprovalEntity> result = repository.changeApproval("mediaUri1", "userId1", ApprovalModifier.LIKE);
+    	MediaEntity media = storeDefaultMedia();
+    	Optional<MediaApprovalEntity> result = repository.changeApproval(media, "userId1", ApprovalModifier.LIKE);
     	assertThat(result).isPresent();
     	assertThat(result.get().getModifier()).isEqualTo(ApprovalModifier.LIKE);
     }
 
     @Test
     public void changeExistingApproval() {
-    	repository.changeApproval("mediaUri1", "userId1", ApprovalModifier.LIKE);
-    	Optional<MediaApprovalEntity> result = repository.changeApproval("mediaUri1", "userId1", ApprovalModifier.DISLIKE);
+    	MediaEntity media = storeDefaultMedia();
+    	repository.changeApproval(media, "userId1", ApprovalModifier.LIKE);
+    	Optional<MediaApprovalEntity> result = repository.changeApproval(media, "userId1", ApprovalModifier.DISLIKE);
     	assertThat(result).isPresent();
     	assertThat(result.get().getModifier()).isEqualTo(ApprovalModifier.DISLIKE);
     }
     
     @Test
     public void resetExistingApproval() {
-    	repository.changeApproval("mediaUri1", "userId1", ApprovalModifier.LIKE);
-    	Optional<MediaApprovalEntity> result = repository.changeApproval("mediaUri1", "userId1", null);
+    	MediaEntity media = storeDefaultMedia();
+    	repository.changeApproval(media, "userId1", ApprovalModifier.LIKE);
+    	Optional<MediaApprovalEntity> result = repository.changeApproval(media, "userId1", null);
     	assertThat(result).isEmpty();
     }
 }

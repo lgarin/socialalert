@@ -8,6 +8,7 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 
 import com.bravson.socialalert.domain.approval.ApprovalModifier;
 import com.bravson.socialalert.infrastructure.layer.Repository;
+import com.bravson.socialalert.media.comment.MediaCommentEntity;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -23,12 +24,12 @@ public class CommentApprovalRepository {
 	@NonNull
 	FullTextEntityManager entityManager;
 	
-	public Optional<CommentApprovalEntity> changeApproval(@NonNull String commentId, @NonNull String userId, ApprovalModifier modifier) {
-		find(commentId, userId).ifPresent(entityManager::remove);
+	public Optional<CommentApprovalEntity> changeApproval(@NonNull MediaCommentEntity comment, @NonNull String userId, ApprovalModifier modifier) {
+		find(comment.getId(), userId).ifPresent(entityManager::remove);
 		if (modifier == null) {
 			return Optional.empty();
 		}
-		CommentApprovalEntity entity = new CommentApprovalEntity(commentId, userId);
+		CommentApprovalEntity entity = new CommentApprovalEntity(comment, userId);
 		entity.setModifier(modifier);
 		entityManager.persist(entity);
 		return Optional.of(entity);

@@ -14,6 +14,7 @@ import org.hibernate.search.query.dsl.QueryBuilder;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.infrastructure.layer.Repository;
+import com.bravson.socialalert.media.MediaEntity;
 import com.bravson.socialalert.user.UserAccess;
 
 import lombok.AccessLevel;
@@ -35,7 +36,8 @@ public class MediaCommentRepository {
 	}
 	
 	public MediaCommentEntity create(@NonNull String mediaUri, @NonNull String comment, @NonNull UserAccess userAccess) {
-		MediaCommentEntity entity = new MediaCommentEntity(mediaUri, comment, userAccess);
+		MediaEntity media = entityManager.find(MediaEntity.class, mediaUri);
+		MediaCommentEntity entity = new MediaCommentEntity(media, comment, userAccess);
 		entityManager.persist(entity);
 		return entity;
 	}
@@ -49,7 +51,7 @@ public class MediaCommentRepository {
 		QueryBuilder builder = createQueryBuilder();
 		BooleanJunction<?> junction = builder.bool();
 		junction = junction.must(builder.range().onField("versionInfo.creation").below(paging.getTimestamp()).createQuery()).disableScoring();
-		junction = junction.must(builder.keyword().onField("mediaUri").matching(mediaUri).createQuery()).disableScoring();
+		junction = junction.must(builder.keyword().onField("media.id").matching(mediaUri).createQuery()).disableScoring();
 		FullTextQuery query = entityManager.createFullTextQuery(junction.createQuery(), MediaCommentEntity.class)
 				.setFirstResult(paging.getPageNumber() * paging.getPageSize())
 				.setMaxResults(paging.getPageSize());

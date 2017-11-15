@@ -2,6 +2,8 @@ package com.bravson.socialalert.test.repository;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
+import java.util.Arrays;
 import java.util.logging.LogManager;
 
 import javax.persistence.EntityManagerFactory;
@@ -13,6 +15,15 @@ import org.hibernate.search.jpa.Search;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+
+import com.bravson.socialalert.domain.location.GeoAddress;
+import com.bravson.socialalert.file.FileEntity;
+import com.bravson.socialalert.file.FileMetadata;
+import com.bravson.socialalert.file.media.MediaFileFormat;
+import com.bravson.socialalert.file.media.MediaMetadata;
+import com.bravson.socialalert.media.MediaEntity;
+import com.bravson.socialalert.media.UpsertMediaParameter;
+import com.bravson.socialalert.user.UserAccess;
 
 public class BaseRepositoryTest extends Assertions {
 
@@ -38,23 +49,36 @@ public class BaseRepositoryTest extends Assertions {
     }
 
     @After
-    public void closeEntityManager() {
+    public final void closeEntityManager() {
     	if (entityManager != null) {
     		entityManager.close();
     	}
     }
     
-    protected FullTextEntityManager getEntityManager() {
+    protected final FullTextEntityManager getEntityManager() {
     	if (entityManager == null) {
     		entityManager = Search.getFullTextEntityManager(entityManagerFactory.createEntityManager());
     	}
     	return entityManager;
     }
     
-    protected <T> T persistAndIndex(T entity) {
+    protected final <T> T persistAndIndex(T entity) {
     	getEntityManager().persist(entity);
     	getEntityManager().index(entity);
     	getEntityManager().flushToIndexes();
     	return entity;
     }
+    
+    protected MediaEntity storeDefaultMedia() {
+		UpsertMediaParameter claimParameter = new UpsertMediaParameter();
+		claimParameter.setTitle("Test title");
+		claimParameter.setDescription("Test desc");
+		claimParameter.setTags(Arrays.asList("tag1", "tag2"));
+		claimParameter.setCategories(Arrays.asList("cat1", "cat2"));
+		claimParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
+		FileMetadata fileMetadata = FileMetadata.builder().md5("test").timestamp(Instant.now()).contentLength(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
+    	MediaMetadata mediaMetadata = MediaMetadata.builder().height(700).width(1000).build();
+		FileEntity file = persistAndIndex(new FileEntity(fileMetadata, mediaMetadata, UserAccess.of("test", "1.2.3.4")));
+		return persistAndIndex(new MediaEntity(file, claimParameter, UserAccess.of("test", "1.2.3.4")));
+	}
 }

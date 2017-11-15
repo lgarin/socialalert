@@ -17,7 +17,7 @@ import lombok.Data;
 @Data
 public class MediaCommentInfo implements UserContent {
 
-	private String commentId;
+	private String id;
 	
 	private String creatorId;
 	

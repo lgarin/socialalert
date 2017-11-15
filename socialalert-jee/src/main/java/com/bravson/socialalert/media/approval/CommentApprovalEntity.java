@@ -46,9 +46,10 @@ public class CommentApprovalEntity {
 	@MapsId("commentId")
 	private MediaCommentEntity comment;
 
-	public CommentApprovalEntity(@NonNull String commentId, @NonNull String userId) {
-		this.commentId = commentId;
+	public CommentApprovalEntity(@NonNull MediaCommentEntity comment, @NonNull String userId) {
+		this.commentId = comment.getId();
 		this.userId = userId;
 		this.creation = Instant.now();
+		this.comment = comment;
 	}
 }

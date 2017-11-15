@@ -12,7 +12,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 
-import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotSupportedException;
 
 import org.junit.Test;
@@ -101,27 +100,6 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		
 		assertThat(result).isEqualTo(fileMetadata);
 		verifyZeroInteractions(asyncRepository, logger);
-	}
-	
-	@Test
-	public void uploadNewPictureWithUnknowProfile() throws Exception {
-		String userId = "test";
-		String ipAddress = "1.2.3.4";
-		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
-		MediaFileFormat fileFormat = MediaFileFormat.MEDIA_JPG;
-		
-		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).timestamp(Instant.EPOCH).build();
-		when(mediaFileStore.buildMediaMetadata(inputFile, fileFormat)).thenReturn(mediaMetadata);
-		
-		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(fileFormat).build();
-		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat)).thenReturn(fileMetadata);
-		
-		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.empty());
-		
-		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
-		assertThatExceptionOfType(ForbiddenException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress)));
-		
-		verifyZeroInteractions(mediaFileStore, asyncRepository, logger);
 	}
 	
 	@Test

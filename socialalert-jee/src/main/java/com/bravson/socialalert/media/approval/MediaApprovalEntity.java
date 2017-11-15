@@ -46,9 +46,10 @@ public class MediaApprovalEntity {
 	@MapsId("mediaUri")
 	private MediaEntity media;
 
-	public MediaApprovalEntity(@NonNull String mediaUri, @NonNull String userId) {
-		this.mediaUri = mediaUri;
+	public MediaApprovalEntity(@NonNull MediaEntity media, @NonNull String userId) {
+		this.mediaUri = media.getId();
 		this.userId = userId;
 		this.creation = Instant.now();
+		this.media = media;
 	}
 }

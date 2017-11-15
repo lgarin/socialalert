@@ -48,7 +48,7 @@ public class MediaService {
 		MediaEntity mediaEntity = mediaRepository.findMedia(mediaUri).orElseThrow(NotFoundException::new);
 		
 		ApprovalModifier oldModifier = approvalRepository.find(mediaUri, userId).map(MediaApprovalEntity::getModifier).orElse(null);
-		ApprovalModifier newModifier = approvalRepository.changeApproval(mediaUri, userId, modifier).map(MediaApprovalEntity::getModifier).orElse(null);
+		ApprovalModifier newModifier = approvalRepository.changeApproval(mediaEntity, userId, modifier).map(MediaApprovalEntity::getModifier).orElse(null);
 
 		mediaEntity.getStatistic().updateApprovalCount(oldModifier, newModifier);
 		
