@@ -3,6 +3,8 @@ package com.bravson.socialalert.file;
 import java.util.List;
 import java.util.Optional;
 
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
 import org.apache.lucene.search.Query;
@@ -27,10 +29,15 @@ public class FileRepository {
 	@Inject
 	@NonNull
 	FullTextEntityManager entityManager;
+	
+	@Inject
+	@Any
+	Event<FileEntity> newEntityEvent;
 
 	public FileEntity storeMedia(@NonNull FileMetadata fileMetadata, @NonNull MediaMetadata mediaMetadata, @NonNull UserAccess userAccess) {
 		FileEntity entity = new FileEntity(fileMetadata, mediaMetadata, userAccess);
 		entityManager.persist(entity);
+		newEntityEvent.fire(entity);
 		return entity;
 	}
 	

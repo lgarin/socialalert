@@ -6,8 +6,8 @@ import javax.inject.Inject;
 import javax.ws.rs.NotFoundException;
 
 import com.bravson.socialalert.infrastructure.layer.Service;
-import com.bravson.socialalert.user.profile.ProfileEntity;
-import com.bravson.socialalert.user.profile.ProfileRepository;
+import com.bravson.socialalert.user.profile.UserProfileEntity;
+import com.bravson.socialalert.user.profile.UserProfileRepository;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,20 +25,20 @@ public class UserService {
 	
 	@Inject
 	@NonNull
-	ProfileRepository profileRepository;
+	UserProfileRepository profileRepository;
 
-	private ProfileEntity createProfile(String accessToken, String ipAddress) {
+	private UserProfileEntity createProfile(String accessToken, String ipAddress) {
 		return authenticationRepository.findUserInfo(accessToken)
 				.map(userInfo -> profileRepository.createProfile(userInfo, ipAddress))
 				.orElseThrow(NotFoundException::new);
 	}
 	
-	private ProfileEntity getOrCreateProfile(String accessToken, String userId, String ipAddress) {
+	private UserProfileEntity getOrCreateProfile(String accessToken, String userId, String ipAddress) {
 		return profileRepository.findByUserId(userId).orElseGet(() -> createProfile(accessToken, ipAddress));
 	}
 	
 	private LoginResponse toLoginResponse(String accessToken, String ipAddress) {
-		ProfileEntity profile = getOrCreateProfile(accessToken, authenticationRepository.extractUserId(accessToken).get(), ipAddress);
+		UserProfileEntity profile = getOrCreateProfile(accessToken, authenticationRepository.extractUserId(accessToken).get(), ipAddress);
 		return LoginResponse.builder()
 				.accessToken(accessToken)
 				.username(profile.getUsername())

@@ -30,7 +30,6 @@ import com.bravson.socialalert.user.UserAccess;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity(name="Media")
 @Indexed
@@ -39,7 +38,6 @@ import lombok.Setter;
 public class MediaEntity extends VersionedEntity {
 
 	@Getter
-	@Setter
 	@OneToOne(fetch=FetchType.LAZY, optional=false)
 	private FileEntity file;
 	

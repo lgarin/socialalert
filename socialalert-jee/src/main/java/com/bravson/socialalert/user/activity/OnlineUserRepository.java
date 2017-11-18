@@ -1,5 +1,6 @@
 package com.bravson.socialalert.user.activity;
 
+import java.security.Principal;
 import java.time.Instant;
 
 import javax.cache.Cache;
@@ -8,7 +9,12 @@ import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.AccessedExpiryPolicy;
 import javax.cache.spi.CachingProvider;
+import javax.enterprise.context.Destroyed;
+import javax.enterprise.context.Initialized;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
@@ -46,5 +52,17 @@ public class OnlineUserRepository {
 
 	public boolean isUserActive(String userId) {
 		return onlineUserCache.containsKey(userId);
+	}
+	
+	void handleNewSession(@Observes @Initialized(SessionScoped.class) HttpSession session, Principal principal) {
+		if (principal != null) {
+			addActiveUser(principal.getName());
+		}
+	}
+
+	void handleTerminatedSession(@Observes @Destroyed(SessionScoped.class) HttpSession session, Principal principal) {
+		if (principal != null) {
+			onlineUserCache.remove(principal.getName());
+		}
 	}
 }

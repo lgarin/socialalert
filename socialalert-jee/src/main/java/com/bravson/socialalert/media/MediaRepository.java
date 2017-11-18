@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
@@ -42,15 +44,19 @@ public class MediaRepository {
 	@NonNull
 	FullTextEntityManager entityManager;
 	
+	@Inject
+	@Any
+	Event<MediaEntity> newEntityEvent;
+	
 	public Optional<MediaEntity> findMedia(@NonNull String mediaUri) {
 		return Optional.ofNullable(entityManager.find(MediaEntity.class, mediaUri));
 	}
 
 	public MediaEntity storeMedia(@NonNull FileEntity file, @NonNull UpsertMediaParameter parameter, @NonNull UserAccess userAccess) {
-		MediaEntity media = new MediaEntity(file, parameter, userAccess);
-		media.setFile(file);
-		entityManager.persist(media);
-		return media;
+		MediaEntity entity = new MediaEntity(file, parameter, userAccess);
+		entityManager.persist(entity);
+		newEntityEvent.fire(entity);
+		return entity;
 	}
 	
 	@SuppressWarnings("unchecked")

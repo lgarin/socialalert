@@ -10,8 +10,8 @@ import javax.transaction.Transactional.TxType;
 import com.bravson.socialalert.infrastructure.layer.Service;
 import com.bravson.socialalert.media.UserContent;
 import com.bravson.socialalert.user.activity.OnlineUserRepository;
-import com.bravson.socialalert.user.profile.ProfileEntity;
-import com.bravson.socialalert.user.profile.ProfileRepository;
+import com.bravson.socialalert.user.profile.UserProfileEntity;
+import com.bravson.socialalert.user.profile.UserProfileRepository;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -30,13 +30,13 @@ public class UserInfoService {
 	
 	@Inject
 	@NonNull
-	ProfileRepository profileRepository;
+	UserProfileRepository profileRepository;
 	
-	private Function<ProfileEntity, UserInfo> getUserInfoMapper(UserContent content) {
+	private Function<UserProfileEntity, UserInfo> getUserInfoMapper(UserContent content) {
 		if (onlineUserRepository.isUserActive(content.getCreatorId())) {
-			return ProfileEntity::toOnlineUserInfo;
+			return UserProfileEntity::toOnlineUserInfo;
 		} else {
-			return ProfileEntity::toOfflineUserInfo;
+			return UserProfileEntity::toOfflineUserInfo;
 		}
 	}
 	

@@ -3,6 +3,8 @@ package com.bravson.socialalert.media.comment;
 import java.util.List;
 import java.util.Optional;
 
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
 import org.hibernate.annotations.QueryHints;
@@ -31,6 +33,10 @@ public class MediaCommentRepository {
 	@NonNull
 	FullTextEntityManager entityManager;
 	
+	@Inject
+	@Any
+	Event<MediaCommentEntity> newEntityEvent;
+	
 	private QueryBuilder createQueryBuilder() {
 		return entityManager.getSearchFactory().buildQueryBuilder().forEntity(MediaCommentEntity.class).get();
 	}
@@ -39,6 +45,7 @@ public class MediaCommentRepository {
 		MediaEntity media = entityManager.find(MediaEntity.class, mediaUri);
 		MediaCommentEntity entity = new MediaCommentEntity(media, comment, userAccess);
 		entityManager.persist(entity);
+		newEntityEvent.fire(entity);
 		return entity;
 	}
 	

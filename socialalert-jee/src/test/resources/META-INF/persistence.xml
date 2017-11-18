@@ -11,7 +11,7 @@
         <class>com.bravson.socialalert.infrastructure.entity.InstantAttributeConverter</class>
         <class>com.bravson.socialalert.infrastructure.entity.LocalDateAttributeConverter</class>
         <class>com.bravson.socialalert.file.FileEntity</class>
-        <class>com.bravson.socialalert.user.profile.ProfileEntity</class>
+        <class>com.bravson.socialalert.user.profile.UserProfileEntity</class>
         <class>com.bravson.socialalert.media.MediaEntity</class>
         <class>com.bravson.socialalert.media.approval.MediaApprovalEntity</class>
         <class>com.bravson.socialalert.media.comment.MediaCommentEntity</class>

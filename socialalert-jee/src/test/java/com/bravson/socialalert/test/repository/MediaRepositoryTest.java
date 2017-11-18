@@ -18,7 +18,7 @@ import com.bravson.socialalert.media.SearchMediaParameter;
 
 public class MediaRepositoryTest extends BaseRepositoryTest {
     
-    private MediaRepository repository = new MediaRepository(getEntityManager());
+    private MediaRepository repository = new MediaRepository(getEntityManager(), new DummyEvent<>());
 
     @Test
     public void findMediaWithInvalidUri() {
