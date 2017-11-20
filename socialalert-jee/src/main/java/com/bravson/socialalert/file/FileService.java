@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaSizeVariant;
@@ -17,6 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Service
+@Transactional
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class FileService {

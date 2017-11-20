@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.time.Instant;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import com.bravson.socialalert.file.media.MediaFileFormat;
 import com.bravson.socialalert.file.media.MediaFileProcessor;
@@ -22,6 +24,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Service
+@Transactional(TxType.SUPPORTS)
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class MediaFileStore {

@@ -1,6 +1,7 @@
 package com.bravson.socialalert.media;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
@@ -15,6 +16,7 @@ import com.bravson.socialalert.user.UserInfoService;
 import lombok.NonNull;
 
 @Service
+@Transactional
 public class MediaUpsertService {
 
 	@Inject

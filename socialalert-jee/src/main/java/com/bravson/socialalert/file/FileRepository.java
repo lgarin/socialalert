@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.enterprise.event.Event;
-import javax.enterprise.inject.Any;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import org.apache.lucene.search.Query;
 import org.hibernate.annotations.QueryHints;
@@ -13,6 +13,7 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.query.dsl.QueryBuilder;
 
 import com.bravson.socialalert.file.media.MediaMetadata;
+import com.bravson.socialalert.infrastructure.entity.NewEntity;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 import com.bravson.socialalert.user.UserAccess;
 
@@ -22,6 +23,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Repository
+@Transactional
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class FileRepository {
@@ -31,7 +33,7 @@ public class FileRepository {
 	FullTextEntityManager entityManager;
 	
 	@Inject
-	@Any
+	@NewEntity
 	Event<FileEntity> newEntityEvent;
 
 	public FileEntity storeMedia(@NonNull FileMetadata fileMetadata, @NonNull MediaMetadata mediaMetadata, @NonNull UserAccess userAccess) {

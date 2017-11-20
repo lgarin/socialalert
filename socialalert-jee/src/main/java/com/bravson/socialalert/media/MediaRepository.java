@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.enterprise.event.Event;
-import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
@@ -27,6 +26,7 @@ import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.file.FileEntity;
+import com.bravson.socialalert.infrastructure.entity.NewEntity;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 import com.bravson.socialalert.user.UserAccess;
 
@@ -36,6 +36,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Repository
+@Transactional
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class MediaRepository {
@@ -45,7 +46,7 @@ public class MediaRepository {
 	FullTextEntityManager entityManager;
 	
 	@Inject
-	@Any
+	@NewEntity
 	Event<MediaEntity> newEntityEvent;
 	
 	public Optional<MediaEntity> findMedia(@NonNull String mediaUri) {

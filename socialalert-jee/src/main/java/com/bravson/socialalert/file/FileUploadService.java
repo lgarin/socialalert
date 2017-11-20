@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import javax.ws.rs.NotSupportedException;
 
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Service
+@Transactional
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class FileUploadService {

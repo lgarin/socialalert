@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import javax.jms.Destination;
 import javax.jms.JMSConnectionFactory;
 import javax.jms.JMSContext;
+import javax.transaction.Transactional;
 
 import com.bravson.socialalert.infrastructure.layer.Service;
 
@@ -13,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 @Service
+@Transactional
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class AsyncRepository {

@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 import javax.annotation.ManagedBean;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Stereotype;
-import javax.transaction.Transactional;
 
 import com.bravson.socialalert.infrastructure.log.Logged;
 
@@ -17,7 +16,6 @@ import com.bravson.socialalert.infrastructure.log.Logged;
 @Retention(RUNTIME)
 @Target(TYPE)
 @ManagedBean
-@Transactional
 @Logged
 @ApplicationScoped
 public @interface Repository {

@@ -3,6 +3,7 @@ package com.bravson.socialalert.media.approval;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import org.hibernate.search.jpa.FullTextEntityManager;
 
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Repository
+@Transactional
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class MediaApprovalRepository {

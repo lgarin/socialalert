@@ -3,8 +3,10 @@ package com.bravson.socialalert.test.repository;
 import java.lang.annotation.Annotation;
 
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.Alternative;
 import javax.enterprise.util.TypeLiteral;
 
+@Alternative
 public class DummyEvent<T> implements Event<T> {
 
 	@Override

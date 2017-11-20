@@ -4,10 +4,12 @@ import java.util.Optional;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import org.hibernate.search.jpa.FullTextEntityManager;
 
 import com.bravson.socialalert.file.FileEntity;
+import com.bravson.socialalert.infrastructure.entity.NewEntity;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 import com.bravson.socialalert.media.MediaEntity;
 import com.bravson.socialalert.media.comment.MediaCommentEntity;
@@ -20,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Repository
+@Transactional
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class UserProfileRepository {
@@ -38,15 +41,15 @@ public class UserProfileRepository {
 		return entity;
 	}
 
-	void handleNewFile(@Observes FileEntity file) {
+	void handleNewFile(@Observes @NewEntity FileEntity file) {
 		findByUserId(file.getUserId()).ifPresent(profile -> profile.addFile(file));
 	}
 	
-	void handleNewMedia(@Observes MediaEntity media) {
+	void handleNewMedia(@Observes @NewEntity MediaEntity media) {
 		findByUserId(media.getUserId()).ifPresent(profile -> profile.addMedia(media));
 	}
 	
-	void handleNewComment(@Observes MediaCommentEntity comment) {
+	void handleNewComment(@Observes @NewEntity MediaCommentEntity comment) {
 		findByUserId(comment.getUserId()).ifPresent(profile -> profile.addComment(comment));
 	}
 }

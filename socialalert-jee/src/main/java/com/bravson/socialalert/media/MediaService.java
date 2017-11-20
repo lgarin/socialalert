@@ -1,6 +1,7 @@
 package com.bravson.socialalert.media;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 
 import com.bravson.socialalert.domain.approval.ApprovalModifier;
@@ -13,6 +14,7 @@ import com.bravson.socialalert.user.session.UserSessionService;
 import lombok.NonNull;
 
 @Service
+@Transactional
 public class MediaService {
 
 	@Inject
