@@ -11,15 +11,15 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import com.bravson.socialalert.business.media.MediaEntity;
+import com.bravson.socialalert.business.media.MediaRepository;
+import com.bravson.socialalert.business.media.MediaSearchService;
+import com.bravson.socialalert.business.media.SearchMediaParameter;
+import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.location.GeoStatistic;
+import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
-import com.bravson.socialalert.media.MediaEntity;
-import com.bravson.socialalert.media.MediaInfo;
-import com.bravson.socialalert.media.MediaRepository;
-import com.bravson.socialalert.media.MediaSearchService;
-import com.bravson.socialalert.media.SearchMediaParameter;
-import com.bravson.socialalert.user.UserInfoService;
 
 public class MediaSearchServiceTest extends BaseServiceTest {
 

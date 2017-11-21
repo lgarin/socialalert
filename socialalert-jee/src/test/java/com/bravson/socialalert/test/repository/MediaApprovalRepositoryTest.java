@@ -4,10 +4,10 @@ import java.util.Optional;
 
 import org.junit.Test;
 
-import com.bravson.socialalert.domain.approval.ApprovalModifier;
-import com.bravson.socialalert.media.MediaEntity;
-import com.bravson.socialalert.media.approval.MediaApprovalEntity;
-import com.bravson.socialalert.media.approval.MediaApprovalRepository;
+import com.bravson.socialalert.business.media.MediaEntity;
+import com.bravson.socialalert.business.media.approval.MediaApprovalEntity;
+import com.bravson.socialalert.business.media.approval.MediaApprovalRepository;
+import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 
 public class MediaApprovalRepositoryTest extends BaseRepositoryTest {
     

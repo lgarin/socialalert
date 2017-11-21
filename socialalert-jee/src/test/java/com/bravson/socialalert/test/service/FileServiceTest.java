@@ -12,15 +12,15 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import com.bravson.socialalert.file.FileEntity;
-import com.bravson.socialalert.file.FileMetadata;
-import com.bravson.socialalert.file.FileRepository;
-import com.bravson.socialalert.file.FileResponse;
-import com.bravson.socialalert.file.FileService;
-import com.bravson.socialalert.file.media.MediaFileFormat;
-import com.bravson.socialalert.file.media.MediaMetadata;
-import com.bravson.socialalert.file.store.FileStore;
-import com.bravson.socialalert.user.UserAccess;
+import com.bravson.socialalert.business.file.FileEntity;
+import com.bravson.socialalert.business.file.FileMetadata;
+import com.bravson.socialalert.business.file.FileRepository;
+import com.bravson.socialalert.business.file.FileResponse;
+import com.bravson.socialalert.business.file.FileService;
+import com.bravson.socialalert.business.file.media.MediaFileFormat;
+import com.bravson.socialalert.business.file.media.MediaMetadata;
+import com.bravson.socialalert.business.file.store.FileStore;
+import com.bravson.socialalert.business.user.UserAccess;
 
 public class FileServiceTest extends BaseServiceTest {
 

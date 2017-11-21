@@ -12,16 +12,16 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import com.bravson.socialalert.domain.approval.ApprovalModifier;
-import com.bravson.socialalert.media.MediaDetail;
-import com.bravson.socialalert.media.MediaEntity;
-import com.bravson.socialalert.media.MediaRepository;
-import com.bravson.socialalert.media.MediaService;
-import com.bravson.socialalert.media.MediaStatistic;
-import com.bravson.socialalert.media.approval.MediaApprovalEntity;
-import com.bravson.socialalert.media.approval.MediaApprovalRepository;
-import com.bravson.socialalert.user.UserInfoService;
-import com.bravson.socialalert.user.session.UserSessionService;
+import com.bravson.socialalert.business.media.MediaEntity;
+import com.bravson.socialalert.business.media.MediaRepository;
+import com.bravson.socialalert.business.media.MediaService;
+import com.bravson.socialalert.business.media.MediaStatistic;
+import com.bravson.socialalert.business.media.approval.MediaApprovalEntity;
+import com.bravson.socialalert.business.media.approval.MediaApprovalRepository;
+import com.bravson.socialalert.business.user.UserInfoService;
+import com.bravson.socialalert.business.user.session.UserSessionService;
+import com.bravson.socialalert.domain.media.MediaDetail;
+import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 
 public class MediaServiceTest extends BaseServiceTest {
 

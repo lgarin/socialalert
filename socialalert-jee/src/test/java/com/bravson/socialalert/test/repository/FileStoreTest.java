@@ -12,9 +12,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.bravson.socialalert.file.media.MediaFileFormat;
-import com.bravson.socialalert.file.store.FileStore;
-import com.bravson.socialalert.file.store.FileStoreConfiguration;
+import com.bravson.socialalert.business.file.media.MediaFileFormat;
+import com.bravson.socialalert.business.file.store.FileStore;
+import com.bravson.socialalert.business.file.store.FileStoreConfiguration;
 
 public class FileStoreTest extends Assertions {
 

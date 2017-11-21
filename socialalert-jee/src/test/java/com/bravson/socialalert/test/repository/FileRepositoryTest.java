@@ -6,12 +6,12 @@ import java.util.Optional;
 
 import org.junit.Test;
 
-import com.bravson.socialalert.file.FileEntity;
-import com.bravson.socialalert.file.FileMetadata;
-import com.bravson.socialalert.file.FileRepository;
-import com.bravson.socialalert.file.media.MediaFileFormat;
-import com.bravson.socialalert.file.media.MediaMetadata;
-import com.bravson.socialalert.user.UserAccess;
+import com.bravson.socialalert.business.file.FileEntity;
+import com.bravson.socialalert.business.file.FileMetadata;
+import com.bravson.socialalert.business.file.FileRepository;
+import com.bravson.socialalert.business.file.media.MediaFileFormat;
+import com.bravson.socialalert.business.file.media.MediaMetadata;
+import com.bravson.socialalert.business.user.UserAccess;
 
 public class FileRepositoryTest extends BaseRepositoryTest {
     

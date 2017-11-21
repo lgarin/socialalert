@@ -11,15 +11,15 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import com.bravson.socialalert.file.FileMetadata;
-import com.bravson.socialalert.file.MediaFileStore;
-import com.bravson.socialalert.file.media.MediaFileFormat;
-import com.bravson.socialalert.file.media.MediaMetadata;
-import com.bravson.socialalert.file.media.MediaSizeVariant;
-import com.bravson.socialalert.file.picture.PictureFileProcessor;
-import com.bravson.socialalert.file.store.FileStore;
-import com.bravson.socialalert.file.store.TempFileFormat;
-import com.bravson.socialalert.file.video.SnapshotVideoFileProcessor;
+import com.bravson.socialalert.business.file.FileMetadata;
+import com.bravson.socialalert.business.file.MediaFileStore;
+import com.bravson.socialalert.business.file.media.MediaFileFormat;
+import com.bravson.socialalert.business.file.media.MediaMetadata;
+import com.bravson.socialalert.business.file.media.MediaSizeVariant;
+import com.bravson.socialalert.business.file.picture.PictureFileProcessor;
+import com.bravson.socialalert.business.file.store.FileStore;
+import com.bravson.socialalert.business.file.store.TempFileFormat;
+import com.bravson.socialalert.business.file.video.SnapshotVideoFileProcessor;
 
 import static org.mockito.Mockito.*;
 

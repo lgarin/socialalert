@@ -13,13 +13,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.bravson.socialalert.media.MediaInfo;
-import com.bravson.socialalert.media.UserContent;
-import com.bravson.socialalert.user.UserAccess;
-import com.bravson.socialalert.user.UserInfoService;
-import com.bravson.socialalert.user.activity.OnlineUserRepository;
-import com.bravson.socialalert.user.profile.UserProfileEntity;
-import com.bravson.socialalert.user.profile.UserProfileRepository;
+import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.UserInfoService;
+import com.bravson.socialalert.business.user.activity.OnlineUserRepository;
+import com.bravson.socialalert.business.user.profile.UserProfileEntity;
+import com.bravson.socialalert.business.user.profile.UserProfileRepository;
+import com.bravson.socialalert.domain.media.MediaInfo;
+import com.bravson.socialalert.domain.media.UserContent;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserInfoServiceTest extends Assertions {

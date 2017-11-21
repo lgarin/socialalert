@@ -20,8 +20,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.runner.RunWith;
 
-import com.bravson.socialalert.user.LoginParameter;
-import com.bravson.socialalert.user.LoginResponse;
+import com.bravson.socialalert.domain.user.LoginParameter;
+import com.bravson.socialalert.domain.user.LoginResponse;
 
 @RunWith(Arquillian.class)
 public abstract class BaseIntegrationTest extends Assertions {

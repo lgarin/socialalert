@@ -19,19 +19,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.slf4j.Logger;
 
-import com.bravson.socialalert.file.FileEntity;
-import com.bravson.socialalert.file.FileMetadata;
-import com.bravson.socialalert.file.FileRepository;
-import com.bravson.socialalert.file.FileUploadParameter;
-import com.bravson.socialalert.file.FileUploadService;
-import com.bravson.socialalert.file.MediaFileStore;
-import com.bravson.socialalert.file.media.MediaFileConstants;
-import com.bravson.socialalert.file.media.MediaFileFormat;
-import com.bravson.socialalert.file.media.MediaMetadata;
-import com.bravson.socialalert.file.media.MediaSizeVariant;
-import com.bravson.socialalert.file.video.AsyncVideoPreviewEvent;
+import com.bravson.socialalert.business.file.FileEntity;
+import com.bravson.socialalert.business.file.FileMetadata;
+import com.bravson.socialalert.business.file.FileRepository;
+import com.bravson.socialalert.business.file.FileUploadParameter;
+import com.bravson.socialalert.business.file.FileUploadService;
+import com.bravson.socialalert.business.file.MediaFileStore;
+import com.bravson.socialalert.business.file.media.MediaFileConstants;
+import com.bravson.socialalert.business.file.media.MediaFileFormat;
+import com.bravson.socialalert.business.file.media.MediaMetadata;
+import com.bravson.socialalert.business.file.media.MediaSizeVariant;
+import com.bravson.socialalert.business.file.video.AsyncVideoPreviewEvent;
+import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
-import com.bravson.socialalert.user.UserAccess;
 
 public class FileUploadServiceTest extends BaseServiceTest {
 

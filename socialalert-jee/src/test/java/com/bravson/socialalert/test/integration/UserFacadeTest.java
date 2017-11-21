@@ -8,9 +8,9 @@ import javax.ws.rs.core.Response.Status;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.junit.Test;
 
-import com.bravson.socialalert.user.LoginParameter;
-import com.bravson.socialalert.user.LoginResponse;
-import com.bravson.socialalert.user.UserInfo;
+import com.bravson.socialalert.domain.user.LoginParameter;
+import com.bravson.socialalert.domain.user.LoginResponse;
+import com.bravson.socialalert.domain.user.UserInfo;
 
 public class UserFacadeTest extends BaseIntegrationTest {
 

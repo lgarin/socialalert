@@ -8,9 +8,9 @@ import javax.ws.rs.client.ClientBuilder;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.junit.Test;
 
-import com.bravson.socialalert.user.AuthenticationConfiguration;
-import com.bravson.socialalert.user.AuthenticationRepository;
-import com.bravson.socialalert.user.UserInfo;
+import com.bravson.socialalert.business.user.AuthenticationConfiguration;
+import com.bravson.socialalert.business.user.AuthenticationRepository;
+import com.bravson.socialalert.domain.user.UserInfo;
 
 public class AuthenticationTest extends BaseIntegrationTest {
 

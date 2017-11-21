@@ -7,9 +7,9 @@ import javax.persistence.EntityExistsException;
 
 import org.junit.Test;
 
-import com.bravson.socialalert.user.UserInfo;
-import com.bravson.socialalert.user.profile.UserProfileEntity;
-import com.bravson.socialalert.user.profile.UserProfileRepository;
+import com.bravson.socialalert.business.user.profile.UserProfileEntity;
+import com.bravson.socialalert.business.user.profile.UserProfileRepository;
+import com.bravson.socialalert.domain.user.UserInfo;
 
 public class UserProfileRepositoryTest extends BaseRepositoryTest {
     

@@ -4,11 +4,11 @@ import java.util.Optional;
 
 import org.junit.Test;
 
-import com.bravson.socialalert.domain.approval.ApprovalModifier;
-import com.bravson.socialalert.media.approval.CommentApprovalEntity;
-import com.bravson.socialalert.media.approval.CommentApprovalRepository;
-import com.bravson.socialalert.media.comment.MediaCommentEntity;
-import com.bravson.socialalert.user.UserAccess;
+import com.bravson.socialalert.business.media.approval.CommentApprovalEntity;
+import com.bravson.socialalert.business.media.approval.CommentApprovalRepository;
+import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
+import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 
 public class CommentApprovalRepositoryTest extends BaseRepositoryTest {
     

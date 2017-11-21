@@ -16,14 +16,14 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+import com.bravson.socialalert.business.file.FileEntity;
+import com.bravson.socialalert.business.file.FileMetadata;
+import com.bravson.socialalert.business.file.media.MediaFileFormat;
+import com.bravson.socialalert.business.file.media.MediaMetadata;
+import com.bravson.socialalert.business.media.MediaEntity;
+import com.bravson.socialalert.business.media.UpsertMediaParameter;
+import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.location.GeoAddress;
-import com.bravson.socialalert.file.FileEntity;
-import com.bravson.socialalert.file.FileMetadata;
-import com.bravson.socialalert.file.media.MediaFileFormat;
-import com.bravson.socialalert.file.media.MediaMetadata;
-import com.bravson.socialalert.media.MediaEntity;
-import com.bravson.socialalert.media.UpsertMediaParameter;
-import com.bravson.socialalert.user.UserAccess;
 
 public class BaseRepositoryTest extends Assertions {
 

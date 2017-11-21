@@ -12,7 +12,7 @@ import javax.ws.rs.core.Response.Status;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.junit.Test;
 
-import com.bravson.socialalert.file.media.MediaFileConstants;
+import com.bravson.socialalert.business.file.media.MediaFileConstants;
 import com.google.common.io.Files;
 
 public class FileUploadTest extends BaseIntegrationTest {

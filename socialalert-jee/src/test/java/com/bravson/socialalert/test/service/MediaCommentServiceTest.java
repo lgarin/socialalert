@@ -14,16 +14,16 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import com.bravson.socialalert.business.media.MediaEntity;
+import com.bravson.socialalert.business.media.MediaRepository;
+import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
+import com.bravson.socialalert.business.media.comment.MediaCommentRepository;
+import com.bravson.socialalert.business.media.comment.MediaCommentService;
+import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.UserInfoService;
+import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
-import com.bravson.socialalert.media.MediaEntity;
-import com.bravson.socialalert.media.MediaRepository;
-import com.bravson.socialalert.media.comment.MediaCommentEntity;
-import com.bravson.socialalert.media.comment.MediaCommentInfo;
-import com.bravson.socialalert.media.comment.MediaCommentRepository;
-import com.bravson.socialalert.media.comment.MediaCommentService;
-import com.bravson.socialalert.user.UserAccess;
-import com.bravson.socialalert.user.UserInfoService;
 
 public class MediaCommentServiceTest extends BaseServiceTest {
 

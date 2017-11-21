@@ -3,7 +3,7 @@ package com.bravson.socialalert.test.service;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 
-import com.bravson.socialalert.user.session.UserSessionService;
+import com.bravson.socialalert.business.user.session.UserSessionService;
 
 public class UserSessionServiceTest extends BaseServiceTest {
 

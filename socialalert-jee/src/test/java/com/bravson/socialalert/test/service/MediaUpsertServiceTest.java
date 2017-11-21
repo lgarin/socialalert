@@ -13,16 +13,16 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import com.bravson.socialalert.business.file.FileEntity;
+import com.bravson.socialalert.business.file.FileRepository;
+import com.bravson.socialalert.business.media.MediaEntity;
+import com.bravson.socialalert.business.media.MediaRepository;
+import com.bravson.socialalert.business.media.MediaUpsertService;
+import com.bravson.socialalert.business.media.UpsertMediaParameter;
+import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.location.GeoAddress;
-import com.bravson.socialalert.file.FileEntity;
-import com.bravson.socialalert.file.FileRepository;
-import com.bravson.socialalert.media.MediaEntity;
-import com.bravson.socialalert.media.MediaInfo;
-import com.bravson.socialalert.media.MediaRepository;
-import com.bravson.socialalert.media.MediaUpsertService;
-import com.bravson.socialalert.media.UpsertMediaParameter;
-import com.bravson.socialalert.user.UserAccess;
-import com.bravson.socialalert.user.UserInfoService;
+import com.bravson.socialalert.domain.media.MediaInfo;
 
 public class MediaUpsertServiceTest extends BaseServiceTest {
 
