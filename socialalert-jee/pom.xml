@@ -219,7 +219,7 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-war-plugin</artifactId>
 						<configuration>
-							<warSourceDirectory>${basedir}/src/main/test-webapp</warSourceDirectory>
+							<warSourceDirectory>${basedir}/src/main/integ-webapp</warSourceDirectory>
 						</configuration>
 					</plugin>
 				</plugins>

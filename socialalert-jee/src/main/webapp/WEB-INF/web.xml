@@ -5,6 +5,10 @@
   <param-name>resteasy.role.based.security</param-name>
   <param-value>true</param-value>
  </context-param>
+ <context-param>
+ 	<param-name>primefaces.FONT_AWESOME</param-name>
+ 	<param-value>true</param-value>
+ </context-param>
  <servlet>
   <servlet-name>swagger</servlet-name>
   <servlet-class>io.swagger.jaxrs.config.DefaultJaxrsConfig</servlet-class>
@@ -69,7 +73,17 @@
  <env-entry>
   <env-entry-name>mediaBaseDirectory</env-entry-name>
   <env-entry-type>java.lang.String</env-entry-type>
-  <env-entry-value>C:\Dev\wildfly-10.1.0.Final\standalone\data\media.store</env-entry-value>
+  <env-entry-value>${jboss.server.data.dir}\media.store</env-entry-value>
+ </env-entry>
+ <env-entry>
+  <env-entry-name>databaseBaseDirectory</env-entry-name>
+  <env-entry-type>java.lang.String</env-entry-type>
+  <env-entry-value>${jboss.server.data.dir}\neo4j.db</env-entry-value>
+ </env-entry>
+ <env-entry>
+  <env-entry-name>indexBaseDirectory</env-entry-name>
+  <env-entry-type>java.lang.String</env-entry-type>
+  <env-entry-value>${jboss.server.data.dir}\lucene.idx</env-entry-value>
  </env-entry>
  <env-entry>
   <env-entry-name>mediaThumbnailHeight</env-entry-name>

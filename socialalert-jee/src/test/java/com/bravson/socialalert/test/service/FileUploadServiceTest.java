@@ -12,6 +12,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.NotSupportedException;
 
 import org.junit.Test;
@@ -71,12 +72,9 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		FileEntity fileEntity = new FileEntity(fileMetadata, mediaMetadata, UserAccess.of(userId, ipAddress));
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.of(fileEntity));
 		
-		when(userService.fillUserInfo(fileEntity.toFileInfo())).thenReturn(fileEntity.toFileInfo());
-		
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
-		FileInfo result = fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress));
+		assertThatExceptionOfType(ClientErrorException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress)));
 		
-		assertThat(result.getFileUri()).isEqualTo(fileMetadata.buildFileUri());
 		verifyZeroInteractions(asyncRepository, logger);
 	}
 	

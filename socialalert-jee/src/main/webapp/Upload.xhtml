@@ -5,23 +5,82 @@
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:p="http://primefaces.org/ui"> 
 <ui:define name="content">
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    </p:confirmDialog>
 	<h:panelGroup id="uploadForm">
 		<h:form>
 		    	<p:fileUpload fileUploadListener="#{fileUploadView.handleFileUpload}" mode="advanced" dragDropSupport="true"
 		        	update="uploadResult,uploadForm" sizeLimit="#{fileUploadView.maxUploadSize}" fileLimit="1" allowTypes="#{fileUploadView.filePattern}" />
-		        <p:growl id="messages" showDetail="true" life="2000" />
 	    </h:form>
 	</h:panelGroup>
 	<h:panelGroup id="uploadResult">
+	   <p:growl id="messages" showDetail="true" life="2000" />
 	   <p:dataTable value="#{fileUploadView.newFiles}" var="file">
-    		<p:column headerText="Preview">
-    			<p:graphicImage url="/rest/file/thumbnail/#{file.fileUri}"></p:graphicImage>
-    		</p:column>
-    		<p:column headerText="Type" sortBy="#{file.fileFormat}">
-    			<p:outputLabel value="#{file.fileFormat}"></p:outputLabel>
-    		</p:column>
-    		<p:column headerText="Date/Time" sortBy="#{file.timestamp}">
-    			<h:outputLabel value="#{file.timestamp}" converter="instantConverter"></h:outputLabel>
+    		<p:column headerText="Previous uploads" sortBy="#{file.timestamp}">
+    			<p:panelGrid>
+   					<p:row>
+			            <p:column style="width:320px" rowspan="7"><p:graphicImage url="/rest/file/thumbnail/#{file.fileUri}"></p:graphicImage></p:column>
+			            <p:column style="font-weight:bold" colspan="2">Details</p:column>
+			        </p:row>
+    				
+    				<p:row>
+   						<p:column><h:outputText value="Size" /></p:column>
+   						<p:column><h:outputText value="#{file.contentSize/1024/1024}"><f:convertNumber pattern="#,##0.0MB"/></h:outputText></p:column>
+   					</p:row>
+   					
+   					<p:row>
+   						<p:column><h:outputText value="Upload date" /></p:column>
+   						<p:column><h:outputText value="#{file.timestamp}" converter="instantConverter" /></p:column>
+					</p:row>
+					   		
+					<p:row>
+   						<p:column><h:outputText value="Date taken" /></p:column>
+   						<p:column><h:outputText value="#{file.creation}" converter="instantConverter" /></p:column>
+   					</p:row>
+   					
+   					<p:row>
+   						<p:column><h:outputText value="Duration" /></p:column>
+   						<p:column><h:outputText value="#{file.duration.seconds} sec" rendered="#{not empty file.duration}"/></p:column>
+					</p:row>
+					
+					<p:row>
+   						<p:column><h:outputText value="Coordinates" /></p:column>
+   						<p:column>
+   							<ui:fragment rendered="#{not empty file.latitude and not empty file.longitude}">
+   								(<h:outputText value="#{file.latitude}"><f:convertNumber pattern="0.00"/></h:outputText>,	
+   								<h:outputText value="#{file.longitude}"><f:convertNumber pattern="0.00"/></h:outputText>)
+   							</ui:fragment>
+   						</p:column>
+   					</p:row>
+   					
+   					<p:row>
+   						<p:column><h:outputText value="Format" /></p:column>
+   						<p:column><h:outputText value="#{file.fileFormat.contentType}" /></p:column>
+   					</p:row>
+   					
+   					<p:row>
+   						<p:column rowspan="2">
+   							<div class="ui-g">
+   								<div class="ui-g-6"><p:button outcome="Index?i=0" value="Claim" icon="fa fa-send"></p:button></div>
+   								<div class="ui-g-6">
+   									<p:commandButton value="Delete" icon="fa fa-remove" update="uploadResult" actionListener="#{fileUploadView.handleDeleteFile(file)}">
+   										<p:confirm header="Delete file" message="Do you really want to delete this file?" icon="ui-icon-alert">
+   										</p:confirm>
+   									</p:commandButton>
+   								</div>
+							</div>
+						</p:column>
+   						<p:column><h:outputText value="Resolution" /></p:column>
+   						<p:column><h:outputText value="#{file.width}x#{file.height}" /></p:column>
+   					</p:row>
+   					
+   					<p:row>
+   						<p:column><h:outputText value="Camera" /></p:column>
+   						<p:column><h:outputText value="#{file.cameraMaker} #{file.cameraModel}" /></p:column>
+   					</p:row>
+    			</p:panelGrid>
     		</p:column>
     	</p:dataTable>
     </h:panelGroup>

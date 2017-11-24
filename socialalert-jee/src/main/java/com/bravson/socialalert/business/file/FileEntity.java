@@ -110,6 +110,8 @@ public class FileEntity extends VersionedEntity {
 		info.setContentSize(getFileMetadata().getContentSize());
 		info.setCreatorId(getUserId());
 		info.setTimestamp(getFileMetadata().getTimestamp());
+		info.setLatitude(getMediaMetadata().getLatitude());
+		info.setLongitude(getMediaMetadata().getLongitude());
 		info.setCameraMaker(getMediaMetadata().getCameraMaker());
 		info.setCameraModel(getMediaMetadata().getCameraModel());
 		info.setHeight(getMediaMetadata().getHeight());
@@ -119,13 +121,46 @@ public class FileEntity extends VersionedEntity {
 		return info;
 	}
 
-	public void markClaimed() {
-		state = FileState.CLAIMED;
+	public boolean markClaimed(UserAccess userAccess) {
+		if (state != FileState.UPLOADED) {
+			return false;
+		} else if (!getUserId().equals(userAccess.getUserId())) {
+			return false;
+		}
+		changeState(FileState.CLAIMED);
+		return true;
+	}
+	
+	public boolean markDelete(UserAccess userAccess) {
+		if (state != FileState.UPLOADED) {
+			return false;
+		} else if (!getUserId().equals(userAccess.getUserId())) {
+			return false;
+		}
+		changeState(FileState.DELETED);
+		return true;
+	}
+	
+	public boolean markUploaded(UserAccess userAccess) {
+		if (state != FileState.DELETED) {
+			return false;
+		} else if (state == FileState.UPLOADED && !getUserId().equals(userAccess.getUserId())) {
+			return false;
+		}
+		changeState(FileState.UPLOADED);
+		return true;
+	}
+	
+	private void changeState(@NonNull FileState newState) {
+		state = newState;
 		versionInfo.touch(versionInfo.getUserId(), versionInfo.getIpAddress());
 	}
 	
-	public void markDeleted() {
-		state = FileState.DELETED;
-		versionInfo.touch(versionInfo.getUserId(), versionInfo.getIpAddress());
+	public boolean isUploaded() {
+		return state == FileState.UPLOADED;
+	}
+	
+	public boolean isNotDeleted() {
+		return state != FileState.DELETED;
 	}
 }

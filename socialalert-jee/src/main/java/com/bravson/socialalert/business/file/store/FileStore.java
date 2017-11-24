@@ -97,4 +97,9 @@ public class FileStore {
 		}
 		return path.toFile();
 	}
+	
+	public boolean deleteFile(@NonNull String md5, @NonNull Temporal timestamp, @NonNull FileFormat format) throws IOException {
+		Path path = buildAbsolutePath(md5, timestamp, format);
+		return Files.deleteIfExists(path);
+	}
 }

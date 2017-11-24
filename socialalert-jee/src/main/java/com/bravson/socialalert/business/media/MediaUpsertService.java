@@ -34,11 +34,10 @@ public class MediaUpsertService {
 			throw new ClientErrorException(Status.CONFLICT);
 		}
 		FileEntity fileEntity = fileRepository.findFile(fileUri).orElseThrow(NotFoundException::new);
-		if (!fileEntity.getUserId().equals(userAccess.getUserId())) {
+		if (!fileEntity.markClaimed(userAccess)) {
 			throw new ForbiddenException();
 		}
 		MediaEntity mediaEntity = mediaRepository.storeMedia(fileEntity, mediaParameter, userAccess);
-		fileEntity.markClaimed();
 		return userService.fillUserInfo(mediaEntity.toMediaInfo());
 	}
 	

@@ -46,6 +46,10 @@ public class FileInfo implements UserContent {
 	@JsonDeserialize(using=DurationDeserializer.class)
 	private Duration duration;
 	
+	private Double longitude;
+	
+	private Double latitude;
+	
 	private String cameraMaker;
 	
 	private String cameraModel;

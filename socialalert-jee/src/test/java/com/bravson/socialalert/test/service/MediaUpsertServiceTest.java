@@ -92,10 +92,10 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 		
 		when(mediaRepository.findMedia(fileUri)).thenReturn(Optional.empty());
 		when(fileRepository.findFile(fileUri)).thenReturn(Optional.of(fileEntity));
-		when(fileEntity.getUserId()).thenReturn("other");
+		when(fileEntity.isUploaded()).thenReturn(true);
+		when(fileEntity.markClaimed(userAccess)).thenReturn(false);
 		
-		Throwable exception = catchThrowable(() -> mediaUpsertService.claimMedia(fileUri, mediaParameter, userAccess));
-		assertThat(exception).isInstanceOf(ForbiddenException.class);
+		assertThatExceptionOfType(ForbiddenException.class).isThrownBy(() -> mediaUpsertService.claimMedia(fileUri, mediaParameter, userAccess));
 	}
 	
 	@Test
@@ -113,7 +113,8 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 		
 		when(mediaRepository.findMedia(fileUri)).thenReturn(Optional.empty());
 		when(fileRepository.findFile(fileUri)).thenReturn(Optional.of(fileEntity));
-		when(fileEntity.getUserId()).thenReturn("test");
+		when(fileEntity.isUploaded()).thenReturn(true);
+		when(fileEntity.markClaimed(userAccess)).thenReturn(true);
 		when(mediaRepository.storeMedia(fileEntity, mediaParameter, userAccess)).thenReturn(mediaEntity);
 		when(mediaEntity.toMediaInfo()).thenReturn(mediaInfo);
 		when(userService.fillUserInfo(mediaInfo)).thenReturn(mediaInfo);

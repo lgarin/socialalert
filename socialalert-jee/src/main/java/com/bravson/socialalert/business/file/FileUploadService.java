@@ -6,7 +6,9 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.NotSupportedException;
+import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 
@@ -44,6 +46,13 @@ public class FileUploadService {
 	@Inject
 	Logger logger;
 
+	private static FileInfo handleExistingFile(FileEntity file, UserAccess userAccess) {
+		if (!file.markUploaded(userAccess)) {
+			throw new ClientErrorException(Status.CONFLICT);
+		}
+		return file.toFileInfo();
+	}
+	
 	public FileInfo uploadMedia(@NonNull FileUploadParameter parameter, @NonNull UserAccess userAccess) throws IOException {
 		MediaFileFormat fileFormat = MediaFileFormat.fromMediaContentType(parameter.getContentType()).orElseThrow(NotSupportedException::new);
 		MediaMetadata mediaMetadata = buildMediaMetadata(parameter.getInputFile(), fileFormat).orElseThrow(NotSupportedException::new);
@@ -52,7 +61,7 @@ public class FileUploadService {
 		
 		Optional<FileEntity> existingEntity = mediaRepository.findFile(fileMetadata.buildFileUri());
 		if (existingEntity.isPresent()) {
-			return userService.fillUserInfo(existingEntity.get().toFileInfo());
+			return userService.fillUserInfo(handleExistingFile(existingEntity.get(), userAccess));
 		}
 		
 		FileEntity newEntity = storeNewFile(parameter.getInputFile(), fileMetadata, mediaMetadata, userAccess);

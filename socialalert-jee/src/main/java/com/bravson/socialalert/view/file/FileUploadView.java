@@ -20,6 +20,7 @@ import javax.inject.Inject;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
+import com.bravson.socialalert.business.file.FileDeleteService;
 import com.bravson.socialalert.business.file.FileSearchService;
 import com.bravson.socialalert.business.file.FileUploadParameter;
 import com.bravson.socialalert.business.file.FileUploadService;
@@ -49,6 +50,9 @@ public class FileUploadView implements Serializable, MediaFileConstants {
 	@Inject
 	FileSearchService searchService;
 	
+	@Inject
+	FileDeleteService deleteService;
+	
 	@Getter
 	List<FileInfo> newFiles;
 	
@@ -69,11 +73,20 @@ public class FileUploadView implements Serializable, MediaFileConstants {
 			Files.copy(upload.getInputstream(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			FileInfo newFile = uploadService.uploadMedia(new FileUploadParameter(tempFile, upload.getContentType()), userAccess);
 			newFiles.add(newFile);
+			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "File has been uploaded");
+			FacesContext.getCurrentInstance().addMessage(null, message);
 		} catch (Exception e) {
-			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Could not upload file", e.getMessage());
+			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Could not upload file");
 			FacesContext.getCurrentInstance().addMessage(null, message);
 		} finally {
 			tempFile.delete();
 		}
     }
+	
+	public void handleDeleteFile(FileInfo file) {
+		deleteService.deleteFile(file.getFileUri(), userAccess);
+		newFiles.remove(file);
+		FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "File has been deleted");
+		FacesContext.getCurrentInstance().addMessage(null, message);
+	}
 }

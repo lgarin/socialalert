@@ -28,7 +28,7 @@ public class FileReadService {
 	FileStore fileStore;
 	
 	private Optional<FileResponse> createFileResponse(String fileUri, MediaSizeVariant sizeVariant) throws IOException {
-		FileEntity fileEntity = mediaRepository.findFile(fileUri).orElse(null);
+		FileEntity fileEntity = mediaRepository.findFile(fileUri).filter(FileEntity::isNotDeleted).orElse(null);
 		if (fileEntity == null) {
 			return Optional.empty();
 		}

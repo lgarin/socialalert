@@ -26,9 +26,9 @@ import com.bravson.socialalert.domain.user.LoginResponse;
 @RunWith(Arquillian.class)
 public abstract class BaseIntegrationTest extends Assertions {
 
-	private static File baseMediaDirectory = new File("C:/Temp/xtra");
-	private static File baseDatabaseDirectory = new File("neo4j.db");
-	private static File baseSearchIndexDirectory = new File("lucene.idx");
+	private static File baseMediaDirectory = new File("C:/Temp/arquillian/media.store");
+	private static File baseDatabaseDirectory = new File("C:/Temp/arquillian/neo4j.db");
+	private static File baseSearchIndexDirectory = new File("C:/Temp/arquillian/lucene.idx");
 	
 	private static void cleanDirectories(File... directories) {
 		for (File directory : directories) {

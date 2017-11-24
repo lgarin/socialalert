@@ -2,6 +2,7 @@ package com.bravson.socialalert.business.file.media;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Resource;
+import javax.enterprise.context.ApplicationScoped;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @ManagedBean
+@ApplicationScoped
 @Data
 @Builder
 @AllArgsConstructor(access=AccessLevel.PRIVATE)

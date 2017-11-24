@@ -10,6 +10,7 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 
 @ManagedBean
+@RequestScoped
 public class EntityManagerProducer {
 
     @PersistenceContext(unitName = "socialalert")
