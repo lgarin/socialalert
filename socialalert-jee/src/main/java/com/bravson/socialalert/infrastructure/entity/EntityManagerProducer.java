@@ -1,6 +1,7 @@
 package com.bravson.socialalert.infrastructure.entity;
 
 import javax.annotation.ManagedBean;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -14,7 +15,7 @@ public class EntityManagerProducer {
     @PersistenceContext(unitName = "socialalert")
     private EntityManager em;
 	
-	@Produces
+	@Produces @RequestScoped
 	public FullTextEntityManager getFullTextEntityManager() {
 		return Search.getFullTextEntityManager(em);
 	}

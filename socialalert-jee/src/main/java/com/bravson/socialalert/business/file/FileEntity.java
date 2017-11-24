@@ -9,6 +9,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 
+import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 
@@ -16,6 +17,7 @@ import com.bravson.socialalert.business.file.media.MediaFileFormat;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.file.media.MediaSizeVariant;
 import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.domain.file.FileInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
 
@@ -29,6 +31,11 @@ import lombok.NonNull;
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class FileEntity extends VersionedEntity {
 
+	@Getter
+	@NonNull
+	@Field
+	private FileState state;
+	
 	@ElementCollection(fetch=FetchType.EAGER)
 	@IndexedEmbedded
 	private List<FileMetadata> fileVariants;
@@ -46,6 +53,7 @@ public class FileEntity extends VersionedEntity {
 		this.versionInfo = VersionInfo.of(userAccess.getUserId(), userAccess.getIpAddress());
 		this.id = fileMetadata.buildFileUri();
 		this.mediaMetadata = mediaMetadata;
+		this.state = FileState.UPLOADED;
 		addVariant(fileMetadata);
 	}
 	
@@ -93,5 +101,31 @@ public class FileEntity extends VersionedEntity {
 	
 	public String getUserId() {
 		return versionInfo.getUserId();
+	}
+	
+	public FileInfo toFileInfo() {
+		FileInfo info = new FileInfo();
+		info.setFileUri(getId());
+		info.setFileFormat(getFileMetadata().getFileFormat());
+		info.setContentSize(getFileMetadata().getContentSize());
+		info.setCreatorId(getUserId());
+		info.setTimestamp(getFileMetadata().getTimestamp());
+		info.setCameraMaker(getMediaMetadata().getCameraMaker());
+		info.setCameraModel(getMediaMetadata().getCameraModel());
+		info.setHeight(getMediaMetadata().getHeight());
+		info.setWidth(getMediaMetadata().getWidth());
+		info.setDuration(getMediaMetadata().getDuration());
+		info.setCreation(getMediaMetadata().getTimestamp());
+		return info;
+	}
+
+	public void markClaimed() {
+		state = FileState.CLAIMED;
+		versionInfo.touch(versionInfo.getUserId(), versionInfo.getIpAddress());
+	}
+	
+	public void markDeleted() {
+		state = FileState.DELETED;
+		versionInfo.touch(versionInfo.getUserId(), versionInfo.getIpAddress());
 	}
 }

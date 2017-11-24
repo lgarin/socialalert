@@ -1,5 +1,6 @@
 package com.bravson.socialalert.business.file;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 import javax.persistence.Embeddable;
@@ -27,7 +28,9 @@ import lombok.Setter;
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Setter(AccessLevel.NONE)
 @Indexed
-public class FileMetadata {
+public class FileMetadata implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@NonNull
 	@Field(analyze=Analyze.NO)
@@ -39,7 +42,7 @@ public class FileMetadata {
 	
 	@NonNull
 	@Field
-	private Long contentLength;
+	private Long contentSize;
 
 	@NonNull
 	@Field

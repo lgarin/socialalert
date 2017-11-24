@@ -53,4 +53,13 @@ public class FileRepository {
 		Query query = queryBuilder.keyword().wildcard().onField("versionInfo.ipAddress").matching(ipAddressPattern).createQuery();
 		return entityManager.createFullTextQuery(query, FileEntity.class).setHint(QueryHints.READ_ONLY, true).getResultList();
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<FileEntity> findByUserIdAndState(@NonNull String userId, @NonNull FileState state) {
+		QueryBuilder queryBuilder = entityManager.getSearchFactory().buildQueryBuilder().forEntity(FileEntity.class).get();
+		Query query = queryBuilder.bool()
+				.must(queryBuilder.keyword().withConstantScore().onField("versionInfo.userId").matching(userId).createQuery())
+				.must(queryBuilder.keyword().withConstantScore().onField("state").matching(state).createQuery()).createQuery();
+		return entityManager.createFullTextQuery(query, FileEntity.class).setHint(QueryHints.READ_ONLY, true).getResultList();
+	}
 }

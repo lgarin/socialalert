@@ -1,0 +1,29 @@
+<ui:composition template="/WEB-INF/templates/MasterTemplate.xhtml" 
+	xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"> 
+<ui:define name="content">
+	<h:panelGroup id="uploadForm">
+		<h:form>
+		    	<p:fileUpload fileUploadListener="#{fileUploadView.handleFileUpload}" mode="advanced" dragDropSupport="true"
+		        	update="uploadResult,uploadForm" sizeLimit="#{fileUploadView.maxUploadSize}" fileLimit="1" allowTypes="#{fileUploadView.filePattern}" />
+		        <p:growl id="messages" showDetail="true" life="2000" />
+	    </h:form>
+	</h:panelGroup>
+	<h:panelGroup id="uploadResult">
+	   <p:dataTable value="#{fileUploadView.newFiles}" var="file">
+    		<p:column headerText="Preview">
+    			<p:graphicImage url="/rest/file/thumbnail/#{file.fileUri}"></p:graphicImage>
+    		</p:column>
+    		<p:column headerText="Type" sortBy="#{file.fileFormat}">
+    			<p:outputLabel value="#{file.fileFormat}"></p:outputLabel>
+    		</p:column>
+    		<p:column headerText="Date/Time" sortBy="#{file.timestamp}">
+    			<h:outputLabel value="#{file.timestamp}" converter="instantConverter"></h:outputLabel>
+    		</p:column>
+    	</p:dataTable>
+    </h:panelGroup>
+</ui:define>
+</ui:composition>

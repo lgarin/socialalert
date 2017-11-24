@@ -12,10 +12,10 @@
 			<property name="wildfly.jpa.hibernate.search.module" value="org.hibernate.search.orm:5.6.1.Final-orm51" />
 			<property name="hibernate.transaction.jta.platform" value="JBossTS" />
             <property name="hibernate.ogm.datastore.provider" value="neo4j_embedded"/>
-            <property name="hibernate.ogm.neo4j.database_path" value="neo4j.db"/>
+            <property name="hibernate.ogm.neo4j.database_path" value="${jboss.server.data.dir}/neo4j.db"/>
             <property name="hibernate.search.lucene_version" value="LUCENE_CURRENT"/>
             <property name="hibernate.search.default.directory_provider" value="filesystem" />
-            <property name="hibernate.search.default.indexBase" value="lucene.idx"/>
+            <property name="hibernate.search.default.indexBase" value="${jboss.server.data.dir}/lucene.idx"/>
             <property name="hibernate.search.default.exclusive_index_use" value="false" />
         </properties>
     </persistence-unit>

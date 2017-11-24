@@ -1,13 +1,11 @@
 package com.bravson.socialalert.rest;
 
-import java.security.Principal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -59,10 +57,7 @@ import io.swagger.annotations.ApiResponses;
 public class MediaFacade {
 
 	@Inject
-	Principal principal;
-	
-	@Inject
-	HttpServletRequest httpRequest;
+	UserAccess userAccess;
 	
 	@Inject
 	MediaUpsertService mediaUpsertService;
@@ -90,7 +85,7 @@ public class MediaFacade {
 			@ApiParam(value="The relative file uri.", required=true) @NotEmpty @PathParam("fileUri") String fileUri,
 			@Valid @NotNull UpsertMediaParameter parameter,
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
-		return mediaUpsertService.claimMedia(fileUri, parameter, UserAccess.of(principal.getName(), httpRequest.getRemoteAddr()));
+		return mediaUpsertService.claimMedia(fileUri, parameter, userAccess);
 	}
 	
 	@POST
@@ -106,7 +101,7 @@ public class MediaFacade {
 			@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@Valid @NotNull UpsertMediaParameter parameter,
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
-		return mediaUpsertService.updateMedia(mediaUri, parameter, UserAccess.of(principal.getName(), httpRequest.getRemoteAddr()));
+		return mediaUpsertService.updateMedia(mediaUri, parameter, userAccess);
 	}
 	
 	@GET
@@ -164,7 +159,7 @@ public class MediaFacade {
 			@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		
-		return mediaService.viewMediaDetail(mediaUri, principal.getName());
+		return mediaService.viewMediaDetail(mediaUri, userAccess.getUserId());
 	}
 	
 	@POST
@@ -177,7 +172,7 @@ public class MediaFacade {
 	public MediaDetail likeMedia(
 			@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
-		return mediaService.setApprovalModifier(mediaUri, ApprovalModifier.LIKE, principal.getName());
+		return mediaService.setApprovalModifier(mediaUri, ApprovalModifier.LIKE, userAccess.getUserId());
 	}
 	
 	@POST
@@ -190,7 +185,7 @@ public class MediaFacade {
 	public MediaDetail dislikeMedia(
 			@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
-		return mediaService.setApprovalModifier(mediaUri, ApprovalModifier.DISLIKE, principal.getName());
+		return mediaService.setApprovalModifier(mediaUri, ApprovalModifier.DISLIKE, userAccess.getUserId());
 	}
 	
 	@POST
@@ -203,7 +198,7 @@ public class MediaFacade {
 	public MediaDetail resetMediaApproval(
 			@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
-		return mediaService.setApprovalModifier(mediaUri, null, principal.getName());
+		return mediaService.setApprovalModifier(mediaUri, null, userAccess.getUserId());
 	}
 	
 	@POST
@@ -218,7 +213,7 @@ public class MediaFacade {
 			@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@ApiParam(value="The comment text.", required=true) @NotEmpty @Size(max=MediaConstants.MAX_COMMENT_LENGTH) String comment,
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
-		return commentService.createComment(mediaUri, comment, UserAccess.of(principal.getName(), httpRequest.getRemoteAddr()));
+		return commentService.createComment(mediaUri, comment, userAccess);
 	}
 	
 	@GET

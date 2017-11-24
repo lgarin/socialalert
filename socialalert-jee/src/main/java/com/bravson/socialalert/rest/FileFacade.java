@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
-import java.security.Principal;
 
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -34,14 +34,14 @@ import javax.ws.rs.core.UriInfo;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.bravson.socialalert.business.file.FileMetadata;
+import com.bravson.socialalert.business.file.FileReadService;
 import com.bravson.socialalert.business.file.FileResponse;
-import com.bravson.socialalert.business.file.FileService;
 import com.bravson.socialalert.business.file.FileUploadParameter;
 import com.bravson.socialalert.business.file.FileUploadService;
 import com.bravson.socialalert.business.file.media.MediaFileConstants;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.activity.UserActivity;
+import com.bravson.socialalert.domain.file.FileInfo;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -63,7 +63,7 @@ public class FileFacade {
 	int mediaCacheMaxAge;
 	
 	@Inject
-	Principal principal;
+	UserAccess userAccess;
 	
 	@Inject
 	HttpServletRequest httpRequest;
@@ -75,7 +75,7 @@ public class FileFacade {
 	UriInfo uriInfo;
 	
 	@Inject
-	FileService fileService;
+	FileReadService fileReadService;
 	
 	@Inject
 	FileUploadService fileUploadService;
@@ -112,7 +112,7 @@ public class FileFacade {
 	public Response download(
 			@ApiParam(value="The relative file uri.", required=true)
 			@NotEmpty @PathParam("fileUri") String fileUri) throws IOException {
-		return createStreamResponse(fileService.download(fileUri).orElseThrow(NotFoundException::new));
+		return createStreamResponse(fileReadService.download(fileUri).orElseThrow(NotFoundException::new));
 	}
 	
 	@GET
@@ -126,9 +126,10 @@ public class FileFacade {
 	public Response preview(
 			@ApiParam(value="The relative file uri.", required=true) @NotEmpty @PathParam("fileUri") String fileUri,
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException {
-		return createStreamResponse(fileService.preview(fileUri).orElseThrow(NotFoundException::new));
+		return createStreamResponse(fileReadService.preview(fileUri).orElseThrow(NotFoundException::new));
 	}
 	
+	@PermitAll
 	@GET
 	@Path("/thumbnail/{fileUri : .+}")
 	@Produces(MediaFileConstants.JPG_MEDIA_TYPE)
@@ -137,13 +138,13 @@ public class FileFacade {
 			@ApiResponse(code = 200, message = "File will be streamed."),
 			@ApiResponse(code = 404, message = "No media exists with this uri.") })
 	public Response thumbnail(
-			@ApiParam(value="The relative file uri.", required=true) @NotEmpty @PathParam("fileUri") String fileUri,
-			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException {
-		return createStreamResponse(fileService.thumbnail(fileUri).orElseThrow(NotFoundException::new));
+			@ApiParam(value="The relative file uri.", required=true) @NotEmpty @PathParam("fileUri") String fileUri/*,
+			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization*/) throws IOException {
+		return createStreamResponse(fileReadService.thumbnail(fileUri).orElseThrow(NotFoundException::new));
 	}
 	
-	private Response createUploadResponse(FileMetadata metadata) {
-		URI fileUri = uriInfo.getBaseUriBuilder().path(FileFacade.class).path("download").path(metadata.buildFileUri()).build();
+	private Response createUploadResponse(FileInfo fileInfo) {
+		URI fileUri = uriInfo.getBaseUriBuilder().path(FileFacade.class).path("download").path(fileInfo.getFileUri()).build();
 		return Response.created(fileUri).build();
 	}
 	
@@ -159,7 +160,7 @@ public class FileFacade {
 	public Response uploadPicture(
 			@ApiParam(value="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile,
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException, ServletException {
-		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), UserAccess.of(principal.getName(), httpRequest.getRemoteAddr())));
+		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), userAccess));
 	}
 	
 	@POST
@@ -174,7 +175,7 @@ public class FileFacade {
 	public Response uploadVideo(
 			@ApiParam(value="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile,
 			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException, ServletException {
-		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), UserAccess.of(principal.getName(), httpRequest.getRemoteAddr())));
+		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), userAccess));
 	}
 
 	private FileUploadParameter createUploadParameter(File inputFile) {

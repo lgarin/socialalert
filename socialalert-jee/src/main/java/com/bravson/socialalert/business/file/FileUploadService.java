@@ -15,18 +15,18 @@ import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.file.media.MediaSizeVariant;
 import com.bravson.socialalert.business.file.video.AsyncVideoPreviewEvent;
 import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.UserInfoService;
+import com.bravson.socialalert.domain.file.FileInfo;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Service
 @Transactional
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class FileUploadService {
 	
 	@Inject
@@ -39,21 +39,24 @@ public class FileUploadService {
 	AsyncRepository asyncRepository;
 	
 	@Inject
+	UserInfoService userService;
+	
+	@Inject
 	Logger logger;
 
-	public FileMetadata uploadMedia(@NonNull FileUploadParameter parameter, @NonNull UserAccess userAccess) throws IOException {
+	public FileInfo uploadMedia(@NonNull FileUploadParameter parameter, @NonNull UserAccess userAccess) throws IOException {
 		MediaFileFormat fileFormat = MediaFileFormat.fromMediaContentType(parameter.getContentType()).orElseThrow(NotSupportedException::new);
 		MediaMetadata mediaMetadata = buildMediaMetadata(parameter.getInputFile(), fileFormat).orElseThrow(NotSupportedException::new);
 		
 		FileMetadata fileMetadata = mediaFileStore.buildFileMetadata(parameter.getInputFile(), fileFormat);
 		
-		if (mediaRepository.findFile(fileMetadata.buildFileUri()).isPresent()) {
-			return fileMetadata;
+		Optional<FileEntity> existingEntity = mediaRepository.findFile(fileMetadata.buildFileUri());
+		if (existingEntity.isPresent()) {
+			return userService.fillUserInfo(existingEntity.get().toFileInfo());
 		}
 		
-		storeNewFile(parameter.getInputFile(), fileMetadata, mediaMetadata, userAccess);
-		
-		return fileMetadata;
+		FileEntity newEntity = storeNewFile(parameter.getInputFile(), fileMetadata, mediaMetadata, userAccess);
+		return userService.fillUserInfo(newEntity.toFileInfo());
 	}
 
 	private FileEntity storeNewFile(File inputFile, FileMetadata fileMetadata, MediaMetadata mediaMetadata, UserAccess userAccess) throws IOException {

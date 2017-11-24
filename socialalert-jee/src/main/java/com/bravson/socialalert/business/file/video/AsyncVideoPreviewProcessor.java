@@ -53,7 +53,7 @@ public class AsyncVideoPreviewProcessor {
 		return FileMetadata.builder()
 			.md5(fileStore.computeMd5Hex(file))
 			.timestamp(Instant.now())
-			.contentLength(file.length())
+			.contentSize(file.length())
 			.fileFormat(fileFormat)
 			.build();
 	}

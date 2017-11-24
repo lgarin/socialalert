@@ -38,6 +38,7 @@ public class MediaUpsertService {
 			throw new ForbiddenException();
 		}
 		MediaEntity mediaEntity = mediaRepository.storeMedia(fileEntity, mediaParameter, userAccess);
+		fileEntity.markClaimed();
 		return userService.fillUserInfo(mediaEntity.toMediaInfo());
 	}
 	

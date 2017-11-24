@@ -2,12 +2,14 @@ package com.bravson.socialalert.business.file;
 
 import java.io.File;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
 @Value
 @Builder
+@AllArgsConstructor
 public final class FileUploadParameter {
 
 	@NonNull 

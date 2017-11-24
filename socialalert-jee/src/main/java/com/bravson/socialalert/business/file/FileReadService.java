@@ -13,24 +13,20 @@ import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Service
 @Transactional
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
-@AllArgsConstructor
-public class FileService {
+public class FileReadService {
 
 	@Inject
-	@NonNull
 	FileRepository mediaRepository;
 
 	@Inject
-	@NonNull
 	FileStore fileStore;
-
+	
 	private Optional<FileResponse> createFileResponse(String fileUri, MediaSizeVariant sizeVariant) throws IOException {
 		FileEntity fileEntity = mediaRepository.findFile(fileUri).orElse(null);
 		if (fileEntity == null) {

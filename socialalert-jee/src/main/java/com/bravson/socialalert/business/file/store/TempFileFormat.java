@@ -8,7 +8,12 @@ import lombok.Value;
 public class TempFileFormat implements FileFormat {
 
 	private final FileFormat sourceFormat;
-	private final String extension = "." + System.currentTimeMillis() + ".tmp"; 
+	private final String extension;
+	
+	public TempFileFormat(FileFormat sourceFormat) {
+		this.sourceFormat = sourceFormat;
+		this.extension = "." + System.currentTimeMillis() + ".tmp" + sourceFormat.getExtension();
+	}
 	
 	@Override
 	public String getContentType() {

@@ -19,14 +19,12 @@ import com.bravson.socialalert.business.file.video.SnapshotVideoFileProcessor;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Service
 @Transactional(TxType.SUPPORTS)
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class MediaFileStore {
 
 	@Inject
@@ -46,7 +44,7 @@ public class MediaFileStore {
 		return FileMetadata.builder()
 			.md5(md5)
 			.timestamp(Instant.now())
-			.contentLength(file.length())
+			.contentSize(file.length())
 			.fileFormat(fileFormat)
 			.build();
 	}

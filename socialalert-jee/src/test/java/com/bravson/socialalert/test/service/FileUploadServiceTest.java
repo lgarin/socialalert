@@ -31,6 +31,8 @@ import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.file.media.MediaSizeVariant;
 import com.bravson.socialalert.business.file.video.AsyncVideoPreviewEvent;
 import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.UserInfoService;
+import com.bravson.socialalert.domain.file.FileInfo;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 
 public class FileUploadServiceTest extends BaseServiceTest {
@@ -48,6 +50,9 @@ public class FileUploadServiceTest extends BaseServiceTest {
 	AsyncRepository asyncRepository;
 	
 	@Mock
+	UserInfoService userService;
+	
+	@Mock
 	Logger logger;
 	
 	@Test
@@ -60,16 +65,18 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).build();
 		when(mediaFileStore.buildMediaMetadata(inputFile, fileFormat)).thenReturn(mediaMetadata);
 		
-		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(fileFormat).build();
+		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(fileFormat).build();
 		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat)).thenReturn(fileMetadata);
 		
 		FileEntity fileEntity = new FileEntity(fileMetadata, mediaMetadata, UserAccess.of(userId, ipAddress));
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.of(fileEntity));
 		
-		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
-		FileMetadata result = fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress));
+		when(userService.fillUserInfo(fileEntity.toFileInfo())).thenReturn(fileEntity.toFileInfo());
 		
-		assertThat(result).isEqualTo(fileMetadata);
+		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
+		FileInfo result = fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress));
+		
+		assertThat(result.getFileUri()).isEqualTo(fileMetadata.buildFileUri());
 		verifyZeroInteractions(asyncRepository, logger);
 	}
 	
@@ -83,7 +90,7 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).timestamp(Instant.EPOCH).build();
 		when(mediaFileStore.buildMediaMetadata(inputFile, fileFormat)).thenReturn(mediaMetadata);
 		
-		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(0L).fileFormat(fileFormat).build();
+		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(fileFormat).build();
 		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat)).thenReturn(fileMetadata);
 		
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.empty());
@@ -95,10 +102,12 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);
 		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.PREVIEW);
 		
-		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
-		FileMetadata result = fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress));
+		when(userService.fillUserInfo(fileEntity.toFileInfo())).thenReturn(fileEntity.toFileInfo());
 		
-		assertThat(result).isEqualTo(fileMetadata);
+		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
+		FileInfo result = fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress));
+		
+		assertThat(result.getFileUri()).isEqualTo(fileMetadata.buildFileUri());
 		verifyZeroInteractions(asyncRepository, logger);
 	}
 	
@@ -114,7 +123,7 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
 		assertThatExceptionOfType(NotSupportedException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress)));
 		verify(logger).info(eq("Cannot extract metadata"), any(Exception.class));
-		verifyZeroInteractions(asyncRepository);
+		verifyZeroInteractions(asyncRepository, userService);
 	}
 	
 	@Test
@@ -127,7 +136,7 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).duration(Duration.ofHours(2L)).build();
 		when(mediaFileStore.buildMediaMetadata(inputFile, fileFormat)).thenReturn(mediaMetadata);
 		
-		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentLength(1000L).fileFormat(fileFormat).build();
+		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(1000L).fileFormat(fileFormat).build();
 		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat)).thenReturn(fileMetadata);
 		
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.empty());
@@ -139,10 +148,12 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);
 		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.PREVIEW);
 		
-		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.MOV_MEDIA_TYPE).build();
-		FileMetadata result = fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress));
+		when(userService.fillUserInfo(fileEntity.toFileInfo())).thenReturn(fileEntity.toFileInfo());
 		
-		assertThat(result).isEqualTo(fileMetadata);
+		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.MOV_MEDIA_TYPE).build();
+		FileInfo result = fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress));
+		
+		assertThat(result.getFileUri()).isEqualTo(fileMetadata.buildFileUri());
 		verify(asyncRepository).fireAsync(AsyncVideoPreviewEvent.of(fileEntity.getId()));
 		verifyZeroInteractions(logger);
 	}

@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.assertj.core.data.Offset;
 import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.bravson.socialalert.business.file.media.MediaFileConstants;
@@ -87,6 +88,7 @@ public class MediaClaimTest extends BaseIntegrationTest {
 	
 	@Test
 	@RunAsClient
+	@Ignore
 	public void claimExistingVideo() {
 		String token = requestLoginToken("test@test.com", "123");
 		String uri = uploadVideo(token);
