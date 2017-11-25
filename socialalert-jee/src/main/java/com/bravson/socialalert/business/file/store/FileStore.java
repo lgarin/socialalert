@@ -63,10 +63,12 @@ public class FileStore {
 		return new BigInteger(1, data).toString(16);
 	}
 
-	public void storeFile(@NonNull File source, @NonNull String md5, @NonNull Temporal timestamp, @NonNull FileFormat format) throws IOException {
+	public File storeFile(@NonNull File source, @NonNull String md5, @NonNull Temporal timestamp, @NonNull FileFormat format) throws IOException {
+		Path targetPath = buildAbsolutePath(md5, timestamp, format);
 		try (InputStream is = Files.newInputStream(source.toPath())) {
-			Files.copy(is, buildAbsolutePath(md5, timestamp, format));
+			Files.copy(is, targetPath);
 		}
+		return targetPath.toFile();
 	}
 	
 	private Path buildRelativePath(String md5, Temporal timestamp, FileFormat format) {

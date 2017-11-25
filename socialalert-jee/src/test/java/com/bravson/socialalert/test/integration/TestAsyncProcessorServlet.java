@@ -1,5 +1,6 @@
 package com.bravson.socialalert.test.integration;
 
+import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -7,13 +8,18 @@ import javax.annotation.ManagedBean;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-
-import org.junit.Test;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.bravson.socialalert.infrastructure.async.AsyncEvent;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 
-public class AsyncProcessorTest extends BaseIntegrationTest {
+@WebServlet("/unitTest/asyncProcessor")
+public class TestAsyncProcessorServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
 	
 	public static class TestEvent implements AsyncEvent {
 		private static final long serialVersionUID = 1L;
@@ -42,9 +48,15 @@ public class AsyncProcessorTest extends BaseIntegrationTest {
 	@Inject
 	AsyncEventObserver observer;
 	
-	@Test
-	public void fireAsyncEvent() throws InterruptedException {
+	
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		repository.fireAsync(new TestEvent());
-		observer.waitEvent();
+		try {
+			observer.waitEvent();
+			resp.setStatus(HttpServletResponse.SC_OK);
+		} catch (InterruptedException e) {
+			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+		}
 	}
 }

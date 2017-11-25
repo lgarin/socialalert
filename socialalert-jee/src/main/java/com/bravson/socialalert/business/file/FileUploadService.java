@@ -6,9 +6,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.NotSupportedException;
-import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 
@@ -21,6 +19,7 @@ import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.file.FileInfo;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 import com.bravson.socialalert.infrastructure.layer.Service;
+import com.bravson.socialalert.infrastructure.rest.ConflictException;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -48,7 +47,7 @@ public class FileUploadService {
 
 	private static FileInfo handleExistingFile(FileEntity file, UserAccess userAccess) {
 		if (!file.markUploaded(userAccess)) {
-			throw new ClientErrorException(Status.CONFLICT);
+			throw new ConflictException();
 		}
 		return file.toFileInfo();
 	}

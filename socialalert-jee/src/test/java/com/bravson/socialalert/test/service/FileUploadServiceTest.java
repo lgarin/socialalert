@@ -12,7 +12,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 
-import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.NotSupportedException;
 
 import org.junit.Test;
@@ -35,6 +34,7 @@ import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.file.FileInfo;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
+import com.bravson.socialalert.infrastructure.rest.ConflictException;
 
 public class FileUploadServiceTest extends BaseServiceTest {
 
@@ -73,7 +73,7 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.of(fileEntity));
 		
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
-		assertThatExceptionOfType(ClientErrorException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress)));
+		assertThatExceptionOfType(ConflictException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress)));
 		
 		verifyZeroInteractions(asyncRepository, logger);
 	}

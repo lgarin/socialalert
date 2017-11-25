@@ -7,7 +7,6 @@ import java.util.Optional;
 
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
-import javax.ws.rs.WebApplicationException;
 
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -23,6 +22,7 @@ import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.media.MediaInfo;
+import com.bravson.socialalert.infrastructure.rest.ConflictException;
 
 public class MediaUpsertServiceTest extends BaseServiceTest {
 
@@ -75,8 +75,7 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 		
 		when(mediaRepository.findMedia(fileUri)).thenReturn(Optional.of(mediaEntity));
 		
-		Throwable exception = catchThrowable(() -> mediaUpsertService.claimMedia(fileUri, mediaParameter, userAccess));
-		assertThat(exception).isInstanceOfSatisfying(WebApplicationException.class, e -> assertThat(e.getResponse().getStatus()).isEqualTo(409));
+		assertThatExceptionOfType(ConflictException.class).isThrownBy(() -> mediaUpsertService.claimMedia(fileUri, mediaParameter, userAccess));
 	}
 	
 	@Test

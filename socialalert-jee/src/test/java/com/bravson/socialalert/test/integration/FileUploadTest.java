@@ -9,7 +9,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.junit.Test;
 
 import com.bravson.socialalert.business.file.media.MediaFileConstants;
@@ -30,7 +29,6 @@ public class FileUploadTest extends BaseIntegrationTest {
 	}
 
 	@Test
-	@RunAsClient
 	public void uploadPictureWithoutPrincial() throws Exception {
 		Response response = createRequest("/file/upload/picture", MediaType.WILDCARD).post(getPicture("src/main/resources/logo.jpg"));
 		assertThat(response.getStatus()).isEqualTo(Status.FORBIDDEN.getStatusCode());
@@ -47,7 +45,6 @@ public class FileUploadTest extends BaseIntegrationTest {
 	}
 
 	@Test
-	@RunAsClient
 	public void uploadPictureWithLogin() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
 		Response response = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token).post(getPicture("src/test/resources/media/IMG_0397.JPG"));
@@ -57,7 +54,6 @@ public class FileUploadTest extends BaseIntegrationTest {
 	}
 
 	@Test
-	@RunAsClient
 	public void uploadVideoWithLogin() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
 		Response response = createAuthRequest("/file/upload/video", MediaType.WILDCARD, token).post(getVideo("src/test/resources/media/IMG_0236.MOV"));
@@ -67,7 +63,6 @@ public class FileUploadTest extends BaseIntegrationTest {
 	}
 
 	@Test
-	@RunAsClient
 	public void uploadPictureTooLarge() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
 		Response response = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token).post(getPicture("C:/Dev/jdk8/javafx-src.zip"));
@@ -75,7 +70,6 @@ public class FileUploadTest extends BaseIntegrationTest {
 	}
 	
 	@Test
-	@RunAsClient
 	public void uploadPictureWithWrongMediaType() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
 		Response response = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token).post(getPlainText("test"));

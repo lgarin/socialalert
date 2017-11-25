@@ -142,9 +142,9 @@ public class FileEntity extends VersionedEntity {
 	}
 	
 	public boolean markUploaded(UserAccess userAccess) {
-		if (state != FileState.DELETED) {
-			return false;
-		} else if (state == FileState.UPLOADED && !getUserId().equals(userAccess.getUserId())) {
+		if (state == FileState.UPLOADED && getUserId().equals(userAccess.getUserId())) {
+			return true;
+		} else if (state != FileState.DELETED) {
 			return false;
 		}
 		changeState(FileState.UPLOADED);

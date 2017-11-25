@@ -12,7 +12,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.assertj.core.data.Offset;
-import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -34,7 +33,6 @@ public class MediaClaimTest extends BaseIntegrationTest {
 	}
 	
 	@Test
-	@RunAsClient
 	public void claimNonExistingPicture() {
 		String token = requestLoginToken("test@test.com", "123");
 		Response response = createAuthRequest("/media/claim/20170407/58b28c6b28011a1ad4180419", MediaType.APPLICATION_JSON, token).post(getClaimMediaParameter());
@@ -52,7 +50,6 @@ public class MediaClaimTest extends BaseIntegrationTest {
 	}
 	
 	@Test
-	@RunAsClient
 	public void claimExistingPicture() {
 		String token = requestLoginToken("test@test.com", "123");
 		String uri = uploadPicture(token);
@@ -87,7 +84,6 @@ public class MediaClaimTest extends BaseIntegrationTest {
 	}
 	
 	@Test
-	@RunAsClient
 	@Ignore
 	public void claimExistingVideo() {
 		String token = requestLoginToken("test@test.com", "123");

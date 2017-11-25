@@ -9,46 +9,34 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 
 import com.bravson.socialalert.domain.user.LoginParameter;
 import com.bravson.socialalert.domain.user.LoginResponse;
 
 @RunWith(Arquillian.class)
+@RunAsClient
 public abstract class BaseIntegrationTest extends Assertions {
 
-	private static File baseMediaDirectory = new File("C:/Temp/arquillian/media.store");
-	private static File baseDatabaseDirectory = new File("C:/Temp/arquillian/neo4j.db");
-	private static File baseSearchIndexDirectory = new File("C:/Temp/arquillian/lucene.idx");
-	
-	private static void cleanDirectories(File... directories) {
-		for (File directory : directories) {
-			try {
-				FileUtils.deleteDirectory(directory);
-			} catch (IOException e) {
-			}
-		}
-	}
-	
-	@Deployment(testable = true)
+	@Deployment(testable = false)
 	public static WebArchive createDeployment() throws IOException {
-		cleanDirectories(baseSearchIndexDirectory, baseDatabaseDirectory, baseMediaDirectory);
 		
 		File[] libs = Maven.resolver()  
                 .loadPomFromFile("pom.xml").importCompileAndRuntimeDependencies().resolve().withTransitivity().as(File.class);
 		
 		return ShrinkWrap.create(WebArchive.class, "socialalert-jee-test.war")
 				.addPackages(true, "com/bravson/socialalert")
-				.addPackages(true, "org/assertj")
 				.addAsResource("logo.jpg")
 				.addAsLibraries(libs)
 				.addAsResource(new File("src/main/resources/META-INF/jboss-logging.properties"), "META-INF/jboss-logging.properties")
@@ -78,5 +66,12 @@ public abstract class BaseIntegrationTest extends Assertions {
 	
 	protected String getLocationPath(Response response) {
 		return response.getLocation().toString().replaceFirst("^(http://.*/rest)", "");
+	}
+	
+	@RunAsClient
+	@Before
+	public void cleanAllData() {
+		Response response = ClientBuilder.newClient().target(deploymentUrl.toString() + "unitTest/deleteData").request().delete();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 	}
 }
