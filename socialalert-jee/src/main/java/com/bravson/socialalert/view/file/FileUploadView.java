@@ -72,9 +72,16 @@ public class FileUploadView implements Serializable, MediaFileConstants {
 		try {
 			Files.copy(upload.getInputstream(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			FileInfo newFile = uploadService.uploadMedia(new FileUploadParameter(tempFile, upload.getContentType()), userAccess);
-			newFiles.add(newFile);
-			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "File has been uploaded");
-			FacesContext.getCurrentInstance().addMessage(null, message);
+			if (newFiles.contains(newFile)) {
+				FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "Warning", "File has already been uploaded");
+				FacesContext.getCurrentInstance().addMessage(null, message);
+			} else {
+				newFiles.add(newFile);
+				newFiles.sort(Comparator.comparing(FileInfo::getTimestamp));
+				FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "File has been uploaded");
+				FacesContext.getCurrentInstance().addMessage(null, message);
+			}
+			
 		} catch (Exception e) {
 			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Could not upload file");
 			FacesContext.getCurrentInstance().addMessage(null, message);

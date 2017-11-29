@@ -1,6 +1,7 @@
 package com.bravson.socialalert.business.file;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -27,5 +28,9 @@ public class FileSearchService {
 	
 	public List<FileInfo> findNewFilesByUserId(@NonNull String userId) {
 		return userService.fillUserInfo(fileRepository.findByUserIdAndState(userId, FileState.UPLOADED).stream().map(FileEntity::toFileInfo).collect(Collectors.toList()));
+	}
+	
+	public Optional<FileInfo> findFileByUri(@NonNull String fileUri) {
+		return userService.fillUserInfo(fileRepository.findFile(fileUri).map(FileEntity::toFileInfo));
 	}
 }

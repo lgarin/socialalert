@@ -1,6 +1,7 @@
 package com.bravson.socialalert.business.file;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.business.user.UserAccess;
@@ -10,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @Service
+@Transactional
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class FileDeleteService {
 

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
@@ -25,6 +26,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -36,6 +38,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.bravson.socialalert.business.file.FileReadService;
 import com.bravson.socialalert.business.file.FileResponse;
+import com.bravson.socialalert.business.file.FileSearchService;
 import com.bravson.socialalert.business.file.FileUploadParameter;
 import com.bravson.socialalert.business.file.FileUploadService;
 import com.bravson.socialalert.business.file.media.MediaFileConstants;
@@ -79,6 +82,9 @@ public class FileFacade {
 	
 	@Inject
 	FileUploadService fileUploadService;
+	
+	@Inject
+	FileSearchService fileSearchService;
 	
 	private static StreamingOutput createStreamingOutput(File file) {
 		return os -> Files.copy(file.toPath(), os);
@@ -129,6 +135,30 @@ public class FileFacade {
 		return createStreamResponse(fileReadService.preview(fileUri).orElseThrow(NotFoundException::new));
 	}
 	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value="Access the file metadata.")
+	@Path("/metadata/{fileUri : .+}")
+	@ApiResponses(value= {
+			@ApiResponse(code = 200, message = "File metadata are available in the response."),
+			@ApiResponse(code = 404, message = "No media exists with this uri.") })
+	public FileInfo getMetadata(
+			@ApiParam(value="The relative file uri.", required=true) @NotEmpty @PathParam("fileUri") String fileUri,
+			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException {
+		return fileSearchService.findFileByUri(fileUri).orElseThrow(NotFoundException::new);
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value="List the new files for the current user.")
+	@Path("/list/new")
+	@ApiResponses(value= {
+			@ApiResponse(code = 200, message = "List of file metadata is available in the response.")})
+	public List<FileInfo> listNewFiles(
+			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException {
+		return fileSearchService.findNewFilesByUserId(userAccess.getUserId());
+	}
+	
 	@PermitAll
 	@GET
 	@Path("/thumbnail/{fileUri : .+}")
@@ -138,8 +168,7 @@ public class FileFacade {
 			@ApiResponse(code = 200, message = "File will be streamed."),
 			@ApiResponse(code = 404, message = "No media exists with this uri.") })
 	public Response thumbnail(
-			@ApiParam(value="The relative file uri.", required=true) @NotEmpty @PathParam("fileUri") String fileUri/*,
-			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization*/) throws IOException {
+			@ApiParam(value="The relative file uri.", required=true) @NotEmpty @PathParam("fileUri") String fileUri) throws IOException {
 		return createStreamResponse(fileReadService.thumbnail(fileUri).orElseThrow(NotFoundException::new));
 	}
 	

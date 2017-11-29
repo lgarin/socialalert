@@ -1,6 +1,7 @@
 package com.bravson.socialalert.business.user;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.Function;
 
 import javax.inject.Inject;
@@ -48,7 +49,12 @@ public class UserInfoService {
 		return content;
 	}
 	
-	public <T extends Collection<? extends UserContent>> T fillUserInfo(T collection) {
+	public <T extends UserContent> Optional<T> fillUserInfo(@NonNull Optional<T> content) {
+		content.ifPresent(this::fillUserInfo);
+		return content;
+	}
+	
+	public <T extends Collection<? extends UserContent>> T fillUserInfo(@NonNull T collection) {
 		for (UserContent content : collection) {
 			fillUserInfo(content);
 		}

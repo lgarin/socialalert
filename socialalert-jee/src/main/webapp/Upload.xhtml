@@ -11,14 +11,14 @@
     </p:confirmDialog>
 	<h:panelGroup id="uploadForm">
 		<h:form>
-		    	<p:fileUpload fileUploadListener="#{fileUploadView.handleFileUpload}" mode="advanced" dragDropSupport="true"
+		    	<p:fileUpload fileUploadListener="#{fileUploadView.handleFileUpload}" mode="advanced" dragDropSupport="true" auto="true"
 		        	update="uploadResult,uploadForm" sizeLimit="#{fileUploadView.maxUploadSize}" fileLimit="1" allowTypes="#{fileUploadView.filePattern}" />
 	    </h:form>
 	</h:panelGroup>
 	<h:panelGroup id="uploadResult">
 	   <p:growl id="messages" showDetail="true" life="2000" />
 	   <p:dataTable value="#{fileUploadView.newFiles}" var="file">
-    		<p:column headerText="Previous uploads" sortBy="#{file.timestamp}">
+    		<p:column headerText="Previous uploads">
     			<p:panelGrid>
    					<p:row>
 			            <p:column style="width:320px" rowspan="7"><p:graphicImage url="/rest/file/thumbnail/#{file.fileUri}"></p:graphicImage></p:column>
@@ -63,7 +63,14 @@
    					<p:row>
    						<p:column rowspan="2">
    							<div class="ui-g">
-   								<div class="ui-g-6"><p:button outcome="Index?i=0" value="Claim" icon="fa fa-send"></p:button></div>
+   								<div class="ui-g-6">
+   									<h:form>
+	   									<p:button outcome="ClaimBegin" value="Publish" icon="fa fa-send">
+	   										<f:param name="uri" value="#{file.fileUri}"/>
+	   										<f:param name="i" value="1"/>
+	   									</p:button>
+   									</h:form>
+   								</div>
    								<div class="ui-g-6">
    									<p:commandButton value="Delete" icon="fa fa-remove" update="uploadResult" actionListener="#{fileUploadView.handleDeleteFile(file)}">
    										<p:confirm header="Delete file" message="Do you really want to delete this file?" icon="ui-icon-alert">

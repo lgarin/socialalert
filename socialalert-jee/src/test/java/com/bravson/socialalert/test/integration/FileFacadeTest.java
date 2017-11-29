@@ -60,4 +60,18 @@ public class FileFacadeTest extends BaseIntegrationTest {
 		assertThat(response.getMediaType()).isEqualTo(MediaType.valueOf(MediaFileConstants.JPG_MEDIA_TYPE));
 		response.readEntity(InputStream.class).close();
 	}
+	
+	@Test
+	public void findNonExistingFile() throws Exception {
+		String token = requestLoginToken("test@test.com", "123");
+		Response response = createAuthRequest("/file/metadata/20170407/58b28c6b28011a1ad4180419", MediaType.WILDCARD, token).get();
+		assertThat(response.getStatus()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+	}
+	
+	@Test
+	public void listNewFiles() throws Exception {
+		String token = requestLoginToken("test@test.com", "123");
+		Response response = createAuthRequest("/file/list/new", MediaType.WILDCARD, token).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
 }

@@ -57,4 +57,12 @@ public class FileInfo implements UserContent {
 	private String creatorId;
     
 	private UserInfo creator;
+	
+	public boolean isVideo() {
+		return MediaFileFormat.VIDEO_SET.contains(fileFormat);
+	}
+	
+	public boolean isPicture() {
+		return MediaFileFormat.PICTURE_SET.contains(fileFormat);
+	}
 }
