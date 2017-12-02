@@ -7,7 +7,6 @@ import java.time.Instant;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
 
 import com.bravson.socialalert.business.file.FileEntity;
 import com.bravson.socialalert.business.file.FileMetadata;
@@ -22,7 +21,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 @Service
-@Transactional(TxType.SUPPORTS)
+@Transactional
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class AsyncVideoPreviewProcessor {

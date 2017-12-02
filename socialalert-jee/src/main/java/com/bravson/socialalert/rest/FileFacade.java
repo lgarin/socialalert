@@ -121,6 +121,7 @@ public class FileFacade {
 		return createStreamResponse(fileReadService.download(fileUri).orElseThrow(NotFoundException::new));
 	}
 	
+	@PermitAll
 	@GET
 	@Path("/preview/{fileUri : .+}")
 	@ApiOperation(value="Download a file in the preview format.",
@@ -130,8 +131,7 @@ public class FileFacade {
 			@ApiResponse(code = 200, message = "File will be streamed."),
 			@ApiResponse(code = 404, message = "No media exists with this uri.") })
 	public Response preview(
-			@ApiParam(value="The relative file uri.", required=true) @NotEmpty @PathParam("fileUri") String fileUri,
-			@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException {
+			@ApiParam(value="The relative file uri.", required=true) @NotEmpty @PathParam("fileUri") String fileUri) throws IOException {
 		return createStreamResponse(fileReadService.preview(fileUri).orElseThrow(NotFoundException::new));
 	}
 	

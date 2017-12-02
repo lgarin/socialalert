@@ -57,7 +57,54 @@ public class FileUploadServiceTest extends BaseServiceTest {
 	Logger logger;
 	
 	@Test
-	public void uploadExistingPicture() throws Exception {
+	public void uploadExistingPictureWithSameUser() throws Exception {
+		String userId = "test";
+		String ipAddress = "1.2.3.4";
+		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
+		MediaFileFormat fileFormat = MediaFileFormat.MEDIA_JPG;
+		
+		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).build();
+		when(mediaFileStore.buildMediaMetadata(inputFile, fileFormat)).thenReturn(mediaMetadata);
+		
+		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(fileFormat).build();
+		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat)).thenReturn(fileMetadata);
+		
+		FileEntity fileEntity = new FileEntity(fileMetadata, mediaMetadata, UserAccess.of(userId, "4.3.2.1"));
+		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.of(fileEntity));
+		
+		when(userService.fillUserInfo(fileEntity.toFileInfo())).thenReturn(fileEntity.toFileInfo());
+		
+		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
+		FileInfo result = fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress));
+		
+		assertThat(result).isEqualTo(fileEntity.toFileInfo());
+		verifyZeroInteractions(asyncRepository, logger);
+	}
+	
+	@Test
+	public void uploadExistingPictureWithDifferentUser() throws Exception {
+		String userId = "test";
+		String ipAddress = "1.2.3.4";
+		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
+		MediaFileFormat fileFormat = MediaFileFormat.MEDIA_JPG;
+		
+		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).build();
+		when(mediaFileStore.buildMediaMetadata(inputFile, fileFormat)).thenReturn(mediaMetadata);
+		
+		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(fileFormat).build();
+		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat)).thenReturn(fileMetadata);
+		
+		FileEntity fileEntity = new FileEntity(fileMetadata, mediaMetadata, UserAccess.of("test2", "4.3.2.1"));
+		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.of(fileEntity));
+		
+		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
+		assertThatExceptionOfType(ConflictException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress)));
+		
+		verifyZeroInteractions(asyncRepository, logger);
+	}
+	
+	@Test
+	public void uploadExistingPictureWithClaimedState() throws Exception {
 		String userId = "test";
 		String ipAddress = "1.2.3.4";
 		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
@@ -70,6 +117,7 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat)).thenReturn(fileMetadata);
 		
 		FileEntity fileEntity = new FileEntity(fileMetadata, mediaMetadata, UserAccess.of(userId, ipAddress));
+		fileEntity.markClaimed(UserAccess.of(userId, ipAddress));
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.of(fileEntity));
 		
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();

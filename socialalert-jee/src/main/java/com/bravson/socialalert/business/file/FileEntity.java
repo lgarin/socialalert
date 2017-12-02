@@ -1,6 +1,7 @@
 package com.bravson.socialalert.business.file;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,22 +66,19 @@ public class FileEntity extends VersionedEntity {
 		if (fileVariants == null) {
 			return Optional.empty();
 		}
-		return fileVariants.stream().filter(v -> v.getSizeVariant() == sizeVariant).findAny();
+		return fileVariants.stream().filter(v -> v.getSizeVariant() == sizeVariant).max(Comparator.comparing(FileMetadata::isVideo));
 	}
 	
 	public Optional<MediaFileFormat> findVariantFormat(@NonNull MediaSizeVariant sizeVariant) {
 		return findFileMetadata(sizeVariant).map(FileMetadata::getFileFormat);
 	}
 
-	public boolean addVariant(@NonNull FileMetadata metadata) {
-		if (findFileMetadata(metadata.getSizeVariant()).isPresent()) {
-			return false;
-		}
+	public void addVariant(@NonNull FileMetadata metadata) {
 		if (fileVariants == null) {
 			fileVariants = new ArrayList<>();
 		}
 		fileVariants.add(metadata);
-		return true;
+		System.out.println(fileVariants);
 	}
 
 	public FileMetadata getFileMetadata() {
@@ -118,6 +116,7 @@ public class FileEntity extends VersionedEntity {
 		info.setWidth(getMediaMetadata().getWidth());
 		info.setDuration(getMediaMetadata().getDuration());
 		info.setCreation(getMediaMetadata().getTimestamp());
+		findVariantFormat(MediaSizeVariant.PREVIEW).ifPresent(info::setPreviewFormat);
 		return info;
 	}
 

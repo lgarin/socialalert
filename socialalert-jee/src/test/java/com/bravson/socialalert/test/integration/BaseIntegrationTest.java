@@ -38,6 +38,7 @@ public abstract class BaseIntegrationTest extends Assertions {
 		return ShrinkWrap.create(WebArchive.class, "socialalert-jee-test.war")
 				.addPackages(true, "com/bravson/socialalert")
 				.addAsResource("logo.jpg")
+				.addAsResource("neo4j.properties")
 				.addAsLibraries(libs)
 				.addAsResource(new File("src/main/resources/META-INF/jboss-logging.properties"), "META-INF/jboss-logging.properties")
 				.addAsResource(new File("src/main/resources/META-INF/persistence.xml"), "META-INF/persistence.xml")

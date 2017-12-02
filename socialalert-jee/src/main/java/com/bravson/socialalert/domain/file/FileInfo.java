@@ -27,6 +27,8 @@ public class FileInfo implements UserContent {
 	
 	private MediaFileFormat fileFormat;
 	
+	private MediaFileFormat previewFormat;
+	
 	@ApiModelProperty("The media timestamp in milliseconds since the epoch.")
 	@JsonSerialize(using=InstantSerializer.class)
 	@JsonDeserialize(using=InstantDeserializer.class)
@@ -64,5 +66,13 @@ public class FileInfo implements UserContent {
 	
 	public boolean isPicture() {
 		return MediaFileFormat.PICTURE_SET.contains(fileFormat);
+	}
+	
+	public boolean hasVideoPreview() {
+		return MediaFileFormat.VIDEO_SET.contains(previewFormat);
+	}
+
+	public boolean hasLocation() {
+		return latitude != null && longitude != null;
 	}
 }

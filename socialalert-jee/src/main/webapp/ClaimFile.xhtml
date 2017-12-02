@@ -7,19 +7,19 @@
 <ui:define name="content">
 <p:importConstants type="com.bravson.socialalert.business.media.MediaConstants" var="MediaConstants" />
 <f:metadata>
-    	<f:viewParam name="uri" value="#{fileClaimView.selectedFile}" converter="#{fileUriConverter}" id="uri" />
+    	<f:viewParam name="uri" value="#{fileClaimView.selectedFile}" converter="#{fileInfoConverter}" id="uri" />
 </f:metadata>
 <h:form>
-	<h:inputHidden value="#{fileClaimView.selectedFile}" converter="#{fileUriConverter}" />
+	<p:growl id="messages" showDetail="true" sticky="false" life="2000" />
+	<h:inputHidden value="#{fileClaimView.selectedFile}" converter="#{fileInfoConverter}" />
 	<p:panel header="Publish">
-		<p:messages id="messages" showDetail="false" autoUpdate="true" closable="false" />
 		<h:panelGrid columns="3">
 			<p:panelGrid columns="1">
-				<h:panelGroup rendered="#{fileClaimView.selectedFile.picture}">
-					<img src="rest/file/thumbnail/#{fileClaimView.selectedFile.fileUri}"/>
+				<h:panelGroup rendered="#{not fileClaimView.selectedFile.hasVideoPreview()}">
+					<img src="rest/file/preview/#{fileClaimView.selectedFile.fileUri}" />
 				</h:panelGroup>
-				<h:panelGroup rendered="#{fileClaimView.selectedFile.video}">
-					<video src="rest/file/thumbnail/#{fileClaimView.selectedFile.fileUri}"/>
+				<h:panelGroup rendered="#{fileClaimView.selectedFile.hasVideoPreview()}">
+					<video src="rest/file/preview/#{fileClaimView.selectedFile.fileUri}" controls="controls"/>
 				</h:panelGroup>
 			</p:panelGrid>
 			
@@ -48,7 +48,7 @@
 			    <p:inputTextarea value="#{fileClaimView.description}" rows="6" cols="50" id="description"/>
 			    
 				<p:button value="Cancel" outcome="Upload?i=1"/>
-				<p:commandButton type="submit" value="Next" action="#{fileClaimView.updateLocation}"/>
+				<p:commandButton type="submit" value="Next" action="#{fileClaimView.updateLocation}" ajax="false"/>
 			</h:panelGrid>
 		</h:panelGrid>
 	</p:panel>

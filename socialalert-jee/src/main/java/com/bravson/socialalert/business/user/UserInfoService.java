@@ -34,18 +34,20 @@ public class UserInfoService {
 	@NonNull
 	UserProfileRepository profileRepository;
 	
-	private Function<UserProfileEntity, UserInfo> getUserInfoMapper(UserContent content) {
-		if (onlineUserRepository.isUserActive(content.getCreatorId())) {
+	private Function<UserProfileEntity, UserInfo> getUserInfoMapper(String userId) {
+		if (onlineUserRepository.isUserActive(userId)) {
 			return UserProfileEntity::toOnlineUserInfo;
 		} else {
 			return UserProfileEntity::toOfflineUserInfo;
 		}
 	}
 	
+	public Optional<UserInfo> findUserInfo(@NonNull String userId) {
+		return profileRepository.findByUserId(userId).map(getUserInfoMapper(userId));
+	}
+	
 	public <T extends UserContent> T fillUserInfo(@NonNull T content) {
-		profileRepository.findByUserId(content.getCreatorId())
-			.map(getUserInfoMapper(content))
-			.ifPresent(content::setCreator);
+		findUserInfo(content.getCreatorId()).ifPresent(content::setCreator);
 		return content;
 	}
 	
