@@ -20,7 +20,7 @@
 				<p:ajax event="pointSelect" listener="#{fileClaimView.onMapPointSelect}" update="messages map" />
 			</p:gmap>
 		</p:panel>
-		<p:button value="Cancel" outcome="Upload?i=1"/>
+		<p:button value="Cancel" outcome="Upload"/>
 		<p:commandButton type="submit" value="Previous" action="#{fileClaimView.updateMetadata}" ajax="false"/>
 		<p:commandButton type="submit" value="Next" action="#{fileClaimView.confirmPublish}" ajax="false"/>
 	</h:form>

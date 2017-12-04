@@ -5,7 +5,6 @@ import java.io.Serializable;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.primefaces.event.map.PointSelectEvent;
@@ -14,9 +13,6 @@ import org.primefaces.model.map.DefaultMapModel;
 import org.primefaces.model.map.LatLng;
 import org.primefaces.model.map.MapModel;
 import org.primefaces.model.map.Marker;
-
-import com.bravson.socialalert.business.user.UserAccess;
-import com.bravson.socialalert.domain.user.UserInfo;
 
 import lombok.Getter;
 
@@ -34,14 +30,6 @@ public class IndexView implements Serializable {
 	
 	@Getter
 	private int zoomLevel = 15;
-	
-	@Getter
-	@Inject
-	UserAccess userAccess;
-	
-	@Getter
-	@Inject
-	UserInfo userInfo;
 	
 	public void onPointSelect(PointSelectEvent event) {
         LatLng latlng = event.getLatLng();

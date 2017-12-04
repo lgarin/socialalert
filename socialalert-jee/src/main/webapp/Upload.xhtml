@@ -48,10 +48,10 @@
 					<p:row>
    						<p:column><h:outputText value="Coordinates" /></p:column>
    						<p:column>
-   							<ui:fragment rendered="#{not empty file.latitude and not empty file.longitude}">
-   								(<h:outputText value="#{file.latitude}"><f:convertNumber pattern="0.00"/></h:outputText>,	
-   								<h:outputText value="#{file.longitude}"><f:convertNumber pattern="0.00"/></h:outputText>)
-   							</ui:fragment>
+   						<h:outputLink rendered="#{not empty file.latitude and not empty file.longitude}" iframe="true" value="https://www.google.com/maps?z=15&amp;t=m&amp;q=#{file.latitude},#{file.longitude}">
+   									(<h:outputText value="#{file.latitude}"><f:convertNumber pattern="0.00"/></h:outputText>,	
+   									<h:outputText value="#{file.longitude}"><f:convertNumber pattern="0.00"/></h:outputText>)
+   						</h:outputLink>
    						</p:column>
    					</p:row>
    					

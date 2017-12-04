@@ -36,7 +36,7 @@ public class UserService {
 				.orElseThrow(NotFoundException::new);
 	}
 	
-	private UserProfileEntity getOrCreateProfile(String accessToken, String userId, String ipAddress) {
+	public UserProfileEntity getOrCreateProfile(String accessToken, String userId, String ipAddress) {
 		return profileRepository.findByUserId(userId).orElseGet(() -> createProfile(accessToken, ipAddress));
 	}
 	

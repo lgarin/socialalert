@@ -10,15 +10,13 @@
 	<ui:insert name="metadata"/>
 </h:head>
 <body>
-	<p:tabMenu activeIndex="#{param.i}">
-	    <p:menuitem value="&nbsp;Home" outcome="Index" icon="fa fa-star-o" >
-	        <f:param name="i" value="0" />
-	    </p:menuitem>
-	    <p:menuitem value="&nbsp;Upload" outcome="Upload" icon="fa fa-upload">
-	        <f:param name="i" value="1" />
-	    </p:menuitem>
-	</p:tabMenu>
-
+	<h:form>
+		<p:menubar>
+			 <p:menuitem outcome="Index" value="&nbsp;Home" icon="fa fa-star-o" />
+			 <p:menuitem outcome="Upload" value="&nbsp;Upload" icon="fa fa-upload"/>
+			 <p:menuitem action="#{userSession.logout}" value="&nbsp;Logout" icon="fa fa-sign-out" style="position: absolute; right: 6px;"/>
+		</p:menubar>
+	</h:form>
     <ui:insert name="content" />
     
 	<!-- 

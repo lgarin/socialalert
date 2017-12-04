@@ -47,7 +47,7 @@
 			    <h:outputLabel value="Description" for="description" maxlength="#{MediaConstants.MAX_DESCRIPTION_LENGTH}"/>
 			    <p:inputTextarea value="#{fileClaimView.description}" rows="6" cols="50" id="description"/>
 			    
-				<p:button value="Cancel" outcome="Upload?i=1"/>
+				<p:button value="Cancel" outcome="Upload"/>
 				<p:commandButton type="submit" value="Next" action="#{fileClaimView.updateLocation}" ajax="false"/>
 			</h:panelGrid>
 		</h:panelGrid>
