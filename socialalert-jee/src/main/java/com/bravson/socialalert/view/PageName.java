@@ -6,4 +6,5 @@ public interface PageName {
 	String UPLOAD = "Upload";
 	String CLAIM_FILE = "ClaimFile";
 	String CLAIM_LOCATION = "ClaimLocation";
+	String CLAIM_CONFIRMATION = "ClaimConfirmation";
 }

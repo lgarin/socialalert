@@ -20,7 +20,11 @@ import org.primefaces.model.map.MapModel;
 import org.primefaces.model.map.Marker;
 
 import com.bravson.socialalert.business.media.MediaConstants;
+import com.bravson.socialalert.business.media.MediaUpsertService;
+import com.bravson.socialalert.business.media.UpsertMediaParameter;
+import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.file.FileInfo;
+import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.view.PageName;
 
 import lombok.Getter;
@@ -63,6 +67,12 @@ public class FileClaimView implements Serializable {
 	@Getter
 	private int mapZoomLevel = 15;
 	
+	@Inject
+	MediaUpsertService mediaUpsertService;
+	
+	@Inject
+	UserAccess userAccess;
+	
 	public String updateLocation() {
 		if (conversation.isTransient()) {
 			if (selectedFile.hasLocation()) {
@@ -81,15 +91,25 @@ public class FileClaimView implements Serializable {
 	}
 	
 	public String confirmPublish() {
+		return PageName.CLAIM_CONFIRMATION;
+	}
+	
+	public String publish() {
+		UpsertMediaParameter param = UpsertMediaParameter.builder()
+				.title(title).description(description)
+				.categories(categories).tags(tags)
+				.location(GeoAddress.builder().latitude(mapCenter.getLat()).longitude(mapCenter.getLng()).build())
+				.build();
+		mediaUpsertService.claimMedia(selectedFile.getFileUri(), param, userAccess);
 		conversation.end();
 		return PageName.INDEX;
 	}
 	
 	public void onMapPointSelect(PointSelectEvent event) {
-        LatLng latlng = event.getLatLng();
+		mapCenter = event.getLatLng();
         mapModel.getMarkers().clear();
-        mapModel.addOverlay(new Marker(latlng, title));
-        addMessage(new FacesMessage(FacesMessage.SEVERITY_INFO, "Position selected", "Lat:" + latlng.getLat() + ", Lng:" + latlng.getLng()));
+        mapModel.addOverlay(new Marker(mapCenter, title));
+        addMessage(new FacesMessage(FacesMessage.SEVERITY_INFO, "Position selected", "Lat:" + mapCenter.getLat() + ", Lng:" + mapCenter.getLng()));
     }
 	
 	public void addMessage(FacesMessage message) {

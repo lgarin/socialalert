@@ -3,6 +3,7 @@ package com.bravson.socialalert.view.user;
 import java.io.Serializable;
 
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.ServletException;
@@ -39,8 +40,9 @@ public class UserSession implements Serializable {
 			userInfo = userService.getOrCreateProfile("Bearer " + token, userAccess.getUserId(), userAccess.getIpAddress()).toOnlineUserInfo();
 		}
 	}
-	
+
 	public String logout() throws ServletException {
+		FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
 		request.logout();
 		return PageName.INDEX + "?faces-redirect=true";
 	}
