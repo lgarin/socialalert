@@ -2,6 +2,7 @@ package com.bravson.socialalert.infrastructure.entity;
 
 import javax.annotation.ManagedBean;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,5 +20,9 @@ public class EntityManagerProducer {
 	@Produces @RequestScoped
 	public FullTextEntityManager getFullTextEntityManager() {
 		return Search.getFullTextEntityManager(em);
+	}
+	
+	public void destroyEntityManager(@Disposes FullTextEntityManager em) {
+		em.close();
 	}
 }

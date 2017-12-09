@@ -11,6 +11,21 @@
 		<param-name>primefaces.FONT_AWESOME</param-name>
 		<param-value>true</param-value>
 	</context-param>
+	
+  <welcome-file-list>
+    <welcome-file>Index.jsf</welcome-file>
+  </welcome-file-list>
+
+  <security-constraint>
+  	<web-resource-collection>
+  		<web-resource-name>secured</web-resource-name>
+  		<url-pattern>*.jsf</url-pattern>
+  		<url-pattern>/faces/*</url-pattern>
+  	</web-resource-collection>
+  	<auth-constraint>
+  		<role-name>user</role-name>
+  	</auth-constraint>
+  </security-constraint>
 
 	<login-config>
 		<auth-method>KEYCLOAK</auth-method>

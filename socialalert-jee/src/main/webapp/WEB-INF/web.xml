@@ -32,6 +32,7 @@
   	<web-resource-collection>
   		<web-resource-name>secured</web-resource-name>
   		<url-pattern>*.jsf</url-pattern>
+  		<url-pattern>/faces/*</url-pattern>
   	</web-resource-collection>
   	<auth-constraint>
   		<role-name>user</role-name>
