@@ -11,21 +11,39 @@
 		<param-name>primefaces.FONT_AWESOME</param-name>
 		<param-value>true</param-value>
 	</context-param>
-	
-  <welcome-file-list>
-    <welcome-file>Index.jsf</welcome-file>
-  </welcome-file-list>
 
-  <security-constraint>
-  	<web-resource-collection>
-  		<web-resource-name>secured</web-resource-name>
-  		<url-pattern>*.jsf</url-pattern>
-  		<url-pattern>/faces/*</url-pattern>
-  	</web-resource-collection>
-  	<auth-constraint>
-  		<role-name>user</role-name>
-  	</auth-constraint>
-  </security-constraint>
+	<servlet>
+		<servlet-name>swagger</servlet-name>
+		<servlet-class>io.swagger.jaxrs.config.DefaultJaxrsConfig</servlet-class>
+		<init-param>
+			<param-name>api.version</param-name>
+			<param-value>1.0</param-value>
+		</init-param>
+		<init-param>
+			<param-name>swagger.api.basepath</param-name>
+			<param-value>http://jcla3ndtozbxyghx.myfritz.net:18788/socialalert-jee/rest</param-value>
+		</init-param>
+		<init-param>
+			<param-name>swagger.api.title</param-name>
+			<param-value>Socialalert API</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+
+	<welcome-file-list>
+		<welcome-file>Index.jsf</welcome-file>
+	</welcome-file-list>
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>secured</web-resource-name>
+			<url-pattern>*.jsf</url-pattern>
+			<url-pattern>/faces/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>user</role-name>
+		</auth-constraint>
+	</security-constraint>
 
 	<login-config>
 		<auth-method>KEYCLOAK</auth-method>
@@ -115,22 +133,4 @@
 		<env-entry-type>java.lang.Integer</env-entry-type>
 		<env-entry-value>6000</env-entry-value>
 	</env-entry>
-
-	<servlet>
-		<servlet-name>swagger</servlet-name>
-		<servlet-class>io.swagger.jaxrs.config.DefaultJaxrsConfig</servlet-class>
-		<init-param>
-			<param-name>api.version</param-name>
-			<param-value>1.0</param-value>
-		</init-param>
-		<init-param>
-			<param-name>swagger.api.basepath</param-name>
-			<param-value>http://jcla3ndtozbxyghx.myfritz.net:18788/socialalert-jee/rest</param-value>
-		</init-param>
-		<init-param>
-			<param-name>swagger.api.title</param-name>
-			<param-value>Socialalert API</param-value>
-		</init-param>
-		<load-on-startup>2</load-on-startup>
-	</servlet>
 </web-app>
