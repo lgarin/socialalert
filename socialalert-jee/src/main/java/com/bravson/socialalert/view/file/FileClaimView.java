@@ -73,15 +73,20 @@ public class FileClaimView implements Serializable {
 	@Inject
 	UserAccess userAccess;
 	
-	public String updateLocation() {
+	public void startConversation() {
 		if (conversation.isTransient()) {
+			conversation.begin();
+		}
+	}
+	
+	public String updateLocation() {
+		if (mapCenter == null) {
 			if (selectedFile.hasLocation()) {
 				mapCenter = new LatLng(selectedFile.getLatitude(), selectedFile.getLongitude());
 				mapModel.addOverlay(new Marker(mapCenter, title));
 			} else {
 				mapCenter = new LatLng(46.948, 7.447);
 			}
-			conversation.begin();
 		}
 		return PageName.CLAIM_LOCATION;
 	}

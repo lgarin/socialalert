@@ -2,7 +2,6 @@ package com.bravson.socialalert.business.media.comment;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
 import javax.ws.rs.NotFoundException;
 
 import com.bravson.socialalert.business.media.MediaRepository;
@@ -34,7 +33,6 @@ public class MediaCommentService {
 		return userService.fillUserInfo(entity.toMediaCommentInfo());
 	}
 
-	@Transactional(TxType.SUPPORTS)
 	public QueryResult<MediaCommentInfo> listComments(@NonNull String mediaUri, @NonNull PagingParameter paging) {
 		mediaRepository.findMedia(mediaUri).orElseThrow(NotFoundException::new);
 		QueryResult<MediaCommentInfo> result = commentRepository.listByMediaUri(mediaUri, paging).map(MediaCommentEntity::toMediaCommentInfo);

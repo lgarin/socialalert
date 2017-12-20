@@ -16,7 +16,7 @@ import com.bravson.socialalert.infrastructure.layer.Service;
 import lombok.NonNull;
 
 @Service
-@Transactional(TxType.SUPPORTS)
+@Transactional(TxType.REQUIRED)
 public class MediaSearchService {
 	
 	@Inject

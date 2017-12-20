@@ -21,6 +21,7 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 
 import com.bravson.socialalert.business.file.FileEntity;
+import com.bravson.socialalert.business.file.media.MediaSizeVariant;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.media.MediaDetail;
@@ -193,10 +194,10 @@ public class MediaEntity extends VersionedEntity {
 		info.setTimestamp(getFile().getFileMetadata().getTimestamp());
 		info.setCameraMaker(getFile().getMediaMetadata().getCameraMaker());
 		info.setCameraModel(getFile().getMediaMetadata().getCameraModel());
-		info.setHeight(getFile().getMediaMetadata().getHeight());
-		info.setWidth(getFile().getMediaMetadata().getWidth());
 		info.setDuration(getFile().getMediaMetadata().getDuration());
 		info.setCreation(getFile().getMediaMetadata().getTimestamp());
+		info.setFileFormat(getFile().getFileMetadata().getFileFormat());
+		getFile().findVariantFormat(MediaSizeVariant.PREVIEW).ifPresent(info::setPreviewFormat);
 		return info;
 	}
 	

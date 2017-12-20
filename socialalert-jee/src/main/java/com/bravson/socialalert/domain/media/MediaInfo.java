@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
+import com.bravson.socialalert.business.file.media.MediaFileFormat;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.infrastructure.rest.DurationDeserializer;
 import com.bravson.socialalert.infrastructure.rest.DurationSerializer;
@@ -40,9 +41,9 @@ public class MediaInfo implements UserContent {
 	@JsonDeserialize(using=InstantDeserializer.class)
 	private Instant timestamp;
 	
-	private Integer width;
+	private MediaFileFormat fileFormat;
 	
-	private Integer height;
+	private MediaFileFormat previewFormat;
 	
 	@ApiModelProperty(value="The duration of the video in milliseconds.", dataType="long")
 	@JsonSerialize(using=DurationSerializer.class)
@@ -75,4 +76,19 @@ public class MediaInfo implements UserContent {
 	
 	private UserInfo creator;
 
+	public boolean isVideo() {
+		return MediaFileFormat.VIDEO_SET.contains(fileFormat);
+	}
+	
+	public boolean isPicture() {
+		return MediaFileFormat.PICTURE_SET.contains(fileFormat);
+	}
+	
+	public boolean hasVideoPreview() {
+		return MediaFileFormat.VIDEO_SET.contains(previewFormat);
+	}
+
+	public boolean hasLocation() {
+		return latitude != null && longitude != null;
+	}
 }

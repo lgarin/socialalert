@@ -5,19 +5,106 @@
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:p="http://primefaces.org/ui">
 <ui:define name="content">
-	<h:head>
-		<script src="http://maps.google.com/maps/api/js?key=AIzaSyBWxkaqPv_cAbdPojte3XNzGSKuOzvQYps" type="text/javascript"></script>
-	</h:head>
 	<f:metadata>
 		<f:event listener="#{userSession.init(request.userPrincipal.keycloakSecurityContext.tokenString)}" type="preRenderView"></f:event>
+		<f:event listener="#{indexView.loadMediaList()}" type="preRenderView"></f:event>
 	</f:metadata>
 	<p:growl id="messages" showDetail="true" sticky="false" life="2000" />  
 	<h1>Hello #{userSession.userInfo.username}, your IP is #{userSession.userAccess.ipAddress}.</h1>
-	<h:form>
-		<p:gmap center="#{indexView.centerString}" zoom="#{indexView.zoomLevel}" type="HYBRID" style="height:400px" model="#{indexView.simpleModel}" id="map">
-			<p:ajax event="stateChange" listener="#{indexView.onStateChange}"/>
-			<p:ajax event="pointSelect" listener="#{indexView.onPointSelect}" update="messages map" />
-		</p:gmap>
-	</h:form>
+	<p:dataGrid var="media" value="#{indexView.mediaList}" columns="5" rows="4" layout="grid">
+	<p:panel header="#{media.title}" style="text-align:center">
+		<h:panelGrid columns="1" style="width:320px">
+			 <p:commandLink update=":mediaInfo" oncomplete="PF('mediaDialog').show()" title="View Detail">
+	                <p:graphicImage url="/rest/file/thumbnail/#{media.mediaUri}"/> 
+ 
+                    <f:setPropertyActionListener value="#{media}" target="#{indexView.selectedMedia}" />
+                </p:commandLink>
+                <h:outputText value="Likes:#{media.likeCount} Dislikes:#{media.dislikeCount} Hits:#{media.hitCount}" />
+           </h:panelGrid>
+	</p:panel>
+	</p:dataGrid>
+	
+	<p:dialog header="Media Info" widgetVar="mediaDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+        <p:outputPanel id="mediaInfo" style="text-align:center;">
+            <p:panelGrid>
+				<p:row>
+					<p:column style="font-weight:bold" colspan="2">Details</p:column>
+					<p:column style="width:640px" rowspan="11">
+						<h:panelGroup rendered="#{not indexView.selectedMedia.hasVideoPreview()}">
+							<img src="rest/file/preview/#{indexView.selectedMedia.mediaUri}" />
+						</h:panelGroup>
+						<h:panelGroup rendered="#{indexView.selectedMedia.hasVideoPreview()}">
+							<video src="rest/file/preview/#{indexView.selectedMedia.mediaUri}" controls="controls"/>
+						</h:panelGroup>
+					</p:column>
+				</p:row>
+				<p:row>
+					<p:column><h:outputText value="Title" /></p:column>
+					<p:column><h:outputText value="#{indexView.selectedMedia.title}" /></p:column>
+				</p:row>
+				<p:row>
+					<p:column><h:outputText value="Categories" /></p:column>
+					<p:column><h:outputText value="#{indexView.selectedMedia.categories}" converter="#{arrayConverter}" /></p:column>
+				</p:row>
+				<p:row>
+					<p:column><h:outputText value="Tags" /></p:column>
+					<p:column><h:outputText value="#{indexView.selectedMedia.tags}" converter="#{arrayConverter}" /></p:column>
+				</p:row>
+				<p:row>
+					<p:column><h:outputText value="Coordinates" /></p:column>
+					<p:column>
+					<h:outputLink rendered="#{indexView.selectedMedia.hasLocation()}" iframe="true" value="https://www.google.com/maps?z=15&amp;t=m&amp;q=#{indexView.selectedMedia.latitude},#{indexView.selectedMedia.longitude}">
+								(<h:outputText value="#{indexView.selectedMedia.latitude}"><f:convertNumber pattern="0.00"/></h:outputText>,	
+								<h:outputText value="#{indexView.selectedMedia.longitude}"><f:convertNumber pattern="0.00"/></h:outputText>)
+					</h:outputLink>
+					</p:column>
+				</p:row>
+				<p:row>
+					<p:column rowspan="1"><h:outputText value="Description" /></p:column>
+					<p:column rowspan="1"><h:outputText value="#{indexView.selectedMedia.description}" /></p:column>
+				</p:row>
+				<p:row>
+					<p:column>
+						<h:outputText value="Upload date" />
+					</p:column>
+					<p:column>
+						<h:outputText value="#{indexView.selectedMedia.timestamp}" converter="#{instantConverter}" />
+					</p:column>
+				</p:row>
+				<p:row>
+					<p:column>
+						<h:outputText value="Date taken" />
+					</p:column>
+					<p:column>
+						<h:outputText value="#{indexView.selectedMedia.creation}" converter="#{instantConverter}" />
+					</p:column>
+				</p:row>
+				<p:row>
+					<p:column>
+						<h:outputText value="Duration" />
+					</p:column>
+					<p:column>
+						<h:outputText value="#{indexView.selectedMedia.duration.seconds} sec" rendered="#{not empty indexView.selectedMedia.duration}" />
+					</p:column>
+				</p:row>
+				<p:row>
+					<p:column>
+						<h:outputText value="Format" />
+					</p:column>
+					<p:column>
+						<h:outputText value="#{indexView.selectedMedia.fileFormat.contentType}" />
+					</p:column>
+				</p:row>
+				<p:row>
+					<p:column>
+						<h:outputText value="Camera" />
+					</p:column>
+					<p:column>
+						<h:outputText value="#{indexView.selectedMedia.cameraMaker} #{fileClaimView.selectedFile.cameraModel}" />
+					</p:column>
+				</p:row>
+			</p:panelGrid>
+        </p:outputPanel>
+    </p:dialog>
 </ui:define>
 </ui:composition> 

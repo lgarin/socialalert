@@ -8,6 +8,7 @@
 <p:importConstants type="com.bravson.socialalert.business.media.MediaConstants" var="MediaConstants" />
 <f:metadata>
     	<f:viewParam name="uri" value="#{fileClaimView.selectedFile}" converter="#{fileInfoConverter}" id="uri" />
+    	<f:event listener="#{fileClaimView.startConversation()}" type="preRenderView"></f:event>
 </f:metadata>
 <h:form>
 	<p:growl id="messages" showDetail="true" sticky="false" life="2000" />

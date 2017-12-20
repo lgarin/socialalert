@@ -104,8 +104,6 @@ public class MediaClaimTest extends BaseIntegrationTest {
 		assertThat(result.getCameraModel()).isEqualTo("iPhone 6");
 		assertThat(result.getDuration()).isEqualTo(Duration.ofSeconds(23));
 		assertThat(result.getCreation()).isEqualTo(LocalDateTime.of(2015, 1, 7, 21, 13, 32).atOffset(ZoneOffset.UTC).toInstant());
-		assertThat(result.getHeight()).isEqualTo(320);
-		assertThat(result.getWidth()).isEqualTo(568);
 		assertThat(result.getHitCount()).isEqualTo(0);
 		assertThat(result.getLikeCount()).isEqualTo(0);
 		assertThat(result.getCategories()).containsExactly("cat1");
