@@ -65,7 +65,7 @@
    							<div class="ui-g">
    								<div class="ui-g-6">
    									<h:form>
-	   									<p:button outcome="ClaimFile" value="Publish" icon="fa fa-send">
+	   									<p:button outcome="ClaimFile?faces-redirect=true" value="Publish" icon="fa fa-send">
 	   										<f:param name="uri" value="#{file.fileUri}"/>
 	   									</p:button>
    									</h:form>

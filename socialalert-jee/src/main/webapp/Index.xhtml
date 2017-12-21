@@ -14,97 +14,13 @@
 	<p:dataGrid var="media" value="#{indexView.mediaList}" columns="5" rows="4" layout="grid">
 	<p:panel header="#{media.title}" style="text-align:center">
 		<h:panelGrid columns="1" style="width:320px">
-			 <p:commandLink update=":mediaInfo" oncomplete="PF('mediaDialog').show()" title="View Detail">
+			 	<h:link outcome="ShowMedia" title="View Detail">
 	                <p:graphicImage url="/rest/file/thumbnail/#{media.mediaUri}"/> 
- 
-                    <f:setPropertyActionListener value="#{media}" target="#{indexView.selectedMedia}" />
-                </p:commandLink>
+	                <f:param name="uri" value="#{media.mediaUri}"></f:param>
+                </h:link>
                 <h:outputText value="Likes:#{media.likeCount} Dislikes:#{media.dislikeCount} Hits:#{media.hitCount}" />
            </h:panelGrid>
 	</p:panel>
 	</p:dataGrid>
-	
-	<p:dialog header="Media Info" widgetVar="mediaDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
-        <p:outputPanel id="mediaInfo" style="text-align:center;">
-            <p:panelGrid>
-				<p:row>
-					<p:column style="font-weight:bold" colspan="2">Details</p:column>
-					<p:column style="width:640px" rowspan="11">
-						<h:panelGroup rendered="#{not indexView.selectedMedia.hasVideoPreview()}">
-							<img src="rest/file/preview/#{indexView.selectedMedia.mediaUri}" />
-						</h:panelGroup>
-						<h:panelGroup rendered="#{indexView.selectedMedia.hasVideoPreview()}">
-							<video src="rest/file/preview/#{indexView.selectedMedia.mediaUri}" controls="controls"/>
-						</h:panelGroup>
-					</p:column>
-				</p:row>
-				<p:row>
-					<p:column><h:outputText value="Title" /></p:column>
-					<p:column><h:outputText value="#{indexView.selectedMedia.title}" /></p:column>
-				</p:row>
-				<p:row>
-					<p:column><h:outputText value="Categories" /></p:column>
-					<p:column><h:outputText value="#{indexView.selectedMedia.categories}" converter="#{arrayConverter}" /></p:column>
-				</p:row>
-				<p:row>
-					<p:column><h:outputText value="Tags" /></p:column>
-					<p:column><h:outputText value="#{indexView.selectedMedia.tags}" converter="#{arrayConverter}" /></p:column>
-				</p:row>
-				<p:row>
-					<p:column><h:outputText value="Coordinates" /></p:column>
-					<p:column>
-					<h:outputLink rendered="#{indexView.selectedMedia.hasLocation()}" iframe="true" value="https://www.google.com/maps?z=15&amp;t=m&amp;q=#{indexView.selectedMedia.latitude},#{indexView.selectedMedia.longitude}">
-								(<h:outputText value="#{indexView.selectedMedia.latitude}"><f:convertNumber pattern="0.00"/></h:outputText>,	
-								<h:outputText value="#{indexView.selectedMedia.longitude}"><f:convertNumber pattern="0.00"/></h:outputText>)
-					</h:outputLink>
-					</p:column>
-				</p:row>
-				<p:row>
-					<p:column rowspan="1"><h:outputText value="Description" /></p:column>
-					<p:column rowspan="1"><h:outputText value="#{indexView.selectedMedia.description}" /></p:column>
-				</p:row>
-				<p:row>
-					<p:column>
-						<h:outputText value="Upload date" />
-					</p:column>
-					<p:column>
-						<h:outputText value="#{indexView.selectedMedia.timestamp}" converter="#{instantConverter}" />
-					</p:column>
-				</p:row>
-				<p:row>
-					<p:column>
-						<h:outputText value="Date taken" />
-					</p:column>
-					<p:column>
-						<h:outputText value="#{indexView.selectedMedia.creation}" converter="#{instantConverter}" />
-					</p:column>
-				</p:row>
-				<p:row>
-					<p:column>
-						<h:outputText value="Duration" />
-					</p:column>
-					<p:column>
-						<h:outputText value="#{indexView.selectedMedia.duration.seconds} sec" rendered="#{not empty indexView.selectedMedia.duration}" />
-					</p:column>
-				</p:row>
-				<p:row>
-					<p:column>
-						<h:outputText value="Format" />
-					</p:column>
-					<p:column>
-						<h:outputText value="#{indexView.selectedMedia.fileFormat.contentType}" />
-					</p:column>
-				</p:row>
-				<p:row>
-					<p:column>
-						<h:outputText value="Camera" />
-					</p:column>
-					<p:column>
-						<h:outputText value="#{indexView.selectedMedia.cameraMaker} #{fileClaimView.selectedFile.cameraModel}" />
-					</p:column>
-				</p:row>
-			</p:panelGrid>
-        </p:outputPanel>
-    </p:dialog>
 </ui:define>
 </ui:composition> 

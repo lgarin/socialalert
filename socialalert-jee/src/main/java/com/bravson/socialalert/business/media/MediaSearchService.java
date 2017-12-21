@@ -1,6 +1,7 @@
 package com.bravson.socialalert.business.media;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -33,5 +34,9 @@ public class MediaSearchService {
 	
 	public List<GeoStatistic> groupByGeoHash(@NonNull SearchMediaParameter parameter) {
 		return mediaRepository.groupByGeoHash(parameter);
+	}
+	
+	public Optional<MediaInfo> findMediaByUri(@NonNull String mediaUri) {
+		return userService.fillUserInfo(mediaRepository.findMedia(mediaUri).map(MediaEntity::toMediaInfo));
 	}
 }

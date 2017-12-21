@@ -12,7 +12,6 @@
 </f:metadata>
 <h:form>
 	<p:growl id="messages" showDetail="true" sticky="false" life="2000" />
-	<h:inputHidden value="#{fileClaimView.selectedFile}" converter="#{fileInfoConverter}" />
 	<p:panel header="Publish">
 		<h:panelGrid columns="3">
 			<p:panelGrid columns="1">
@@ -48,7 +47,7 @@
 			    <h:outputLabel value="Description" for="description" maxlength="#{MediaConstants.MAX_DESCRIPTION_LENGTH}"/>
 			    <p:inputTextarea value="#{fileClaimView.description}" rows="6" cols="50" id="description"/>
 			    
-				<p:button value="Cancel" outcome="Upload"/>
+				<p:button value="Cancel" outcome="UploadFile"/>
 				<p:commandButton type="submit" value="Next" action="#{fileClaimView.updateLocation}" ajax="false"/>
 			</h:panelGrid>
 		</h:panelGrid>

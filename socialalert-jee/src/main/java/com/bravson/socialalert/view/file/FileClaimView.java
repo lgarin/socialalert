@@ -88,15 +88,15 @@ public class FileClaimView implements Serializable {
 				mapCenter = new LatLng(46.948, 7.447);
 			}
 		}
-		return PageName.CLAIM_LOCATION;
+		return PageName.CLAIM_LOCATION + "?faces-redirect=true";
 	}
 	
 	public String updateMetadata() {
-		return PageName.CLAIM_FILE;
+		return PageName.CLAIM_FILE + "?faces-redirect=true";
 	}
 	
 	public String confirmPublish() {
-		return PageName.CLAIM_CONFIRMATION;
+		return PageName.CLAIM_CONFIRMATION + "?faces-redirect=true";
 	}
 	
 	public String publish() {
@@ -107,7 +107,7 @@ public class FileClaimView implements Serializable {
 				.build();
 		mediaUpsertService.claimMedia(selectedFile.getFileUri(), param, userAccess);
 		conversation.end();
-		return PageName.INDEX;
+		return PageName.INDEX + "?faces-redirect=true";
 	}
 	
 	public void onMapPointSelect(PointSelectEvent event) {
