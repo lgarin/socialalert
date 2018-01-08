@@ -43,4 +43,5 @@ public class SnapshotVideoFileProcessor extends BaseVideoFileProcessor {
 	@Override
 	public MediaFileFormat getPreviewFormat() {
 		return MediaFileFormat.PREVIEW_JPG;
-	}}
+	}
+}

@@ -27,8 +27,8 @@ import lombok.ToString;
 @AnalyzerDef(name = "languageAnalyzer",
 tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
 filters = {
-  @TokenFilterDef(factory = LowerCaseFilterFactory.class),
-  @TokenFilterDef(factory = SnowballPorterFilterFactory.class)
+	@TokenFilterDef(factory = LowerCaseFilterFactory.class),
+	@TokenFilterDef(factory = SnowballPorterFilterFactory.class)
 })
 public abstract class VersionedEntity {
 

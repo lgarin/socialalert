@@ -10,4 +10,12 @@ import lombok.EqualsAndHashCode;
 public class MediaDetail extends MediaInfo {
 
 	private ApprovalModifier userApprovalModifier;
+	
+	public boolean isLikeAllowed() {
+		return userApprovalModifier != ApprovalModifier.LIKE;
+	}
+	
+	public boolean isDislikeAllowed() {
+		return userApprovalModifier != ApprovalModifier.DISLIKE;
+	}
 }
