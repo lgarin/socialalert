@@ -5,14 +5,16 @@
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:p="http://primefaces.org/ui">
 <ui:define name="content">
-	<h:head>
-		<script src="http://maps.google.com/maps/api/js?key=AIzaSyBWxkaqPv_cAbdPojte3XNzGSKuOzvQYps" type="text/javascript"></script>
-	</h:head>
-	<f:metadata>
-		<f:viewParam name="uri" value="#{mediaView.selectedMedia}" converter="#{mediaDetailConverter}" id="uri" required="true" />
-		<f:event listener="#{mediaView.initMapModel}" type="preRenderView"></f:event>
-	</f:metadata>
-	<p:growl id="messages" showDetail="true" sticky="false" life="2000" />  
+<h:head>
+	<script src="http://maps.google.com/maps/api/js?key=AIzaSyBWxkaqPv_cAbdPojte3XNzGSKuOzvQYps" type="text/javascript"></script>
+</h:head>
+<f:metadata>
+	<f:viewParam name="uri" value="#{mediaView.selectedMedia}" converter="#{mediaDetailConverter}" id="uri" required="true" />
+	<f:event listener="#{mediaView.initMapModel}" type="preRenderView"></f:event>
+</f:metadata>
+<h:form>
+	<p:growl id="messages" showDetail="true" sticky="false" life="2000" />
+	<!-- <h:inputHidden value="#{mediaView.selectedMedia}" converter="#{mediaDetailConverter}" />  -->  
 	<p:panelGrid>
 		<p:row>
 			<p:column style="font-weight:bold" colspan="2">Details</p:column>
@@ -109,28 +111,21 @@
 		</p:row>
 		<p:row>
 			<p:column>
-				<ui:fragment id="likeButton" >
-					<p:commandButton value="Likes" actionListener="#{mediaView.likeMedia(mediaView.selectedMedia.mediaUri)}" update="likeButton likeCount dislikeButton dislikeCount" />
-				</ui:fragment>
+				<p:commandButton value="Likes" action="#{mediaView.likeMedia()}" ajax="false"/>
 			</p:column>
 			<p:column>
-				<ui:fragment id="likeCount" >
-					<h:outputText value="#{mediaView.selectedMedia.likeCount}" />
-				</ui:fragment>
+				<h:outputText value="#{mediaView.selectedMedia.likeCount}" />
 			</p:column>
 		</p:row>
 		<p:row>
 			<p:column>
-				<ui:fragment id="dislikeButton" >
-					<p:commandButton value="Dislikes" actionListener="#{mediaView.dislikeMedia(mediaView.selectedMedia.mediaUri)}" update="likeButton likeCount dislikeButton dislikeCount" />
-				</ui:fragment>
+				<p:commandButton value="Dislikes" action="#{mediaView.dislikeMedia()}" ajax="false"/>
 			</p:column>
 			<p:column>
-				<ui:fragment id="dislikeCount" >
-					<h:outputText value="#{mediaView.selectedMedia.dislikeCount}" />
-				</ui:fragment>
+				<h:outputText value="#{mediaView.selectedMedia.dislikeCount}" />
 			</p:column>
 		</p:row>
 	</p:panelGrid>
+</h:form>
 </ui:define>
 </ui:composition> 

@@ -14,6 +14,7 @@ import com.bravson.socialalert.business.media.MediaService;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.media.MediaDetail;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
+import com.bravson.socialalert.view.PageName;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -43,15 +44,13 @@ public class MediaView implements Serializable {
 		}
 	}
 	
-	public void likeMedia(String mediaUri) {
-		System.out.println(selectedMedia);
-		selectedMedia = mediaService.setApprovalModifier(mediaUri, ApprovalModifier.LIKE, userAccess.getUserId());
-		System.out.println(selectedMedia.getUserApprovalModifier());
+	public String likeMedia() {
+		selectedMedia = mediaService.setApprovalModifier(selectedMedia.getMediaUri(), ApprovalModifier.LIKE, userAccess.getUserId());
+		return PageName.SHOW_MEDIA + "?faces-redirect=true&uri=" + selectedMedia.getMediaUri();
 	}
 	
-	public void dislikeMedia(String mediaUri) {
-		System.out.println(selectedMedia);
-		selectedMedia = mediaService.setApprovalModifier(mediaUri, ApprovalModifier.DISLIKE, userAccess.getUserId());
-		System.out.println(selectedMedia.getUserApprovalModifier());
+	public String dislikeMedia() {
+		selectedMedia = mediaService.setApprovalModifier(selectedMedia.getMediaUri(), ApprovalModifier.DISLIKE, userAccess.getUserId());
+		return PageName.SHOW_MEDIA + "?faces-redirect=true&uri=" + selectedMedia.getMediaUri();
 	}
 }    
