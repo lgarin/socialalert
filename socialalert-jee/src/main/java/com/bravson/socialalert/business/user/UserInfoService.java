@@ -52,7 +52,9 @@ public class UserInfoService {
 	}
 	
 	public <T extends UserContent> Optional<T> fillUserInfo(@NonNull Optional<T> content) {
-		content.ifPresent(this::fillUserInfo);
+		if (content.isPresent()) {
+			fillUserInfo(content.get());
+		}
 		return content;
 	}
 	

@@ -4,6 +4,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.MediaRepository;
 import com.bravson.socialalert.business.media.MediaSearchService;
 import com.bravson.socialalert.business.media.SearchMediaParameter;
+import com.bravson.socialalert.business.media.tag.MediaTagRepository;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.MediaInfo;
@@ -28,6 +30,9 @@ public class MediaSearchServiceTest extends BaseServiceTest {
 	
 	@Mock
 	MediaRepository mediaRepository;
+	
+	@Mock
+	MediaTagRepository tagRepository;
 	
 	@Mock
 	UserInfoService userService;
@@ -66,5 +71,14 @@ public class MediaSearchServiceTest extends BaseServiceTest {
 		
 		List<GeoStatistic> result = searchService.groupByGeoHash(parameter);
 		assertThat(result).containsExactly(geoStat);
+	}
+	
+	@Test
+	public void suggestTags() {
+		String searchTerm = "test";
+		when(tagRepository.suggestTags(searchTerm)).thenReturn(Arrays.asList("test", "testimonial"));
+		
+		List<String> result = searchService.suggestTags(searchTerm);
+		assertThat(result).containsExactly("test", "testimonial");
 	}
 }
