@@ -7,10 +7,16 @@
 <ui:define name="content">
 	<f:metadata>
 		<f:event listener="#{userSession.init(request.userPrincipal.keycloakSecurityContext.tokenString)}" type="preRenderView"></f:event>
-		<f:event listener="#{indexView.loadMediaList()}" type="preRenderView"></f:event>
+		<f:viewAction action="#{indexView.loadMediaList()}" />
 	</f:metadata>
+	<h:form>
 	<p:growl id="messages" showDetail="true" sticky="false" life="2000" />  
 	<h1>Hello #{userSession.userInfo.username}, your IP is #{userSession.userAccess.ipAddress}.</h1>
+	<h:panelGrid columns="3" cellpadding="5">
+		<p:outputLabel value="Keyword" for="searchField" />
+		<p:autoComplete id="searchField" minQueryLength="3" queryDelay="500" value="#{indexView.keyword}" completeMethod="#{indexView.completeKeyword}" />
+		<p:commandButton value="Search" action="#{indexView.loadMediaList()}" ajax="false" />
+	</h:panelGrid>
 	<p:dataGrid var="media" value="#{indexView.mediaList}" columns="5" rows="4" layout="grid">
 	<p:panel header="#{media.title}" style="text-align:center">
 		<h:panelGrid columns="1" style="width:320px">
@@ -22,5 +28,6 @@
            </h:panelGrid>
 	</p:panel>
 	</p:dataGrid>
+	</h:form>
 </ui:define>
 </ui:composition> 

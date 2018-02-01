@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.apache.lucene.search.Query;
+import org.hibernate.annotations.QueryHints;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.query.dsl.QueryBuilder;
 
@@ -45,7 +46,7 @@ public class MediaTagRepository {
 		QueryBuilder builder = createQueryBuilder();
 		Query query = builder.phrase().withSlop(2).onField("nGramTag").andField("edgeTag").boostedTo(5).andField("langTag").boostedTo(3).sentence(searchTerm.toLowerCase()).createQuery();
 		@SuppressWarnings("unchecked")
-		List<Object[]> result = entityManager.createFullTextQuery(query, MediaTagEntity.class).setProjection("tag").getResultList();
+		List<Object[]> result = entityManager.createFullTextQuery(query, MediaTagEntity.class).setProjection("tag").setHint(QueryHints.READ_ONLY, true).getResultList();
 		return result.stream().flatMap(Stream::of).map(Object::toString).collect(Collectors.toList());
 	}
 }
