@@ -153,11 +153,21 @@ public class MediaEntity extends VersionedEntity {
 	}
 	
 	private void setMetaInformation(UpsertMediaParameter parameter) {
-		this.title = parameter.getTitle();
-		this.description = parameter.getDescription();
-		this.location = parameter.getLocation();
-		this.categories = new ArrayList<>(parameter.getCategories());
-		this.tags = new ArrayList<>(parameter.getTags());
+		if (parameter.getTitle() != null) {
+			this.title = parameter.getTitle();
+		}
+		if (parameter.getDescription() != null) {
+			this.description = parameter.getDescription();
+		}
+		if (parameter.getLocation() != null) {
+			this.location = parameter.getLocation();
+		}
+		if (parameter.getCategories() != null) {
+			this.categories = new ArrayList<>(parameter.getCategories());
+		}
+		if (parameter.getTags() != null) {
+			this.tags = new ArrayList<>(parameter.getTags());
+		}
 	}
 	
 	public void update(UpsertMediaParameter parameter, UserAccess userAccess) {

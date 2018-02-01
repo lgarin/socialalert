@@ -8,4 +8,5 @@ public interface PageName {
 	String CLAIM_LOCATION = "ClaimLocation";
 	String CLAIM_CONFIRMATION = "ClaimConfirmation";
 	String SHOW_MEDIA = "ShowMedia";
+	String EDIT_MEDIA = "EditMedia";
 }

@@ -46,6 +46,7 @@ public class MediaUpsertService {
 			throw new ForbiddenException();
 		}
 		mediaEntity.update(mediaParameter, userAccess);
+		mediaRepository.updateMedia(mediaEntity); // TODO dirty solution for updating the tags in MediaTagRepository
 		return userService.fillUserInfo(mediaEntity.toMediaInfo());
 	}
 }

@@ -53,4 +53,8 @@ public class MediaView implements Serializable {
 		selectedMedia = mediaService.setApprovalModifier(selectedMedia.getMediaUri(), ApprovalModifier.DISLIKE, userAccess.getUserId());
 		return PageName.SHOW_MEDIA + "?faces-redirect=true&uri=" + selectedMedia.getMediaUri();
 	}
+	
+	public String editMedia() {
+		return PageName.EDIT_MEDIA + "?faces-redirect=true&uri=" + selectedMedia.getMediaUri();
+	}
 }    

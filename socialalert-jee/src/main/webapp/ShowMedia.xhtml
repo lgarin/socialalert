@@ -14,10 +14,9 @@
 </f:metadata>
 <h:form>
 	<p:growl id="messages" showDetail="true" sticky="false" life="2000" />
-	<!-- <h:inputHidden value="#{mediaView.selectedMedia}" converter="#{mediaDetailConverter}" />  -->  
 	<p:panelGrid>
 		<p:row>
-			<p:column style="font-weight:bold" colspan="2">Details</p:column>
+			<p:column colspan="2"><p:commandButton value="Edit" action="#{mediaView.editMedia}"></p:commandButton></p:column>
 			<p:column rowspan="15">
 				<p:tabView>
 					<p:tab title="Preview">

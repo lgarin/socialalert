@@ -60,6 +60,11 @@ public class MediaRepository {
 		return entity;
 	}
 	
+	public void updateMedia(@NonNull MediaEntity entity) {
+		entityManager.merge(entity);
+		newEntityEvent.fire(entity);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public QueryResult<MediaEntity> searchMedia(@NonNull SearchMediaParameter parameter, @NonNull PagingParameter paging) {
 		QueryBuilder builder = createQueryBuilder();
