@@ -9,4 +9,5 @@ public interface PageName {
 	String CLAIM_CONFIRMATION = "ClaimConfirmation";
 	String SHOW_MEDIA = "ShowMedia";
 	String EDIT_MEDIA = "EditMedia";
+	String COMMENT_MEDIA = "CommentMedia";
 }

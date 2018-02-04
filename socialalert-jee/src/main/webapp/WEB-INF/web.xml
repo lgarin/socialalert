@@ -11,6 +11,10 @@
 		<param-name>primefaces.FONT_AWESOME</param-name>
 		<param-value>true</param-value>
 	</context-param>
+	<context-param>
+    	<param-name>javax.faces.WEBAPP_RESOURCES_DIRECTORY</param-name>
+    	<param-value>/WEB-INF/resources</param-value>
+	</context-param>
 	<servlet>
 		<servlet-name>swagger</servlet-name>
 		<servlet-class>io.swagger.jaxrs.config.DefaultJaxrsConfig</servlet-class>

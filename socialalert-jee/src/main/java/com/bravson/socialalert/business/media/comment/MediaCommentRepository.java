@@ -47,6 +47,7 @@ public class MediaCommentRepository {
 		MediaEntity media = entityManager.find(MediaEntity.class, mediaUri);
 		MediaCommentEntity entity = new MediaCommentEntity(media, comment, userAccess);
 		entityManager.persist(entity);
+		media.getStatistic().increateCommentCount();
 		newEntityEvent.fire(entity);
 		return entity;
 	}

@@ -16,9 +16,13 @@
 	<p:growl id="messages" showDetail="true" sticky="false" life="2000" />
 	<p:panelGrid>
 		<p:row>
-			<p:column colspan="2"><p:commandButton value="Edit" action="#{mediaView.editMedia}"></p:commandButton></p:column>
+			<p:column colspan="2">
+				<p:commandButton value="Edit" action="#{mediaView.editMedia}"></p:commandButton>
+				<span></span>
+				<p:commandButton value="Comment" action="#{mediaView.commentMedia}"></p:commandButton>
+			</p:column>
 			<p:column rowspan="15">
-				<p:tabView>
+				<p:tabView style="width:1000px;height:720px">
 					<p:tab title="Preview">
 						<h:panelGroup rendered="#{not mediaView.selectedMedia.hasVideoPreview()}">
 							<img src="rest/file/preview/#{mediaView.selectedMedia.mediaUri}" />
@@ -110,18 +114,22 @@
 		</p:row>
 		<p:row>
 			<p:column>
-				<p:commandButton value="Likes" action="#{mediaView.likeMedia()}" ajax="false"/>
+				<h:outputText value="Likes" />
 			</p:column>
 			<p:column>
 				<h:outputText value="#{mediaView.selectedMedia.likeCount}" />
+				<span></span>
+				<p:commandButton value="Like" action="#{mediaView.likeMedia()}" icon="fa fa-fw fa-thumbs-o-up" ajax="false"/>
 			</p:column>
 		</p:row>
 		<p:row>
 			<p:column>
-				<p:commandButton value="Dislikes" action="#{mediaView.dislikeMedia()}" ajax="false"/>
+				<h:outputText value="Dislikes" />
 			</p:column>
 			<p:column>
 				<h:outputText value="#{mediaView.selectedMedia.dislikeCount}" />
+				<span></span>
+				<p:commandButton value="Dislike" action="#{mediaView.dislikeMedia()}" icon="fa fa-fw fa-thumbs-o-down" ajax="false"/>
 			</p:column>
 		</p:row>
 	</p:panelGrid>

@@ -54,6 +54,10 @@ public class MediaView implements Serializable {
 		return PageName.SHOW_MEDIA + "?faces-redirect=true&uri=" + selectedMedia.getMediaUri();
 	}
 	
+	public String commentMedia() {
+		return PageName.COMMENT_MEDIA + "?faces-redirect=true&uri=" + selectedMedia.getMediaUri();
+	}
+	
 	public String editMedia() {
 		return PageName.EDIT_MEDIA + "?faces-redirect=true&uri=" + selectedMedia.getMediaUri();
 	}
