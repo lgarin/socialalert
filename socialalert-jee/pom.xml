@@ -229,7 +229,10 @@
 							<webResources>
 								<resource>
 									<directory>src/main/webapp</directory>
-									<includes>**/**.xhtml</includes>
+									<includes>
+										<include>**/**.xhtml</include>
+										<include>**/**.css</include>
+									</includes>
 								</resource>
 							</webResources>
 						</configuration>

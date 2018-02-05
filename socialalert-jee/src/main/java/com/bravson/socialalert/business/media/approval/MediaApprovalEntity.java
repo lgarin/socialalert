@@ -13,13 +13,17 @@ import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity(name="MediaApproval")
 @IdClass(MediaApprovalKey.class)
+@ToString(of={"mediaUri", "userId"})
+@EqualsAndHashCode(of={"mediaUri", "userId"})
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class MediaApprovalEntity {
 

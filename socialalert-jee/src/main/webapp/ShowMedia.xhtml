@@ -61,7 +61,7 @@
 				<h:outputText value="Upload date" />
 			</p:column>
 			<p:column>
-				<h:outputText value="#{mediaView.selectedMedia.timestamp}" converter="#{instantConverter}" />
+				<h:outputText value="#{mediaView.selectedMedia.timestamp}" converter="#{prettyInstantConverter}" />
 			</p:column>
 		</p:row>
 		<p:row>
@@ -93,7 +93,7 @@
 				<h:outputText value="Camera" />
 			</p:column>
 			<p:column>
-				<h:outputText value="#{mediaView.selectedMedia.cameraMaker} #{fileClaimView.selectedFile.cameraModel}" />
+				<h:outputText value="#{mediaView.selectedMedia.cameraMaker} #{mediaView.selectedMedia.cameraModel}" />
 			</p:column>
 		</p:row>
 		<p:row>
@@ -101,7 +101,7 @@
 				<h:outputText value="Creator" />
 			</p:column>
 			<p:column>
-				<h:outputText value="#{mediaView.selectedMedia.creator.username} #{mediaView.selectedMedia.creator.online ? '(online)' : '(offline)'}" />
+				<h:outputText styleClass="#{mediaView.selectedMedia.creator.online ? 'online' : 'offline'}" value="#{mediaView.selectedMedia.creator.username}" />
 			</p:column>
 		</p:row>
 		<p:row>

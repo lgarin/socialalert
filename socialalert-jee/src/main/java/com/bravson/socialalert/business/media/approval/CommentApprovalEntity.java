@@ -13,13 +13,17 @@ import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity(name="CommentApproval")
 @IdClass(CommentApprovalKey.class)
+@ToString(of={"commentId", "userId"})
+@EqualsAndHashCode(of={"commentId", "userId"})
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class CommentApprovalEntity {
 

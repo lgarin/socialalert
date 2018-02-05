@@ -7,7 +7,7 @@
 <ui:define name="content">
 <p:importConstants type="com.bravson.socialalert.business.media.MediaConstants" var="MediaConstants" />
 <f:metadata>
-    	<f:viewParam name="uri" value="#{mediaCommentView.mediaUri}" id="uri" required="true" />
+    	<f:viewParam name="uri" value="#{mediaCommentView.mediaUri}" id="uri" />
     	<f:event listener="#{mediaCommentView.startConversation()}" type="preRenderView"></f:event>
 </f:metadata>
 <h:form>

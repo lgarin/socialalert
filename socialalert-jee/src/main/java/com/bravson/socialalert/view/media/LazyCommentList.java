@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.primefaces.model.LazyDataModel;
-import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
 
 import com.bravson.socialalert.business.media.comment.MediaCommentService;
@@ -25,14 +24,6 @@ public class LazyCommentList extends LazyDataModel<MediaCommentInfo> {
 	
 	@Override
 	public List<MediaCommentInfo> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
-		System.out.println("Load f:" + first + " s:" + pageSize + " t:" + getRowCount());
 		return commentService.listComments(mediaUri, new PagingParameter(timestamp, first / pageSize, pageSize)).getContent();
 	}
-	
-	@Override
-	public List<MediaCommentInfo> load(int first, int pageSize, List<SortMeta> multiSortMeta, Map<String, Object> filters) {
-		System.out.println("Load2 f:" + first + " s:" + pageSize + " t:" + getRowCount());
-		return commentService.listComments(mediaUri, new PagingParameter(timestamp, first / pageSize, pageSize)).getContent();
-	}
-	
 }
