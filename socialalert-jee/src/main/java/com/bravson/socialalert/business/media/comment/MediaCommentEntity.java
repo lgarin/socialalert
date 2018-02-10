@@ -15,6 +15,7 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.domain.media.comment.MediaCommentDetail;
 import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
@@ -86,14 +87,21 @@ public class MediaCommentEntity {
 		return getMedia().getId();
 	}
 	
+	private <T extends MediaCommentInfo> T fillMediaInfo(T info) {
+		info.setId(id);
+		info.setComment(comment);
+		info.setCreatorId(versionInfo.getUserId());
+		info.setCreation(versionInfo.getCreation());
+		info.setLikeCount(likeCount);
+		info.setDislikeCount(dislikeCount);
+		return info;
+	}
+	
 	public MediaCommentInfo toMediaCommentInfo() {
-		MediaCommentInfo result = new MediaCommentInfo();
-		result.setId(id);
-		result.setComment(comment);
-		result.setCreatorId(versionInfo.getUserId());
-		result.setCreation(versionInfo.getCreation());
-		result.setLikeCount(likeCount);
-		result.setDislikeCount(dislikeCount);
-		return result;
+		return fillMediaInfo(new MediaCommentInfo());
+	}
+
+	public MediaCommentDetail toMediaCommentDetail() {
+		return fillMediaInfo(new MediaCommentDetail());
 	}
 }

@@ -19,3 +19,7 @@
 .preformatted {
     white-space: pre-wrap;
 }
+
+.small-button {
+         padding: 0px !important;
+}
