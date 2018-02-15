@@ -3,6 +3,8 @@ package com.bravson.socialalert.view.media;
 import java.io.Serializable;
 
 import javax.enterprise.inject.Model;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
 import org.primefaces.model.map.DefaultMapModel;
@@ -45,13 +47,19 @@ public class MediaView implements Serializable {
 	}
 	
 	public String likeMedia() {
+		if (!selectedMedia.isLikeAllowed()) {
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("No change made", "You've already liked this media."));
+		}
 		selectedMedia = mediaService.setApprovalModifier(selectedMedia.getMediaUri(), ApprovalModifier.LIKE, userAccess.getUserId());
-		return PageName.SHOW_MEDIA + "?faces-redirect=true&uri=" + selectedMedia.getMediaUri();
+		return PageName.SHOW_MEDIA + "?uri=" + selectedMedia.getMediaUri();
 	}
 	
 	public String dislikeMedia() {
+		if (!selectedMedia.isDislikeAllowed()) {
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("No change made", "You've already disliked this media."));
+		}
 		selectedMedia = mediaService.setApprovalModifier(selectedMedia.getMediaUri(), ApprovalModifier.DISLIKE, userAccess.getUserId());
-		return PageName.SHOW_MEDIA + "?faces-redirect=true&uri=" + selectedMedia.getMediaUri();
+		return PageName.SHOW_MEDIA + "?uri=" + selectedMedia.getMediaUri();
 	}
 	
 	public String commentMedia() {

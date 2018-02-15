@@ -1,5 +1,9 @@
 package com.bravson.socialalert.business.media.comment;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
@@ -40,11 +44,22 @@ public class MediaCommentService {
 		return userService.fillUserInfo(entity.toMediaCommentInfo());
 	}
 
-	public QueryResult<MediaCommentInfo> listComments(@NonNull String mediaUri, @NonNull PagingParameter paging) {
+	public QueryResult<MediaCommentDetail> listComments(@NonNull String mediaUri, @NonNull String userId, @NonNull PagingParameter paging) {
 		mediaRepository.findMedia(mediaUri).orElseThrow(NotFoundException::new);
-		QueryResult<MediaCommentInfo> result = commentRepository.listByMediaUri(mediaUri, paging).map(MediaCommentEntity::toMediaCommentInfo);
+		QueryResult<MediaCommentDetail> result = commentRepository.listByMediaUri(mediaUri, paging).map(MediaCommentEntity::toMediaCommentDetail);
+		Map<String, ApprovalModifier> approvalMap = buildUserCommentApprovalMap(mediaUri, userId);
 		userService.fillUserInfo(result.getContent());
+		for (MediaCommentDetail comment : result.getContent()) {
+			comment.setUserApprovalModifier(approvalMap.get(comment.getId()));
+		}
 		return result;
+	}
+
+	private Map<String, ApprovalModifier> buildUserCommentApprovalMap(String mediaUri, String userId) {
+		List<CommentApprovalEntity> approvals = approvalRepository.findAllByMediaUri(mediaUri, userId);
+		Map<String, ApprovalModifier> approvalMap = new HashMap<>(approvals.size());
+		approvals.stream().forEach(e -> approvalMap.put(e.getCommentId(), e.getModifier()));
+		return approvalMap;
 	}
 	
 	public MediaCommentDetail setCommentModifier(@NonNull String commentId, ApprovalModifier modifier, @NonNull String userId) {

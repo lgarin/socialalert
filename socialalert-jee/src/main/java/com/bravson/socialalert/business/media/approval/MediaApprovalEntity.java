@@ -2,12 +2,15 @@ package com.bravson.socialalert.business.media.approval;
 
 import java.time.Instant;
 
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
+
+import org.hibernate.search.annotations.FieldBridge;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
@@ -21,21 +24,18 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity(name="MediaApproval")
-@IdClass(MediaApprovalKey.class)
-@ToString(of={"mediaUri", "userId"})
-@EqualsAndHashCode(of={"mediaUri", "userId"})
+@Indexed
+@EqualsAndHashCode(of="id")
+@ToString(of="id")
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class MediaApprovalEntity {
 
-	@Id
+	@EmbeddedId
+	@FieldBridge(impl=MediaApprovalKey.Bridge.class)
 	@Getter
 	@NonNull
-	private String userId;
-	
-	@Id
-	@Getter
-	@NonNull
-	private String mediaUri;
+	@IndexedEmbedded
+	private MediaApprovalKey id;
 
 	@Getter
 	@Setter
@@ -51,9 +51,16 @@ public class MediaApprovalEntity {
 	private MediaEntity media;
 
 	public MediaApprovalEntity(@NonNull MediaEntity media, @NonNull String userId) {
-		this.mediaUri = media.getId();
-		this.userId = userId;
+		this.id = new MediaApprovalKey(media.getId(), userId);
 		this.creation = Instant.now();
 		this.media = media;
+	}
+	
+	public String getMediaUri() {
+		return id.getMediaUri();
+	}
+	
+	public String getUserId() {
+		return id.getUserId();
 	}
 }

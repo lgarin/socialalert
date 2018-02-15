@@ -12,10 +12,12 @@ public class MediaDetail extends MediaInfo {
 	private ApprovalModifier userApprovalModifier;
 	
 	public boolean isLikeAllowed() {
+		System.out.println(userApprovalModifier);
 		return userApprovalModifier != ApprovalModifier.LIKE;
 	}
 	
 	public boolean isDislikeAllowed() {
+		System.out.println(userApprovalModifier);
 		return userApprovalModifier != ApprovalModifier.DISLIKE;
 	}
 }

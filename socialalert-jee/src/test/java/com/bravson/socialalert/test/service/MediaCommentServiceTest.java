@@ -82,6 +82,7 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 	@Test
 	public void listCommentsForExitingMedia() {
 		String mediaUri = "uri1";
+		String userId = "user1";
 		PagingParameter paging = new PagingParameter(Instant.now(), 0, 10);
 		MediaEntity mediaEntity = mock(MediaEntity.class);
 		QueryResult<MediaCommentEntity> entityResult = new QueryResult<>(Collections.emptyList(), 0, paging);
@@ -89,17 +90,18 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.of(mediaEntity));
 		when(commentRepository.listByMediaUri(mediaUri, paging)).thenReturn(entityResult);
 		
-		QueryResult<MediaCommentInfo> result = commentService.listComments(mediaUri, paging);
+		QueryResult<MediaCommentDetail> result = commentService.listComments(mediaUri, userId, paging);
 		assertThat(result.getContent()).isEmpty();
 	}
 	
 	@Test
 	public void listCommentsForNonExitingMedia() {
 		String mediaUri = "uri1";
+		String userId = "user1";
 		
 		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.empty());
 		
-		assertThatThrownBy(() -> commentService.listComments(mediaUri, new PagingParameter(Instant.now(), 0, 10))).isInstanceOf(NotFoundException.class);
+		assertThatThrownBy(() -> commentService.listComments(mediaUri, userId, new PagingParameter(Instant.now(), 0, 10))).isInstanceOf(NotFoundException.class);
 		verifyZeroInteractions(commentRepository, userService);
 	}
 	

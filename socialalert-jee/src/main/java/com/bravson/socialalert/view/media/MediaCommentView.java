@@ -54,7 +54,7 @@ public class MediaCommentView implements Serializable {
 		if (conversation.isTransient()) {
 			timestamp = Instant.now();
 			conversation.begin();
-			commentList =  new LazyCommentList(mediaUri, timestamp, commentService);
+			commentList =  new LazyCommentList(mediaUri, userAccess.getUserId(), timestamp, commentService);
 		}
 	}
 	
@@ -63,28 +63,32 @@ public class MediaCommentView implements Serializable {
 			commentService.createComment(mediaUri, comment, userAccess);
 			comment = null;
 			timestamp = Instant.now();
-			commentList =  new LazyCommentList(mediaUri, timestamp, commentService);
+			commentList =  new LazyCommentList(mediaUri, userAccess.getUserId(), timestamp, commentService);
 		}
 		
 		return PageName.COMMENT_MEDIA + "?faces-redirect=true&uri=" + mediaUri;
 	}
 	
-	public void dislike(MediaCommentInfo item) {
-		MediaCommentDetail result = commentService.setCommentModifier(item.getId(), ApprovalModifier.DISLIKE, userAccess.getUserId());
-		if (result.getDislikeCount() == item.getDislikeCount()) {
+	public void dislike(MediaCommentDetail item) {
+		if (!item.isDislikeAllowed()) {
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("No change made", "You've already disliked this comment."));
 		}
+		MediaCommentDetail result = commentService.setCommentModifier(item.getId(), ApprovalModifier.DISLIKE, userAccess.getUserId());
 		item.setDislikeCount(result.getDislikeCount());
 		item.setLikeCount(result.getLikeCount());
+		item.setUserApprovalModifier(result.getUserApprovalModifier());
+
+		
 	}
 	
-	public void like(MediaCommentInfo item) {
-		MediaCommentDetail result = commentService.setCommentModifier(item.getId(), ApprovalModifier.LIKE, userAccess.getUserId());
-		if (result.getLikeCount() == item.getLikeCount()) {
+	public void like(MediaCommentDetail item) {
+		if (!item.isLikeAllowed()) {
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("No change made", "You've already liked this comment"));
 		}
+		MediaCommentDetail result = commentService.setCommentModifier(item.getId(), ApprovalModifier.LIKE, userAccess.getUserId());
 		item.setDislikeCount(result.getDislikeCount());
 		item.setLikeCount(result.getLikeCount());
+		item.setUserApprovalModifier(result.getUserApprovalModifier());
 	}
 	
 	public void reportComment(MediaCommentInfo item) {

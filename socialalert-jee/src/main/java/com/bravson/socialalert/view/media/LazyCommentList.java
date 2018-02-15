@@ -8,22 +8,23 @@ import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 
 import com.bravson.socialalert.business.media.comment.MediaCommentService;
-import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
+import com.bravson.socialalert.domain.media.comment.MediaCommentDetail;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class LazyCommentList extends LazyDataModel<MediaCommentInfo> {
+public class LazyCommentList extends LazyDataModel<MediaCommentDetail> {
 
 	private static final long serialVersionUID = 1L;
 	
 	private String mediaUri;
+	private String userId;
 	private Instant timestamp;
 	private MediaCommentService commentService;
 	
 	@Override
-	public List<MediaCommentInfo> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
-		return commentService.listComments(mediaUri, new PagingParameter(timestamp, first / pageSize, pageSize)).getContent();
+	public List<MediaCommentDetail> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
+		return commentService.listComments(mediaUri, userId, new PagingParameter(timestamp, first / pageSize, pageSize)).getContent();
 	}
 }

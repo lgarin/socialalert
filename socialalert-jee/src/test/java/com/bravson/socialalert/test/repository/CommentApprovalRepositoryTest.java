@@ -1,9 +1,11 @@
 package com.bravson.socialalert.test.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
 
+import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.approval.CommentApprovalEntity;
 import com.bravson.socialalert.business.media.approval.CommentApprovalRepository;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
@@ -39,4 +41,14 @@ public class CommentApprovalRepositoryTest extends BaseRepositoryTest {
     	assertThat(result).isEmpty();
     }
     
+    @Test
+    public void listUserMediaApprovals() {
+    	String userId = "testUser";
+    	MediaEntity media = storeDefaultMedia();
+    	MediaCommentEntity comment = persistAndIndex(new MediaCommentEntity(media, "testComment1", UserAccess.of("otherUser", "1.2.3.4")));
+		CommentApprovalEntity approval = repository.changeApproval(comment, userId, ApprovalModifier.LIKE).get();
+		persistAndIndex(approval);
+    	List<CommentApprovalEntity> result = repository.findAllByMediaUri(media.getId(), userId);
+    	assertThat(result).containsExactly(approval);
+    }
 }

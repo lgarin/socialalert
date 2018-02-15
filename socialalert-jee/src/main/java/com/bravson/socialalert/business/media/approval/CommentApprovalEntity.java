@@ -2,12 +2,15 @@ package com.bravson.socialalert.business.media.approval;
 
 import java.time.Instant;
 
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
+
+import org.hibernate.search.annotations.FieldBridge;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
@@ -21,21 +24,18 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity(name="CommentApproval")
-@IdClass(CommentApprovalKey.class)
-@ToString(of={"commentId", "userId"})
-@EqualsAndHashCode(of={"commentId", "userId"})
+@Indexed
+@EqualsAndHashCode(of="id")
+@ToString(of="id")
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class CommentApprovalEntity {
 
-	@Id
+	@EmbeddedId
+	@FieldBridge(impl=CommentApprovalKey.Bridge.class)
 	@Getter
 	@NonNull
-	private String userId;
-	
-	@Id
-	@Getter
-	@NonNull
-	private String commentId;
+	@IndexedEmbedded
+	private CommentApprovalKey id;
 	
 	@Getter
 	@Setter
@@ -48,12 +48,20 @@ public class CommentApprovalEntity {
 	@Getter
 	@ManyToOne(fetch=FetchType.LAZY)
 	@MapsId("commentId")
+	@IndexedEmbedded(includePaths= {"media.id"})
 	private MediaCommentEntity comment;
 
 	public CommentApprovalEntity(@NonNull MediaCommentEntity comment, @NonNull String userId) {
-		this.commentId = comment.getId();
-		this.userId = userId;
+		this.id = new CommentApprovalKey(comment.getId(), userId);
 		this.creation = Instant.now();
 		this.comment = comment;
+	}
+	
+	public String getCommentId() {
+		return id.getCommentId();
+	}
+	
+	public String getUserId() {
+		return id.getUserId();
 	}
 }

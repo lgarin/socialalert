@@ -78,7 +78,6 @@ public class FileEntity extends VersionedEntity {
 			fileVariants = new ArrayList<>();
 		}
 		fileVariants.add(metadata);
-		System.out.println(fileVariants);
 	}
 
 	public FileMetadata getFileMetadata() {

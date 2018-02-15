@@ -39,6 +39,7 @@ import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.MediaDetail;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.media.MediaKind;
+import com.bravson.socialalert.domain.media.comment.MediaCommentDetail;
 import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
@@ -223,7 +224,7 @@ public class MediaFacade {
 	@ApiResponses(value= {
 			@ApiResponse(code = 200, message = "The comments have been retrieved successfuly."),
 			@ApiResponse(code = 404, message = "No media exists with this uri.")})
-	public QueryResult<MediaCommentInfo> listComments(@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
+	public QueryResult<MediaCommentDetail> listComments(@ApiParam(value="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@ApiParam(value="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
 			@ApiParam(value="Sets the page number to return.", required=false) @DefaultValue("0") @Min(0) @QueryParam("pageNumber") int pageNumber,
 			@ApiParam(value="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize,
@@ -233,7 +234,7 @@ public class MediaFacade {
 			pagingTimestamp = System.currentTimeMillis();
 		}
 		PagingParameter paging = new PagingParameter(Instant.ofEpochMilli(pagingTimestamp), pageNumber, pageSize);
-		return commentService.listComments(mediaUri, paging);
+		return commentService.listComments(mediaUri, userAccess.getUserId(), paging);
 	}
 	
 	@GET
