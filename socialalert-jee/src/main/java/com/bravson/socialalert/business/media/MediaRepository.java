@@ -91,7 +91,9 @@ public class MediaRepository {
 		if (parameter.getArea() != null) {
 			List<String> geoHashList = GeoHashUtil.computeGeoHashList(parameter.getArea());
 			int precision = geoHashList.stream().mapToInt(String::length).max().getAsInt();
-			junction.filteredBy(new SpatialHashFilter(geoHashList, "geoHash" + precision));
+			if (precision >= 1 && precision <= 8) {
+				junction.filteredBy(new SpatialHashFilter(geoHashList, "geoHash" + precision));
+			}
 		}
 		if (parameter.getCategory() != null) {
 			junction = junction.must(builder.keyword().onField("categories").matching(parameter.getCategory()).createQuery());
@@ -112,7 +114,10 @@ public class MediaRepository {
 	}
 
 	public List<GeoStatistic> groupByGeoHash(@NonNull SearchMediaParameter parameter) {
-		int precision = Math.max(GeoHashUtil.computeGeoHashPrecision(parameter.getArea()) + 2, 8);
+		int precision = 2;
+		if (parameter.getArea() != null) {
+			precision = Math.min(GeoHashUtil.computeGeoHashPrecision(parameter.getArea()) + 2, 8);
+		}
 		QueryBuilder builder = createQueryBuilder();
 		FullTextQuery query = createSearchQuery(parameter, Instant.now(), builder);
 		

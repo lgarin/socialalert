@@ -29,8 +29,8 @@
 			<h:panelGroup styleClass="preformatted">#{item.comment}</h:panelGroup>
 			<h:form>
 			<h:panelGroup class="ui-g" id="itemInteraction">
-				<div class="ui-g-3"><p:commandLink action="#{mediaCommentView.like(item)}" process="@form" update="itemInteraction messages"><span class="fa fa-thumbs-o-up"/></p:commandLink><span> #{item.likeCount} </span></div>
-                <div class="ui-g-3"><p:commandLink action="#{mediaCommentView.dislike(item)}" process="@form" update="itemInteraction messages"><span class="fa fa-thumbs-o-down"/></p:commandLink><span> #{item.dislikeCount} </span></div>
+				<div class="ui-g-3"><p:commandLink action="#{mediaCommentView.like(item)}" disabled="#{not item.likeAllowed}" process="@form" update="itemInteraction messages"><span class="fa fa-thumbs-o-up"/></p:commandLink><span> #{item.likeCount} </span></div>
+                <div class="ui-g-3"><p:commandLink action="#{mediaCommentView.dislike(item)}" disabled="#{not item.dislikeAllowed}" process="@form" update="itemInteraction messages"><span class="fa fa-thumbs-o-down"/></p:commandLink><span> #{item.dislikeCount} </span></div>
                 <div class="ui-g-3"><p:commandLink value="REPORT" onclick="PF('reportComment').show();"/></div>
 			</h:panelGroup>
 			</h:form>

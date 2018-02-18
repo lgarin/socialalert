@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 
 import org.hibernate.search.annotations.Analyze;
@@ -117,6 +118,7 @@ public class MediaEntity extends VersionedEntity {
 	private String geoHash8;
 	
 	@PrePersist
+	@PreUpdate
 	private void updateGeoHashes() {
 		if (location != null && location.getLatitude() != null && location.getLongitude() != null) {
 			geoHash1 = GeoHashUtil.computeGeoHash(location.getLatitude(), location.getLongitude(), 1);
