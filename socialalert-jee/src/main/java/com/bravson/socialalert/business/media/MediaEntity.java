@@ -41,6 +41,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @DynamicBoost(impl=MediaBoostStrategy.class)
 public class MediaEntity extends VersionedEntity {
+	
+	public static final int MIN_GEOHASH_PRECISION = 1;
+	public static final int MAX_GEOHASH_PRECISION = 8;
 
 	@Getter
 	@OneToOne(fetch=FetchType.LAZY, optional=false)

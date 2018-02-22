@@ -91,7 +91,7 @@ public class MediaRepository {
 		if (parameter.getArea() != null) {
 			List<String> geoHashList = GeoHashUtil.computeGeoHashList(parameter.getArea());
 			int precision = geoHashList.stream().mapToInt(String::length).max().getAsInt();
-			if (precision >= 1 && precision <= 8) {
+			if (precision >= MediaEntity.MIN_GEOHASH_PRECISION && precision <= MediaEntity.MAX_GEOHASH_PRECISION) {
 				junction.filteredBy(new SpatialHashFilter(geoHashList, "geoHash" + precision));
 			}
 		}
@@ -116,7 +116,7 @@ public class MediaRepository {
 	public List<GeoStatistic> groupByGeoHash(@NonNull SearchMediaParameter parameter) {
 		int precision = 2;
 		if (parameter.getArea() != null) {
-			precision = Math.min(GeoHashUtil.computeGeoHashPrecision(parameter.getArea()) + 2, 8);
+			precision = Math.min(GeoHashUtil.computeGeoHashPrecision(parameter.getArea(), 64), MediaEntity.MAX_GEOHASH_PRECISION);
 		}
 		QueryBuilder builder = createQueryBuilder();
 		FullTextQuery query = createSearchQuery(parameter, Instant.now(), builder);
@@ -130,7 +130,8 @@ public class MediaRepository {
 			    .maxFacetCount(-1)
 			    .createFacetingRequest();
 		
-		return query.getFacetManager().enableFaceting(geoHashFacet).getFacets("geoHashFacet").stream().map(MediaRepository::toGeoStatistic).collect(Collectors.toList());
+		return query.getFacetManager().enableFaceting(geoHashFacet).getFacets("geoHashFacet").stream()
+				.map(MediaRepository::toGeoStatistic).filter(s -> s.intersect(parameter.getArea())).collect(Collectors.toList());
 	}
 
 	private static GeoStatistic toGeoStatistic(Facet geoHashFacet) {

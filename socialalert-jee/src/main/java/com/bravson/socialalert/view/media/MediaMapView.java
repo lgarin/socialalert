@@ -1,9 +1,15 @@
 package com.bravson.socialalert.view.media;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Model;
-import javax.inject.Inject;
+import java.io.Serializable;
+import java.util.IntSummaryStatistics;
+import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.primefaces.event.map.OverlaySelectEvent;
 import org.primefaces.event.map.StateChangeEvent;
 import org.primefaces.model.map.DefaultMapModel;
 import org.primefaces.model.map.LatLng;
@@ -18,8 +24,11 @@ import com.bravson.socialalert.domain.location.GeoStatistic;
 
 import lombok.Getter;
 
-@Model
-public class MediaMapView {
+@ViewScoped
+@Named
+public class MediaMapView implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Inject
 	MediaSearchService searchService;
@@ -36,18 +45,18 @@ public class MediaMapView {
 	@PostConstruct
 	void init() {
 		SearchMediaParameter parameter = new SearchMediaParameter();
-		for (GeoStatistic item : searchService.groupByGeoHash(parameter)) {
-			addRectangle(item);
-		}
+		addAllRectangles(parameter);
 	}
 	
-	private void addRectangle(GeoStatistic item) {
+	private void addRectangle(GeoStatistic item, int minValue, int maxValue) {
 		LatLng sw = new LatLng(item.getMinLat(), item.getMinLon());
 		LatLng ne = new LatLng(item.getMaxLat(), item.getMaxLon());
 		Rectangle rect = new Rectangle(new LatLngBounds(ne, sw));
-		rect.setData(item.getCount());
-		rect.setStrokeColor("#d93c3c");
-		rect.setFillColor("#d93c3c");
+		rect.setData(new LatLng(item.getCenterLatitude(), item.getCenterLongitude()));
+		double normalizedValue = minValue == maxValue ? 0.5 : (double) (item.getCount() - minValue) / (double) (maxValue - minValue); 
+		int hue = (int) ((1.0 - normalizedValue) * 240.0);
+		rect.setFillColor("hsl(" + hue + ", 100%, 50%)");
+		rect.setStrokeColor("hsl(" + hue + ", 100%, 50%)");
 		rect.setFillOpacity(0.5);
 		mapModel.addOverlay(rect);
 	}
@@ -66,12 +75,22 @@ public class MediaMapView {
 		parameter.setArea(geoBox);
 		
 		mapModel.getRectangles().clear();
-		for (GeoStatistic item : searchService.groupByGeoHash(parameter)) {
-			addRectangle(item);
+		addAllRectangles(parameter);
+	}
+
+	private void addAllRectangles(SearchMediaParameter parameter) {
+		List<GeoStatistic> result = searchService.groupByGeoHash(parameter);
+		IntSummaryStatistics stat = result.stream().mapToInt(GeoStatistic::getCount).summaryStatistics();
+		for (GeoStatistic item : result) {
+			addRectangle(item, stat.getMin(), stat.getMax());
 		}
 	}
 	
 	public String getMapCenterString() {
     	return mapCenter.getLat() + "," + mapCenter.getLng();
     }
+	
+	public void onRectangleSelect(OverlaySelectEvent event) {
+		// TODO show top media in area using carousel
+	}
 }

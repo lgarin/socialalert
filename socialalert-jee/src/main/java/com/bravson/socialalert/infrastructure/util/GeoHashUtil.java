@@ -19,8 +19,10 @@ public class GeoHashUtil {
 		return new BoundingBox(geoArea.getMinLat(), geoArea.getMaxLat(), geoArea.getMinLon(), geoArea.getMaxLon());
 	}
 	
-	public static int computeGeoHashPrecision(GeoBox geoArea) {
-		return (GeoHashSizeTable.numberOfBitsForOverlappingGeoHash(toBoundingBox(geoArea)) + 4) / 5; 
+	public static int computeGeoHashPrecision(GeoBox geoArea, int division) {
+		BoundingBox boundingBox = toBoundingBox(geoArea);
+		int precision = GeoHashSizeTable.numberOfBitsForOverlappingGeoHash(boundingBox) + Integer.highestOneBit(division) / 8;
+		return (precision + 4) / 5;
 	}
 	
 	public static GeoBox computeBoundingBox(String geoHash) {
@@ -31,7 +33,7 @@ public class GeoHashUtil {
 	public static List<String> computeGeoHashList(GeoBox geoArea) {
 		List<String> searchHashes = new ArrayList<>();
 		BoundingBox boundingBox = toBoundingBox(geoArea);
-		int precision = computeGeoHashPrecision(geoArea);
+		int precision = (GeoHashSizeTable.numberOfBitsForOverlappingGeoHash(boundingBox) + 4) / 5;
 		GeoHash centerHash = GeoHash.withCharacterPrecision(geoArea.getCenterLatitude(), geoArea.getCenterLongitude(), precision);
 		searchHashes.add(centerHash.toBase32());
 		if (!centerHash.contains(boundingBox.getUpperLeft()) || !centerHash.contains(boundingBox.getLowerRight())) {

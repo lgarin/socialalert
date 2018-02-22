@@ -10,6 +10,7 @@
 	</h:head>
 	<p:gmap id="gmap" center="#{mediaMapView.mapCenterString}" zoom="#{mediaMapView.mapZoomLevel}" type="HYBRID" style="width:800px;height:800px" model="#{mediaMapView.mapModel}" >
 		<p:ajax event="stateChange" listener="#{mediaMapView.onMapStateChange}" update="gmap" />
+		<p:ajax event="overlaySelect" listener="#{mediaMapView.onRectangleSelect}" update="gmap" />
 	</p:gmap>
 </ui:define>
 </ui:composition>
