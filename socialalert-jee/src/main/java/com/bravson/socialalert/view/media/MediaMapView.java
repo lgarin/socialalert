@@ -1,6 +1,7 @@
 package com.bravson.socialalert.view.media;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.IntSummaryStatistics;
 import java.util.List;
 
@@ -21,6 +22,8 @@ import com.bravson.socialalert.business.media.MediaSearchService;
 import com.bravson.socialalert.business.media.SearchMediaParameter;
 import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;
+import com.bravson.socialalert.domain.media.MediaInfo;
+import com.bravson.socialalert.domain.paging.PagingParameter;
 
 import lombok.Getter;
 
@@ -30,6 +33,9 @@ public class MediaMapView implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final int SELECTED_STROKE_WEIGHT = 5;
+	private static final int DEFAULT_STROKE_WEIGHT = 1;
+	
 	@Inject
 	MediaSearchService searchService;
 	
@@ -41,6 +47,11 @@ public class MediaMapView implements Serializable {
 	
 	@Getter
 	private int mapZoomLevel = 2;
+	
+	@Getter
+	private List<MediaInfo> topMediaList;
+	
+	private Rectangle selectedRectangle;
 
 	@PostConstruct
 	void init() {
@@ -58,6 +69,12 @@ public class MediaMapView implements Serializable {
 		rect.setFillColor("hsl(" + hue + ", 100%, 50%)");
 		rect.setStrokeColor("hsl(" + hue + ", 100%, 50%)");
 		rect.setFillOpacity(0.5);
+		if (selectedRectangle != null && LagLngBoundsUtil.equals(selectedRectangle.getBounds(), rect.getBounds())) {
+			rect.setStrokeWeight(SELECTED_STROKE_WEIGHT);
+			selectedRectangle = rect;
+		} else {
+			rect.setStrokeWeight(DEFAULT_STROKE_WEIGHT);
+		}
 		mapModel.addOverlay(rect);
 	}
 	
@@ -65,6 +82,19 @@ public class MediaMapView implements Serializable {
 		mapCenter = event.getCenter();
 		mapZoomLevel = event.getZoomLevel();
 		LatLngBounds mapBounds = event.getBounds();
+		SearchMediaParameter parameter = buildSearchParameter(mapBounds);
+		
+		if (selectedRectangle != null && !LagLngBoundsUtil.intersect(mapBounds, selectedRectangle.getBounds())) {
+			selectedRectangle = null;
+			topMediaList = null;
+		}
+		
+		mapModel.getRectangles().clear();
+		addAllRectangles(parameter);
+		
+	}
+
+	private SearchMediaParameter buildSearchParameter(LatLngBounds mapBounds) {
 		GeoBox geoBox = GeoBox.builder()
 						.maxLat(mapBounds.getNorthEast().getLat())
 						.minLat(mapBounds.getSouthWest().getLat())
@@ -73,9 +103,7 @@ public class MediaMapView implements Serializable {
 						.build();
 		SearchMediaParameter parameter = new SearchMediaParameter();
 		parameter.setArea(geoBox);
-		
-		mapModel.getRectangles().clear();
-		addAllRectangles(parameter);
+		return parameter;
 	}
 
 	private void addAllRectangles(SearchMediaParameter parameter) {
@@ -91,6 +119,13 @@ public class MediaMapView implements Serializable {
     }
 	
 	public void onRectangleSelect(OverlaySelectEvent event) {
-		// TODO show top media in area using carousel
+		if (selectedRectangle != null) {
+			selectedRectangle.setStrokeWeight(DEFAULT_STROKE_WEIGHT);
+		}
+		selectedRectangle = (Rectangle) event.getOverlay();
+		
+		selectedRectangle.setStrokeWeight(SELECTED_STROKE_WEIGHT);
+		SearchMediaParameter parameter = buildSearchParameter(selectedRectangle.getBounds());
+		topMediaList = searchService.searchMedia(parameter, new PagingParameter(Instant.now(), 0, 20)).getContent();
 	}
 }
