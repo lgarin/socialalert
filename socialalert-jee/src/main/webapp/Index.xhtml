@@ -18,24 +18,9 @@
 		<p:commandButton value="Search" action="#{indexView.loadMediaList()}" ajax="false" />
 	</h:panelGrid>
 	<p:dataGrid var="media" value="#{indexView.mediaList}" columns="5" rows="4" layout="grid" styleClass="ui-datagrid-no-border">
-		<p:panel header="#{media.title}" style="text-align:center">
-			<h:panelGrid style="width:320px">
-					<h:panelGroup class="ui-g">
-						<div class="ui-g-6"><h:outputText styleClass="#{media.creator.online ? 'online' : 'offline'}" value="#{media.creator.username}" /></div>
-						<div class="ui-g-6"><h:outputText value="#{media.timestamp}" converter="#{prettyInstantConverter}"/></div>
-					</h:panelGroup>
-				 	<h:link outcome="ShowMedia" title="View Detail">
-		                <p:graphicImage url="/rest/file/thumbnail/#{media.mediaUri}"/> 
-		                <f:param name="uri" value="#{media.mediaUri}"></f:param>
-	                </h:link>
-	                <h:panelGroup class="ui-g">
-	                	<div class="ui-g-3"><span class="fa fa-thumbs-o-up"/><span> #{media.likeCount} </span></div>
-	                	<div class="ui-g-3"><span class="fa fa-thumbs-o-down"/><span> #{media.dislikeCount} </span></div>
-	                	<div class="ui-g-3"><span class="fa fa-eye"/><span> #{media.hitCount} </span></div>
-	                	<div class="ui-g-3"><span class="fa fa-comments"/><span> #{media.commentCount} </span></div>
-	                </h:panelGroup>
-	        </h:panelGrid>
-		</p:panel>
+		<ui:include src="/WEB-INF/templates/MediaThumbnail.xhtml">
+			<ui:param name="media" value="#{media}" />
+		</ui:include>
 	</p:dataGrid>
 	</h:form>
 </ui:define>

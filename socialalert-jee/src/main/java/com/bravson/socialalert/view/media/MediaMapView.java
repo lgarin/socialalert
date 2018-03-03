@@ -56,6 +56,7 @@ public class MediaMapView implements Serializable {
 	@PostConstruct
 	void init() {
 		SearchMediaParameter parameter = new SearchMediaParameter();
+		fillTopMediaList(parameter);
 		addAllRectangles(parameter);
 	}
 	
@@ -86,12 +87,14 @@ public class MediaMapView implements Serializable {
 		
 		if (selectedRectangle != null && !LagLngBoundsUtil.intersect(mapBounds, selectedRectangle.getBounds())) {
 			selectedRectangle = null;
-			topMediaList = null;
+		}
+		
+		if (selectedRectangle == null) {
+			fillTopMediaList(parameter);
 		}
 		
 		mapModel.getRectangles().clear();
 		addAllRectangles(parameter);
-		
 	}
 
 	private SearchMediaParameter buildSearchParameter(LatLngBounds mapBounds) {
@@ -126,6 +129,10 @@ public class MediaMapView implements Serializable {
 		
 		selectedRectangle.setStrokeWeight(SELECTED_STROKE_WEIGHT);
 		SearchMediaParameter parameter = buildSearchParameter(selectedRectangle.getBounds());
+		fillTopMediaList(parameter);
+	}
+
+	private void fillTopMediaList(SearchMediaParameter parameter) {
 		topMediaList = searchService.searchMedia(parameter, new PagingParameter(Instant.now(), 0, 20)).getContent();
 	}
 }
