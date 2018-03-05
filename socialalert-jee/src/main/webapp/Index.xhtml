@@ -12,11 +12,9 @@
 	<h:form>
 	<p:growl id="messages" showDetail="true" sticky="false" life="2000" />  
 	<h1>Hello #{userSession.userInfo.username}, your IP is #{userSession.userAccess.ipAddress}.</h1>
-	<h:panelGrid columns="3" cellpadding="5">
-		<p:outputLabel value="Keyword" for="searchField" />
-		<p:autoComplete id="searchField" minQueryLength="3" queryDelay="500" value="#{indexView.keyword}" completeMethod="#{indexView.completeKeyword}" />
-		<p:commandButton value="Search" action="#{indexView.loadMediaList()}" ajax="false" />
-	</h:panelGrid>
+	<ui:include src="/WEB-INF/templates/MediaSearch.xhtml">
+		<ui:param name="searchAction" value="#{indexView.loadMediaList()}" />
+	</ui:include>
 	<p:dataGrid var="media" value="#{indexView.mediaList}" columns="5" rows="4" layout="grid" styleClass="ui-datagrid-no-border">
 		<ui:include src="/WEB-INF/templates/MediaThumbnail.xhtml">
 			<ui:param name="media" value="#{media}" />

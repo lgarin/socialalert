@@ -11,9 +11,9 @@ import com.bravson.socialalert.business.media.MediaSearchService;
 import com.bravson.socialalert.business.media.SearchMediaParameter;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.paging.PagingParameter;
+import com.bravson.socialalert.view.media.MediaSearchComponent;
 
 import lombok.Getter;
-import lombok.Setter;
 
 @Model
 public class IndexView implements Serializable {
@@ -25,18 +25,12 @@ public class IndexView implements Serializable {
 
 	@Getter
 	private List<MediaInfo> mediaList;
-
-	@Getter
-	@Setter
-	private String keyword;
 	
-	public List<String> completeKeyword(String query) {
-		return searchMediaService.suggestTags(query);
-	}
+	@Inject
+	private MediaSearchComponent searchComponent;
 	
     public void loadMediaList() {
-    	SearchMediaParameter parameter = new SearchMediaParameter();
-    	parameter.setKeywords(keyword);
+    	SearchMediaParameter parameter = searchComponent.buildSearchParameter();
     	mediaList = searchMediaService.searchMedia(parameter, new PagingParameter(Instant.now(), 0, 50)).getContent();
     }
 }    

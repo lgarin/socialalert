@@ -45,6 +45,8 @@ public class MediaMapView implements Serializable {
 	@Getter
 	private LatLng mapCenter = new LatLng(0.0, 0.0);
 	
+	LatLngBounds mapBounds;
+	
 	@Getter
 	private int mapZoomLevel = 2;
 	
@@ -52,10 +54,13 @@ public class MediaMapView implements Serializable {
 	private List<MediaInfo> topMediaList;
 	
 	private Rectangle selectedRectangle;
+	
+	@Inject
+	private MediaSearchComponent searchComponent;
 
 	@PostConstruct
 	void init() {
-		SearchMediaParameter parameter = new SearchMediaParameter();
+		SearchMediaParameter parameter = searchComponent.buildSearchParameter();
 		fillTopMediaList(parameter);
 		addAllRectangles(parameter);
 	}
@@ -82,7 +87,7 @@ public class MediaMapView implements Serializable {
 	public void onMapStateChange(StateChangeEvent event) {
 		mapCenter = event.getCenter();
 		mapZoomLevel = event.getZoomLevel();
-		LatLngBounds mapBounds = event.getBounds();
+		mapBounds = event.getBounds();
 		SearchMediaParameter parameter = buildSearchParameter(mapBounds);
 		
 		if (selectedRectangle != null && !LagLngBoundsUtil.intersect(mapBounds, selectedRectangle.getBounds())) {
@@ -98,13 +103,13 @@ public class MediaMapView implements Serializable {
 	}
 
 	private SearchMediaParameter buildSearchParameter(LatLngBounds mapBounds) {
+		SearchMediaParameter parameter = searchComponent.buildSearchParameter();
 		GeoBox geoBox = GeoBox.builder()
-						.maxLat(mapBounds.getNorthEast().getLat())
-						.minLat(mapBounds.getSouthWest().getLat())
-						.maxLon(mapBounds.getNorthEast().getLng())
-						.minLon(mapBounds.getSouthWest().getLng())
-						.build();
-		SearchMediaParameter parameter = new SearchMediaParameter();
+				.maxLat(mapBounds.getNorthEast().getLat())
+				.minLat(mapBounds.getSouthWest().getLat())
+				.maxLon(mapBounds.getNorthEast().getLng())
+				.minLon(mapBounds.getSouthWest().getLng())
+				.build();
 		parameter.setArea(geoBox);
 		return parameter;
 	}
@@ -134,5 +139,19 @@ public class MediaMapView implements Serializable {
 
 	private void fillTopMediaList(SearchMediaParameter parameter) {
 		topMediaList = searchService.searchMedia(parameter, new PagingParameter(Instant.now(), 0, 20)).getContent();
+	}
+	
+	public void search() {
+		/*
+		if (mapBounds != null) {
+			SearchMediaParameter parameter = buildSearchParameter(mapBounds);
+			addAllRectangles(parameter);
+			fillTopMediaList(parameter);
+		} else {
+			SearchMediaParameter parameter = searchComponent.buildSearchParameter();
+			addAllRectangles(parameter);
+			fillTopMediaList(parameter);
+		}
+		*/
 	}
 }
