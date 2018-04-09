@@ -83,6 +83,7 @@ public class FileUploadView implements Serializable, MediaFileConstants {
 			}
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Could not upload file");
 			FacesContext.getCurrentInstance().addMessage(null, message);
 		} finally {

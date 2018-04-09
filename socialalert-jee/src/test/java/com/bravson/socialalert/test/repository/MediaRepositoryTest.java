@@ -18,7 +18,7 @@ import com.bravson.socialalert.domain.paging.QueryResult;
 
 public class MediaRepositoryTest extends BaseRepositoryTest {
     
-    private MediaRepository repository = new MediaRepository(getEntityManager(), new DummyEvent<>());
+    private MediaRepository repository = new MediaRepository(getPersistenceManager(), new DummyEvent<>());
 
     @Test
     public void findMediaWithInvalidUri() {

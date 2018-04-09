@@ -16,7 +16,7 @@ import com.bravson.socialalert.business.user.UserAccess;
 
 public class FileRepositoryTest extends BaseRepositoryTest {
     
-    private FileRepository repository = new FileRepository(getEntityManager(), new DummyEvent<>());
+    private FileRepository repository = new FileRepository(getPersistenceManager(), new DummyEvent<>());
     
     @Test
     public void findNonExistingFile() {

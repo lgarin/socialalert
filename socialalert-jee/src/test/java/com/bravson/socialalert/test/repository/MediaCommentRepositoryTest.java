@@ -14,7 +14,7 @@ import com.bravson.socialalert.domain.paging.QueryResult;
 
 public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     
-    private MediaCommentRepository repository = new MediaCommentRepository(getEntityManager(), new DummyEvent<>());
+    private MediaCommentRepository repository = new MediaCommentRepository(getPersistenceManager(), new DummyEvent<>());
     
     @Test
     public void createNewComment() {

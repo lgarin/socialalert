@@ -9,12 +9,12 @@ import javax.transaction.Transactional;
 
 import org.apache.lucene.search.Query;
 import org.hibernate.annotations.QueryHints;
-import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.query.dsl.QueryBuilder;
 
 import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.infrastructure.entity.NewEntity;
+import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 
 import lombok.AccessLevel;
@@ -30,7 +30,7 @@ public class FileRepository {
 
 	@Inject
 	@NonNull
-	FullTextEntityManager entityManager;
+	PersistenceManager persistenceManager;
 	
 	@Inject
 	@NewEntity
@@ -38,28 +38,28 @@ public class FileRepository {
 
 	public FileEntity storeMedia(@NonNull FileMetadata fileMetadata, @NonNull MediaMetadata mediaMetadata, @NonNull UserAccess userAccess) {
 		FileEntity entity = new FileEntity(fileMetadata, mediaMetadata, userAccess);
-		entityManager.persist(entity);
+		persistenceManager.persist(entity);
 		newEntityEvent.fire(entity);
 		return entity;
 	}
 	
 	public Optional<FileEntity> findFile(@NonNull String fileUri) {
-		return Optional.ofNullable(entityManager.find(FileEntity.class, fileUri));
+		return persistenceManager.find(FileEntity.class, fileUri);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public List<FileEntity> findByIpAddressPattern(@NonNull String ipAddressPattern) {
-		QueryBuilder queryBuilder = entityManager.getSearchFactory().buildQueryBuilder().forEntity(FileEntity.class).get();
+		QueryBuilder queryBuilder = persistenceManager.createQueryBuilder(FileEntity.class);
 		Query query = queryBuilder.keyword().wildcard().onField("versionInfo.ipAddress").matching(ipAddressPattern).createQuery();
-		return entityManager.createFullTextQuery(query, FileEntity.class).setHint(QueryHints.READ_ONLY, true).getResultList();
+		return persistenceManager.createFullTextQuery(query, FileEntity.class).setHint(QueryHints.READ_ONLY, true).getResultList();
 	}
 	
 	@SuppressWarnings("unchecked")
 	public List<FileEntity> findByUserIdAndState(@NonNull String userId, @NonNull FileState state) {
-		QueryBuilder queryBuilder = entityManager.getSearchFactory().buildQueryBuilder().forEntity(FileEntity.class).get();
+		QueryBuilder queryBuilder = persistenceManager.createQueryBuilder(FileEntity.class);
 		Query query = queryBuilder.bool()
 				.must(queryBuilder.keyword().withConstantScore().onField("versionInfo.userId").matching(userId).createQuery())
 				.must(queryBuilder.keyword().withConstantScore().onField("state").matching(state).createQuery()).createQuery();
-		return entityManager.createFullTextQuery(query, FileEntity.class).setHint(QueryHints.READ_ONLY, true).getResultList();
+		return persistenceManager.createFullTextQuery(query, FileEntity.class).setHint(QueryHints.READ_ONLY, true).getResultList();
 	}
 }

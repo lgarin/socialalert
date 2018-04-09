@@ -6,6 +6,8 @@ import java.util.Arrays;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
@@ -13,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 @Logged
 @Interceptor
+@Transactional(TxType.SUPPORTS)
 public class LoggedInterceptor implements Serializable {
 	
 	private static final long serialVersionUID = 1L;

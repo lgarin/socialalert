@@ -13,7 +13,7 @@ import com.bravson.socialalert.domain.user.UserInfo;
 
 public class UserProfileRepositoryTest extends BaseRepositoryTest {
     
-    private UserProfileRepository repository = new UserProfileRepository(getEntityManager());
+    private UserProfileRepository repository = new UserProfileRepository(getPersistenceManager());
 
     @Test
     public void createNonExistingProfile() {

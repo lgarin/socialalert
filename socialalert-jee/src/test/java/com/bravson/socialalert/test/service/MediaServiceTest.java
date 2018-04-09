@@ -62,6 +62,7 @@ public class MediaServiceTest extends BaseServiceTest {
 		String userId = "user1";
 		String mediaUri = "uri1";
 		MediaEntity mediaEntity = mock(MediaEntity.class);
+		when(mediaEntity.getId()).thenReturn(mediaUri);
 		MediaDetail mediaDetail = new MediaDetail();
 		MediaApprovalEntity approvalEntity = new MediaApprovalEntity(mediaEntity, userId);
 		approvalEntity.setModifier(ApprovalModifier.LIKE);
@@ -93,6 +94,7 @@ public class MediaServiceTest extends BaseServiceTest {
 		String mediaUri = "uri1";
 		ApprovalModifier modifier = ApprovalModifier.LIKE;
 		MediaEntity mediaEntity = mock(MediaEntity.class);
+		when(mediaEntity.getId()).thenReturn(mediaUri);
 		MediaStatistic mediaStatistic = new MediaStatistic();
 		MediaDetail mediaDetail = new MediaDetail();
 		MediaApprovalEntity approvalEntity = new MediaApprovalEntity(mediaEntity, userId);

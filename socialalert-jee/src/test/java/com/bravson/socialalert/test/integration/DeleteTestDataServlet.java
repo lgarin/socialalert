@@ -9,6 +9,8 @@ import java.util.Comparator;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.metamodel.EntityType;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,6 +21,7 @@ import javax.transaction.Transactional;
 
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.Search;
 import org.slf4j.Logger;
 
 @WebServlet("/unitTest/deleteData")
@@ -29,8 +32,8 @@ public class DeleteTestDataServlet extends HttpServlet {
 	@Inject
 	Logger logger;
 	
-    @Inject
-    FullTextEntityManager entityManager;
+	@PersistenceContext(unitName = "socialalert")
+    EntityManager em;
     
     @Resource(name="mediaBaseDirectory")
 	String mediaBaseDirectory;
@@ -61,6 +64,7 @@ public class DeleteTestDataServlet extends HttpServlet {
 	}
 
 	private void deleteDatabase() {
+		FullTextEntityManager entityManager = Search.getFullTextEntityManager(em);
 		entityManager.createNativeQuery("MATCH (n) DETACH DELETE n").executeUpdate();
 		for (EntityType<?> entityType : entityManager.getMetamodel().getEntities()) {
 			if (entityType.getJavaType().getAnnotation(Indexed.class) != null) {

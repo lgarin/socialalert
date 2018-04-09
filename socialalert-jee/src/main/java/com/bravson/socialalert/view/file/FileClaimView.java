@@ -11,7 +11,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.constraints.Size;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import org.hibernate.validator.constraints.NotBlank;
 import org.primefaces.event.map.PointSelectEvent;
 import org.primefaces.event.map.StateChangeEvent;
 import org.primefaces.model.map.DefaultMapModel;
@@ -37,7 +37,7 @@ public class FileClaimView implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Getter @Setter
-	@NotEmpty @Size(max=MediaConstants.MAX_TITLE_LENGTH)
+	@NotBlank @Size(max=MediaConstants.MAX_TITLE_LENGTH)
 	private String title;
 	
 	@Getter @Setter

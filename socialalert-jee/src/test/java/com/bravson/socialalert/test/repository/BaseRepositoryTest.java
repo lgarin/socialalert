@@ -24,6 +24,7 @@ import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.UpsertMediaParameter;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.location.GeoAddress;
+import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 
 public class BaseRepositoryTest extends Assertions {
 
@@ -60,6 +61,10 @@ public class BaseRepositoryTest extends Assertions {
     		entityManager = Search.getFullTextEntityManager(entityManagerFactory.createEntityManager());
     	}
     	return entityManager;
+    }
+    
+    protected final PersistenceManager getPersistenceManager() {
+    	return new PersistenceManager(getEntityManager());
     }
     
     protected final <T> T persistAndIndex(T entity) {

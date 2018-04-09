@@ -10,7 +10,7 @@ import com.bravson.socialalert.business.media.tag.MediaTagRepository;
 
 public class MediaTagRepositoryTest extends BaseRepositoryTest {
 	
-	private MediaTagRepository repository = new MediaTagRepository(getEntityManager());
+	private MediaTagRepository repository = new MediaTagRepository(getPersistenceManager());
 
 	@Before
 	public void addTestData() {

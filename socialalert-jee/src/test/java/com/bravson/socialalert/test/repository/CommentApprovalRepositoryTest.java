@@ -14,7 +14,7 @@ import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 
 public class CommentApprovalRepositoryTest extends BaseRepositoryTest {
     
-    private CommentApprovalRepository repository = new CommentApprovalRepository(getEntityManager());
+    private CommentApprovalRepository repository = new CommentApprovalRepository(getPersistenceManager());
 
     @Test
     public void createNewApproval() {

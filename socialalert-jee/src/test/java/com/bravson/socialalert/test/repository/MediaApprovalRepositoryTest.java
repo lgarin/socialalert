@@ -11,7 +11,7 @@ import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 
 public class MediaApprovalRepositoryTest extends BaseRepositoryTest {
     
-    private MediaApprovalRepository repository = new MediaApprovalRepository(getEntityManager());
+    private MediaApprovalRepository repository = new MediaApprovalRepository(getPersistenceManager());
 
     @Test
     public void createNewApproval() {

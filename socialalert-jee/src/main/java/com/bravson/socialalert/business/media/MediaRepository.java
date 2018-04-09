@@ -11,14 +11,13 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import org.hibernate.annotations.QueryHints;
-import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.hibernate.search.query.facet.Facet;
 import org.hibernate.search.query.facet.FacetSortOrder;
 import org.hibernate.search.query.facet.FacetingRequest;
-import org.hibernate.search.spatial.impl.SpatialHashFilter;
+import org.hibernate.search.spatial.impl.SpatialHashQuery;
 
 import com.bravson.socialalert.business.file.FileEntity;
 import com.bravson.socialalert.business.user.UserAccess;
@@ -27,6 +26,7 @@ import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.infrastructure.entity.NewEntity;
+import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 import com.bravson.socialalert.infrastructure.util.GeoHashUtil;
 
@@ -40,34 +40,34 @@ import lombok.NonNull;
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class MediaRepository {
-
+	
 	@Inject
 	@NonNull
-	FullTextEntityManager entityManager;
+	PersistenceManager persistenceManager;
 	
 	@Inject
 	@NewEntity
 	Event<MediaEntity> newEntityEvent;
 	
 	public Optional<MediaEntity> findMedia(@NonNull String mediaUri) {
-		return Optional.ofNullable(entityManager.find(MediaEntity.class, mediaUri));
+		return persistenceManager.find(MediaEntity.class, mediaUri);
 	}
 
 	public MediaEntity storeMedia(@NonNull FileEntity file, @NonNull UpsertMediaParameter parameter, @NonNull UserAccess userAccess) {
 		MediaEntity entity = new MediaEntity(file, parameter, userAccess);
-		entityManager.persist(entity);
+		persistenceManager.persist(entity);
 		newEntityEvent.fire(entity);
 		return entity;
 	}
 	
 	public void updateMedia(@NonNull MediaEntity entity) {
-		entityManager.merge(entity);
+		persistenceManager.merge(entity);
 		newEntityEvent.fire(entity);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public QueryResult<MediaEntity> searchMedia(@NonNull SearchMediaParameter parameter, @NonNull PagingParameter paging) {
-		QueryBuilder builder = createQueryBuilder();
+		QueryBuilder builder = persistenceManager.createQueryBuilder(MediaEntity.class);
 		FullTextQuery query = createSearchQuery(parameter, paging.getTimestamp(), builder);
 		List<MediaEntity> list = query
 				.setSort(builder.sort().byScore().createSort())
@@ -76,10 +76,6 @@ public class MediaRepository {
 				.setHint(QueryHints.READ_ONLY, true)
 				.getResultList();
 		return new QueryResult<>(list, query.getResultSize(), paging);
-	}
-
-	private QueryBuilder createQueryBuilder() {
-		return entityManager.getSearchFactory().buildQueryBuilder().forEntity(MediaEntity.class).get();
 	}
 
 	private FullTextQuery createSearchQuery(SearchMediaParameter parameter, Instant pagingTimestamp, QueryBuilder builder) {
@@ -92,7 +88,7 @@ public class MediaRepository {
 			List<String> geoHashList = GeoHashUtil.computeGeoHashList(parameter.getArea());
 			int precision = geoHashList.stream().mapToInt(String::length).max().getAsInt();
 			if (precision >= MediaEntity.MIN_GEOHASH_PRECISION && precision <= MediaEntity.MAX_GEOHASH_PRECISION) {
-				junction.filteredBy(new SpatialHashFilter(geoHashList, "geoHash" + precision));
+				junction.filteredBy(new SpatialHashQuery(geoHashList, "geoHash" + precision));
 			}
 		}
 		if (parameter.getCategory() != null) {
@@ -104,7 +100,7 @@ public class MediaRepository {
 		if (parameter.getMediaKind() != null) {
 			junction = junction.must(builder.keyword().onField("kind").matching(parameter.getMediaKind()).createQuery());
 		}
-		return entityManager.createFullTextQuery(junction.createQuery(), MediaEntity.class);
+		return persistenceManager.createFullTextQuery(junction.createQuery(), MediaEntity.class);
 	}
 
 	@Transactional(value=TxType.REQUIRES_NEW)
@@ -118,7 +114,7 @@ public class MediaRepository {
 		if (parameter.getArea() != null) {
 			precision = Math.min(GeoHashUtil.computeGeoHashPrecision(parameter.getArea(), 64), MediaEntity.MAX_GEOHASH_PRECISION);
 		}
-		QueryBuilder builder = createQueryBuilder();
+		QueryBuilder builder = persistenceManager.createQueryBuilder(MediaEntity.class);
 		FullTextQuery query = createSearchQuery(parameter, Instant.now(), builder);
 		
 		FacetingRequest geoHashFacet = builder.facet()

@@ -112,6 +112,7 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 		ApprovalModifier modifier = ApprovalModifier.LIKE;
 		MediaCommentEntity commentEntity = mock(MediaCommentEntity.class);
 		MediaCommentDetail commentDetail = new MediaCommentDetail();
+		when(commentEntity.getId()).thenReturn(commentId);
 		CommentApprovalEntity approvalEntity = new CommentApprovalEntity(commentEntity, userId);
 		approvalEntity.setModifier(modifier);
 		when(commentRepository.find(commentId)).thenReturn(Optional.of(commentEntity));
@@ -130,6 +131,7 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 		String commentId = "id";
 		ApprovalModifier modifier = null;
 		MediaCommentEntity commentEntity = mock(MediaCommentEntity.class);
+		when(commentEntity.getId()).thenReturn(commentId);
 		MediaCommentDetail commentDetail = new MediaCommentDetail();
 		CommentApprovalEntity approvalEntity = new CommentApprovalEntity(commentEntity, userId);
 		approvalEntity.setModifier(modifier);

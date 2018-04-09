@@ -10,11 +10,11 @@ import javax.transaction.Transactional;
 
 import org.apache.lucene.search.Query;
 import org.hibernate.annotations.QueryHints;
-import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.query.dsl.QueryBuilder;
 
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.infrastructure.entity.NewEntity;
+import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 
 import lombok.AccessLevel;
@@ -30,23 +30,19 @@ public class MediaTagRepository {
 
 	@Inject
 	@NonNull
-	FullTextEntityManager entityManager;
+	PersistenceManager persistenceManager;
 	
 	void handleNewMedia(@Observes @NewEntity MediaEntity media) {
 		for (String tag : media.getTags()) {
-			entityManager.merge(new MediaTagEntity(tag));
+			persistenceManager.merge(new MediaTagEntity(tag));
 		}
 	}
 	
-	private QueryBuilder createQueryBuilder() {
-		return entityManager.getSearchFactory().buildQueryBuilder().forEntity(MediaTagEntity.class).get();
-	}
-	
 	public List<String> suggestTags(String searchTerm) {
-		QueryBuilder builder = createQueryBuilder();
+		QueryBuilder builder = persistenceManager.createQueryBuilder(MediaTagEntity.class);
 		Query query = builder.phrase().withSlop(2).onField("nGramTag").andField("edgeTag").boostedTo(5).andField("langTag").boostedTo(3).sentence(searchTerm.toLowerCase()).createQuery();
 		@SuppressWarnings("unchecked")
-		List<Object[]> result = entityManager.createFullTextQuery(query, MediaTagEntity.class).setProjection("tag").setHint(QueryHints.READ_ONLY, true).getResultList();
+		List<Object[]> result = persistenceManager.createFullTextQuery(query, MediaTagEntity.class).setProjection("tag").setHint(QueryHints.READ_ONLY, true).getResultList();
 		return result.stream().flatMap(Stream::of).map(Object::toString).collect(Collectors.toList());
 	}
 }
