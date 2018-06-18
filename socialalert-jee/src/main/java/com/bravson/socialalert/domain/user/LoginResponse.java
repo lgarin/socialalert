@@ -7,7 +7,7 @@ import com.bravson.socialalert.infrastructure.rest.InstantSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -30,7 +30,7 @@ public class LoginResponse {
 	
 	private final String imageUri;
 
-	@ApiModelProperty("The user creation timestamp in milliseconds since the epoch.")
+	@Schema(description="The user creation timestamp in milliseconds since the epoch.")
 	@JsonSerialize(using=InstantSerializer.class)
 	@JsonDeserialize(using=InstantDeserializer.class)
 	@NonNull

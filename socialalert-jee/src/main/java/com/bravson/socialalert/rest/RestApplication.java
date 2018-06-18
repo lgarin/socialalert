@@ -6,17 +6,24 @@ import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
-import io.swagger.jaxrs.listing.ApiListingResource;
-import io.swagger.jaxrs.listing.SwaggerSerializers;
+import io.swagger.v3.jaxrs2.integration.resources.AcceptHeaderOpenApiResource;
+import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.servers.Server;
 
 @ApplicationPath("/rest")
+@OpenAPIDefinition(
+		info = @Info(title = "Socialalert API", version = "1.0"),
+        servers = {@Server(description = "Test server", url = "http://jcla3ndtozbxyghx.myfritz.net:18788/socialalert-jee/rest")}
+)
 public class RestApplication extends Application {
 
 	@Override
 	public Set<Class<?>> getClasses() {
 		HashSet<Class<?>> resources = new HashSet<>();
-		resources.add(ApiListingResource.class);
-        resources.add(SwaggerSerializers.class);
+		resources.add(OpenApiResource.class);
+		resources.add(AcceptHeaderOpenApiResource.class);
         resources.add(FileFacade.class);
         resources.add(MediaFacade.class);
         resources.add(UserFacade.class);

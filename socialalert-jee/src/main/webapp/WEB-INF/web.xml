@@ -15,23 +15,6 @@
     	<param-name>javax.faces.WEBAPP_RESOURCES_DIRECTORY</param-name>
     	<param-value>/WEB-INF/resources</param-value>
 	</context-param>
-	<servlet>
-		<servlet-name>swagger</servlet-name>
-		<servlet-class>io.swagger.jaxrs.config.DefaultJaxrsConfig</servlet-class>
-		<init-param>
-			<param-name>api.version</param-name>
-			<param-value>1.0</param-value>
-		</init-param>
-		<init-param>
-			<param-name>swagger.api.basepath</param-name>
-			<param-value>http://jcla3ndtozbxyghx.myfritz.net:18788/socialalert-jee/rest</param-value>
-		</init-param>
-		<init-param>
-			<param-name>swagger.api.title</param-name>
-			<param-value>Socialalert API</param-value>
-		</init-param>
-		<load-on-startup>2</load-on-startup>
-	</servlet>
 	<welcome-file-list>
 		<welcome-file>Index.jsf</welcome-file>
 	</welcome-file-list>

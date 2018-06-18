@@ -1,10 +1,10 @@
 package com.bravson.socialalert.domain.location;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Value;
 
-@ApiModel(description="The number of matching media in the area.")
+@Schema(description="The number of matching media in the area.")
 @Value
 @Builder
 public class GeoStatistic {

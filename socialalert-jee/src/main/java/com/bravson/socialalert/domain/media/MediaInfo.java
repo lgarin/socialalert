@@ -14,11 +14,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-@ApiModel(description="The meta information for the media.")
+@Schema(description="The meta information for the media.")
 @Data
 public class MediaInfo implements UserContent {
 
@@ -32,12 +31,12 @@ public class MediaInfo implements UserContent {
     
     private String description;
 	
-    @ApiModelProperty("The media timestamp in milliseconds since the epoch.")
+    @Schema(description="The media timestamp in milliseconds since the epoch.")
 	@JsonSerialize(using=InstantSerializer.class)
 	@JsonDeserialize(using=InstantDeserializer.class)
 	private Instant creation;
 	 
-    @ApiModelProperty("The upload timestamp in milliseconds since the epoch.")
+    @Schema(description="The upload timestamp in milliseconds since the epoch.")
 	@JsonSerialize(using=InstantSerializer.class)
 	@JsonDeserialize(using=InstantDeserializer.class)
 	private Instant timestamp;
@@ -46,7 +45,7 @@ public class MediaInfo implements UserContent {
 	
 	private MediaFileFormat previewFormat;
 	
-	@ApiModelProperty(value="The duration of the video in milliseconds.", dataType="long")
+	@Schema(description="The duration of the video in milliseconds.", implementation=Long.class)
 	@JsonSerialize(using=DurationSerializer.class)
 	@JsonDeserialize(using=DurationDeserializer.class)
 	private Duration duration;

@@ -28,13 +28,13 @@ import com.bravson.socialalert.domain.user.LoginParameter;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.UserInfo;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(tags= {"user"})
+@Tag(name="user")
 @Path("/user")
 @RolesAllowed("user")
 public class UserFacade {
@@ -50,21 +50,19 @@ public class UserFacade {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/login")
 	@PermitAll
-	@ApiOperation(value="Login an existing user.")
-	@ApiResponses(value= {
-		@ApiResponse(code = 200, message = "Login successfull."),
-		@ApiResponse(code = 401, message = "Login failed.") })
-	public LoginResponse login(@ApiParam(required=true) @Valid @NotNull LoginParameter param) {
+	@Operation(summary="Login an existing user.")
+	@ApiResponse(responseCode = "200", description = "Login successfull.")
+	@ApiResponse(responseCode = "401", description = "Login failed.")
+	public LoginResponse login(@Parameter(required=true) @Valid @NotNull LoginParameter param) {
 		return userService.login(param, request.getRemoteAddr()).orElseThrow(() -> new WebApplicationException(Status.UNAUTHORIZED));
 	}
 	
 	@POST
 	@Path("/logout")
-	@ApiOperation(value="Logout an existing user.")
-	@ApiResponses(value= {
-			@ApiResponse(code = 204, message = "Logout successfull."),
-			@ApiResponse(code = 400, message = "Logout failed.") })
-	public Response logout(@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization, @Context HttpServletRequest httpRequest) throws ServletException {
+	@Operation(summary="Logout an existing user.")
+	@ApiResponse(responseCode = "204", description = "Logout successfull.")
+	@ApiResponse(responseCode = "400", description = "Logout failed.")
+	public Response logout(@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization, @Context HttpServletRequest httpRequest) throws ServletException {
 		if (!userService.logout(authorization)) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
@@ -77,11 +75,11 @@ public class UserFacade {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/current")
 	@UserActivity
-	@ApiOperation(value="Read information about the currently logged in user.")
+	@Operation(summary="Read information about the currently logged in user.")
 	@ApiResponses(value= {
-			@ApiResponse(code = 200, message = "Current user returned with success."),
-			@ApiResponse(code = 404, message = "Current user could not be found.") })
-	public UserInfo current(@ApiParam(value="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+			@ApiResponse(responseCode = "200", description = "Current user returned with success."),
+			@ApiResponse(responseCode = "404", description = "Current user could not be found.") })
+	public UserInfo current(@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		return userService.findUserInfo(authorization).orElseThrow(NotFoundException::new);
 	}
 }

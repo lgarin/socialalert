@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.Value;
 
-@ApiModel(description="Group the items in a page.")
+@Schema(description="Group the items in a page.")
 @Value
 @AllArgsConstructor(access=AccessLevel.PRIVATE)
 public class QueryResult<T> {
