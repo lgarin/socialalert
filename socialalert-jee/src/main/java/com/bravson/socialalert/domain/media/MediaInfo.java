@@ -10,6 +10,7 @@ import com.bravson.socialalert.infrastructure.rest.DurationDeserializer;
 import com.bravson.socialalert.infrastructure.rest.DurationSerializer;
 import com.bravson.socialalert.infrastructure.rest.InstantDeserializer;
 import com.bravson.socialalert.infrastructure.rest.InstantSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -76,10 +77,12 @@ public class MediaInfo implements UserContent {
 	
 	private UserInfo creator;
 
+	@JsonIgnore
 	public boolean isVideo() {
 		return MediaFileFormat.VIDEO_SET.contains(fileFormat);
 	}
 	
+	@JsonIgnore
 	public boolean isPicture() {
 		return MediaFileFormat.PICTURE_SET.contains(fileFormat);
 	}
