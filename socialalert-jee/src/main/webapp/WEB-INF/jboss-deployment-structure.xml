@@ -4,6 +4,7 @@
       <dependencies>
          <module name="org.hibernate.ogm" slot="5.3" services="export" />
          <module name="org.hibernate.ogm.neo4j" slot="5.3" services="export" />
+         <module name="com.google.guava" />
       </dependencies>
    </deployment>
 </jboss-deployment-structure>

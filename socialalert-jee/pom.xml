@@ -57,13 +57,13 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-search-orm</artifactId>
-			<version>5.8.2.Final</version>
+			<version>5.9.2.Final</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-search-engine</artifactId>
-			<version>5.8.2.Final</version>
+			<version>5.9.2.Final</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -71,6 +71,30 @@
 		    <artifactId>hibernate-hql-lucene</artifactId>
 		    <version>1.4.0.Final</version>
 		    <scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.8.9</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.8.9</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.8.9</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.jaxrs</groupId>
+			<artifactId>jackson-jaxrs-json-provider</artifactId>
+			<version>2.8.9</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
@@ -97,9 +121,33 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.7</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+		  	<artifactId>guava</artifactId>
+		  	<version>20.0</version>
+		  	<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.20.0-GA</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 		    <artifactId>swagger-jaxrs2</artifactId>
 		  	<version>2.0.2</version>
+		  	<exclusions>
+		  		<exclusion>
+		  			<groupId>javax.xml.bind</groupId>
+		  			<artifactId>jaxb-api</artifactId>
+		  		</exclusion>
+		  	</exclusions>
 		</dependency>
 		<dependency>
 		    <groupId>ch.hsr</groupId>
