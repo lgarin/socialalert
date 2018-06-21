@@ -3,7 +3,6 @@ package com.bravson.socialalert.rest;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.nio.file.Files;
 import java.util.List;
 
@@ -178,7 +177,7 @@ public class FileFacade {
 	@Path("/upload/picture")
 	@Operation(summary="Upload a picture file.")
     @ApiResponse(responseCode = "201", description = "The picture is ready to be claimed.", 
-    				headers = @Header(name = "Location", description = "The media url", schema = @Schema(implementation=URL.class)))
+    				headers = @Header(name = "Location", description = "The media url", schema = @Schema(type="string", format="uri")))
     @ApiResponse(responseCode = "413", description = "The file is too large.")
 	@ApiResponse(responseCode = "415", description = "The media is not in the expected format.")
 	public Response uploadPicture(
@@ -192,7 +191,7 @@ public class FileFacade {
 	@Path("/upload/video")
 	@Operation(summary="Upload a video file.")
     @ApiResponse(responseCode = "201", description = "The video is ready to be claimed.", 
-		                   headers = {@Header(name = "Location", description = "The media url", schema = @Schema(implementation=URL.class))})
+		                   headers = @Header(name = "Location", description = "The media url", schema = @Schema(type="string", format="uri")))
     @ApiResponse(responseCode = "413", description = "The file is too large.")
     @ApiResponse(responseCode = "415", description = "The media is not in the expected format.")
 	public Response uploadVideo(
