@@ -9,7 +9,7 @@
         <provider>org.hibernate.ogm.jpa.HibernateOgmPersistence</provider>
         <properties>
 			<property name="jboss.as.jpa.providerModule" value="org.hibernate.ogm:5.3"/>
-			<property name="wildfly.jpa.hibernate.search.module" value="org.hibernate.search.orm:5.9.2.Final" />
+			<property name="wildfly.jpa.hibernate.search.module" value="org.hibernate.search.orm:5.9" />
 			<property name="hibernate.transaction.jta.platform" value="JBossTS" />
             <property name="hibernate.ogm.datastore.provider" value="neo4j_embedded"/>
             <property name="hibernate.ogm.neo4j.database_path" value="${jboss.server.data.dir}/neo4j.db"/>
