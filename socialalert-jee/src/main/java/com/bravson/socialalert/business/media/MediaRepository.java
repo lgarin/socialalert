@@ -14,6 +14,7 @@ import org.hibernate.annotations.QueryHints;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
+import org.hibernate.search.query.dsl.Unit;
 import org.hibernate.search.query.facet.Facet;
 import org.hibernate.search.query.facet.FacetSortOrder;
 import org.hibernate.search.query.facet.FacetingRequest;
@@ -84,12 +85,18 @@ public class MediaRepository {
 		if (parameter.getMaxAge() != null) {
 			junction = junction.must(builder.range().onField("versionInfo.creation").above(pagingTimestamp.minus(parameter.getMaxAge())).createQuery());
 		}
+		if (parameter.getCreator() != null) {
+			junction = junction.must(builder.keyword().onField("versionInfo.userId").matching(parameter.getCreator()).createQuery());
+		}
 		if (parameter.getArea() != null) {
 			List<String> geoHashList = GeoHashUtil.computeGeoHashList(parameter.getArea());
 			int precision = geoHashList.stream().mapToInt(String::length).max().getAsInt();
 			if (precision >= MediaEntity.MIN_GEOHASH_PRECISION && precision <= MediaEntity.MAX_GEOHASH_PRECISION) {
 				junction.filteredBy(new SpatialHashQuery(geoHashList, "geoHash" + precision));
 			}
+		}
+		if (parameter.getLocation() != null) {
+			junction = junction.must(builder.spatial().boostedTo(10.0f).onField("location.coordinates").within(parameter.getLocation().getRadius(), Unit.KM).ofLatitude(parameter.getLocation().getLatitude()).andLongitude(parameter.getLocation().getLongitude()).createQuery());
 		}
 		if (parameter.getCategory() != null) {
 			junction = junction.must(builder.keyword().onField("categories").matching(parameter.getCategory()).createQuery());

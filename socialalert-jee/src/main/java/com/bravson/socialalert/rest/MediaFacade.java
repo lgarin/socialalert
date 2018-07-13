@@ -34,6 +34,7 @@ import com.bravson.socialalert.business.media.UpsertMediaParameter;
 import com.bravson.socialalert.business.media.comment.MediaCommentService;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.activity.UserActivity;
+import com.bravson.socialalert.domain.location.GeoArea;
 import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.MediaDetail;
@@ -115,6 +116,7 @@ public class MediaFacade {
 			@Parameter(description="Define the keywords for searching the media.", required=false) @QueryParam("keywords") String keywords,
 			@Parameter(description="Define the maximum age in milliseconds of the returned media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
+			@Parameter(description="Define the user id of the creator for searching the media.", required=false) @QueryParam("creator") String creator,
 			@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
 			@Parameter(description="Sets the page number to return.", required=false) @DefaultValue("0") @Min(0) @QueryParam("pageNumber") int pageNumber,
 			@Parameter(description="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize,
@@ -139,9 +141,54 @@ public class MediaFacade {
 		if (category != null) {
 			parameter.setCategory(category);
 		}
+		if (creator != null) {
+			parameter.setCreator(creator);
+		}
 		if (pagingTimestamp == null) {
 			pagingTimestamp = System.currentTimeMillis();
 		}
+		PagingParameter paging = new PagingParameter(Instant.ofEpochMilli(pagingTimestamp), pageNumber, pageSize);
+		return mediaSearchService.searchMedia(parameter, paging);
+	}
+	
+	@GET
+	@Path("/searchNearest")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Operation(summary="Search claimed media based on any combination of the provided parameters.")
+	public QueryResult<MediaInfo> searchNearestMedia(
+			@Parameter(description="Define the location for the nearest media.", required=true) @QueryParam("latitude") Double latitude,
+			@Parameter(description="Define the location for the nearest media.", required=true) @QueryParam("longitude") Double longitude,
+			@Parameter(description="Define the maximum distance in kilometer for the nearest media.", required=true) @QueryParam("maxDistance") Double maxDistance,
+			@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
+			@Parameter(description="Define the keywords for searching the media.", required=false) @QueryParam("keywords") String keywords,
+			@Parameter(description="Define the maximum age in milliseconds of the returned media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
+			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
+			@Parameter(description="Define the user id of the creator for searching the media.", required=false) @QueryParam("creator") String creator,
+			@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
+			@Parameter(description="Sets the page number to return.", required=false) @DefaultValue("0") @Min(0) @QueryParam("pageNumber") int pageNumber,
+			@Parameter(description="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize,
+			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+		
+		SearchMediaParameter parameter = new SearchMediaParameter();
+		if (mediaKind != null) {
+			parameter.setMediaKind(mediaKind);
+		}
+		if (keywords != null) {
+			parameter.setKeywords(keywords);
+		}
+		if (maxAge != null) {
+			parameter.setMaxAge(Duration.ofMillis(maxAge));
+		}
+		if (category != null) {
+			parameter.setCategory(category);
+		}
+		if (creator != null) {
+			parameter.setCreator(creator);
+		}
+		if (pagingTimestamp == null) {
+			pagingTimestamp = System.currentTimeMillis();
+		}
+		parameter.setLocation(GeoArea.builder().latitude(latitude).longitude(longitude).radius(maxDistance).build());
 		PagingParameter paging = new PagingParameter(Instant.ofEpochMilli(pagingTimestamp), pageNumber, pageSize);
 		return mediaSearchService.searchMedia(parameter, paging);
 	}
@@ -240,6 +287,7 @@ public class MediaFacade {
 			@Parameter(description="Define the keywords for searching the media.", required=false) @QueryParam("keywords") String keywords,
 			@Parameter(description="Define the maximum age in milliseconds of the returned media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
+			@Parameter(description="Define the user id of the creator for searching the media.", required=false) @QueryParam("creator") String creator,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
@@ -257,6 +305,9 @@ public class MediaFacade {
 		}
 		if (category != null) {
 			parameter.setCategory(category);
+		}
+		if (creator != null) {
+			parameter.setCreator(creator);
 		}
 		return mediaSearchService.groupByGeoHash(parameter);
 	}
