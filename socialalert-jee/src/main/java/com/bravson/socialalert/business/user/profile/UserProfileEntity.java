@@ -17,6 +17,7 @@ import com.bravson.socialalert.business.file.FileEntity;
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.link.UserLinkEntity;
 import com.bravson.socialalert.domain.user.Gender;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
@@ -83,6 +84,10 @@ public class UserProfileEntity extends VersionedEntity {
 	
 	@OneToMany
 	private Set<MediaCommentEntity> comments;
+	
+	@Getter
+	@OneToMany(mappedBy="sourceUser")
+	private Set<UserLinkEntity> followedUsers;
 	
 	public UserProfileEntity(@NonNull String username, @NonNull String email, @NonNull UserAccess userAccess) {
 		this.id = userAccess.getUserId();
