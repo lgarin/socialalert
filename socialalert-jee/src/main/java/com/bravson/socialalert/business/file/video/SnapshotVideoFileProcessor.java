@@ -1,7 +1,5 @@
 package com.bravson.socialalert.business.file.video;
 
-import static com.bravson.socialalert.business.file.media.MediaFileConstants.JPG_EXTENSION;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -16,8 +14,6 @@ import com.bravson.socialalert.infrastructure.layer.Service;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import net.coobird.thumbnailator.Thumbnails;
-import net.coobird.thumbnailator.geometry.Positions;
 
 @Service
 @Transactional(TxType.SUPPORTS)
@@ -25,18 +21,13 @@ import net.coobird.thumbnailator.geometry.Positions;
 public class SnapshotVideoFileProcessor extends BaseVideoFileProcessor {
 
 	@Inject
-	public SnapshotVideoFileProcessor(@NonNull MediaConfiguration config, @NonNull SnapshotCache snapshotCache) {
-		super(config, snapshotCache);
+	public SnapshotVideoFileProcessor(@NonNull MediaConfiguration config) {
+		super(config);
 	}
 	
 	@Override
 	public MediaFileFormat createPreview(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
-		Thumbnails
-			.of(getSnapshot(sourceFile))
-			.watermark(Positions.CENTER, watermarkImage, 0.25f)
-			.size(config.getPreviewWidth(), config.getPreviewHeight())
-			.outputFormat(JPG_EXTENSION)
-			.toFile(outputFile);
+		takeSnapshot(sourceFile, outputFile, config.getPreviewWidth(), config.getPreviewHeight());
 		return getPreviewFormat();
 	}
 	

@@ -38,6 +38,6 @@ public class MediaConfiguration {
 	@Resource(name="mediaWatermarkFile")
 	String watermarkFile;
 	
-	@Resource(name="videoLibraryPath")
-	String videoLibraryPath;
+	@Resource(name="videoEncodingProgram")
+	String videoEncodingProgram;
 }

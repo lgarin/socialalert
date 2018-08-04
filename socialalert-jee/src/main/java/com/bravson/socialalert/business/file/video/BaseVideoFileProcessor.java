@@ -1,41 +1,42 @@
 package com.bravson.socialalert.business.file.video;
 
-import static com.bravson.socialalert.business.file.media.MediaFileConstants.JPG_EXTENSION;
-import static com.bravson.socialalert.infrastructure.util.DateUtil.parseInstant;
-
-import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.bravson.socialalert.business.file.media.MediaConfiguration;
 import com.bravson.socialalert.business.file.media.MediaFileFormat;
 import com.bravson.socialalert.business.file.media.MediaFileProcessor;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
-import com.bravson.socialalert.business.file.media.MediaUtil;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.MetadataException;
+import com.drew.metadata.Tag;
+import com.drew.metadata.mov.QuickTimeDirectory;
+import com.drew.metadata.mov.media.QuickTimeVideoDirectory;
+import com.drew.metadata.mov.metadata.QuickTimeMetadataDirectory;
+import com.drew.metadata.mp4.Mp4Directory;
+import com.drew.metadata.mp4.media.Mp4VideoDirectory;
 
-import io.humble.video.Decoder;
-import io.humble.video.Demuxer;
-import io.humble.video.DemuxerStream;
-import io.humble.video.Global;
-import io.humble.video.KeyValueBag;
-import io.humble.video.MediaDescriptor;
-import io.humble.video.MediaPacket;
-import io.humble.video.MediaPicture;
-import io.humble.video.awt.MediaPictureConverter;
-import io.humble.video.awt.MediaPictureConverterFactory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.SneakyThrows;
-import net.coobird.thumbnailator.Thumbnails;
-import net.coobird.thumbnailator.geometry.Positions;
 
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 public abstract class BaseVideoFileProcessor implements MediaFileProcessor {
@@ -50,111 +51,128 @@ public abstract class BaseVideoFileProcessor implements MediaFileProcessor {
 	
 	protected MediaConfiguration config;
 	
-	protected BufferedImage watermarkImage;
-	
-	private SnapshotCache snapshotCache;
-	
-	protected BaseVideoFileProcessor(@NonNull MediaConfiguration config, @NonNull SnapshotCache snapshotCache) {
+	protected BaseVideoFileProcessor(@NonNull MediaConfiguration config) {
 		this.config = config;
-		this.snapshotCache = snapshotCache;
-		System.setProperty("java.library.path", config.getVideoLibraryPath());
-		watermarkImage = MediaUtil.readImage(config.getWatermarkFile());
 	}
 	
-	private static MediaPicture buildPicture(Demuxer demuxer, DemuxerStream stream, long delay) throws InterruptedException, IOException {
-		Decoder decoder = stream.getDecoder();
-		decoder.open(null, null);
-		MediaPicture picture = MediaPicture.make(decoder.getWidth(), decoder.getHeight(), decoder.getPixelFormat());
-		MediaPacket packet = MediaPacket.make();
-		// TODO use delay
-		while (demuxer.read(packet) >= 0) {
-			if (packet.getStreamIndex() == stream.getIndex()) {
-				if (VideoUtil.decodePicture(packet, decoder, picture)) {
-					return picture;
-				}
-			}
-		}
-	
-		if (VideoUtil.decodePicture(null, decoder, picture)) {
-			return picture;
-		}
-	
-		return null;
-	}
-	
-	@SneakyThrows(IOException.class)
-	private BufferedImage takeSnapshot(File sourceFile) {
+	@SneakyThrows(InterruptedException.class)
+	protected final File takeSnapshot(File sourceFile, File targetFile, int width, int height) throws IOException {
 		if (!sourceFile.canRead()) {
 			throw new IOException("Cannot read file " + sourceFile);
 		}
-		Demuxer demuxer = Demuxer.make();
-		try {
-			demuxer.open(sourceFile.toString(), null, false, true, null, null);
-			DemuxerStream stream = VideoUtil.getStream(demuxer, MediaDescriptor.Type.MEDIA_VIDEO);
-			MediaPicture picture = buildPicture(demuxer, stream, config.getSnapshotDelay());
-			MediaPictureConverter converter = MediaPictureConverterFactory.createConverter(MediaPictureConverterFactory.HUMBLE_BGR_24, picture);
-			return converter.toImage(null, picture);
-		} catch (InterruptedException e) {
-			throw new IOException(e);
-		} finally {
-			VideoUtil.closeDemuxer(demuxer);
+		
+		//String filter = "thumbnail,scale=320:240:force_original_aspect_ratio=decrease,pad=320:240:(ow-iw)/2:(oh-ih)/2";
+		String filter = String.format("[0] thumbnail,scale=(iw*sar)*max(%1$d/(iw*sar)\\,%2$d/ih):ih*max(%1$d/(iw*sar)\\,%2$d/ih),crop=%1$d:%2$d [thumbnail]; [1] format=yuva420p,lutrgb='a=128' [watermark]; [thumbnail][watermark] overlay='x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2'",width, height);
+		
+		ProcessBuilder builder = new ProcessBuilder(config.getVideoEncodingProgram(), "-i", sourceFile.getAbsolutePath(), "-i", config.getWatermarkFile(), "-f", "image2", "-frames:v", "1", "-filter_complex", filter, "-y", targetFile.getAbsolutePath());
+		builder.redirectErrorStream(true);
+		Process process = builder.start();
+		
+		System.out.println(builder.command().stream().collect(Collectors.joining(" ")));
+		BufferedReader br=new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line;
+        while((line=br.readLine())!=null){
+           System.out.println(line);
+        }
+		 
+		int result = process.waitFor();
+		if (result != 0) {
+			throw new IOException("Cannot process file " + targetFile);
 		}
+
+		return targetFile;
 	}
-	
-	protected BufferedImage getSnapshot(File sourceFile) {
-		if (snapshotCache == null) {
-			return takeSnapshot(sourceFile);
-		}
-		return snapshotCache.memoized(sourceFile, this::takeSnapshot);
-	}
+
 	
 	@Override
 	public MediaFileFormat createThumbnail(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
-		Thumbnails
-			.of(getSnapshot(sourceFile))
-			.watermark(Positions.CENTER, watermarkImage, 0.25f)
-			.size(config.getThumbnailWidth(), config.getThumbnailHeight())
-			.crop(Positions.CENTER)
-			.outputFormat(JPG_EXTENSION)
-			.toFile(outputFile);
+		takeSnapshot(sourceFile, outputFile, config.getThumbnailWidth(), config.getThumbnailHeight());
 		return getThumbnailFormat();
 	}
 	
+	private Instant fixInstant(Instant wrongTimezone) {
+		ZoneOffset offset = wrongTimezone.atZone(ZoneId.systemDefault()).getOffset();;
+		return wrongTimezone.truncatedTo(ChronoUnit.SECONDS).atOffset(offset).withOffsetSameLocal(ZoneOffset.UTC).toInstant();
+	}
+	
 	@Override
-	public MediaMetadata parseMetadata(@NonNull File sourceFile) throws IOException {
-		MediaMetadata.MediaMetadataBuilder result = MediaMetadata.builder();
-		Demuxer demuxer = Demuxer.make();
-		try {
-			demuxer.open(sourceFile.toString(), null, false, true, null, null);
-			KeyValueBag metadata = demuxer.getMetaData();
-		    result.cameraModel(metadata.getValue("model"));
-		    result.cameraMaker(metadata.getValue("make"));
-		    if (metadata.getValue("creation_time") != null) {
-		    	result.timestamp(parseInstant(metadata.getValue("creation_time"), TIMESTAMP_FORMAT));
-		    } else if (metadata.getValue("date") != null) {
-		    	result.timestamp(parseInstant(metadata.getValue("date"), TIMESTAMP_FORMAT));
-		    }
-		    if (metadata.getValue("location") != null) {
-		    	Matcher locationMatcher = LOCATION_PATTERN.matcher(metadata.getValue("location"));
-			    if (locationMatcher.matches()) {
-			    	result.latitude(Double.parseDouble((locationMatcher.group(1))));
-			    	result.longitude(Double.parseDouble((locationMatcher.group(2))));
-			    }
-		    }
-		    
-		    result.duration(Duration.ofSeconds(demuxer.getDuration() / Global.DEFAULT_PTS_PER_SECOND));
-		    
-		    DemuxerStream stream = VideoUtil.getStream(demuxer, MediaDescriptor.Type.MEDIA_VIDEO);
-		    Decoder decoder = stream.getDecoder();
-		    result.height(decoder.getHeight());
-	        result.width(decoder.getWidth());
-		} catch (InterruptedException e) {
-			throw new IOException(e);
-		} finally {
-			VideoUtil.closeDemuxer(demuxer);
+	public MediaMetadata parseMetadata(@NonNull File sourceFile) throws ImageProcessingException, IOException, MetadataException {
+		
+		Metadata metadata = ImageMetadataReader.readMetadata(sourceFile);
+		
+		if (metadata.hasErrors()) {
+			ArrayList<String> errorList = new ArrayList<>();
+			for (Directory directory : metadata.getDirectories()) {
+			   for (String error : directory.getErrors()) {
+				   errorList.add(error);
+			   }
+	        }
+			//throw new ImageProcessingException(errorList.stream().collect(Collectors.joining("; ")));
 		}
 		
-		return result.build();
+		MediaMetadata.MediaMetadataBuilder builder = MediaMetadata.builder();
+		/*
+		for (Directory directory : metadata.getDirectories()) {
+			for (Tag tag : directory.getTags()) {
+				System.out.println(directory.getClass().getName() + " " + tag.getTagTypeHex() + "->" + tag.getTagType() + " : " + tag);
+			}
+		}
+		 */
+		for (Directory directory : metadata.getDirectoriesOfType(Mp4VideoDirectory.class)) {
+			if (directory.containsTag(Mp4VideoDirectory.TAG_HEIGHT)) {
+				builder.height(directory.getInteger(Mp4VideoDirectory.TAG_HEIGHT));
+			}
+			if (directory.containsTag(Mp4VideoDirectory.TAG_WIDTH)) {
+				builder.width(directory.getInteger(Mp4VideoDirectory.TAG_WIDTH));
+			}
+		}
+		
+		for (Directory directory : metadata.getDirectoriesOfType(Mp4Directory.class)) {
+			if (directory.containsTag(Mp4Directory.TAG_DURATION)) {
+				builder.duration(Duration.ofSeconds(directory.getLong(Mp4Directory.TAG_DURATION)));
+			}
+			if (directory.containsTag(Mp4Directory.TAG_CREATION_TIME)) {
+				builder.timestamp(fixInstant(directory.getDate(Mp4Directory.TAG_CREATION_TIME).toInstant()));
+			}
+		}
+
+		for (Directory directory : metadata.getDirectoriesOfType(QuickTimeDirectory.class)) {
+			if (directory.containsTag(QuickTimeDirectory.TAG_DURATION)) {
+				builder.duration(Duration.ofSeconds(directory.getLong(QuickTimeDirectory.TAG_DURATION)));
+			}
+			if (directory.containsTag(QuickTimeDirectory.TAG_CREATION_TIME)) {
+				builder.timestamp(fixInstant(directory.getDate(QuickTimeDirectory.TAG_CREATION_TIME).toInstant()));
+			}
+		}
+		
+		for (Directory directory : metadata.getDirectoriesOfType(QuickTimeVideoDirectory.class)) {
+			if (directory.containsTag(QuickTimeVideoDirectory.TAG_HEIGHT)) {
+				builder.height(directory.getInteger(QuickTimeVideoDirectory.TAG_HEIGHT));
+			}
+			if (directory.containsTag(QuickTimeVideoDirectory.TAG_WIDTH)) {
+				builder.width(directory.getInteger(QuickTimeVideoDirectory.TAG_WIDTH));
+			}
+		}
+		
+		for (Directory directory : metadata.getDirectoriesOfType(QuickTimeMetadataDirectory.class)) {
+			for (Tag tag : directory.getTags()) {
+				if (tag.getTagName().equals("Make")) {
+					builder.cameraMaker(directory.getString(tag.getTagType()));
+				}
+				if (tag.getTagName().equals("Model")) {
+					builder.cameraModel(directory.getString(tag.getTagType()));
+				}
+				if (tag.getTagName().equals("ISO 6709")) {
+			    	Matcher locationMatcher = LOCATION_PATTERN.matcher(directory.getString(tag.getTagType()));
+				    if (locationMatcher.matches()) {
+				    	builder.latitude(Double.parseDouble((locationMatcher.group(1))));
+				    	builder.longitude(Double.parseDouble((locationMatcher.group(2))));
+				    }
+				}
+			}
+		}
+		
+		return builder.build();
 	}
 
 }

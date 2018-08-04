@@ -1,7 +1,6 @@
 package com.bravson.socialalert.test.repository;
 
 import java.io.File;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -13,9 +12,7 @@ import com.bravson.socialalert.business.file.media.MediaConfiguration;
 import com.bravson.socialalert.business.file.media.MediaFileFormat;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.file.picture.PictureFileProcessor;
-import com.bravson.socialalert.business.file.video.SnapshotCache;
 import com.bravson.socialalert.business.file.video.VideoFileProcessor;
-import com.drew.imaging.jpeg.JpegProcessingException;
 
 public class VideoFileProcessorTest extends Assertions {
 
@@ -25,11 +22,11 @@ public class VideoFileProcessorTest extends Assertions {
 			.previewWidth(960)
 			.thumbnailHeight(320)
 			.thumbnailWidth(480)
-			.watermarkFile("logo.jpg")
-			.videoLibraryPath("C:\\Dev")
+			.watermarkFile("C:\\Temp\\logo.jpg")
+			.videoEncodingProgram("C:\\Temp\\ffmpeg.exe")
 			.build(); 
 	
-	private VideoFileProcessor processor = new VideoFileProcessor(config, new SnapshotCache());
+	private VideoFileProcessor processor = new VideoFileProcessor(config);
 	
 	@Test
 	public void testMediaFormat() {
@@ -38,9 +35,9 @@ public class VideoFileProcessorTest extends Assertions {
 	}
 	
 	@Test
-	public void extractMovMetadata() throws IOException {
+	public void extractMovMetadata() throws Exception {
 		MediaMetadata metadata = processor.parseMetadata(new File("src/test/resources/media/IMG_0236.MOV"));
-		assertThat(metadata.getTimestamp()).isEqualTo(LocalDateTime.of(2015, 1, 7, 21, 13, 32).atOffset(ZoneOffset.UTC).toInstant());
+		assertThat(metadata.getTimestamp()).isEqualTo(LocalDateTime.of(2015, 1, 7, 21, 13, 32).toInstant(ZoneOffset.UTC));
 		assertThat(metadata.getCameraMaker()).isEqualTo("Apple");
 		assertThat(metadata.getCameraModel()).isEqualTo("iPhone 6");
 		assertThat(metadata.getHeight()).isEqualTo(320);
@@ -51,7 +48,7 @@ public class VideoFileProcessorTest extends Assertions {
 	}
 
 	@Test
-	public void createMovThumbnail() throws IOException, JpegProcessingException {
+	public void createMovThumbnail() throws Exception {
 		File file = File.createTempFile("mov", "thumbnail.jpg");
 		processor.createThumbnail(new File("src/test/resources/media/IMG_0236.MOV"), file);
 		MediaMetadata metadata = new PictureFileProcessor(config).parseMetadata(file);
@@ -60,7 +57,7 @@ public class VideoFileProcessorTest extends Assertions {
 	}
 	
 	@Test
-	public void createMovPreview() throws IOException {
+	public void createMovPreview() throws Exception {
 		File file = File.createTempFile("mov", "preview.mp4");
 		processor.createPreview(new File("src/test/resources/media/IMG_0236.MOV"), file);
 		MediaMetadata metadata = processor.parseMetadata(file);
