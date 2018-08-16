@@ -7,12 +7,16 @@ import java.util.stream.Collectors;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Value;
+import lombok.Setter;
 
 @Schema(description="Group the items in a page.")
-@Value
-@AllArgsConstructor(access=AccessLevel.PRIVATE)
+@Data
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
+@AllArgsConstructor(access=AccessLevel.PROTECTED)
+@Setter(AccessLevel.PROTECTED)
 public class QueryResult<T> {
 	
 	@NonNull

@@ -8,9 +8,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -40,13 +37,14 @@ import lombok.SneakyThrows;
 
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 public abstract class BaseVideoFileProcessor implements MediaFileProcessor {
+	/*
 	private static final DateTimeFormatter TIMESTAMP_FORMAT = new DateTimeFormatterBuilder()
 			.parseStrict()
 			.appendPattern("yyyy-MM-dd HH:mm:ss")
 			.parseDefaulting(ChronoField.NANO_OF_SECOND, 0)
 			.toFormatter()
 			.withZone(ZoneOffset.UTC);
-	
+	*/
 	private static final Pattern LOCATION_PATTERN = Pattern.compile("([+-]\\d+.\\d+)([+-]\\d+.\\d+)([+-]\\d+.\\d+)/");
 	
 	protected MediaConfiguration config;
@@ -56,7 +54,7 @@ public abstract class BaseVideoFileProcessor implements MediaFileProcessor {
 	}
 	
 	@SneakyThrows(InterruptedException.class)
-	protected final File takeSnapshot(File sourceFile, File targetFile, int width, int height) throws IOException {
+	protected File takeSnapshot(File sourceFile, File targetFile, int width, int height) throws IOException {
 		if (!sourceFile.canRead()) {
 			throw new IOException("Cannot read file " + sourceFile);
 		}

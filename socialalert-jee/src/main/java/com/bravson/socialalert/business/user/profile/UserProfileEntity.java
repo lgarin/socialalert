@@ -109,7 +109,18 @@ public class UserProfileEntity extends VersionedEntity {
 	}
 	
 	private UserInfo toUserInfo(boolean online) {
-		return new UserInfo(id, username, email, getCreation(), online);
+		return UserInfo.builder()
+				.id(id)
+				.username(username)
+				.email(email)
+				.createdTimestamp(getCreation())
+				.online(online)
+				.biography(biography)
+				.birthdate(birthdate)
+				.country(country)
+				.language(language)
+				.imageUri(imageUri)
+				.build();
 	}
 	
 	public Instant getCreation() {

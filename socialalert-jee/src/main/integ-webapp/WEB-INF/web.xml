@@ -107,7 +107,7 @@
 	<env-entry>
 		<env-entry-name>mediaWatermarkFile</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
-		<env-entry-value>logo.jpg</env-entry-value>
+		<env-entry-value>D:\Dev\Data\logo.jpg</env-entry-value>
 	</env-entry>
 	<env-entry>
 		<env-entry-name>videoSnapshotDelay</env-entry-name>
@@ -117,7 +117,7 @@
 	<env-entry>
 		<env-entry-name>videoLibraryPath</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
-		<env-entry-value>D:\Dev\Data</env-entry-value>
+		<env-entry-value>D:\Dev\Data\ffmpeg.exe</env-entry-value>
 	</env-entry>
 	<env-entry>
 		<env-entry-name>sessionTimeout</env-entry-name>

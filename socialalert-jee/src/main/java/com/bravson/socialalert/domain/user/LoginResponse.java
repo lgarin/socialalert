@@ -8,27 +8,31 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Value;
 
-@Value
+@Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class LoginResponse {
 
 	@NonNull
-	private final String accessToken;
+	private String accessToken;
 	
 	@NonNull
-	private final String username;
+	private String username;
 	
-	private final String email;
+	private String email;
 	
-	private final String country;
+	private String country;
 	
-	private final String language;
+	private String language;
 	
-	private final String imageUri;
+	private String imageUri;
 
 	@Schema(description="The user creation timestamp in milliseconds since the epoch.")
 	@JsonSerialize(using=InstantSerializer.class)

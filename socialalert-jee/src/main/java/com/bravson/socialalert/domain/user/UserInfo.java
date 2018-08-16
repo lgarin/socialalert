@@ -1,24 +1,29 @@
 package com.bravson.socialalert.domain.user;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 import com.bravson.socialalert.infrastructure.rest.InstantDeserializer;
 import com.bravson.socialalert.infrastructure.rest.InstantSerializer;
+import com.bravson.socialalert.infrastructure.rest.LocalDateDeserializer;
+import com.bravson.socialalert.infrastructure.rest.LocalDateSerializer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 
 @Data
+@Builder
 @Setter(AccessLevel.NONE)
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserInfo {
 
@@ -36,4 +41,18 @@ public class UserInfo {
 	private Instant createdTimestamp;
 	
 	private boolean online;
+	
+	@JsonSerialize(using=LocalDateSerializer.class)
+	@JsonDeserialize(using=LocalDateDeserializer.class)
+	private LocalDate birthdate;
+	
+	private Gender gender;
+	
+	private String country;
+	
+	private String language;
+	
+	private String imageUri;
+	
+	private String biography;
 }

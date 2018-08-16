@@ -63,11 +63,21 @@ public class AuthenticationTest extends BaseIntegrationTest {
 		assertThat(result).isTrue();
 	}
 	
+	private UserInfo createExistingUserInfo() {
+		return UserInfo.builder()
+				.id("33935dd6-d3b9-4215-9afa-984f5f28ccfc")
+				.username("test@test.com")
+				.email("test@test.com")
+				.createdTimestamp(Instant.ofEpochMilli(1492950170774L))
+				.online(false)
+				.build();
+	}
+	
 	@Test
 	public void findExistingUserInfo() {
 		Optional<String> token = repository.requestAccessToken("test@test.com", "123");
 		Optional<UserInfo> result = repository.findUserInfo(token.get());
-		assertThat(result).isPresent().hasValue(new UserInfo("33935dd6-d3b9-4215-9afa-984f5f28ccfc", "test@test.com", "test@test.com", Instant.ofEpochMilli(1492950170774L), false));
+		assertThat(result).isPresent().hasValue(createExistingUserInfo());
 	}
 	
 	@Test

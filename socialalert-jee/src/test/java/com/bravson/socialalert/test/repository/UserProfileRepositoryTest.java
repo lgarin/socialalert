@@ -15,9 +15,19 @@ public class UserProfileRepositoryTest extends BaseRepositoryTest {
     
     private UserProfileRepository repository = new UserProfileRepository(getPersistenceManager());
 
+    private UserInfo createTestUserInfo() {
+		return UserInfo.builder()
+				.id("test")
+				.username("test")
+				.email("test@test.com")
+				.createdTimestamp(Instant.now())
+				.online(false)
+				.build();
+	}
+    
     @Test
     public void createNonExistingProfile() {
-    	UserInfo userInfo = new UserInfo("test", "test", "test@test.com", Instant.now(), false);
+    	UserInfo userInfo = createTestUserInfo();
     	UserProfileEntity entity = repository.createProfile(userInfo, "1.2.3.4");
     	assertThat(entity).isNotNull();
     	assertThat(entity.getId()).isEqualTo("test");
@@ -25,7 +35,7 @@ public class UserProfileRepositoryTest extends BaseRepositoryTest {
     
     @Test(expected=EntityExistsException.class)
     public void createExistingProfile() {
-    	UserInfo userInfo = new UserInfo("test", "test", "test@test.com", Instant.now(), false);
+    	UserInfo userInfo = createTestUserInfo();
     	repository.createProfile(userInfo, "1.2.3.4");
     	repository.createProfile(userInfo, "1.2.3.4");
     }
@@ -38,7 +48,7 @@ public class UserProfileRepositoryTest extends BaseRepositoryTest {
     
     @Test
     public void findExistingProfile() {
-    	UserInfo userInfo = new UserInfo("test", "test", "test@test.com", Instant.now(), false);
+    	UserInfo userInfo = createTestUserInfo();
     	UserProfileEntity entity = repository.createProfile(userInfo, "1.2.3.4");
     	Optional<UserProfileEntity> result = repository.findByUserId("test");
     	assertThat(result).isNotEmpty().hasValue(entity);

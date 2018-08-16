@@ -22,8 +22,8 @@ public class VideoFileProcessorTest extends Assertions {
 			.previewWidth(960)
 			.thumbnailHeight(320)
 			.thumbnailWidth(480)
-			.watermarkFile("C:\\Temp\\logo.jpg")
-			.videoEncodingProgram("C:\\Temp\\ffmpeg.exe")
+			.watermarkFile("C:\\Dev\\logo.jpg")
+			.videoEncodingProgram("C:\\Dev\\ffmpeg.exe")
 			.build(); 
 	
 	private VideoFileProcessor processor = new VideoFileProcessor(config);

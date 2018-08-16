@@ -22,7 +22,7 @@ public class PictureFileProcessorTest extends Assertions {
 			.previewWidth(960)
 			.thumbnailHeight(320)
 			.thumbnailWidth(480)
-			.watermarkFile("logo.jpg")
+			.watermarkFile("C:\\Dev\\logo.jpg")
 			.build();  
 	
 	private PictureFileProcessor processor = new PictureFileProcessor(config);
