@@ -115,7 +115,7 @@
 		<env-entry-value>5000</env-entry-value>
 	</env-entry>
 	<env-entry>
-		<env-entry-name>videoLibraryPath</env-entry-name>
+		<env-entry-name>videoEncodingProgram</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
 		<env-entry-value>D:\Dev\Data\ffmpeg.exe</env-entry-value>
 	</env-entry>
