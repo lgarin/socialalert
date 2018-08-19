@@ -48,6 +48,8 @@ import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -77,7 +79,7 @@ public class MediaFacade {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Claim a media which has been uploaded recently.")
-	@ApiResponse(responseCode = "200", description = "This media has been successfully claimed.")
+	@ApiResponse(responseCode = "200", description = "This media has been successfully claimed.", content=@Content(schema=@Schema(implementation=MediaInfo.class)))
 	@ApiResponse(responseCode = "403", description = "This media does not belong to the current user.")
 	@ApiResponse(responseCode = "404", description = "No picture exists with this uri.")
 	@ApiResponse(responseCode = "409", description = "This media exists has already been claimed.")
@@ -93,7 +95,7 @@ public class MediaFacade {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Update the meta information about a media.")
-	@ApiResponse(responseCode = "200", description = "The metainformation have been successfully updated.")
+	@ApiResponse(responseCode = "200", description = "The metainformation have been successfully updated.", content=@Content(schema=@Schema(implementation=MediaInfo.class)))
 	@ApiResponse(responseCode = "403", description = "This media does not belong to the current user.")
 	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaInfo updateMedia(
@@ -197,7 +199,7 @@ public class MediaFacade {
 	@Path("/view/{mediaUri : .+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="View the media details. If it is the first call for this media in the user session, then the hit count will be increased by one.")
-	@ApiResponse(responseCode = "200", description = "The detail is available in the response.")
+	@ApiResponse(responseCode = "200", description = "The detail is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
 	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaDetail viewMediaDetail(
 			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
@@ -210,7 +212,7 @@ public class MediaFacade {
 	@Path("/approval/like/{mediaUri : .+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Set the approval modifier of the media to 'like'.")
-	@ApiResponse(responseCode = "200", description = "The new status is available in the response.")
+	@ApiResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
 	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaDetail likeMedia(
 			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
@@ -222,7 +224,7 @@ public class MediaFacade {
 	@Path("/approval/dislike/{mediaUri : .+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Set the approval modifier of the media to 'dislike'.")
-	@ApiResponse(responseCode = "200", description = "The new status is available in the response.")
+	@ApiResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
 	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaDetail dislikeMedia(
 			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
@@ -234,7 +236,7 @@ public class MediaFacade {
 	@Path("/approval/reset/{mediaUri : .+}")
 	@Operation(summary="Set the approval modifier of the media to 'null'.")
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiResponse(responseCode = "200", description = "The new status is available in the response.")
+	@ApiResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
 	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaDetail resetMediaApproval(
 			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
@@ -247,7 +249,7 @@ public class MediaFacade {
 	@Operation(summary="Comment the specified media.")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiResponse(responseCode = "200", description = "The comment has been created.")
+	@ApiResponse(responseCode = "200", description = "The comment has been created.", content=@Content(schema=@Schema(implementation=MediaCommentInfo.class)))
 	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaCommentInfo commentMedia(
 			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
@@ -260,7 +262,7 @@ public class MediaFacade {
 	@Path("/comments/{mediaUri : .+}")
 	@Operation(summary="List the comments for the specified media.")
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiResponse(responseCode = "200", description = "The comments have been retrieved successfuly.")
+	@ApiResponse(responseCode = "200", description = "The comments have been retrieved successfuly.", content=@Content(schema=@Schema(implementation=MediaCommentDetail.class)))
 	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
 	public QueryResult<MediaCommentDetail> listComments(@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,

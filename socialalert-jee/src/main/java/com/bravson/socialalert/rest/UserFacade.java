@@ -35,6 +35,9 @@ import com.bravson.socialalert.domain.user.UserInfo;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -61,7 +64,7 @@ public class UserFacade {
 	@Path("/login")
 	@PermitAll
 	@Operation(summary="Login an existing user.")
-	@ApiResponse(responseCode = "200", description = "Login successfull.")
+	@ApiResponse(responseCode = "200", description = "Login successfull.", content=@Content(schema=@Schema(implementation=LoginResponse.class)))
 	@ApiResponse(responseCode = "401", description = "Login failed.")
 	public LoginResponse login(@Parameter(required=true) @Valid @NotNull LoginParameter param) {
 		return userService.login(param, request.getRemoteAddr()).orElseThrow(() -> new WebApplicationException(Status.UNAUTHORIZED));
@@ -86,7 +89,7 @@ public class UserFacade {
 	@Path("/current")
 	@UserActivity
 	@Operation(summary="Read information about the currently logged in user.")
-	@ApiResponse(responseCode = "200", description = "Current user returned with success.")
+	@ApiResponse(responseCode = "200", description = "Current user returned with success.", content=@Content(schema=@Schema(implementation=UserInfo.class)))
 	@ApiResponse(responseCode = "404", description = "Current user could not be found.")
 	public UserInfo current(@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		return userService.findUserInfo(authorization).orElseThrow(NotFoundException::new);
@@ -126,7 +129,7 @@ public class UserFacade {
 	@Path("/followed")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="List the followed users.")
-	@ApiResponse(responseCode = "200", description = "The has been deleted.")
+	@ApiResponse(responseCode = "200", description = "The has been deleted.", content=@Content(array=@ArraySchema(schema=@Schema(implementation=UserInfo.class))))
 	public List<UserInfo> followedProfiles(@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		return linkService.getTargetProfiles(userAccess.getUserId());
 	}

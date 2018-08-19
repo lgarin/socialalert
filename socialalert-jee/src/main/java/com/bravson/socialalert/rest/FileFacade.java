@@ -48,6 +48,7 @@ import com.bravson.socialalert.domain.file.FileInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -137,7 +138,7 @@ public class FileFacade {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Access the file metadata.")
 	@Path("/metadata/{fileUri : .+}")
-	@ApiResponse(responseCode = "200", description = "File metadata are available in the response.")
+	@ApiResponse(responseCode = "200", description = "File metadata are available in the response.", content=@Content(schema=@Schema(implementation=FileInfo.class)))
 	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
 	public FileInfo getMetadata(
 			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("fileUri") String fileUri,
@@ -149,7 +150,7 @@ public class FileFacade {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="List the new files for the current user.")
 	@Path("/list/new")
-	@ApiResponse(responseCode = "200", description = "List of file metadata is available in the response.")
+	@ApiResponse(responseCode = "200", description = "List of file metadata is available in the response.", content=@Content(array=@ArraySchema(schema=@Schema(implementation=FileInfo.class))))
 	public List<FileInfo> listNewFiles(
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException {
 		return fileSearchService.findNewFilesByUserId(userAccess.getUserId());
