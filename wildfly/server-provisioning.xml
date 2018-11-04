@@ -1,0 +1,14 @@
+<server-provisioning xmlns="urn:wildfly:server-provisioning:1.2" exclude-dependencies="true" copy-module-artifacts="true">
+    <feature-packs>
+        <feature-pack
+            groupId="org.hibernate"
+            artifactId="hibernate-search-jbossmodules-orm"
+            version="5.10.4.Final" /> 
+
+        <feature-pack
+            groupId="org.hibernate.ogm"
+            artifactId="hibernate-ogm-featurepack-neo4j"
+            version="5.4.0.Final" /> 
+
+    </feature-packs>
+</server-provisioning>
