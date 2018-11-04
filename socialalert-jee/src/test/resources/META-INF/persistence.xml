@@ -5,7 +5,7 @@
              http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
              version="2.1">
 
-    <persistence-unit name="socialalert" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="socialalert-test" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.ogm.jpa.HibernateOgmPersistence</provider>
         <class>com.bravson.socialalert.infrastructure.entity.DurationAttributeConverter</class>
         <class>com.bravson.socialalert.infrastructure.entity.InstantAttributeConverter</class>
@@ -21,7 +21,7 @@
         
         <properties>
             <property name="hibernate.ogm.datastore.provider" value="map"/>
-            <property name="hibernate.search.default.directory_provider" value="ram"/>
+            <property name="hibernate.search.default.directory_provider" value="local-heap"/>
            	<property name="hibernate.hbm2ddl.auto" value="create"/>
         </properties>
     </persistence-unit>

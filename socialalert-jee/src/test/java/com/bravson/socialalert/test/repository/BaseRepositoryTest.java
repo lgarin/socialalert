@@ -14,6 +14,7 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 
 import com.bravson.socialalert.business.file.FileEntity;
@@ -39,7 +40,7 @@ public class BaseRepositoryTest extends Assertions {
              logManager.readConfiguration(is);
          }
     	
-        entityManagerFactory = Persistence.createEntityManagerFactory("socialalert");
+        entityManagerFactory = Persistence.createEntityManagerFactory("socialalert-test");
     }
 
     @AfterClass
@@ -47,6 +48,11 @@ public class BaseRepositoryTest extends Assertions {
     	if (entityManagerFactory != null) {
     		entityManagerFactory.close();
     	}
+    }
+    
+    @Before
+    public final void startTransaction() {
+    	entityManager.getTransaction().begin();
     }
 
     @After
