@@ -36,7 +36,7 @@ public class MediaCommentEntity {
 	
 	@Getter
 	@Id
-	@GenericGenerator(name="system-uuid", strategy = "uuid")
+	@GenericGenerator(name="system-uuid", strategy = "uuid2")
 	@GeneratedValue(generator="system-uuid")
 	private String id;
 	

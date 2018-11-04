@@ -62,7 +62,7 @@
 	<env-entry>
 		<env-entry-name>maxUploadSize</env-entry-name>
 		<env-entry-type>java.lang.Long</env-entry-type>
-		<env-entry-value>4000000</env-entry-value>
+		<env-entry-value>50000000</env-entry-value>
 	</env-entry>
 	<env-entry>
 		<env-entry-name>mediaCacheMaxAge</env-entry-name>
