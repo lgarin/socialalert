@@ -17,9 +17,9 @@ public class AuthenticationTest extends BaseIntegrationTest {
 			.builder()
 			.clientSecret("a1c5e3a3-a715-4f8e-b218-c826f9ebeac7")
 			.loginClientId("socialalert-jee")
-			.loginUrl("http://localhost:8080/auth/realms/SocialAlert-Dev/protocol/openid-connect/token")
-			.logoutUrl("http://localhost:8080/auth/realms/SocialAlert-Dev/protocol/openid-connect/logout")
-			.userInfoUrl("http://localhost:8080/auth/realms/SocialAlert-Dev/protocol/openid-connect/userinfo")
+			.loginUrl("http://localhost:8081/auth/realms/SocialAlert/protocol/openid-connect/token")
+			.logoutUrl("http://localhost:8081/auth/realms/SocialAlert/protocol/openid-connect/logout")
+			.userInfoUrl("http://localhost:8081/auth/realms/SocialAlert/protocol/openid-connect/userinfo")
 			.build();  
 	
 	private AuthenticationRepository repository = new AuthenticationRepository(config, ClientBuilder.newClient());
@@ -65,7 +65,7 @@ public class AuthenticationTest extends BaseIntegrationTest {
 	
 	private UserInfo createExistingUserInfo() {
 		return UserInfo.builder()
-				.id("33935dd6-d3b9-4215-9afa-984f5f28ccfc")
+				.id("da73e562-9dcb-4491-aa14-5711a15cf096")
 				.username("test@test.com")
 				.email("test@test.com")
 				.createdTimestamp(Instant.ofEpochMilli(1492950170774L))
