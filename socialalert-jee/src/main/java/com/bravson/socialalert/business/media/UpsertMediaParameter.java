@@ -2,10 +2,9 @@ package com.bravson.socialalert.business.media;
 
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
-import org.hibernate.validator.constraints.NotBlank;
 
 import com.bravson.socialalert.domain.location.GeoAddress;
 

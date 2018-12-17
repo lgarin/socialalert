@@ -8,9 +8,8 @@ import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-
-import org.hibernate.validator.constraints.NotBlank;
 
 import com.bravson.socialalert.business.media.MediaConstants;
 import com.bravson.socialalert.business.media.MediaUpsertService;

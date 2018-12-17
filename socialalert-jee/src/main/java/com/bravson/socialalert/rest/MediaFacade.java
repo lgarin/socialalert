@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.ws.rs.BadRequestException;
@@ -22,8 +23,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-
-import org.hibernate.validator.constraints.NotEmpty;
 
 import com.bravson.socialalert.business.media.MediaConstants;
 import com.bravson.socialalert.business.media.MediaSearchService;

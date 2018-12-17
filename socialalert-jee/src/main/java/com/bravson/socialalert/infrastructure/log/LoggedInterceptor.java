@@ -13,8 +13,8 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Logged
 @Interceptor
+@Logged
 @Transactional(TxType.SUPPORTS)
 public class LoggedInterceptor implements Serializable {
 	

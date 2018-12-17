@@ -1,6 +1,7 @@
 package com.bravson.socialalert.domain.user;
 
-import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.constraints.NotEmpty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -45,7 +45,8 @@ public abstract class BaseIntegrationTest extends Assertions {
 				.setWebXML(new File("src/main/webapp/WEB-INF/web.xml"))
 				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/beans.xml"), "beans.xml")
 				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/keycloak.json"), "keycloak.json")
-				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/jboss-deployment-structure.xml"), "jboss-deployment-structure.xml");
+				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/jboss-deployment-structure.xml"), "jboss-deployment-structure.xml")
+				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/jboss-jms.xml"), "jboss-jms.xml");
 	}
 	
 	@ArquillianResource

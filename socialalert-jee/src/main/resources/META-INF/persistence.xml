@@ -8,8 +8,8 @@
     <persistence-unit name="socialalert" transaction-type="JTA">
         <provider>org.hibernate.ogm.jpa.HibernateOgmPersistence</provider>
         <properties>
-			<property name="jboss.as.jpa.providerModule" value="org.hibernate.ogm:5.3"/>
-			<property name="wildfly.jpa.hibernate.search.module" value="org.hibernate.search.orm:5.9" />
+			<property name="jboss.as.jpa.providerModule" value="org.hibernate.ogm:5.4"/>
+			<property name="wildfly.jpa.hibernate.search.module" value="org.hibernate.search.orm:5.10" />
 			<property name="hibernate.transaction.jta.platform" value="JBossTS" />
             <property name="hibernate.ogm.datastore.provider" value="neo4j_bolt"/>
             <property name="hibernate.ogm.datastore.host" value="localhost:7687"/>
