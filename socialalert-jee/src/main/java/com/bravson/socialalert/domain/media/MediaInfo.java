@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
-import com.bravson.socialalert.business.file.media.MediaFileFormat;
+import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.infrastructure.rest.DurationDeserializer;
 import com.bravson.socialalert.infrastructure.rest.DurationSerializer;

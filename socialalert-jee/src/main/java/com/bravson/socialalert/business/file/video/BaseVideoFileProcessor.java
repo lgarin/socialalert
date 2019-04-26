@@ -15,9 +15,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.bravson.socialalert.business.file.media.MediaConfiguration;
-import com.bravson.socialalert.business.file.media.MediaFileFormat;
 import com.bravson.socialalert.business.file.media.MediaFileProcessor;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
+import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;

@@ -20,7 +20,7 @@ import org.hibernate.search.query.facet.FacetSortOrder;
 import org.hibernate.search.query.facet.FacetingRequest;
 import org.hibernate.search.spatial.impl.SpatialHashQuery;
 
-import com.bravson.socialalert.business.file.FileEntity;
+import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;

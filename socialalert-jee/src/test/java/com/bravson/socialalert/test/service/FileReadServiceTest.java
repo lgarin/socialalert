@@ -12,15 +12,15 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import com.bravson.socialalert.business.file.FileEntity;
 import com.bravson.socialalert.business.file.FileMetadata;
 import com.bravson.socialalert.business.file.FileRepository;
 import com.bravson.socialalert.business.file.FileResponse;
+import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.file.FileReadService;
-import com.bravson.socialalert.business.file.media.MediaFileFormat;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 
 public class FileReadServiceTest extends BaseServiceTest {
 

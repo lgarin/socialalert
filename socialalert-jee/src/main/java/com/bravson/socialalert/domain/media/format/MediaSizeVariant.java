@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.file.media;
+package com.bravson.socialalert.domain.media.format;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

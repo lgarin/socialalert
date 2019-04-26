@@ -1,16 +1,14 @@
-package com.bravson.socialalert.business.file.media;
+package com.bravson.socialalert.domain.media.format;
 
-import static com.bravson.socialalert.business.file.media.MediaFileConstants.JPG_EXTENSION;
-import static com.bravson.socialalert.business.file.media.MediaFileConstants.JPG_MEDIA_TYPE;
-import static com.bravson.socialalert.business.file.media.MediaFileConstants.MOV_EXTENSION;
-import static com.bravson.socialalert.business.file.media.MediaFileConstants.MOV_MEDIA_TYPE;
-import static com.bravson.socialalert.business.file.media.MediaFileConstants.MP4_EXTENSION;
-import static com.bravson.socialalert.business.file.media.MediaFileConstants.MP4_MEDIA_TYPE;
+import static com.bravson.socialalert.domain.media.format.MediaFileConstants.JPG_EXTENSION;
+import static com.bravson.socialalert.domain.media.format.MediaFileConstants.JPG_MEDIA_TYPE;
+import static com.bravson.socialalert.domain.media.format.MediaFileConstants.MOV_EXTENSION;
+import static com.bravson.socialalert.domain.media.format.MediaFileConstants.MOV_MEDIA_TYPE;
+import static com.bravson.socialalert.domain.media.format.MediaFileConstants.MP4_EXTENSION;
+import static com.bravson.socialalert.domain.media.format.MediaFileConstants.MP4_MEDIA_TYPE;
 
 import java.util.EnumSet;
 import java.util.Optional;
-
-import com.bravson.socialalert.business.file.store.FileFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

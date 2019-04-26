@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.file.store;
+package com.bravson.socialalert.domain.media.format;
 
 public interface FileFormat {
 

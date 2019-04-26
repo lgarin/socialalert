@@ -13,7 +13,7 @@ import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 
-import com.bravson.socialalert.business.file.FileEntity;
+import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.business.user.UserAccess;

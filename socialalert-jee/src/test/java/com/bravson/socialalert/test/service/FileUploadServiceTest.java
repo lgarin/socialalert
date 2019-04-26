@@ -19,20 +19,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.slf4j.Logger;
 
-import com.bravson.socialalert.business.file.FileEntity;
 import com.bravson.socialalert.business.file.FileMetadata;
 import com.bravson.socialalert.business.file.FileRepository;
 import com.bravson.socialalert.business.file.FileUploadParameter;
 import com.bravson.socialalert.business.file.FileUploadService;
 import com.bravson.socialalert.business.file.MediaFileStore;
-import com.bravson.socialalert.business.file.media.MediaFileConstants;
-import com.bravson.socialalert.business.file.media.MediaFileFormat;
+import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
-import com.bravson.socialalert.business.file.media.MediaSizeVariant;
 import com.bravson.socialalert.business.file.video.AsyncVideoPreviewEvent;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.file.FileInfo;
+import com.bravson.socialalert.domain.media.format.MediaFileConstants;
+import com.bravson.socialalert.domain.media.format.MediaFileFormat;
+import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 import com.bravson.socialalert.infrastructure.rest.ConflictException;
 

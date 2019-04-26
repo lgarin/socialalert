@@ -39,10 +39,10 @@ import com.bravson.socialalert.business.file.FileResponse;
 import com.bravson.socialalert.business.file.FileSearchService;
 import com.bravson.socialalert.business.file.FileUploadParameter;
 import com.bravson.socialalert.business.file.FileUploadService;
-import com.bravson.socialalert.business.file.media.MediaFileConstants;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.domain.file.FileInfo;
+import com.bravson.socialalert.domain.media.format.MediaFileConstants;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

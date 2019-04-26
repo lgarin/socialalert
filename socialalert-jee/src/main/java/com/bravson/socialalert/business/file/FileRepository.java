@@ -11,6 +11,8 @@ import org.apache.lucene.search.Query;
 import org.hibernate.annotations.QueryHints;
 import org.hibernate.search.query.dsl.QueryBuilder;
 
+import com.bravson.socialalert.business.file.entity.FileEntity;
+import com.bravson.socialalert.business.file.entity.FileState;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.infrastructure.entity.NewEntity;

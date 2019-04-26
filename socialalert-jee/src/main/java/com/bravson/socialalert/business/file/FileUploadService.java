@@ -10,13 +10,14 @@ import javax.ws.rs.NotSupportedException;
 
 import org.slf4j.Logger;
 
-import com.bravson.socialalert.business.file.media.MediaFileFormat;
+import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
-import com.bravson.socialalert.business.file.media.MediaSizeVariant;
 import com.bravson.socialalert.business.file.video.AsyncVideoPreviewEvent;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.file.FileInfo;
+import com.bravson.socialalert.domain.media.format.MediaFileFormat;
+import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 import com.bravson.socialalert.infrastructure.layer.Service;
 import com.bravson.socialalert.infrastructure.rest.ConflictException;

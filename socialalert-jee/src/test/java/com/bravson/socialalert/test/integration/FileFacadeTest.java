@@ -10,7 +10,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.Test;
 
-import com.bravson.socialalert.business.file.media.MediaFileConstants;
+import com.bravson.socialalert.domain.media.format.MediaFileConstants;
 
 public class FileFacadeTest extends BaseIntegrationTest {
 

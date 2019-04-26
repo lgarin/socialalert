@@ -14,13 +14,13 @@ import org.mockito.Mockito;
 
 import com.bravson.socialalert.business.file.FileMetadata;
 import com.bravson.socialalert.business.file.MediaFileStore;
-import com.bravson.socialalert.business.file.media.MediaFileFormat;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
-import com.bravson.socialalert.business.file.media.MediaSizeVariant;
 import com.bravson.socialalert.business.file.picture.PictureFileProcessor;
 import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.business.file.store.TempFileFormat;
 import com.bravson.socialalert.business.file.video.SnapshotVideoFileProcessor;
+import com.bravson.socialalert.domain.media.format.MediaFileFormat;
+import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 
 import static org.mockito.Mockito.*;
 

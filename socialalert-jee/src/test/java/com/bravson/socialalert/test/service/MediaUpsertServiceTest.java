@@ -12,8 +12,8 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import com.bravson.socialalert.business.file.FileEntity;
 import com.bravson.socialalert.business.file.FileRepository;
+import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.MediaRepository;
 import com.bravson.socialalert.business.media.MediaUpsertService;

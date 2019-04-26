@@ -1,6 +1,6 @@
 package com.bravson.socialalert.business.file.picture;
 
-import static com.bravson.socialalert.business.file.media.MediaFileConstants.JPG_EXTENSION;
+import static com.bravson.socialalert.domain.media.format.MediaFileConstants.JPG_EXTENSION;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -14,10 +14,10 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import com.bravson.socialalert.business.file.media.MediaConfiguration;
-import com.bravson.socialalert.business.file.media.MediaFileFormat;
 import com.bravson.socialalert.business.file.media.MediaFileProcessor;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.file.media.MediaUtil;
+import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.infrastructure.layer.Service;
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;

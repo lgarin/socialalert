@@ -15,10 +15,10 @@ import org.assertj.core.data.Offset;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.bravson.socialalert.business.file.media.MediaFileConstants;
 import com.bravson.socialalert.business.media.UpsertMediaParameter;
 import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.media.MediaInfo;
+import com.bravson.socialalert.domain.media.format.MediaFileConstants;
 
 public class MediaClaimTest extends BaseIntegrationTest {
 

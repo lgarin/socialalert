@@ -9,9 +9,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import com.bravson.socialalert.business.file.media.MediaConfiguration;
-import com.bravson.socialalert.business.file.media.MediaFileFormat;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.file.picture.PictureFileProcessor;
+import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.drew.imaging.jpeg.JpegProcessingException;
 
 public class PictureFileProcessorTest extends Assertions {

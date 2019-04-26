@@ -9,8 +9,8 @@ import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 
-import com.bravson.socialalert.business.file.media.MediaFileFormat;
-import com.bravson.socialalert.business.file.media.MediaSizeVariant;
+import com.bravson.socialalert.domain.media.format.MediaFileFormat;
+import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 import com.bravson.socialalert.infrastructure.util.DateUtil;
 
 import lombok.AccessLevel;

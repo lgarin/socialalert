@@ -24,9 +24,9 @@ import com.bravson.socialalert.business.file.FileDeleteService;
 import com.bravson.socialalert.business.file.FileSearchService;
 import com.bravson.socialalert.business.file.FileUploadParameter;
 import com.bravson.socialalert.business.file.FileUploadService;
-import com.bravson.socialalert.business.file.media.MediaFileConstants;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.file.FileInfo;
+import com.bravson.socialalert.domain.media.format.MediaFileConstants;
 
 import lombok.Getter;
 

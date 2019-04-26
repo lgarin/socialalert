@@ -1,8 +1,14 @@
 package com.bravson.socialalert.infrastructure.log;
 
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Set;
 
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InterceptionType;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
@@ -16,7 +22,7 @@ import org.slf4j.LoggerFactory;
 @Interceptor
 @Logged
 @Transactional(TxType.SUPPORTS)
-public class LoggedInterceptor implements Serializable {
+public class LoggedInterceptor implements javax.enterprise.inject.spi.Interceptor<Object>, Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -40,5 +46,89 @@ public class LoggedInterceptor implements Serializable {
 			return response.getStatusInfo();
 		}
 		return result;
+	}
+
+	@Override
+	public Class<?> getBeanClass() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<InjectionPoint> getInjectionPoints() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isNullable() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Object create(CreationalContext<Object> creationalContext) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void destroy(Object instance, CreationalContext<Object> creationalContext) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Set<Type> getTypes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<Annotation> getQualifiers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Class<? extends Annotation> getScope() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<Class<? extends Annotation>> getStereotypes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isAlternative() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Set<Annotation> getInterceptorBindings() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean intercepts(InterceptionType type) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Object intercept(InterceptionType type, Object instance, InvocationContext ctx) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

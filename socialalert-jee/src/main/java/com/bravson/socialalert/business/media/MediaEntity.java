@@ -21,13 +21,13 @@ import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 
-import com.bravson.socialalert.business.file.FileEntity;
-import com.bravson.socialalert.business.file.media.MediaSizeVariant;
+import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.media.MediaDetail;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.media.MediaKind;
+import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
 import com.bravson.socialalert.infrastructure.util.GeoHashUtil;

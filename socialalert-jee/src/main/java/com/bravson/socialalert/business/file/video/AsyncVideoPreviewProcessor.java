@@ -8,11 +8,11 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import com.bravson.socialalert.business.file.FileEntity;
 import com.bravson.socialalert.business.file.FileMetadata;
 import com.bravson.socialalert.business.file.FileRepository;
-import com.bravson.socialalert.business.file.media.MediaFileFormat;
+import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.file.store.FileStore;
+import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
 import lombok.AccessLevel;

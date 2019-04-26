@@ -1,5 +1,7 @@
 package com.bravson.socialalert.business.file.store;
 
+import com.bravson.socialalert.domain.media.format.FileFormat;
+
 import lombok.ToString;
 import lombok.Value;
 

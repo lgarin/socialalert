@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.file;
+package com.bravson.socialalert.business.file.entity;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -14,11 +14,12 @@ import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 
-import com.bravson.socialalert.business.file.media.MediaFileFormat;
+import com.bravson.socialalert.business.file.FileMetadata;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
-import com.bravson.socialalert.business.file.media.MediaSizeVariant;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.file.FileInfo;
+import com.bravson.socialalert.domain.media.format.MediaFileFormat;
+import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
 

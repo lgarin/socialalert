@@ -3,6 +3,9 @@ package com.bravson.socialalert.business.file.media;
 import java.io.File;
 import java.io.IOException;
 
+import com.bravson.socialalert.domain.media.format.MediaFileFormat;
+import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
+
 public interface MediaFileProcessor {
 
 	MediaMetadata parseMetadata(File inputFile) throws Exception;

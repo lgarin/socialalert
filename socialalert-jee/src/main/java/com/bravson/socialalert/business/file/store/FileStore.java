@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
+import com.bravson.socialalert.domain.media.format.FileFormat;
 import com.bravson.socialalert.infrastructure.layer.Service;
 import com.bravson.socialalert.infrastructure.util.DateUtil;
 

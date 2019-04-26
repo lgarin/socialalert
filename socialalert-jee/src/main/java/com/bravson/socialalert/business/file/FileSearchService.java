@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import com.bravson.socialalert.business.file.entity.FileEntity;
+import com.bravson.socialalert.business.file.entity.FileState;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.file.FileInfo;
 import com.bravson.socialalert.infrastructure.layer.Service;

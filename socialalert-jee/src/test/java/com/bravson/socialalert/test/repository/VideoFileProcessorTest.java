@@ -9,10 +9,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import com.bravson.socialalert.business.file.media.MediaConfiguration;
-import com.bravson.socialalert.business.file.media.MediaFileFormat;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.file.picture.PictureFileProcessor;
 import com.bravson.socialalert.business.file.video.VideoFileProcessor;
+import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 
 public class VideoFileProcessorTest extends Assertions {
 

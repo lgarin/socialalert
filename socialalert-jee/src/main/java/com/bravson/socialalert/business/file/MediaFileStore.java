@@ -8,14 +8,14 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
-import com.bravson.socialalert.business.file.media.MediaFileFormat;
 import com.bravson.socialalert.business.file.media.MediaFileProcessor;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
-import com.bravson.socialalert.business.file.media.MediaSizeVariant;
 import com.bravson.socialalert.business.file.picture.PictureFileProcessor;
 import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.business.file.store.TempFileFormat;
 import com.bravson.socialalert.business.file.video.SnapshotVideoFileProcessor;
+import com.bravson.socialalert.domain.media.format.MediaFileFormat;
+import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
 import lombok.AccessLevel;

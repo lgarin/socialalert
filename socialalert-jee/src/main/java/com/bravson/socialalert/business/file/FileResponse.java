@@ -2,7 +2,7 @@ package com.bravson.socialalert.business.file;
 
 import java.io.File;
 
-import com.bravson.socialalert.business.file.media.MediaFileFormat;
+import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 
 import lombok.Builder;
 import lombok.NonNull;
