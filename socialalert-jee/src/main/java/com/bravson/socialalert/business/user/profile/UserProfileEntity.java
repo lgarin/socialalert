@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
@@ -18,8 +19,10 @@ import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.link.UserLinkEntity;
+import com.bravson.socialalert.domain.media.MediaKind;
 import com.bravson.socialalert.domain.user.Gender;
 import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.domain.user.statistic.UserStatistic;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
 
@@ -76,6 +79,11 @@ public class UserProfileEntity extends VersionedEntity {
 	@Analyzer(definition="languageAnalyzer")
 	private String biography;
 	
+	@Getter
+	@NonNull
+	@Embedded
+	private UserStatistic statistic;
+	
 	@OneToMany
 	private Set<FileEntity> files;
 	
@@ -94,6 +102,7 @@ public class UserProfileEntity extends VersionedEntity {
 		this.username = username;
 		this.email = email;
 		this.versionInfo = VersionInfo.of(userAccess.getUserId(), userAccess.getIpAddress());
+		this.statistic = new UserStatistic();
 	}
 	
 	public UserProfileEntity(@NonNull String id) {
@@ -120,6 +129,7 @@ public class UserProfileEntity extends VersionedEntity {
 				.country(country)
 				.language(language)
 				.imageUri(imageUri)
+				.statistic(statistic)
 				.build();
 	}
 	
@@ -132,6 +142,7 @@ public class UserProfileEntity extends VersionedEntity {
 			files = new HashSet<>();
 		}
 		files.add(file);
+		statistic.incFileCount();
 	}
 	
 	public void addMedia(MediaEntity media) {
@@ -139,6 +150,11 @@ public class UserProfileEntity extends VersionedEntity {
 			medias = new HashSet<>();
 		}
 		medias.add(media);
+		if (media.getKind() == MediaKind.VIDEO) {
+			statistic.incVideoCount();
+		} else {
+			statistic.incPictureCount();
+		}
 	}
 	
 	public void addComment(MediaCommentEntity comment) {
@@ -146,6 +162,11 @@ public class UserProfileEntity extends VersionedEntity {
 			comments = new HashSet<>();
 		}
 		comments.add(comment);
+		statistic.incCommentCount();
+	}
+
+	public void addMediaHit() {
+		statistic.incHitCount();
 	}
 	
 }

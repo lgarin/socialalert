@@ -10,7 +10,7 @@
         <class>com.bravson.socialalert.infrastructure.entity.DurationAttributeConverter</class>
         <class>com.bravson.socialalert.infrastructure.entity.InstantAttributeConverter</class>
         <class>com.bravson.socialalert.infrastructure.entity.LocalDateAttributeConverter</class>
-        <class>com.bravson.socialalert.business.file.FileEntity</class>
+        <class>com.bravson.socialalert.business.file.entity.FileEntity</class>
         <class>com.bravson.socialalert.business.user.profile.UserProfileEntity</class>
         <class>com.bravson.socialalert.business.user.link.UserLinkEntity</class>
         <class>com.bravson.socialalert.business.media.MediaEntity</class>

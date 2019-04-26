@@ -3,6 +3,7 @@ package com.bravson.socialalert.domain.user;
 import java.time.Instant;
 import java.time.LocalDate;
 
+import com.bravson.socialalert.domain.user.statistic.UserStatistic;
 import com.bravson.socialalert.infrastructure.rest.InstantDeserializer;
 import com.bravson.socialalert.infrastructure.rest.InstantSerializer;
 import com.bravson.socialalert.infrastructure.rest.LocalDateDeserializer;
@@ -55,4 +56,6 @@ public class UserInfo {
 	private String imageUri;
 	
 	private String biography;
+	
+	private UserStatistic statistic;
 }

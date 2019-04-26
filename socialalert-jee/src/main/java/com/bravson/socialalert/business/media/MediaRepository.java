@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
@@ -26,6 +27,7 @@ import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
+import com.bravson.socialalert.infrastructure.entity.HitEntity;
 import com.bravson.socialalert.infrastructure.entity.NewEntity;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
@@ -111,9 +113,14 @@ public class MediaRepository {
 	}
 
 	@Transactional(value=TxType.REQUIRES_NEW)
+	@Deprecated
 	public void increaseHitCountAtomicaly(@NonNull String mediaUri) {
 		// TODO improve performance + handle OptimisticLockException
 		findMedia(mediaUri).ifPresent(MediaEntity::increaseHitCount);
+	}
+	
+	void handleNewMediaHit(@Observes @HitEntity MediaEntity media) {
+		media.increaseHitCount();
 	}
 
 	public List<GeoStatistic> groupByGeoHash(@NonNull SearchMediaParameter parameter) {

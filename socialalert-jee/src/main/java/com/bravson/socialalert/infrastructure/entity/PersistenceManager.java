@@ -6,6 +6,7 @@ import javax.annotation.ManagedBean;
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import org.apache.lucene.search.Query;
@@ -51,5 +52,9 @@ public class PersistenceManager {
 	
 	public FullTextQuery createFullTextQuery(Query query, Class<?> entityClass) {
 		 return Search.getFullTextEntityManager(entityManager).createFullTextQuery(query, entityClass);
+	}
+	
+	public <T> TypedQuery<T> createQuery(String qlString, Class<T> resultClass) {
+		return entityManager.createQuery(qlString, resultClass);
 	}
 }

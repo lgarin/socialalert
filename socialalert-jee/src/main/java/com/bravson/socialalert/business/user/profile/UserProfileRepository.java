@@ -3,6 +3,7 @@ package com.bravson.socialalert.business.user.profile;
 import java.util.Optional;
 
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
@@ -49,5 +50,9 @@ public class UserProfileRepository {
 	
 	void handleNewComment(@Observes @NewEntity MediaCommentEntity comment) {
 		findByUserId(comment.getUserId()).ifPresent(profile -> profile.addComment(comment));
+	}
+	
+	void handleMediaHit(@Observes @Any MediaEntity media) {
+		findByUserId(media.getUserId()).ifPresent(profile -> profile.addMediaHit());
 	}
 }
