@@ -1,6 +1,6 @@
 {
   "realm": "SocialAlert-Dev",
-  "auth-server-url": "http://jcla3ndtozbxyghx.myfritz.net:18788/auth",
+  "auth-server-url": "http://3ft8uk98qmfq79pc.myfritz.net:18788/auth",
   "ssl-required": "none",
   "resource": "socialalert-jee",
   "credentials": {

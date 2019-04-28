@@ -1,9 +1,9 @@
 {
-  "realm": "SocialAlert",
+  "realm": "SocialAlert-Dev",
   "auth-server-url": "http://localhost:8081/auth",
   "ssl-required": "none",
   "resource": "socialalert-jee",
   "credentials": {
-    "secret": "a1c5e3a3-a715-4f8e-b218-c826f9ebeac7"
+    "secret": "c4e3823b-c603-42de-aaf1-c27334137f99"
   }
 }

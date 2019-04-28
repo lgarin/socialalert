@@ -14,7 +14,7 @@
             <property name="hibernate.ogm.datastore.provider" value="neo4j_bolt"/>
             <property name="hibernate.ogm.datastore.host" value="localhost:7687"/>
             <property name="hibernate.ogm.datastore.username" value="neo4j"/>
-            <property name="hibernate.ogm.datastore.password" value="neo4j"/>
+            <property name="hibernate.ogm.datastore.password" value="password"/>
             <property name="hibernate.search.lucene_version" value="LUCENE_CURRENT"/>
             <property name="hibernate.search.default.directory_provider" value="filesystem" />
             <property name="hibernate.search.default.indexBase" value="${jboss.server.data.dir}/lucene.idx"/>

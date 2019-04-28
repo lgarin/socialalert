@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
 
 @OpenAPIDefinition(
 		info = @Info(title = "Socialalert API", version = "1.0"),
-        servers = {@Server(description = "Test server", url = "http://jcla3ndtozbxyghx.myfritz.net:18788/socialalert-jee")}
+        servers = {@Server(description = "Test server", url = "http://3ft8uk98qmfq79pc.myfritz.net:18788/socialalert-jee")}
 )
 @ApplicationPath("/rest")
 public class RestApplication extends Application {

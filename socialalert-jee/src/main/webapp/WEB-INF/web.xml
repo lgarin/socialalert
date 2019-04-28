@@ -37,17 +37,17 @@
 	<env-entry>
 		<env-entry-name>loginUrl</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
-		<env-entry-value>http://localhost:8081/auth/realms/SocialAlert/protocol/openid-connect/token</env-entry-value>
+		<env-entry-value>http://localhost:8081/auth/realms/SocialAlert-Dev/protocol/openid-connect/token</env-entry-value>
 	</env-entry>
 	<env-entry>
 		<env-entry-name>logoutUrl</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
-		<env-entry-value>http://localhost:8081/auth/realms/SocialAlert/protocol/openid-connect/logout</env-entry-value>
+		<env-entry-value>http://localhost:8081/auth/realms/SocialAlert-Dev/protocol/openid-connect/logout</env-entry-value>
 	</env-entry>
 	<env-entry>
 		<env-entry-name>userInfoUrl</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
-		<env-entry-value>http://localhost:8081/auth/realms/SocialAlert/protocol/openid-connect/userinfo</env-entry-value>
+		<env-entry-value>http://localhost:8081/auth/realms/SocialAlert-Dev/protocol/openid-connect/userinfo</env-entry-value>
 	</env-entry>
 	<env-entry>
 		<env-entry-name>loginClientId</env-entry-name>
@@ -57,7 +57,7 @@
 	<env-entry>
 		<env-entry-name>clientSecret</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
-		<env-entry-value>a1c5e3a3-a715-4f8e-b218-c826f9ebeac7</env-entry-value>
+		<env-entry-value>c4e3823b-c603-42de-aaf1-c27334137f99</env-entry-value>
 	</env-entry>
 	<env-entry>
 		<env-entry-name>maxUploadSize</env-entry-name>

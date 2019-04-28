@@ -15,11 +15,11 @@ public class AuthenticationTest extends BaseIntegrationTest {
 
 	private static AuthenticationConfiguration config = AuthenticationConfiguration
 			.builder()
-			.clientSecret("a1c5e3a3-a715-4f8e-b218-c826f9ebeac7")
+			.clientSecret("c4e3823b-c603-42de-aaf1-c27334137f99")
 			.loginClientId("socialalert-jee")
-			.loginUrl("http://localhost:8081/auth/realms/SocialAlert/protocol/openid-connect/token")
-			.logoutUrl("http://localhost:8081/auth/realms/SocialAlert/protocol/openid-connect/logout")
-			.userInfoUrl("http://localhost:8081/auth/realms/SocialAlert/protocol/openid-connect/userinfo")
+			.loginUrl("http://localhost:8081/auth/realms/SocialAlert-Dev/protocol/openid-connect/token")
+			.logoutUrl("http://localhost:8081/auth/realms/SocialAlert-Dev/protocol/openid-connect/logout")
+			.userInfoUrl("http://localhost:8081/auth/realms/SocialAlert-Dev/protocol/openid-connect/userinfo")
 			.build();  
 	
 	private AuthenticationRepository repository = new AuthenticationRepository(config, ClientBuilder.newClient());

@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
+import javax.enterprise.event.Event;
 import javax.ws.rs.NotFoundException;
 
 import org.junit.Test;
@@ -39,6 +40,9 @@ public class MediaServiceTest extends BaseServiceTest {
 	
 	@Mock
 	MediaApprovalRepository approvalRepository;
+	
+	@Mock
+	Event<MediaEntity> mediaHitEvent;
 	
 	@Test
 	public void viewExistingMedia() {
@@ -81,7 +85,6 @@ public class MediaServiceTest extends BaseServiceTest {
 	public void viewNonExistingMedia() {
 		String userId = "user1";
 		String mediaUri = "uri1";
-		when(sessionService.addViewedMedia(mediaUri)).thenReturn(true);
 		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.empty());
 		
 		assertThatThrownBy(() -> mediaService.viewMediaDetail(mediaUri, userId)).isInstanceOf(NotFoundException.class);
