@@ -3,8 +3,11 @@
    <deployment>
       <dependencies>
          <module name="org.hibernate.ogm" slot="5.4" services="export" />
-         <module name="org.hibernate.ogm.neo4j" slot="5.4" services="export" />
+         <module name="org.hibernate.ogm.mongodb" slot="5.4" services="export" />
          <module name="com.google.guava" />
       </dependencies>
+	  <exclusions>
+		<module name="org.jboss.resteasy.resteasy-json-binding-provider" />
+	  </exclusions>
    </deployment>
 </jboss-deployment-structure>

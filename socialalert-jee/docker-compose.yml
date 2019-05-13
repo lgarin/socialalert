@@ -4,9 +4,9 @@ services:
   keycloak:
     image: "jboss/keycloak:4.7.0.Final"
     environment:
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin
-#      - KEYCLOAK_IMPORT=/opt/jboss/keycloak/standalone/tmp/realm-export.json
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+#     KEYCLOAK_IMPORT: /opt/jboss/keycloak/standalone/tmp/realm-export.json
     volumes:
       - "keycloak:/opt/jboss/keycloak/standalone"
     ports:
@@ -18,31 +18,45 @@ services:
   postgres:
     image: "postgres:11.0"
     environment:
-      - POSTGRES_DB=keycloak
-      - POSTGRES_USER=keycloak
-      - POSTGRES_PASSWORD=password
-      - PGDATA=/var/lib/postgresql/data/dbdata
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+      PGDATA: /var/lib/postgresql/data/dbdata
     volumes:
       - "postgres:/var/lib/postgresql/data/dbdata"
-  neo4j:
-    image: neo4j:3.5.0
-    environment:
-      - discovery.type=single-node
-    ports:
-      - "7474:7474"
-      - "7687:7687"
-    volumes:
-      - neo4j:/var/lib/neo4j/data
+#  neo4j:
+#    image: neo4j:3.5.0
+#    environment:
+#      - discovery.type=single-node
+#    ports:
+#      - "7474:7474"
+#      - "7687:7687"
+#    volumes:
+#      - neo4j:/var/lib/neo4j/data
 #  pgadmin:
 #    image: "dpage/pgadmin4:3.6"
 #    environment:
-#      - PGADMIN_DEFAULT_EMAIL=lgarin@gmx.ch
-#      - PGADMIN_DEFAULT_PASSWORD=123
+#      PGADMIN_DEFAULT_EMAIL: lgarin@gmx.ch
+#      PGADMIN_DEFAULT_PASSWORD: 123
 #    ports:
 #      - "8084:80"
 #    links:
 #      - "postgres:postgres"
+  mongo:
+    image: "mongo:4.0.6-xenial"
+    command: "--setParameter maxSessions=20 --smallfiles --port 27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: test
+    ports:
+      - "27017:27017"
+    volumes:
+      - "mongodata:/data/db"
+      - "mongoconfig:/data/configdb"
 volumes:
   keycloak:
   postgres:
   neo4j:
+  mongodata:
+  mongoconfig:

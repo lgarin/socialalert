@@ -23,7 +23,7 @@
 
         <feature-pack
             groupId="org.hibernate.ogm"
-            artifactId="hibernate-ogm-featurepack-neo4j"
+            artifactId="hibernate-ogm-featurepack-mongodb"
             version="5.4.1.Final" />
             
         <feature-pack
