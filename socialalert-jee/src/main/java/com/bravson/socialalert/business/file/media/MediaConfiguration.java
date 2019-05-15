@@ -40,4 +40,7 @@ public class MediaConfiguration {
 	
 	@Resource(name="videoEncodingProgram")
 	String videoEncodingProgram;
+	
+	@Resource(name="metadataExtractorProgram")
+	String metadataExtractorProgram;
 }
