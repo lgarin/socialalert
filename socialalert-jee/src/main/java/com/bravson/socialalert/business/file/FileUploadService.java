@@ -1,7 +1,7 @@
 package com.bravson.socialalert.business.file;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -11,8 +11,7 @@ import javax.ws.rs.NotSupportedException;
 import org.slf4j.Logger;
 
 import com.bravson.socialalert.business.file.entity.FileEntity;
-import com.bravson.socialalert.business.file.media.MediaMetadata;
-import com.bravson.socialalert.business.file.video.AsyncVideoPreviewEvent;
+import com.bravson.socialalert.business.file.media.AsyncMediaEnrichEvent;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.file.FileInfo;
@@ -54,8 +53,7 @@ public class FileUploadService {
 	}
 	
 	public FileInfo uploadMedia(@NonNull FileUploadParameter parameter, @NonNull UserAccess userAccess) throws IOException {
-		MediaFileFormat fileFormat = MediaFileFormat.fromMediaContentType(parameter.getContentType()).orElseThrow(NotSupportedException::new);
-		MediaMetadata mediaMetadata = buildMediaMetadata(parameter.getInputFile(), fileFormat).orElseThrow(NotSupportedException::new);
+		MediaFileFormat fileFormat = determineFileFormat(parameter);
 		
 		FileMetadata fileMetadata = mediaFileStore.buildFileMetadata(parameter.getInputFile(), fileFormat);
 		
@@ -64,33 +62,20 @@ public class FileUploadService {
 			return userService.fillUserInfo(handleExistingFile(existingEntity.get(), userAccess));
 		}
 		
-		FileEntity newEntity = storeNewFile(parameter.getInputFile(), fileMetadata, mediaMetadata, userAccess);
-		return userService.fillUserInfo(newEntity.toFileInfo());
+		mediaFileStore.storeVariant(parameter.getInputFile(), fileMetadata, MediaSizeVariant.MEDIA);
+		FileEntity fileEntity = mediaRepository.storeMedia(fileMetadata, userAccess);
+		asyncRepository.fireAsync(AsyncMediaEnrichEvent.of(fileEntity.getId()));
+		
+		return userService.fillUserInfo(fileEntity.toFileInfo());
 	}
 
-	private FileEntity storeNewFile(File inputFile, FileMetadata fileMetadata, MediaMetadata mediaMetadata, UserAccess userAccess) throws IOException {
-		mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.MEDIA);
-		FileEntity fileEntity = mediaRepository.storeMedia(fileMetadata, mediaMetadata, userAccess);
-		
-		FileMetadata thumbnailMetadata = mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);
-		fileEntity.addVariant(thumbnailMetadata);
-		
-		FileMetadata previewMetadata = mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.PREVIEW);
-		fileEntity.addVariant(previewMetadata);
-		
-		if (fileMetadata.isVideo()) {
-			asyncRepository.fireAsync(AsyncVideoPreviewEvent.of(fileEntity.getId()));
+	private MediaFileFormat determineFileFormat(FileUploadParameter parameter) throws IOException {
+		String detectedContentType = Files.probeContentType(parameter.getInputFile().toPath());
+		MediaFileFormat detectedFileFormat = MediaFileFormat.fromMediaContentType(detectedContentType).orElseThrow(NotSupportedException::new);
+		MediaFileFormat fileFormat = MediaFileFormat.fromMediaContentType(parameter.getContentType()).orElseThrow(NotSupportedException::new);
+		if (detectedFileFormat != fileFormat) {
+			throw new NotSupportedException();
 		}
-		
-		return fileEntity;
-	}
-
-	private Optional<MediaMetadata> buildMediaMetadata(File inputFile, MediaFileFormat fileFormat) throws IOException {
-		try {
-			return Optional.of(mediaFileStore.buildMediaMetadata(inputFile, fileFormat));
-		} catch (Exception e) {
-			logger.info("Cannot extract metadata", e);
-			return Optional.empty();
-		}
+		return fileFormat;
 	}
 }

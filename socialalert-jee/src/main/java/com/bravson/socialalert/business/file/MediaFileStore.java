@@ -9,7 +9,6 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import com.bravson.socialalert.business.file.media.MediaFileProcessor;
-import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.file.picture.PictureFileProcessor;
 import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.business.file.store.TempFileFormat;
@@ -47,11 +46,6 @@ public class MediaFileStore {
 			.contentSize(file.length())
 			.fileFormat(fileFormat)
 			.build();
-	}
-	
-	public MediaMetadata buildMediaMetadata(@NonNull File inputFile, @NonNull MediaFileFormat fileFormat) throws Exception {
-		MediaFileProcessor processor =  MediaFileFormat.VIDEO_SET.contains(fileFormat) ? videoFileProcessor : pictureFileProcessor;
-		return processor.parseMetadata(inputFile);
 	}
 	
 	public FileMetadata storeVariant(@NonNull File inputFile, @NonNull FileMetadata fileMetadata, @NonNull MediaSizeVariant sizeVariant) throws IOException {

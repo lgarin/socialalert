@@ -43,18 +43,16 @@ public class FileEntity extends VersionedEntity {
 	private List<FileMetadata> fileVariants;
 		
 	@Getter
-	@NonNull
 	@Embedded
 	@IndexedEmbedded
 	private MediaMetadata mediaMetadata;
 
-	public FileEntity(@NonNull FileMetadata fileMetadata, @NonNull MediaMetadata mediaMetadata, @NonNull UserAccess userAccess) {
+	public FileEntity(@NonNull FileMetadata fileMetadata, @NonNull UserAccess userAccess) {
 		if (fileMetadata.getSizeVariant() != MediaSizeVariant.MEDIA) {
 			throw new IllegalArgumentException("Size variant must be " + MediaSizeVariant.MEDIA.getVariantName());
 		}
 		this.versionInfo = VersionInfo.of(userAccess.getUserId(), userAccess.getIpAddress());
 		this.id = fileMetadata.buildFileUri();
-		this.mediaMetadata = mediaMetadata;
 		this.state = FileState.UPLOADED;
 		addVariant(fileMetadata);
 	}
@@ -74,6 +72,10 @@ public class FileEntity extends VersionedEntity {
 		return findFileMetadata(sizeVariant).map(FileMetadata::getFileFormat);
 	}
 
+	public void setMediaMetadata(@NonNull MediaMetadata metadata) {
+		this.mediaMetadata = metadata;
+	}
+	
 	public void addVariant(@NonNull FileMetadata metadata) {
 		if (fileVariants == null) {
 			fileVariants = new ArrayList<>();

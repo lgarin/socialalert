@@ -19,7 +19,6 @@ import org.junit.BeforeClass;
 
 import com.bravson.socialalert.business.file.FileMetadata;
 import com.bravson.socialalert.business.file.entity.FileEntity;
-import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.UpsertMediaParameter;
 import com.bravson.socialalert.business.user.UserAccess;
@@ -88,8 +87,7 @@ public class BaseRepositoryTest extends Assertions {
 		claimParameter.setCategories(Arrays.asList("cat1", "cat2"));
 		claimParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
 		FileMetadata fileMetadata = FileMetadata.builder().md5("test").timestamp(Instant.now()).contentSize(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
-    	MediaMetadata mediaMetadata = MediaMetadata.builder().height(700).width(1000).build();
-		FileEntity file = persistAndIndex(new FileEntity(fileMetadata, mediaMetadata, UserAccess.of("test", "1.2.3.4")));
+		FileEntity file = persistAndIndex(new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4")));
 		return persistAndIndex(new MediaEntity(file, claimParameter, UserAccess.of("test", "1.2.3.4")));
 	}
 }

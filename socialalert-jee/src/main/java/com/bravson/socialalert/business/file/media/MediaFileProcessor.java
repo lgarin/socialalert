@@ -8,8 +8,6 @@ import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 
 public interface MediaFileProcessor {
 
-	MediaMetadata parseMetadata(File inputFile) throws Exception;
-	
 	MediaFileFormat createPreview(File inputFile, File outputFile) throws IOException;
 	
 	MediaFileFormat getPreviewFormat();

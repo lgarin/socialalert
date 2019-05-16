@@ -6,9 +6,12 @@ import java.util.List;
 
 import com.google.common.io.CharStreams;
 
+import lombok.SneakyThrows;
+
 public class ProcessUtil {
 
-	public static int execute(String program, List<String> arguments, StringBuilder output) throws IOException, InterruptedException {
+	@SneakyThrows(InterruptedException.class)
+	public static int execute(String program, List<String> arguments, StringBuilder output) throws IOException {
 		ProcessBuilder builder = new ProcessBuilder(program);
 		builder.command().addAll(arguments);
 		builder.redirectErrorStream(true);

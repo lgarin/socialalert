@@ -1,10 +1,13 @@
 package com.bravson.socialalert.test.service;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
 import java.time.Instant;
 
 import org.junit.Test;
@@ -14,15 +17,12 @@ import org.mockito.Mockito;
 
 import com.bravson.socialalert.business.file.FileMetadata;
 import com.bravson.socialalert.business.file.MediaFileStore;
-import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.file.picture.PictureFileProcessor;
 import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.business.file.store.TempFileFormat;
 import com.bravson.socialalert.business.file.video.SnapshotVideoFileProcessor;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
-
-import static org.mockito.Mockito.*;
 
 public class MediaFileStoreTest extends BaseServiceTest {
 
@@ -58,34 +58,6 @@ public class MediaFileStoreTest extends BaseServiceTest {
 		when(fileStore.computeMd5Hex(inputFile)).thenThrow(IOException.class);
 		
 		assertThatThrownBy(() -> mediaFileStore.buildFileMetadata(inputFile, fileFormat)).isInstanceOf(IOException.class);
-	}
-	
-	@Test
-	public void buildPictureMetadata() throws Exception {
-		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
-		MediaFileFormat fileFormat = MediaFileFormat.MEDIA_JPG;
-		MediaMetadata metadata = MediaMetadata.builder().cameraMaker("a").cameraModel("b").width(1200).height(1600).timestamp(Instant.EPOCH).build();
-		
-		when(pictureFileProcessor.parseMetadata(inputFile)).thenReturn(metadata);
-		
-		MediaMetadata result = mediaFileStore.buildMediaMetadata(inputFile, fileFormat);
-		assertThat(result).isEqualTo(metadata);
-		
-		verifyNoMoreInteractions(fileStore, videoFileProcessor);
-	}
-	
-	@Test
-	public void buildVideoMetadata() throws Exception {
-		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
-		MediaFileFormat fileFormat = MediaFileFormat.MEDIA_MP4;
-		MediaMetadata metadata = MediaMetadata.builder().cameraMaker("a").cameraModel("b").width(1200).height(1600).duration(Duration.ofMinutes(10)).timestamp(Instant.EPOCH).build();
-		
-		when(videoFileProcessor.parseMetadata(inputFile)).thenReturn(metadata);
-		
-		MediaMetadata result = mediaFileStore.buildMediaMetadata(inputFile, fileFormat);
-		assertThat(result).isEqualTo(metadata);
-		
-		verifyNoMoreInteractions(fileStore, pictureFileProcessor);
 	}
 	
 	@Test

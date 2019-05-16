@@ -55,7 +55,7 @@ public class MediaMetadataExtractor {
 		this.config = config;
 	}
 	
-	public MediaMetadata parseMetadata(File inputFile) throws Exception {
+	public MediaMetadata parseMetadata(File inputFile) throws IOException {
 		
 		if (!inputFile.canRead()) {
 			throw new IOException("Cannot read file " + inputFile);

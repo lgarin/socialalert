@@ -13,7 +13,6 @@ import org.hibernate.search.query.dsl.QueryBuilder;
 
 import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.file.entity.FileState;
-import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.infrastructure.entity.NewEntity;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
@@ -38,8 +37,8 @@ public class FileRepository {
 	@NewEntity
 	Event<FileEntity> newEntityEvent;
 
-	public FileEntity storeMedia(@NonNull FileMetadata fileMetadata, @NonNull MediaMetadata mediaMetadata, @NonNull UserAccess userAccess) {
-		FileEntity entity = new FileEntity(fileMetadata, mediaMetadata, userAccess);
+	public FileEntity storeMedia(@NonNull FileMetadata fileMetadata, @NonNull UserAccess userAccess) {
+		FileEntity entity = new FileEntity(fileMetadata, userAccess);
 		persistenceManager.persist(entity);
 		newEntityEvent.fire(entity);
 		return entity;

@@ -8,7 +8,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -25,7 +24,6 @@ import com.bravson.socialalert.business.file.FileUploadParameter;
 import com.bravson.socialalert.business.file.FileUploadService;
 import com.bravson.socialalert.business.file.MediaFileStore;
 import com.bravson.socialalert.business.file.entity.FileEntity;
-import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.file.video.AsyncVideoPreviewEvent;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserInfoService;
@@ -63,13 +61,10 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
 		MediaFileFormat fileFormat = MediaFileFormat.MEDIA_JPG;
 		
-		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).build();
-		when(mediaFileStore.buildMediaMetadata(inputFile, fileFormat)).thenReturn(mediaMetadata);
-		
 		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(fileFormat).build();
 		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat)).thenReturn(fileMetadata);
 		
-		FileEntity fileEntity = new FileEntity(fileMetadata, mediaMetadata, UserAccess.of(userId, "4.3.2.1"));
+		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of(userId, "4.3.2.1"));
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.of(fileEntity));
 		
 		when(userService.fillUserInfo(fileEntity.toFileInfo())).thenReturn(fileEntity.toFileInfo());
@@ -88,13 +83,10 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
 		MediaFileFormat fileFormat = MediaFileFormat.MEDIA_JPG;
 		
-		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).build();
-		when(mediaFileStore.buildMediaMetadata(inputFile, fileFormat)).thenReturn(mediaMetadata);
-		
 		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(fileFormat).build();
 		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat)).thenReturn(fileMetadata);
 		
-		FileEntity fileEntity = new FileEntity(fileMetadata, mediaMetadata, UserAccess.of("test2", "4.3.2.1"));
+		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of("test2", "4.3.2.1"));
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.of(fileEntity));
 		
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
@@ -110,13 +102,10 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
 		MediaFileFormat fileFormat = MediaFileFormat.MEDIA_JPG;
 		
-		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).build();
-		when(mediaFileStore.buildMediaMetadata(inputFile, fileFormat)).thenReturn(mediaMetadata);
-		
 		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(fileFormat).build();
 		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat)).thenReturn(fileMetadata);
 		
-		FileEntity fileEntity = new FileEntity(fileMetadata, mediaMetadata, UserAccess.of(userId, ipAddress));
+		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of(userId, ipAddress));
 		fileEntity.markClaimed(UserAccess.of(userId, ipAddress));
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.of(fileEntity));
 		
@@ -133,16 +122,13 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
 		MediaFileFormat fileFormat = MediaFileFormat.MEDIA_JPG;
 		
-		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).timestamp(Instant.EPOCH).build();
-		when(mediaFileStore.buildMediaMetadata(inputFile, fileFormat)).thenReturn(mediaMetadata);
-		
 		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(fileFormat).build();
 		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat)).thenReturn(fileMetadata);
 		
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.empty());
 		
-		FileEntity fileEntity = new FileEntity(fileMetadata, mediaMetadata, UserAccess.of(userId, ipAddress));
-		when(mediaRepository.storeMedia(fileMetadata, mediaMetadata, UserAccess.of(userId, ipAddress))).thenReturn(fileEntity);
+		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of(userId, ipAddress));
+		when(mediaRepository.storeMedia(fileMetadata, UserAccess.of(userId, ipAddress))).thenReturn(fileEntity);
 		
 		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.MEDIA);
 		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);
@@ -162,9 +148,6 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		String userId = "test";
 		String ipAddress = "1.2.3.4";
 		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
-		MediaFileFormat fileFormat = MediaFileFormat.MEDIA_JPG;
-		
-		when(mediaFileStore.buildMediaMetadata(inputFile, fileFormat)).thenThrow(Exception.class);
 		
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
 		assertThatExceptionOfType(NotSupportedException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress)));
@@ -179,16 +162,13 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		File inputFile = new File("src/test/resources/media/IMG_0236.MOV");
 		MediaFileFormat fileFormat = MediaFileFormat.MEDIA_MOV;
 		
-		MediaMetadata mediaMetadata = MediaMetadata.builder().width(100).height(100).duration(Duration.ofHours(2L)).build();
-		when(mediaFileStore.buildMediaMetadata(inputFile, fileFormat)).thenReturn(mediaMetadata);
-		
 		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(1000L).fileFormat(fileFormat).build();
 		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat)).thenReturn(fileMetadata);
 		
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.empty());
 		
-		FileEntity fileEntity = new FileEntity(fileMetadata, mediaMetadata, UserAccess.of(userId, ipAddress));
-		when(mediaRepository.storeMedia(fileMetadata, mediaMetadata, UserAccess.of(userId, ipAddress))).thenReturn(fileEntity);
+		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of(userId, ipAddress));
+		when(mediaRepository.storeMedia(fileMetadata, UserAccess.of(userId, ipAddress))).thenReturn(fileEntity);
 		
 		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.MEDIA);
 		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);
