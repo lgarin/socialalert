@@ -9,7 +9,6 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
 
 import org.hibernate.annotations.QueryHints;
 import org.hibernate.search.jpa.FullTextQuery;
@@ -112,13 +111,6 @@ public class MediaRepository {
 		return persistenceManager.createFullTextQuery(junction.createQuery(), MediaEntity.class);
 	}
 
-	@Transactional(value=TxType.REQUIRES_NEW)
-	@Deprecated
-	public void increaseHitCountAtomicaly(@NonNull String mediaUri) {
-		// TODO improve performance + handle OptimisticLockException
-		findMedia(mediaUri).ifPresent(MediaEntity::increaseHitCount);
-	}
-	
 	void handleNewMediaHit(@Observes @HitEntity MediaEntity media) {
 		media.increaseHitCount();
 	}

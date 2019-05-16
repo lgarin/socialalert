@@ -209,16 +209,6 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	assertThat(result.getNextPage()).isNull();
     	assertThat(result.getContent()).containsExactly(media);
     }
-    
-    @Test
-    public void incrementHitCount() {
-    	MediaEntity media = storeDefaultMedia();
-    	
-    	repository.increaseHitCountAtomicaly(media.getId());
-    	
-    	media = repository.findMedia(media.getId()).get();
-    	assertThat(media.getStatistic().getHitCount()).isEqualTo(1);
-    }
 
     @Test
     public void groupPicturesByGeoHash() {

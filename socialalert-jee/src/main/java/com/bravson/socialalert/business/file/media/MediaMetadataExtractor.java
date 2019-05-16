@@ -80,20 +80,20 @@ public class MediaMetadataExtractor {
 
 		JsonObject item = parser.getArray().get(0).asJsonObject();
 		return MediaMetadata.builder()
-			.width(readInteger(item, "/ImageWidth"))
-			.height(readInteger(item, "/ImageHeight"))
-			.latitude(readDouble(item, "/GPSLatitude"))
-			.longitude(readDouble(item, "/GPSLongitude"))
-			.duration(readDuration(item, "/MediaDuration"))
-			.timestamp(readTimestamp(item, "/CreationDate", "/CreateDate"))
-			.cameraMaker(readString(item, "/Make"))
-			.cameraModel(readString(item, "/Model"))
+			.width(readInteger(item, "ImageWidth"))
+			.height(readInteger(item, "ImageHeight"))
+			.latitude(readDouble(item, "GPSLatitude"))
+			.longitude(readDouble(item, "GPSLongitude"))
+			.duration(readDuration(item, "MediaDuration"))
+			.timestamp(readTimestamp(item, "CreationDate", "CreateDate"))
+			.cameraMaker(readString(item, "Make"))
+			.cameraModel(readString(item, "Model"))
 			.build();
 	}
 	
 	private static JsonValue findFirstDefinedValue(JsonObject item, String... names) {
 		for (String name : names) {
-			JsonValue value = item.getValue(name);
+			JsonValue value = item.get(name);
 			if (value != null) {
 				return value;
 			}

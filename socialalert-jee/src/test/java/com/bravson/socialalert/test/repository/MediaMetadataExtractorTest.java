@@ -16,12 +16,6 @@ public class MediaMetadataExtractorTest extends Assertions {
 
 	private static MediaConfiguration config = MediaConfiguration
 			.builder()
-			.previewHeight(640)
-			.previewWidth(960)
-			.thumbnailHeight(320)
-			.thumbnailWidth(480)
-			.watermarkFile("C:\\Dev\\logo.jpg")
-			.videoEncodingProgram("C:\\Dev\\ffmpeg.exe")
 			.metadataExtractorProgram("C:\\Dev\\exiftool.exe")
 			.build(); 
 	
@@ -42,4 +36,16 @@ public class MediaMetadataExtractorTest extends Assertions {
 	}
 
 
+	@Test
+	public void extractJpgMetadata() throws Exception {
+		MediaMetadata metadata = extractor.parseMetadata(new File("src/test/resources/media/IMG_0397.JPG"));
+		assertThat(metadata.getTimestamp()).isEqualTo(LocalDateTime.of(2013, 4, 14, 16, 28, 26, 0).toInstant(ZoneOffset.UTC));
+		assertThat(metadata.getCameraMaker()).isEqualTo("Apple");
+		assertThat(metadata.getCameraModel()).isEqualTo("iPhone 5");
+		assertThat(metadata.getWidth()).isEqualTo(2448);
+		assertThat(metadata.getHeight()).isEqualTo(3264);
+		assertThat(metadata.getLatitude()).isEqualTo(46.6866666666667);
+		assertThat(metadata.getLongitude()).isEqualTo(7.85883333333333);
+		assertThat(metadata.getDuration()).isNull();
+	}
 }
