@@ -1,7 +1,5 @@
 package com.bravson.socialalert.test.service;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -24,7 +22,8 @@ import com.bravson.socialalert.business.file.FileUploadParameter;
 import com.bravson.socialalert.business.file.FileUploadService;
 import com.bravson.socialalert.business.file.MediaFileStore;
 import com.bravson.socialalert.business.file.entity.FileEntity;
-import com.bravson.socialalert.business.file.video.AsyncVideoPreviewEvent;
+import com.bravson.socialalert.business.file.media.AsyncMediaEnrichEvent;
+import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.file.FileInfo;
@@ -106,6 +105,7 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat)).thenReturn(fileMetadata);
 		
 		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of(userId, ipAddress));
+		fileEntity.markProcessed(MediaMetadata.builder().width(1600).height(800).build());
 		fileEntity.markClaimed(UserAccess.of(userId, ipAddress));
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.of(fileEntity));
 		
@@ -140,7 +140,8 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		FileInfo result = fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress));
 		
 		assertThat(result.getFileUri()).isEqualTo(fileMetadata.buildFileUri());
-		verifyZeroInteractions(asyncRepository, logger);
+		verify(asyncRepository).fireAsync(AsyncMediaEnrichEvent.of(fileEntity.getId()));
+		verifyZeroInteractions(logger);
 	}
 	
 	@Test
@@ -149,10 +150,9 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		String ipAddress = "1.2.3.4";
 		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
 		
-		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
+		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType("image/bmp").build();
 		assertThatExceptionOfType(NotSupportedException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress)));
-		verify(logger).info(eq("Cannot extract metadata"), any(Exception.class));
-		verifyZeroInteractions(asyncRepository, userService);
+		verifyZeroInteractions(asyncRepository, logger, userService);
 	}
 	
 	@Test
@@ -180,7 +180,7 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		FileInfo result = fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress));
 		
 		assertThat(result.getFileUri()).isEqualTo(fileMetadata.buildFileUri());
-		verify(asyncRepository).fireAsync(AsyncVideoPreviewEvent.of(fileEntity.getId()));
+		verify(asyncRepository).fireAsync(AsyncMediaEnrichEvent.of(fileEntity.getId()));
 		verifyZeroInteractions(logger);
 	}
 }

@@ -57,7 +57,7 @@ public class AsyncMediaFileEnricher {
 			File inputFile = fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileMetadata.getFileFormat());
 			
 			MediaMetadata mediaMetadata = metadataExtractor.parseMetadata(inputFile);
-			fileEntity.setMediaMetadata(mediaMetadata);
+			fileEntity.markProcessed(mediaMetadata);
 			
 			FileMetadata thumbnailMetadata = mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);
 			fileEntity.addVariant(thumbnailMetadata);
