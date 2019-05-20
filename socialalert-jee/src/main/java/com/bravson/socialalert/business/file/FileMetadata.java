@@ -20,9 +20,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.experimental.Wither;
 
 @Data
 @Builder
+@Wither
 @AllArgsConstructor
 @Embeddable
 @NoArgsConstructor(access=AccessLevel.PROTECTED)

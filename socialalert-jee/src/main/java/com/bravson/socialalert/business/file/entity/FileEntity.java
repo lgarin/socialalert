@@ -77,7 +77,7 @@ public class FileEntity extends VersionedEntity {
 			return false;
 		}
 		this.mediaMetadata = metadata;
-		changeState(FileState.CLAIMED);
+		changeState(FileState.PROCESSED);
 		return true;
 	}
 	
