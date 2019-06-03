@@ -1,6 +1,5 @@
 package com.bravson.socialalert.test.service;
 
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -29,7 +28,6 @@ import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.file.FileInfo;
 import com.bravson.socialalert.domain.media.format.MediaFileConstants;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
-import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 import com.bravson.socialalert.infrastructure.rest.ConflictException;
 
@@ -129,11 +127,6 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		
 		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of(userId, ipAddress));
 		when(mediaRepository.storeMedia(fileMetadata, UserAccess.of(userId, ipAddress))).thenReturn(fileEntity);
-		
-		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.MEDIA);
-		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);
-		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.PREVIEW);
-		
 		when(userService.fillUserInfo(fileEntity.toFileInfo())).thenReturn(fileEntity.toFileInfo());
 		
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
@@ -169,10 +162,6 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		
 		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of(userId, ipAddress));
 		when(mediaRepository.storeMedia(fileMetadata, UserAccess.of(userId, ipAddress))).thenReturn(fileEntity);
-		
-		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.MEDIA);
-		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);
-		doReturn(fileMetadata).when(mediaFileStore).storeVariant(inputFile, fileMetadata, MediaSizeVariant.PREVIEW);
 		
 		when(userService.fillUserInfo(fileEntity.toFileInfo())).thenReturn(fileEntity.toFileInfo());
 		

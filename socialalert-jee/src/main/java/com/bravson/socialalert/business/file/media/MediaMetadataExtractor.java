@@ -85,7 +85,7 @@ public class MediaMetadataExtractor {
 			.latitude(readDouble(item, "GPSLatitude"))
 			.longitude(readDouble(item, "GPSLongitude"))
 			.duration(readDuration(item, "MediaDuration"))
-			.timestamp(readTimestamp(item, "CreationDate", "CreateDate"))
+			.timestamp(readTimestamp(item, "ContentCreateDate", "CreationDate", "CreateDate"))
 			.cameraMaker(readString(item, "Make"))
 			.cameraModel(readString(item, "Model"))
 			.build();
