@@ -11,6 +11,7 @@ import java.time.temporal.ChronoField;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonNumber;
 import javax.json.JsonObject;
@@ -18,14 +19,22 @@ import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bravson.socialalert.infrastructure.layer.Service;
 import com.bravson.socialalert.infrastructure.util.ProcessUtil;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@Service
+@Transactional(TxType.SUPPORTS)
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class MediaMetadataExtractor {
 
 	private static final DateTimeFormatter timestampFormat = new DateTimeFormatterBuilder()
@@ -46,6 +55,7 @@ public class MediaMetadataExtractor {
             .parseDefaulting(ChronoField.OFFSET_SECONDS, 0)
             .toFormatter();
 	
+	@Inject
 	private MediaConfiguration config;
 	
 	private Logger logger = LoggerFactory.getLogger(getClass());
