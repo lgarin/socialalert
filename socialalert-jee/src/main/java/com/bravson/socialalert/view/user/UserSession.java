@@ -36,8 +36,8 @@ public class UserSession implements Serializable {
 	HttpServletRequest request;
 	
 	public void init(String token) {
-		if (userInfo == null) {
-			userInfo = userService.getOrCreateProfile("Bearer " + token, userAccess.getUserId(), userAccess.getIpAddress()).toOnlineUserInfo();
+		if (userInfo == null && token != null) {
+			userInfo = userService.updateOrCreateProfile("Bearer " + token, userAccess.getUserId(), userAccess.getIpAddress()).toOnlineUserInfo();
 		}
 	}
 

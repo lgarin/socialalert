@@ -11,7 +11,7 @@ import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.business.user.UserAccess;
-import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
 import com.bravson.socialalert.infrastructure.entity.NewEntity;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
@@ -35,8 +35,8 @@ public class UserProfileRepository {
 		return persistenceManager.find(UserProfileEntity.class, userId);
 	}
 
-	public UserProfileEntity createProfile(@NonNull UserInfo userInfo, @NonNull String ipAddress) {
-		UserProfileEntity entity = new UserProfileEntity(userInfo.getUsername(), userInfo.getEmail(), UserAccess.of(userInfo.getId(), ipAddress));
+	public UserProfileEntity createProfile(@NonNull AuthenticationInfo authInfo, @NonNull String ipAddress) {
+		UserProfileEntity entity = new UserProfileEntity(authInfo.getUsername(), authInfo.getEmail(), UserAccess.of(authInfo.getId(), ipAddress));
 		return persistenceManager.persist(entity);
 	}
 

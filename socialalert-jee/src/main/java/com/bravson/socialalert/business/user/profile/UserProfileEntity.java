@@ -18,9 +18,11 @@ import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
 import com.bravson.socialalert.business.user.link.UserLinkEntity;
 import com.bravson.socialalert.domain.media.MediaKind;
 import com.bravson.socialalert.domain.user.Gender;
+import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.domain.user.statistic.UserStatistic;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
@@ -78,6 +80,11 @@ public class UserProfileEntity extends VersionedEntity {
 	@Field
 	@Analyzer(definition="languageAnalyzer")
 	private String biography;
+	
+	@Getter
+	@Setter
+	@Field
+	private Instant lastLogin;
 	
 	@Getter
 	@NonNull
@@ -167,6 +174,30 @@ public class UserProfileEntity extends VersionedEntity {
 
 	public void addMediaHit() {
 		statistic.incHitCount();
+	}
+
+	public void login(AuthenticationInfo authInfo) {
+		setEmail(authInfo.getEmail());
+		setUsername(authInfo.getUsername());
+		getStatistic().incLoginCount();
+		setLastLogin(Instant.now());
+	}
+
+	public LoginResponse toLoginResponse(String accessToken) {
+		return LoginResponse.builder()
+				.accessToken(accessToken)
+				.id(id)
+				.username(username)
+				.email(email)
+				.createdTimestamp(getCreation())
+				.online(true)
+				.biography(biography)
+				.birthdate(birthdate)
+				.country(country)
+				.language(language)
+				.imageUri(imageUri)
+				.statistic(statistic)
+				.build();
 	}
 	
 }

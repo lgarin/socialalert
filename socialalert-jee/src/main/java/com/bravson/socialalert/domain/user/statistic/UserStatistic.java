@@ -19,6 +19,8 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Embeddable
 public class UserStatistic {
+	
+	private int loginCount;
 
 	private int fileCount;
 	
@@ -35,6 +37,10 @@ public class UserStatistic {
 	private int dislikeCount;
 	
 	private int followerCount;
+	
+	public void incLoginCount() {
+		loginCount++;
+	}
 	
 	public void incFileCount() {
 		fileCount++;

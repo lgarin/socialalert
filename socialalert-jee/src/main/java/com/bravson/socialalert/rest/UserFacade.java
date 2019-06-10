@@ -91,7 +91,20 @@ public class UserFacade {
 	@ApiResponse(responseCode = "200", description = "Current user returned with success.", content=@Content(schema=@Schema(implementation=UserInfo.class)))
 	@ApiResponse(responseCode = "404", description = "Current user could not be found.")
 	public UserInfo current(@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
-		return userService.findUserInfo(authorization).orElseThrow(NotFoundException::new);
+		return userService.findUserInfo(userAccess.getUserId()).orElseThrow(NotFoundException::new);
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/info/{userId : .+}")
+	@UserActivity
+	@Operation(summary="Read information about the specified user.")
+	@ApiResponse(responseCode = "200", description = "Specified user returned with success.", content=@Content(schema=@Schema(implementation=UserInfo.class)))
+	@ApiResponse(responseCode = "404", description = "Specified user could not be found.")
+	public UserInfo info(
+			@Parameter(description="The user id to return", required=true) @NotEmpty @PathParam("userId") String userId,
+			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+		return userService.findUserInfo(userId).orElseThrow(NotFoundException::new);
 	}
 	
 	@POST

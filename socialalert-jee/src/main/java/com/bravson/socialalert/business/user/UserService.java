@@ -5,6 +5,9 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.ws.rs.NotFoundException;
 
+import com.bravson.socialalert.business.user.activity.OnlineUserRepository;
+import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
+import com.bravson.socialalert.business.user.authentication.AuthenticationRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.user.LoginParameter;
@@ -29,28 +32,22 @@ public class UserService {
 	@Inject
 	@NonNull
 	UserProfileRepository profileRepository;
-
-	private UserProfileEntity createProfile(String accessToken, String ipAddress) {
-		return authenticationRepository.findUserInfo(accessToken)
-				.map(userInfo -> profileRepository.createProfile(userInfo, ipAddress))
-				.orElseThrow(NotFoundException::new);
-	}
 	
-	public UserProfileEntity getOrCreateProfile(String accessToken, String userId, String ipAddress) {
-		return profileRepository.findByUserId(userId).orElseGet(() -> createProfile(accessToken, ipAddress));
+	@Inject
+	@NonNull
+	OnlineUserRepository onlineUserRepository;
+
+
+	public UserProfileEntity updateOrCreateProfile(String accessToken, String userId, String ipAddress) {
+		AuthenticationInfo authInfo = authenticationRepository.findAuthenticationInfo(accessToken).orElseThrow(NotFoundException::new);
+		UserProfileEntity userProfile = profileRepository.findByUserId(userId).orElseGet(() -> profileRepository.createProfile(authInfo, ipAddress));
+		userProfile.login(authInfo);
+		return userProfile;
 	}
 	
 	private LoginResponse toLoginResponse(String accessToken, String ipAddress) {
-		UserProfileEntity profile = getOrCreateProfile(accessToken, authenticationRepository.extractUserId(accessToken).get(), ipAddress);
-		return LoginResponse.builder()
-				.accessToken(accessToken)
-				.username(profile.getUsername())
-				.email(profile.getEmail())
-				.country(profile.getCountry())
-				.language(profile.getLanguage())
-				.imageUri(profile.getImageUri())
-				.creation(profile.getCreation())
-				.build();
+		UserProfileEntity profile = updateOrCreateProfile(accessToken, authenticationRepository.extractUserId(accessToken).get(), ipAddress);
+		return profile.toLoginResponse(accessToken);
 	}
 	
 	public Optional<LoginResponse> login(@NonNull LoginParameter param, @NonNull String ipAddress) {
@@ -62,7 +59,15 @@ public class UserService {
 		return authenticationRepository.invalidateAccessToken(authorization);
 	}
 
-	public Optional<UserInfo> findUserInfo(@NonNull String authorization) {
-		return authenticationRepository.findUserInfo(authorization);
+	public Optional<UserInfo> findUserInfo(@NonNull String userId) {
+		return profileRepository.findByUserId(userId).map(this::getUserInfo);
+	}
+	
+	private UserInfo getUserInfo(UserProfileEntity entity) {
+		if (onlineUserRepository.isUserActive(entity.getId())) {
+			return entity.toOnlineUserInfo();
+		} else {
+			return entity.toOfflineUserInfo();
+		}
 	}
 }

@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.user;
+package com.bravson.socialalert.business.user.authentication;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Resource;

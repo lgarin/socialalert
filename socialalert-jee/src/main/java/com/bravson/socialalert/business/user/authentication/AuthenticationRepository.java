@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.user;
+package com.bravson.socialalert.business.user.authentication;
 
 import java.io.ByteArrayInputStream;
 import java.util.Base64;
@@ -18,7 +18,6 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 
 import lombok.AccessLevel;
@@ -70,11 +69,11 @@ public class AuthenticationRepository {
 		return response.getStatus() == Status.OK.getStatusCode();
 	}
 	
-	public Optional<UserInfo> findUserInfo(@NonNull String authorization) {
+	public Optional<AuthenticationInfo> findAuthenticationInfo(@NonNull String authorization) {
 		Response response = httpClient.target(config.getUserInfoUrl()).request().header("Authorization", authorization).get();
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return Optional.empty();
 		}
-		return Optional.of(response.readEntity(UserInfo.class));
+		return Optional.of(response.readEntity(AuthenticationInfo.class));
 	}
 }

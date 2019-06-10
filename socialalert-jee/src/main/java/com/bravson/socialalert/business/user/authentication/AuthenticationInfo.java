@@ -1,13 +1,11 @@
-package com.bravson.socialalert.domain.user;
+package com.bravson.socialalert.business.user.authentication;
 
 import java.time.Instant;
-import java.time.LocalDate;
 
-import com.bravson.socialalert.domain.user.statistic.UserStatistic;
 import com.bravson.socialalert.infrastructure.rest.InstantDeserializer;
 import com.bravson.socialalert.infrastructure.rest.InstantSerializer;
-import com.bravson.socialalert.infrastructure.rest.LocalDateDeserializer;
-import com.bravson.socialalert.infrastructure.rest.LocalDateSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -24,7 +22,8 @@ import lombok.Setter;
 @Setter(AccessLevel.NONE)
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserInfo {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class AuthenticationInfo {
 
 	@NonNull
 	private String id;
@@ -39,21 +38,6 @@ public class UserInfo {
 	@NonNull
 	private Instant createdTimestamp;
 	
-	private boolean online;
-	
-	@JsonSerialize(using=LocalDateSerializer.class)
-	@JsonDeserialize(using=LocalDateDeserializer.class)
-	private LocalDate birthdate;
-	
-	private Gender gender;
-	
-	private String country;
-	
-	private String language;
-	
-	private String imageUri;
-	
-	private String biography;
-	
-	private UserStatistic statistic;
+	@JsonProperty("email_verified")
+	private boolean emailVerified;
 }
