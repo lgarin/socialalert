@@ -74,7 +74,7 @@ public class MediaFacade {
 	MediaCommentService commentService;
 	
 	@POST
-	@Path("/claim/{fileUri : .+}")
+	@Path("/claim/{mediaUri : .+}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Claim a media which has been uploaded recently.")
@@ -83,7 +83,7 @@ public class MediaFacade {
 	@ApiResponse(responseCode = "404", description = "No picture exists with this uri.")
 	@ApiResponse(responseCode = "409", description = "This media exists has already been claimed.")
 	public MediaInfo claimMedia(
-			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("fileUri") String fileUri,
+			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("mediaUri") String fileUri,
 			@Valid @NotNull UpsertMediaParameter parameter,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		return mediaUpsertService.claimMedia(fileUri, parameter, userAccess);

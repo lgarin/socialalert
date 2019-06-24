@@ -111,36 +111,36 @@ public class FileFacade {
 	}
 	
 	@GET
-	@Path("/download/{fileUri : .+}")
+	@Path("/download/{mediaUri : .+}")
 	@Operation(summary="Download a file in the same format as it has been uploaded.")
 	@ApiResponse(responseCode = "200", description = "File will be streamed.")
 	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
 	public Response download(
 			@Parameter(description="The relative file uri.", required=true)
-			@NotEmpty @PathParam("fileUri") String fileUri) throws IOException {
+			@NotEmpty @PathParam("mediaUri") String fileUri) throws IOException {
 		return createStreamResponse(fileReadService.download(fileUri).orElseThrow(NotFoundException::new));
 	}
 	
 	@PermitAll
 	@GET
-	@Path("/preview/{fileUri : .+}")
+	@Path("/preview/{mediaUri : .+}")
 	@Operation(summary="Download a file in the preview format.",
 			description="For video media, the preview is initialy a still picture and the video preview is only created after a delay.")
 	@ApiResponse(responseCode = "200", description = "File will be streamed.", content= {@Content(mediaType=MediaFileConstants.JPG_MEDIA_TYPE), @Content(mediaType=MediaFileConstants.MP4_MEDIA_TYPE)})
 	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
 	public Response preview(
-			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("fileUri") String fileUri) throws IOException {
+			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("mediaUri") String fileUri) throws IOException {
 		return createStreamResponse(fileReadService.preview(fileUri).orElseThrow(NotFoundException::new));
 	}
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Access the file metadata.")
-	@Path("/metadata/{fileUri : .+}")
+	@Path("/metadata/{mediaUri : .+}")
 	@ApiResponse(responseCode = "200", description = "File metadata are available in the response.", content=@Content(schema=@Schema(implementation=FileInfo.class)))
 	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
 	public FileInfo getMetadata(
-			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("fileUri") String fileUri,
+			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("mediaUri") String fileUri,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException {
 		return fileSearchService.findFileByUri(fileUri).orElseThrow(NotFoundException::new);
 	}
@@ -157,13 +157,13 @@ public class FileFacade {
 	
 	@PermitAll
 	@GET
-	@Path("/thumbnail/{fileUri : .+}")
+	@Path("/thumbnail/{mediaUri : .+}")
 	@Produces(MediaFileConstants.JPG_MEDIA_TYPE)
 	@Operation(summary="Download a jpeg thumbnail of the media.")
 	@ApiResponse(responseCode = "200", description = "File will be streamed.")
 	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
 	public Response thumbnail(
-			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("fileUri") String fileUri) throws IOException {
+			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("mediaUri") String fileUri) throws IOException {
 		return createStreamResponse(fileReadService.thumbnail(fileUri).orElseThrow(NotFoundException::new));
 	}
 	
