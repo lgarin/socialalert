@@ -5,6 +5,7 @@
          <module name="org.hibernate.ogm" slot="5.4" services="export" />
          <module name="org.hibernate.ogm.mongodb" slot="5.4" services="export" />
          <module name="com.google.guava" />
+         <module name="org.apache.commons.lang3" />
       </dependencies>
 	  <exclusions>
 		<module name="org.jboss.resteasy.resteasy-json-binding-provider" />
