@@ -11,7 +11,9 @@ import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.business.user.session.UserSessionService;
 import com.bravson.socialalert.domain.media.MediaDetail;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
+import com.bravson.socialalert.infrastructure.entity.DislikedEntity;
 import com.bravson.socialalert.infrastructure.entity.HitEntity;
+import com.bravson.socialalert.infrastructure.entity.LikedEntity;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
 import lombok.NonNull;
@@ -36,6 +38,14 @@ public class MediaService {
 	@HitEntity
 	Event<MediaEntity> mediaHitEvent;
 	
+	@Inject
+	@LikedEntity
+	Event<MediaEntity> mediaLikedEvent;
+	
+	@Inject
+	@DislikedEntity
+	Event<MediaEntity> mediaDislikedEvent;
+	
 	public MediaDetail viewMediaDetail(@NonNull String mediaUri, @NonNull String userId) {
 		
 		MediaEntity media = mediaRepository.findMedia(mediaUri).orElseThrow(NotFoundException::new);
@@ -57,8 +67,14 @@ public class MediaService {
 		ApprovalModifier oldModifier = approvalRepository.find(mediaUri, userId).map(MediaApprovalEntity::getModifier).orElse(null);
 		ApprovalModifier newModifier = approvalRepository.changeApproval(mediaEntity, userId, modifier).map(MediaApprovalEntity::getModifier).orElse(null);
 
-		// TODO use event for that and observes it for the user profile
-		mediaEntity.getStatistic().updateApprovalCount(oldModifier, newModifier);
+		if (oldModifier != newModifier) {
+			mediaEntity.getStatistic().updateApprovalCount(oldModifier, newModifier);
+			if (newModifier == ApprovalModifier.LIKE) {
+				mediaLikedEvent.fire(mediaEntity);
+			} else if (newModifier == ApprovalModifier.DISLIKE) {
+				mediaDislikedEvent.fire(mediaEntity);
+			}
+		}
 		
 		MediaDetail detail = mediaEntity.toMediaDetail();
 		detail.setUserApprovalModifier(newModifier);

@@ -61,4 +61,12 @@ public class UserStatistic {
 	public void incHitCount() {
 		hitCount++;
 	}
+	
+	public void incLikeCount() {
+		likeCount++;
+	}
+	
+	public void incDislikeCount() {
+		dislikeCount++;
+	}
 }

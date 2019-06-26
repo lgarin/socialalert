@@ -124,7 +124,7 @@ public class UserProfileEntity extends VersionedEntity {
 		return toUserInfo(false);
 	}
 	
-	private UserInfo toUserInfo(boolean online) {
+	public UserInfo toUserInfo(boolean online) {
 		return UserInfo.builder()
 				.id(id)
 				.username(username)
@@ -174,6 +174,14 @@ public class UserProfileEntity extends VersionedEntity {
 
 	public void addMediaHit() {
 		statistic.incHitCount();
+	}
+	
+	public void addMediaLike() {
+		statistic.incLikeCount();
+	}
+	
+	public void addMediaDislike() {
+		statistic.incDislikeCount();
 	}
 
 	public void login(AuthenticationInfo authInfo) {

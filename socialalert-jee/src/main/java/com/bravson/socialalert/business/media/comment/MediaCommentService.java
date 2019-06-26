@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
@@ -18,6 +19,8 @@ import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
+import com.bravson.socialalert.infrastructure.entity.DislikedEntity;
+import com.bravson.socialalert.infrastructure.entity.LikedEntity;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
 import lombok.NonNull;
@@ -37,6 +40,14 @@ public class MediaCommentService {
 	
 	@Inject
 	CommentApprovalRepository approvalRepository;
+	
+	@Inject
+	@LikedEntity
+	Event<MediaCommentEntity> commentLikedEvent;
+	
+	@Inject
+	@DislikedEntity
+	Event<MediaCommentEntity> commentDislikedEvent;
 	
 	public MediaCommentInfo createComment(@NonNull String mediaUri, @NonNull String comment, @NonNull UserAccess userAccess) {
 		mediaRepository.findMedia(mediaUri).orElseThrow(NotFoundException::new);
@@ -68,7 +79,14 @@ public class MediaCommentService {
 		ApprovalModifier oldModifier = approvalRepository.find(commentId, userId).map(CommentApprovalEntity::getModifier).orElse(null);
 		ApprovalModifier newModifier = approvalRepository.changeApproval(entity, userId, modifier).map(CommentApprovalEntity::getModifier).orElse(null);
 
-		entity.updateApprovalCount(oldModifier, newModifier);
+		if (oldModifier != newModifier) {
+			entity.updateApprovalCount(oldModifier, newModifier);
+			if (newModifier == ApprovalModifier.LIKE) {
+				commentLikedEvent.fire(entity);
+			} else if (newModifier == ApprovalModifier.DISLIKE) {
+				commentDislikedEvent.fire(entity);
+			}
+		}
 		
 		MediaCommentDetail info = entity.toMediaCommentDetail();
 		info.setUserApprovalModifier(newModifier);

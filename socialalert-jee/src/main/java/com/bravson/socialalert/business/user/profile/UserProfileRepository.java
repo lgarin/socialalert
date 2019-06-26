@@ -3,7 +3,6 @@ package com.bravson.socialalert.business.user.profile;
 import java.util.Optional;
 
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
@@ -12,6 +11,9 @@ import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
+import com.bravson.socialalert.infrastructure.entity.DislikedEntity;
+import com.bravson.socialalert.infrastructure.entity.HitEntity;
+import com.bravson.socialalert.infrastructure.entity.LikedEntity;
 import com.bravson.socialalert.infrastructure.entity.NewEntity;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
@@ -52,7 +54,15 @@ public class UserProfileRepository {
 		findByUserId(comment.getUserId()).ifPresent(profile -> profile.addComment(comment));
 	}
 	
-	void handleMediaHit(@Observes @Any MediaEntity media) {
+	void handleMediaHit(@Observes @HitEntity MediaEntity media) {
 		findByUserId(media.getUserId()).ifPresent(profile -> profile.addMediaHit());
+	}
+	
+	void handleMediaLiked(@Observes @LikedEntity MediaEntity media) {
+		findByUserId(media.getUserId()).ifPresent(profile -> profile.addMediaLike());
+	}
+	
+	void handleMediaDisliked(@Observes @DislikedEntity MediaEntity media) {
+		findByUserId(media.getUserId()).ifPresent(profile -> profile.addMediaDislike());
 	}
 }
