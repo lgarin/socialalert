@@ -36,17 +36,21 @@ public class UserLinkEntity {
 	private Instant creation;
 	
 	@Getter
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.LAZY, optional = false)
 	@MapsId("sourceUserId")
+	@IndexedEmbedded(includePaths= {"id"})
 	private UserProfileEntity sourceUser;
 	
 	@Getter
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.LAZY, optional = false)
 	@MapsId("targetUserId")
+	@IndexedEmbedded(includePaths= {"id"})
 	private UserProfileEntity targetUser;
 	
-	public UserLinkEntity(@NonNull String sourceUserId, @NonNull String targetUserId) {
-		this.id = new UserLinkKey(sourceUserId, targetUserId);
+	public UserLinkEntity(@NonNull UserProfileEntity sourceUser, @NonNull UserProfileEntity targetUser) {
+		this.id = new UserLinkKey(sourceUser.getId(), targetUser.getId());
+		this.sourceUser = sourceUser;
+		this.targetUser = targetUser;
 		this.creation = Instant.now();
 	}
 }

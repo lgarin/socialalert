@@ -46,7 +46,7 @@ public class CommentApprovalEntity {
 	private Instant creation;
 	
 	@Getter
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.LAZY, optional = false)
 	@MapsId("commentId")
 	@IndexedEmbedded(includePaths= {"media.id"})
 	private MediaCommentEntity comment;

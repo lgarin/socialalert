@@ -16,7 +16,7 @@ import lombok.Data;
 
 @Schema(description="The information for a feed item.")
 @Data
-public class FeedInfo implements UserContent {
+public class FeedItemInfo implements UserContent {
 
 	@Schema(description = "The activity timestamp in milliseconds since the epoch.")
 	@JsonSerialize(using = InstantSerializer.class)

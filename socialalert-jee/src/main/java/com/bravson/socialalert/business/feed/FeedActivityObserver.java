@@ -26,37 +26,38 @@ import lombok.NonNull;
 public class FeedActivityObserver {
 
 	@Inject
-	FeedRepository feedRepository;
+	@NonNull
+	FeedItemRepository itemRepository;
 	
 	@Inject
 	@NonNull
 	UserAccess userAccess;
 
 	void handleNewMedia(@Observes @NewEntity MediaEntity media) {
-		feedRepository.insert(FeedActivity.NEW_MEDIA, media, userAccess);
+		itemRepository.insert(FeedActivity.NEW_MEDIA, media, userAccess);
 	}
 	
 	void handleMediaHit(@Observes @HitEntity MediaEntity media) {
-		feedRepository.insert(FeedActivity.WATCH_MEDIA, media, userAccess);
+		itemRepository.insert(FeedActivity.WATCH_MEDIA, media, userAccess);
 	}
 	
 	void handleMediaLiked(@Observes @LikedEntity MediaEntity media) {
-		feedRepository.insert(FeedActivity.LIKE_MEDIA, media, userAccess);
+		itemRepository.insert(FeedActivity.LIKE_MEDIA, media, userAccess);
 	}
 	
 	void handleMediaDisliked(@Observes @DislikedEntity MediaEntity media) {
-		feedRepository.insert(FeedActivity.DISLIKE_MEDIA, media, userAccess);
+		itemRepository.insert(FeedActivity.DISLIKE_MEDIA, media, userAccess);
 	}
 	
 	void handleNewComment(@Observes @NewEntity MediaCommentEntity comment) {
-		feedRepository.insert(FeedActivity.NEW_COMMENT, comment, userAccess);
+		itemRepository.insert(FeedActivity.NEW_COMMENT, comment, userAccess);
 	}
 	
 	void handleCommentLiked(@Observes @LikedEntity MediaCommentEntity comment) {
-		feedRepository.insert(FeedActivity.LIKE_COMMENT, comment, userAccess);
+		itemRepository.insert(FeedActivity.LIKE_COMMENT, comment, userAccess);
 	}
 	
 	void handleCommentDisliked(@Observes @DislikedEntity MediaCommentEntity comment) {
-		feedRepository.insert(FeedActivity.DISLIKE_COMMENT, comment, userAccess);
+		itemRepository.insert(FeedActivity.DISLIKE_COMMENT, comment, userAccess);
 	}
 }

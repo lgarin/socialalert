@@ -18,6 +18,7 @@
         <class>com.bravson.socialalert.business.media.comment.MediaCommentEntity</class>
         <class>com.bravson.socialalert.business.media.approval.CommentApprovalEntity</class>
         <class>com.bravson.socialalert.business.media.tag.MediaTagEntity</class>
+        <class>com.bravson.socialalert.business.feed.FeedItemEntity</class>
         
         <properties>
             <property name="hibernate.ogm.datastore.provider" value="map"/>

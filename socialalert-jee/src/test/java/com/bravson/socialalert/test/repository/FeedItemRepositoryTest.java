@@ -1,0 +1,69 @@
+package com.bravson.socialalert.test.repository;
+
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collections;
+
+import org.junit.Test;
+
+import com.bravson.socialalert.business.feed.FeedItemEntity;
+import com.bravson.socialalert.business.feed.FeedItemRepository;
+import com.bravson.socialalert.business.media.MediaEntity;
+import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
+import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.domain.feed.FeedActivity;
+import com.bravson.socialalert.domain.paging.PagingParameter;
+import com.bravson.socialalert.domain.paging.QueryResult;
+
+public class FeedItemRepositoryTest extends BaseRepositoryTest {
+    
+    private FeedItemRepository repository = new FeedItemRepository(getPersistenceManager());
+
+    @Test
+    public void insertFeedItemWithNewMedia() {
+    	MediaEntity media = storeDefaultMedia();
+    	FeedItemEntity entity = repository.insert(FeedActivity.NEW_MEDIA, media, UserAccess.of("test", "1.2.3.4"));
+    	assertThat(entity.getUserId()).isEqualTo("test");
+    	assertThat(entity.getActivity()).isEqualTo(FeedActivity.NEW_MEDIA);
+    	assertThat(entity.getMedia()).isEqualTo(media);
+    	assertThat(entity.getComment()).isNull();
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void insertFeedItemWithIllegalActivity() {
+    	MediaEntity media = storeDefaultMedia();
+    	repository.insert(FeedActivity.NEW_COMMENT, media, UserAccess.of("test", "1.2.3.4"));
+    }
+    
+    @Test
+    public void insertFeedItemWithNewComment() {
+    	MediaEntity media = storeDefaultMedia();
+    	MediaCommentEntity comment = new MediaCommentEntity(media, "test", UserAccess.of("test", "1.2.3.4"));
+    	persistAndIndex(comment);
+    	FeedItemEntity entity = repository.insert(FeedActivity.NEW_COMMENT, comment, UserAccess.of("test", "1.2.3.4"));
+    	assertThat(entity.getUserId()).isEqualTo("test");
+    	assertThat(entity.getActivity()).isEqualTo(FeedActivity.NEW_COMMENT);
+    	assertThat(entity.getMedia()).isEqualTo(media);
+    	assertThat(entity.getComment()).isEqualTo(comment);
+    }
+    
+    @Test
+    public void getActivitiesBySingleUser() {
+    	MediaEntity media = storeDefaultMedia();
+    	FeedItemEntity entity = new FeedItemEntity(media, null, FeedActivity.NEW_MEDIA, UserAccess.of("test", "1.2.3.4"));
+    	persistAndIndex(entity);
+    	QueryResult<FeedItemEntity> result = repository.getActivitiesByUsers(Collections.singleton("test"), new PagingParameter(Instant.now(), 0, 10));
+    	assertThat(result.getContent()).containsExactly(entity);
+    }
+    
+    @Test
+    public void getActivitiesByMultipleUsers() {
+    	MediaEntity media = storeDefaultMedia();
+    	FeedItemEntity entity1 = new FeedItemEntity(media, null, FeedActivity.NEW_MEDIA, UserAccess.of("test", "1.2.3.4"));
+    	persistAndIndex(entity1);
+    	FeedItemEntity entity2 = new FeedItemEntity(media, null, FeedActivity.NEW_MEDIA, UserAccess.of("test2", "1.2.3.4"));
+    	persistAndIndex(entity2);
+    	QueryResult<FeedItemEntity> result = repository.getActivitiesByUsers(Arrays.asList("test", "test2"), new PagingParameter(Instant.now(), 0, 10));
+    	assertThat(result.getContent()).containsExactly(entity2, entity1);
+    }
+}

@@ -41,7 +41,7 @@ public class MediaCommentEntity {
 	private String id;
 	
 	@Getter
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.LAZY, optional = false)
 	@IndexedEmbedded(includePaths= {"id"})
 	private MediaEntity media;
 	

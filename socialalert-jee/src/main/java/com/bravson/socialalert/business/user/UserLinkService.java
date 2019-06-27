@@ -38,9 +38,10 @@ public class UserLinkService {
 	OnlineUserRepository onlineUserRepository;
 
 	public boolean link(UserAccess userAccess, String userId) {
-		profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
+		UserProfileEntity targetUser = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
 		if (!linkRepository.find(userAccess.getUserId(), userId).isPresent()) {
-			linkRepository.link(userAccess.getUserId(), userId);
+			UserProfileEntity sourceUser = profileRepository.findByUserId(userAccess.getUserId()).orElseThrow(NotFoundException::new);
+			linkRepository.link(sourceUser, targetUser);
 			return true;
 		}
 		return false;

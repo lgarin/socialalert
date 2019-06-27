@@ -46,7 +46,7 @@ public class MediaApprovalEntity {
 	private Instant creation;
 	
 	@Getter
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.LAZY, optional = false)
 	@MapsId("mediaUri")
 	private MediaEntity media;
 
