@@ -1,7 +1,6 @@
 package com.bravson.socialalert.view.media;
 
 import java.io.Serializable;
-import java.time.Instant;
 import java.util.IntSummaryStatistics;
 import java.util.List;
 
@@ -138,7 +137,7 @@ public class MediaMapView implements Serializable {
 	}
 
 	private void fillTopMediaList(SearchMediaParameter parameter) {
-		topMediaList = searchService.searchMedia(parameter, new PagingParameter(Instant.now(), 0, 20)).getContent();
+		topMediaList = searchService.searchMedia(parameter, PagingParameter.of(null, 0, 20)).getContent();
 	}
 	
 	public void search() {

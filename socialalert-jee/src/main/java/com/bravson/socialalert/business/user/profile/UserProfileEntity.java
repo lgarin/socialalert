@@ -110,6 +110,7 @@ public class UserProfileEntity extends VersionedEntity {
 		this.email = email;
 		this.versionInfo = VersionInfo.of(userAccess.getUserId(), userAccess.getIpAddress());
 		this.statistic = new UserStatistic();
+		this.followedUsers = new HashSet<>();
 	}
 	
 	public UserProfileEntity(@NonNull String id) {
@@ -182,6 +183,10 @@ public class UserProfileEntity extends VersionedEntity {
 	
 	public void addMediaDislike() {
 		statistic.incDislikeCount();
+	}
+	
+	public void addFollower() {
+		statistic.incFollowerCount();
 	}
 
 	public void login(AuthenticationInfo authInfo) {

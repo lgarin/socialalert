@@ -1,7 +1,6 @@
 package com.bravson.socialalert.rest;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -145,11 +144,7 @@ public class MediaFacade {
 		if (creator != null) {
 			parameter.setCreator(creator);
 		}
-		if (pagingTimestamp == null) {
-			pagingTimestamp = System.currentTimeMillis();
-		}
-		PagingParameter paging = new PagingParameter(Instant.ofEpochMilli(pagingTimestamp), pageNumber, pageSize);
-		return mediaSearchService.searchMedia(parameter, paging);
+		return mediaSearchService.searchMedia(parameter, PagingParameter.of(pagingTimestamp, pageNumber, pageSize));
 	}
 	
 	@GET
@@ -186,12 +181,8 @@ public class MediaFacade {
 		if (creator != null) {
 			parameter.setCreator(creator);
 		}
-		if (pagingTimestamp == null) {
-			pagingTimestamp = System.currentTimeMillis();
-		}
 		parameter.setLocation(GeoArea.builder().latitude(latitude).longitude(longitude).radius(maxDistance).build());
-		PagingParameter paging = new PagingParameter(Instant.ofEpochMilli(pagingTimestamp), pageNumber, pageSize);
-		return mediaSearchService.searchMedia(parameter, paging);
+		return mediaSearchService.searchMedia(parameter, PagingParameter.of(pagingTimestamp, pageNumber, pageSize));
 	}
 	
 	@GET
@@ -269,11 +260,7 @@ public class MediaFacade {
 			@Parameter(description="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		
-		if (pagingTimestamp == null) {
-			pagingTimestamp = System.currentTimeMillis();
-		}
-		PagingParameter paging = new PagingParameter(Instant.ofEpochMilli(pagingTimestamp), pageNumber, pageSize);
-		return commentService.listComments(mediaUri, userAccess.getUserId(), paging);
+		return commentService.listComments(mediaUri, userAccess.getUserId(), PagingParameter.of(pagingTimestamp, pageNumber, pageSize));
 	}
 	
 	@GET

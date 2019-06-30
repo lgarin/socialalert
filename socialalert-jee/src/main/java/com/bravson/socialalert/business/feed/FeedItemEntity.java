@@ -36,12 +36,12 @@ public class FeedItemEntity {
 	private String id;
 	
 	@Getter
-	@ManyToOne(fetch=FetchType.LAZY, optional = false)
+	@ManyToOne(fetch=FetchType.EAGER, optional = false)
 	@IndexedEmbedded(includePaths= {"id"})
 	private MediaEntity media;
 	
 	@Getter
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.EAGER)
 	@IndexedEmbedded(includePaths= {"id"})
 	private MediaCommentEntity comment;
 

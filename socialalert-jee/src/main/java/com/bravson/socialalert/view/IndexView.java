@@ -1,7 +1,6 @@
 package com.bravson.socialalert.view;
 
 import java.io.Serializable;
-import java.time.Instant;
 import java.util.List;
 
 import javax.enterprise.inject.Model;
@@ -31,6 +30,6 @@ public class IndexView implements Serializable {
 	
     public void loadMediaList() {
     	SearchMediaParameter parameter = searchComponent.buildSearchParameter();
-    	mediaList = searchMediaService.searchMedia(parameter, new PagingParameter(Instant.now(), 0, 50)).getContent();
+    	mediaList = searchMediaService.searchMedia(parameter, PagingParameter.of(null, 0, 50)).getContent();
     }
 }    

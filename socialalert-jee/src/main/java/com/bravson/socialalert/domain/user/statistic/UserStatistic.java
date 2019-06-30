@@ -69,4 +69,8 @@ public class UserStatistic {
 	public void incDislikeCount() {
 		dislikeCount++;
 	}
+	
+	public void incFollowerCount() {
+		followerCount++;
+	}
 }
