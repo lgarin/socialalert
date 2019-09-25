@@ -10,10 +10,9 @@ public class FeedTest extends BaseIntegrationTest {
 
 
 	@Test
-	public void listFeedForUnknownUser() {
+	public void listEmptyFeedForKnownUser() {
 		String token = requestLoginToken("test@test.com", "123");
-		String user = "xyz";
-		Response response = createAuthRequest("/feed/" + user, MediaType.APPLICATION_JSON, token).get();
-		assertThat(response.getStatus()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+		Response response = createAuthRequest("/feed/current", MediaType.APPLICATION_JSON, token).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 	}
 }
