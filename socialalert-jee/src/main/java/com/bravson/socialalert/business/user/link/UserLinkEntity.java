@@ -8,9 +8,12 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
-import org.hibernate.search.annotations.FieldBridge;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.IdentifierBridgeRef;
+import org.hibernate.search.mapper.pojo.dirtiness.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 
@@ -25,10 +28,9 @@ import lombok.NonNull;
 public class UserLinkEntity {
 
 	@EmbeddedId
-	@FieldBridge(impl=UserLinkKey.Bridge.class)
+	@DocumentId(identifierBridge = @IdentifierBridgeRef(type = UserLinkKey.Bridge.class))
 	@Getter
 	@NonNull
-	@IndexedEmbedded
 	private UserLinkKey id;
 
 	@Getter
@@ -39,12 +41,14 @@ public class UserLinkEntity {
 	@ManyToOne(fetch=FetchType.LAZY, optional = false)
 	@MapsId("sourceUserId")
 	@IndexedEmbedded(includePaths= {"id"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.NO)
 	private UserProfileEntity sourceUser;
 	
 	@Getter
 	@ManyToOne(fetch=FetchType.LAZY, optional = false)
 	@MapsId("targetUserId")
 	@IndexedEmbedded(includePaths= {"id"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.NO)
 	private UserProfileEntity targetUser;
 	
 	public UserLinkEntity(@NonNull UserProfileEntity sourceUser, @NonNull UserProfileEntity targetUser) {

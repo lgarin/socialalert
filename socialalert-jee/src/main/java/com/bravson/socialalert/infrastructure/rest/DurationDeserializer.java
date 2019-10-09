@@ -1,23 +1,18 @@
 package com.bravson.socialalert.infrastructure.rest;
 
-import java.io.IOException;
+import java.lang.reflect.Type;
 import java.time.Duration;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import javax.json.bind.serializer.DeserializationContext;
+import javax.json.bind.serializer.JsonbDeserializer;
+import javax.json.stream.JsonParser;
 
-public class DurationDeserializer extends StdDeserializer<Duration> {
 
-	private static final long serialVersionUID = 1L;
-
-	protected DurationDeserializer() {
-        super(Duration.class);
-    }
+public class DurationDeserializer implements JsonbDeserializer<Duration> {
 
     @Override
-    public Duration deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-        return Duration.ofMillis(jp.getLongValue());
+    public Duration deserialize(JsonParser jp, DeserializationContext ctxt, Type type) {
+        return Duration.ofMillis(jp.getLong());
     }
 
 }

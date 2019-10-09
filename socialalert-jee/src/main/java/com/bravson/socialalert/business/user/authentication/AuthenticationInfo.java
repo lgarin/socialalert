@@ -2,12 +2,12 @@ package com.bravson.socialalert.business.user.authentication;
 
 import java.time.Instant;
 
+import javax.json.bind.annotation.JsonbProperty;
+import javax.json.bind.annotation.JsonbTypeDeserializer;
+import javax.json.bind.annotation.JsonbTypeSerializer;
+
 import com.bravson.socialalert.infrastructure.rest.InstantDeserializer;
 import com.bravson.socialalert.infrastructure.rest.InstantSerializer;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -22,7 +22,6 @@ import lombok.Setter;
 @Setter(AccessLevel.NONE)
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class AuthenticationInfo {
 
 	@NonNull
@@ -33,11 +32,11 @@ public class AuthenticationInfo {
 	
 	private String email;
 	
-	@JsonSerialize(using=InstantSerializer.class)
-	@JsonDeserialize(using=InstantDeserializer.class)
+	@JsonbTypeSerializer(InstantSerializer.class)
+	@JsonbTypeDeserializer(InstantDeserializer.class)
 	@NonNull
 	private Instant createdTimestamp;
 	
-	@JsonProperty("email_verified")
+	@JsonbProperty("email_verified")
 	private boolean emailVerified;
 }

@@ -12,14 +12,10 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.DynamicBoost;
-import org.hibernate.search.annotations.Facet;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Fields;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 
 import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.user.UserAccess;
@@ -39,7 +35,6 @@ import lombok.NoArgsConstructor;
 @Entity(name="Media")
 @Indexed
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
-@DynamicBoost(impl=MediaBoostStrategy.class)
 public class MediaEntity extends VersionedEntity {
 	
 	public static final int MIN_GEOHASH_PRECISION = 1;
@@ -50,17 +45,15 @@ public class MediaEntity extends VersionedEntity {
 	private FileEntity file;
 	
 	@Getter
-	@Field
+	@GenericField
 	private MediaKind kind;
 	
 	@Getter
-	@Field
-	@Analyzer(definition="languageAnalyzer")
+	@FullTextField(analyzer="languageAnalyzer")
     private String title;
 	
 	@Getter
-	@Field
-	@Analyzer(definition="languageAnalyzer")
+	@FullTextField(analyzer="languageAnalyzer")
 	private String description;
 
 	@Getter
@@ -75,49 +68,37 @@ public class MediaEntity extends VersionedEntity {
 	
 	@Getter
 	@ElementCollection(fetch=FetchType.EAGER)
-	@IndexedEmbedded
-	@Fields({@Field, @Field(name="categories_facet", analyze=Analyze.NO)})
-	@Facet(forField="categories_facet")
+	@GenericField
 	private List<String> categories;
 	
 	@Getter
 	@ElementCollection(fetch=FetchType.EAGER)
-	@IndexedEmbedded
-	@Field
-	@Analyzer(definition="languageAnalyzer")
+	@FullTextField(analyzer="languageAnalyzer")
 	private List<String> tags;
 	
 	@Transient
-	@Field(analyze=Analyze.NO)
-	@Facet
+	@GenericField
 	private String geoHash1;
 	@Transient
-	@Field(analyze=Analyze.NO)
-	@Facet
+	@GenericField
 	private String geoHash2;
 	@Transient
-	@Field(analyze=Analyze.NO)
-	@Facet
+	@GenericField
 	private String geoHash3;
 	@Transient
-	@Field(analyze=Analyze.NO)
-	@Facet
+	@GenericField
 	private String geoHash4;
 	@Transient
-	@Field(analyze=Analyze.NO)
-	@Facet
+	@GenericField
 	private String geoHash5;
 	@Transient
-	@Field(analyze=Analyze.NO)
-	@Facet
+	@GenericField
 	private String geoHash6;
 	@Transient
-	@Field(analyze=Analyze.NO)
-	@Facet
+	@GenericField
 	private String geoHash7;
 	@Transient
-	@Field(analyze=Analyze.NO)
-	@Facet
+	@GenericField
 	private String geoHash8;
 	
 	@PrePersist

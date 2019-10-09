@@ -9,10 +9,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
-import org.apache.lucene.search.Query;
-import org.hibernate.search.jpa.FullTextQuery;
-import org.hibernate.search.jpa.Search;
-import org.hibernate.search.query.dsl.QueryBuilder;
+import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.search.dsl.query.HibernateOrmSearchQueryHitTypeStep;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -27,8 +25,8 @@ public class PersistenceManager {
 	@PersistenceContext(unitName = "socialalert")
     EntityManager entityManager;
 	
-	public QueryBuilder createQueryBuilder(Class<?> entityClass) {
-		return Search.getFullTextEntityManager(entityManager).getSearchFactory().buildQueryBuilder().forEntity(entityClass).get();
+	public <T> HibernateOrmSearchQueryHitTypeStep<T> search(Class<T> entityClass) {
+		return Search.session(entityManager).search(entityClass);
 	}
 	
 	public <T> T persist(T entity) {
@@ -48,10 +46,6 @@ public class PersistenceManager {
 	
 	public <T> Optional<T> find(Class<T> entityClass, Object key) {
 		return Optional.ofNullable(entityManager.find(entityClass, key));
-	}
-	
-	public FullTextQuery createFullTextQuery(Query query, Class<?> entityClass) {
-		 return Search.getFullTextEntityManager(entityManager).createFullTextQuery(query, entityClass);
 	}
 	
 	public <T> TypedQuery<T> createQuery(String qlString, Class<T> resultClass) {

@@ -4,9 +4,10 @@ import java.time.Instant;
 
 import javax.persistence.Embeddable;
 
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.SortableField;
+import org.hibernate.search.engine.backend.types.Sortable;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -15,19 +16,18 @@ import lombok.Setter;
 
 @Data
 @Embeddable
-@NoArgsConstructor(access=AccessLevel.PROTECTED)
+@NoArgsConstructor(access=AccessLevel.PUBLIC)
 @Setter(AccessLevel.NONE)
 @Indexed
 public class VersionInfo {
 
-	@Field
+	@KeywordField
 	private String userId;
 	
-	@Field
+	@KeywordField
 	private String ipAddress;
 	
-	@Field
-	@SortableField
+	@GenericField(sortable = Sortable.YES)
 	private Instant creation;
 	
 	private Instant lastUpdate;

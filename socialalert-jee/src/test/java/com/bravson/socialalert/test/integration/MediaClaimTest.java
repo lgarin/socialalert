@@ -12,8 +12,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.assertj.core.data.Offset;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.media.UpsertMediaParameter;
 import com.bravson.socialalert.domain.location.GeoAddress;
@@ -84,7 +83,6 @@ public class MediaClaimTest extends BaseIntegrationTest {
 	}
 	
 	@Test
-	@Ignore
 	public void claimExistingVideo() {
 		String token = requestLoginToken("test@test.com", "123");
 		String uri = uploadVideo(token);

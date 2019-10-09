@@ -21,4 +21,8 @@ public class PagingParameter {
 		}
 		return new PagingParameter(Instant.ofEpochMilli(pagingTimestamp), pageNumber, pageSize);
 	}
+	
+	public int getOffset() {
+		return pageNumber * pageSize;
+	}
 }

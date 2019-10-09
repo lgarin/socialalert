@@ -8,9 +8,12 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
-import org.hibernate.search.annotations.FieldBridge;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.IdentifierBridgeRef;
+import org.hibernate.search.mapper.pojo.dirtiness.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
@@ -31,10 +34,9 @@ import lombok.ToString;
 public class CommentApprovalEntity {
 
 	@EmbeddedId
-	@FieldBridge(impl=CommentApprovalKey.Bridge.class)
+	@DocumentId(identifierBridge = @IdentifierBridgeRef(type = CommentApprovalKey.Bridge.class))
 	@Getter
 	@NonNull
-	@IndexedEmbedded
 	private CommentApprovalKey id;
 	
 	@Getter
@@ -48,7 +50,8 @@ public class CommentApprovalEntity {
 	@Getter
 	@ManyToOne(fetch=FetchType.LAZY, optional = false)
 	@MapsId("commentId")
-	@IndexedEmbedded(includePaths= {"media.id"})
+	@IndexedEmbedded(includePaths= {"id"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.NO)
 	private MediaCommentEntity comment;
 
 	public CommentApprovalEntity(@NonNull MediaCommentEntity comment, @NonNull String userId) {

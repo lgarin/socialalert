@@ -1,14 +1,11 @@
 package com.bravson.socialalert.infrastructure.async;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
-import javax.jms.Destination;
-import javax.jms.JMSConnectionFactory;
-import javax.jms.JMSContext;
 import javax.transaction.Transactional;
 
 import com.bravson.socialalert.infrastructure.layer.Service;
 
+import io.vertx.core.eventbus.EventBus;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -20,13 +17,9 @@ import lombok.NoArgsConstructor;
 public class AsyncRepository {
 
 	@Inject
-	@JMSConnectionFactory(AsyncConstants.QUEUE_CONNECTION_FACTORY)
-    JMSContext context;
-
-    @Resource(mappedName = AsyncConstants.ASYNC_PROCESSOR_QUEUE)
-    Destination destination;
-    
+	EventBus bus;
+	
 	public void fireAsync(AsyncEvent event) {
-		context.createProducer().send(destination, event);
+		bus.publish("async", event);
     }
 }

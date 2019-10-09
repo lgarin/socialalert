@@ -8,10 +8,12 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.dirtiness.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.user.UserAccess;
@@ -36,6 +38,7 @@ public class MediaCommentEntity {
 	
 	@Getter
 	@Id
+	@GenericField
 	@GenericGenerator(name="system-uuid", strategy = "uuid2")
 	@GeneratedValue(generator="system-uuid")
 	private String id;
@@ -43,20 +46,20 @@ public class MediaCommentEntity {
 	@Getter
 	@ManyToOne(fetch=FetchType.LAZY, optional = false)
 	@IndexedEmbedded(includePaths= {"id"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.NO)
 	private MediaEntity media;
 	
 	@Getter
 	@NonNull
-	@Field
-	@Analyzer(definition="languageAnalyzer")
+	@FullTextField(analyzer = "languageAnalyzer")
 	private String comment;
 	
 	@Getter
-	@Field
+	@GenericField
 	private int likeCount;
 	
 	@Getter
-	@Field
+	@GenericField
 	private int dislikeCount;
 	
 	@NonNull

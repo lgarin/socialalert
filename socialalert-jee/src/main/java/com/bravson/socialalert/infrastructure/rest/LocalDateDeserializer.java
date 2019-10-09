@@ -1,24 +1,17 @@
 package com.bravson.socialalert.infrastructure.rest;
 
-import java.io.IOException;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import javax.json.bind.serializer.DeserializationContext;
+import javax.json.bind.serializer.JsonbDeserializer;
+import javax.json.stream.JsonParser;
 
-
-public class LocalDateDeserializer extends StdDeserializer<LocalDate> {
-
-	private static final long serialVersionUID = 1L;
-	
-	protected LocalDateDeserializer() {
-        super(LocalDate.class);
-    }
+public class LocalDateDeserializer implements JsonbDeserializer<LocalDate> {
 
     @Override
-    public LocalDate deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-        return LocalDate.parse(jp.getText());
+    public LocalDate deserialize(JsonParser jp, DeserializationContext ctxt, Type type) {
+        return LocalDate.parse(jp.getString());
     }
 
 }

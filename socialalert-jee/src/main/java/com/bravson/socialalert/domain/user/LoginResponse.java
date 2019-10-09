@@ -3,13 +3,14 @@ package com.bravson.socialalert.domain.user;
 import java.time.Instant;
 import java.time.LocalDate;
 
+import javax.json.bind.annotation.JsonbTypeDeserializer;
+import javax.json.bind.annotation.JsonbTypeSerializer;
+
 import com.bravson.socialalert.domain.user.statistic.UserStatistic;
 import com.bravson.socialalert.infrastructure.rest.InstantDeserializer;
 import com.bravson.socialalert.infrastructure.rest.InstantSerializer;
 import com.bravson.socialalert.infrastructure.rest.LocalDateDeserializer;
 import com.bravson.socialalert.infrastructure.rest.LocalDateSerializer;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,15 +35,15 @@ public class LoginResponse {
 	
 	private String email;
 	
-	@JsonSerialize(using=InstantSerializer.class)
-	@JsonDeserialize(using=InstantDeserializer.class)
+	@JsonbTypeSerializer(InstantSerializer.class)
+	@JsonbTypeDeserializer(InstantDeserializer.class)
 	@NonNull
 	private Instant createdTimestamp;
 	
 	private boolean online;
 	
-	@JsonSerialize(using=LocalDateSerializer.class)
-	@JsonDeserialize(using=LocalDateDeserializer.class)
+	@JsonbTypeSerializer(LocalDateSerializer.class)
+	@JsonbTypeDeserializer(LocalDateDeserializer.class)
 	private LocalDate birthdate;
 	
 	private Gender gender;

@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.feed.FeedItemEntity;
 import com.bravson.socialalert.business.feed.FeedItemRepository;
@@ -29,10 +29,10 @@ public class FeedItemRepositoryTest extends BaseRepositoryTest {
     	assertThat(entity.getComment()).isNull();
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void insertFeedItemWithIllegalActivity() {
     	MediaEntity media = storeDefaultMedia();
-    	repository.insert(FeedActivity.NEW_COMMENT, media, UserAccess.of("test", "1.2.3.4"));
+    	assertThatThrownBy(() -> repository.insert(FeedActivity.NEW_COMMENT, media, UserAccess.of("test", "1.2.3.4"))).isInstanceOf(IllegalArgumentException.class);
     }
     
     @Test

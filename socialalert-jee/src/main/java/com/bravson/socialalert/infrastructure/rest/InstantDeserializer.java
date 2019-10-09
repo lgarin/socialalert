@@ -1,24 +1,17 @@
 package com.bravson.socialalert.infrastructure.rest;
 
-import java.io.IOException;
+import java.lang.reflect.Type;
 import java.time.Instant;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import javax.json.bind.serializer.DeserializationContext;
+import javax.json.bind.serializer.JsonbDeserializer;
+import javax.json.stream.JsonParser;
 
-
-public class InstantDeserializer extends StdDeserializer<Instant> {
-
-	private static final long serialVersionUID = 1L;
-
-	protected InstantDeserializer() {
-        super(Instant.class);
-    }
+public class InstantDeserializer implements JsonbDeserializer<Instant> {
 
     @Override
-    public Instant deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-        return Instant.ofEpochMilli(jp.getLongValue());
+    public Instant deserialize(JsonParser jp, DeserializationContext ctxt, Type type) {
+        return Instant.ofEpochMilli(jp.getLong());
     }
 
 }

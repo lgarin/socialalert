@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import javax.ws.rs.client.ClientBuilder;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.user.authentication.AuthenticationConfiguration;
 import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;

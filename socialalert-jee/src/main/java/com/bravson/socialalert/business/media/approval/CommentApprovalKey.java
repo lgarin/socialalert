@@ -4,10 +4,12 @@ import java.io.Serializable;
 
 import javax.persistence.Embeddable;
 
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.bridge.TwoWayStringBridge;
+import org.hibernate.search.engine.backend.types.Searchable;
+import org.hibernate.search.mapper.pojo.bridge.IdentifierBridge;
+import org.hibernate.search.mapper.pojo.bridge.runtime.IdentifierBridgeFromDocumentIdentifierContext;
+import org.hibernate.search.mapper.pojo.bridge.runtime.IdentifierBridgeToDocumentIdentifierContext;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,30 +28,26 @@ public class CommentApprovalKey implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	@Field(analyze=Analyze.NO)
+	@GenericField(searchable = Searchable.NO)
 	@NonNull
 	private String commentId;
 	
-	@Field(analyze=Analyze.NO)
+	@GenericField(searchable = Searchable.NO)
 	@NonNull
 	private String userId;
 	
-	public static class Bridge implements TwoWayStringBridge {
+	public static class Bridge implements IdentifierBridge<CommentApprovalKey> {
 
 		@Override
-		public String objectToString(Object object) {
-			if (object instanceof CommentApprovalKey) {
-				CommentApprovalKey key = (CommentApprovalKey) object;
-				return key.getCommentId() + "|" + key.getUserId();
-			}
-			return null;
+		public String toDocumentIdentifier(CommentApprovalKey propertyValue, IdentifierBridgeToDocumentIdentifierContext context) {
+			return propertyValue.getCommentId() + "|" + propertyValue.getUserId();
 		}
-
+		
 		@Override
-		public Object stringToObject(String stringValue) {
-			int index = stringValue.indexOf('|');
+		public CommentApprovalKey fromDocumentIdentifier(String documentIdentifier, IdentifierBridgeFromDocumentIdentifierContext context) {
+			int index = documentIdentifier.indexOf('|');
 			if (index > 0) {
-				return new CommentApprovalKey(stringValue.substring(0, index), stringValue.substring(index + 1));
+				return new CommentApprovalKey(documentIdentifier.substring(0, index), documentIdentifier.substring(index + 1));
 			}
 			return null;
 		}

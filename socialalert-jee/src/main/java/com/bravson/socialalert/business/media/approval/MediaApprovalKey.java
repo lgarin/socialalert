@@ -4,10 +4,12 @@ import java.io.Serializable;
 
 import javax.persistence.Embeddable;
 
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.bridge.TwoWayStringBridge;
+import org.hibernate.search.engine.backend.types.Searchable;
+import org.hibernate.search.mapper.pojo.bridge.IdentifierBridge;
+import org.hibernate.search.mapper.pojo.bridge.runtime.IdentifierBridgeFromDocumentIdentifierContext;
+import org.hibernate.search.mapper.pojo.bridge.runtime.IdentifierBridgeToDocumentIdentifierContext;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,30 +28,26 @@ public class MediaApprovalKey implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	@Field(analyze=Analyze.NO)
+	@GenericField(searchable = Searchable.NO)
 	@NonNull
 	private String mediaUri;
 	
-	@Field(analyze=Analyze.NO)
+	@GenericField(searchable = Searchable.NO)
 	@NonNull
 	private String userId;
 	
-	public static class Bridge implements TwoWayStringBridge {
+	public static class Bridge implements IdentifierBridge<MediaApprovalKey> {
 
 		@Override
-		public String objectToString(Object object) {
-			if (object instanceof MediaApprovalKey) {
-				MediaApprovalKey key = (MediaApprovalKey) object;
-				return key.getMediaUri() + "|" + key.getUserId();
-			}
-			return null;
+		public String toDocumentIdentifier(MediaApprovalKey propertyValue, IdentifierBridgeToDocumentIdentifierContext context) {
+			return propertyValue.getMediaUri() + "|" + propertyValue.getUserId();
 		}
-
+		
 		@Override
-		public Object stringToObject(String stringValue) {
-			int index = stringValue.indexOf('|');
+		public MediaApprovalKey fromDocumentIdentifier(String documentIdentifier, IdentifierBridgeFromDocumentIdentifierContext context) {
+			int index = documentIdentifier.indexOf('|');
 			if (index > 0) {
-				return new MediaApprovalKey(stringValue.substring(0, index), stringValue.substring(index + 1));
+				return new MediaApprovalKey(documentIdentifier.substring(0, index), documentIdentifier.substring(index + 1));
 			}
 			return null;
 		}

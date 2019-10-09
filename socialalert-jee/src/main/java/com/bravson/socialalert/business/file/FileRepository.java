@@ -7,10 +7,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.apache.lucene.search.Query;
-import org.hibernate.annotations.QueryHints;
-import org.hibernate.search.query.dsl.QueryBuilder;
-
 import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.file.entity.FileState;
 import com.bravson.socialalert.business.user.UserAccess;
@@ -48,19 +44,25 @@ public class FileRepository {
 		return persistenceManager.find(FileEntity.class, fileUri);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public List<FileEntity> findByIpAddressPattern(@NonNull String ipAddressPattern) {
-		QueryBuilder queryBuilder = persistenceManager.createQueryBuilder(FileEntity.class);
-		Query query = queryBuilder.keyword().wildcard().onField("versionInfo.ipAddress").matching(ipAddressPattern).createQuery();
-		return persistenceManager.createFullTextQuery(query, FileEntity.class).setHint(QueryHints.READ_ONLY, true).getResultList();
+		return persistenceManager.search(FileEntity.class)
+				.predicate(p -> p.wildcard().onField("versionInfo.ipAddress").matching(ipAddressPattern))
+				.fetch()
+				.getHits();
 	}
 	
-	@SuppressWarnings("unchecked")
 	public List<FileEntity> findByUserIdAndState(@NonNull String userId, @NonNull FileState state) {
-		QueryBuilder queryBuilder = persistenceManager.createQueryBuilder(FileEntity.class);
-		Query query = queryBuilder.bool()
-				.must(queryBuilder.keyword().withConstantScore().onField("versionInfo.userId").matching(userId).createQuery())
-				.must(queryBuilder.keyword().withConstantScore().onField("state").matching(state).createQuery()).createQuery();
-		return persistenceManager.createFullTextQuery(query, FileEntity.class).setHint(QueryHints.READ_ONLY, true).getResultList();
+		return persistenceManager.createQuery("select f from File where versionInfo.userId = :userId and state = :state", FileEntity.class)
+			.setParameter("userId", userId)
+			.setParameter("state", state)
+			.getResultList();
+		/*
+		return persistenceManager.search(FileEntity.class)
+				.predicate(p -> p.bool()
+						.must(p.match().onField("versionInfo.userId").matching(userId))
+						.must(p.match().onField("state").matching(state)))
+				.fetch()
+				.getHits();
+				*/
 	}
 }

@@ -1,5 +1,7 @@
 package com.bravson.socialalert.test.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
@@ -8,7 +10,7 @@ import java.util.Optional;
 
 import javax.ws.rs.NotFoundException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -23,7 +25,7 @@ import com.bravson.socialalert.domain.feed.FeedItemInfo;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 
-public class FeedServiceTest extends BaseServiceTest {
+public class FeedServiceTest {
 
 	@InjectMocks
 	FeedService feedService;
@@ -51,11 +53,11 @@ public class FeedServiceTest extends BaseServiceTest {
 		assertThat(result.getPageCount()).isEqualTo(0);
 	}
 	
-	@Test(expected = NotFoundException.class)
+	@Test
 	public void getFeedForUnknownUser() {
 		PagingParameter paging = new PagingParameter(Instant.now(), 0, 10);
 		when(profileRepository.findByUserId("test")).thenReturn(Optional.empty());
 		
-		feedService.getFeed("test", paging);
+		assertThatThrownBy(() -> feedService.getFeed("test", paging)).isInstanceOf(NotFoundException.class);
 	}
 }

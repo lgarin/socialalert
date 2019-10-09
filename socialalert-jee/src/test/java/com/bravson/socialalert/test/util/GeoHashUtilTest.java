@@ -2,7 +2,7 @@ package com.bravson.socialalert.test.util;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.data.Offset;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.infrastructure.util.GeoHashUtil;

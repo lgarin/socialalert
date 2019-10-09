@@ -34,6 +34,16 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.headers.Header;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import com.bravson.socialalert.business.file.FileReadService;
 import com.bravson.socialalert.business.file.FileResponse;
 import com.bravson.socialalert.business.file.FileSearchService;
@@ -43,16 +53,6 @@ import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.domain.file.FileInfo;
 import com.bravson.socialalert.domain.media.format.MediaFileConstants;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.headers.Header;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name="file")
 @Path("/file")
@@ -113,8 +113,8 @@ public class FileFacade {
 	@GET
 	@Path("/download/{mediaUri : .+}")
 	@Operation(summary="Download a file in the same format as it has been uploaded.")
-	@ApiResponse(responseCode = "200", description = "File will be streamed.")
-	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
+	@APIResponse(responseCode = "200", description = "File will be streamed.")
+	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public Response download(
 			@Parameter(description="The relative file uri.", required=true)
 			@NotEmpty @PathParam("mediaUri") String fileUri) throws IOException {
@@ -124,10 +124,9 @@ public class FileFacade {
 	@PermitAll
 	@GET
 	@Path("/preview/{mediaUri : .+}")
-	@Operation(summary="Download a file in the preview format.",
-			description="For video media, the preview is initialy a still picture and the video preview is only created after a delay.")
-	@ApiResponse(responseCode = "200", description = "File will be streamed.", content= {@Content(mediaType=MediaFileConstants.JPG_MEDIA_TYPE), @Content(mediaType=MediaFileConstants.MP4_MEDIA_TYPE)})
-	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
+	@Operation(summary="Download a file in the preview format.", description="For video media, the preview is initialy a still picture and the video preview is only created after a delay.")
+	@APIResponse(responseCode = "200", description = "File will be streamed.", content= {@Content(mediaType=MediaFileConstants.JPG_MEDIA_TYPE), @Content(mediaType=MediaFileConstants.MP4_MEDIA_TYPE)})
+	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public Response preview(
 			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("mediaUri") String fileUri) throws IOException {
 		return createStreamResponse(fileReadService.preview(fileUri).orElseThrow(NotFoundException::new));
@@ -137,8 +136,8 @@ public class FileFacade {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Access the file metadata.")
 	@Path("/metadata/{mediaUri : .+}")
-	@ApiResponse(responseCode = "200", description = "File metadata are available in the response.", content=@Content(schema=@Schema(implementation=FileInfo.class)))
-	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
+	@APIResponse(responseCode = "200", description = "File metadata are available in the response.", content=@Content(schema=@Schema(implementation=FileInfo.class)))
+	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public FileInfo getMetadata(
 			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("mediaUri") String fileUri,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException {
@@ -149,7 +148,7 @@ public class FileFacade {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="List the new files for the current user.")
 	@Path("/list/new")
-	@ApiResponse(responseCode = "200", description = "List of file metadata is available in the response.", content=@Content(array=@ArraySchema(schema=@Schema(implementation=FileInfo.class))))
+	@APIResponse(responseCode = "200", description = "List of file metadata is available in the response.", content=@Content(schema=@Schema(implementation=FileInfo.class, type=SchemaType.ARRAY)))
 	public List<FileInfo> listNewFiles(
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException {
 		return fileSearchService.findNewFilesByUserId(userAccess.getUserId());
@@ -160,8 +159,8 @@ public class FileFacade {
 	@Path("/thumbnail/{mediaUri : .+}")
 	@Produces(MediaFileConstants.JPG_MEDIA_TYPE)
 	@Operation(summary="Download a jpeg thumbnail of the media.")
-	@ApiResponse(responseCode = "200", description = "File will be streamed.")
-	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
+	@APIResponse(responseCode = "200", description = "File will be streamed.")
+	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public Response thumbnail(
 			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("mediaUri") String fileUri) throws IOException {
 		return createStreamResponse(fileReadService.thumbnail(fileUri).orElseThrow(NotFoundException::new));
@@ -176,10 +175,9 @@ public class FileFacade {
 	@Consumes(MediaFileConstants.JPG_MEDIA_TYPE)
 	@Path("/upload/picture")
 	@Operation(summary="Upload a picture file.")
-    @ApiResponse(responseCode = "201", description = "The picture is ready to be claimed.", 
-    				headers = @Header(name = "Location", description = "The media url", schema = @Schema(type="string", format="uri")))
-    @ApiResponse(responseCode = "413", description = "The file is too large.")
-	@ApiResponse(responseCode = "415", description = "The media is not in the expected format.")
+    @APIResponse(responseCode = "201", description = "The picture is ready to be claimed.", headers = @Header(name = "Location", description = "The media url", schema = @Schema(type=SchemaType.STRING, format="uri")))
+    @APIResponse(responseCode = "413", description = "The file is too large.")
+	@APIResponse(responseCode = "415", description = "The media is not in the expected format.")
 	public Response uploadPicture(
 			@RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException, ServletException {
@@ -190,10 +188,9 @@ public class FileFacade {
 	@Consumes({MediaFileConstants.MOV_MEDIA_TYPE, MediaFileConstants.MP4_MEDIA_TYPE})
 	@Path("/upload/video")
 	@Operation(summary="Upload a video file.")
-    @ApiResponse(responseCode = "201", description = "The video is ready to be claimed.", 
-		                   headers = @Header(name = "Location", description = "The media url", schema = @Schema(type="string", format="uri")))
-    @ApiResponse(responseCode = "413", description = "The file is too large.")
-    @ApiResponse(responseCode = "415", description = "The media is not in the expected format.")
+    @APIResponse(responseCode = "201", description = "The video is ready to be claimed.", headers = @Header(name = "Location", description = "The media url", schema = @Schema(type=SchemaType.STRING, format="uri")))
+    @APIResponse(responseCode = "413", description = "The file is too large.")
+    @APIResponse(responseCode = "415", description = "The media is not in the expected format.")
 	public Response uploadVideo(
 		    @RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException, ServletException {

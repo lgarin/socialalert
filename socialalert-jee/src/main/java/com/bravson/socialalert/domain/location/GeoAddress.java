@@ -2,12 +2,12 @@ package com.bravson.socialalert.domain.location;
 
 import javax.persistence.Embeddable;
 
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Latitude;
-import org.hibernate.search.annotations.Longitude;
-import org.hibernate.search.annotations.Spatial;
-import org.hibernate.search.annotations.SpatialMode;
+import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.GeoPointBinding;
+import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.Latitude;
+import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.Longitude;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -23,17 +23,17 @@ import lombok.Setter;
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Setter(AccessLevel.NONE)
 @Indexed
-@Spatial(name="coordinates", spatialMode=SpatialMode.RANGE)
+@GeoPointBinding(fieldName = "position")
 public class GeoAddress {
 
-	@Latitude(of="coordinates")
+	@Latitude
 	private Double latitude;
-	@Longitude(of="coordinates")
+	@Longitude
 	private Double longitude;
-	@Field
+	@FullTextField(analyzer = "")
 	private String formattedAddress;
-	@Field
+	@FullTextField(analyzer = "")
 	private String locality;
-	@Field
+	@KeywordField
 	private String country;
 }

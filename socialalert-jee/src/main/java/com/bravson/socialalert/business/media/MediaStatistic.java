@@ -2,8 +2,8 @@ package com.bravson.socialalert.business.media;
 
 import javax.persistence.Embeddable;
 
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 
@@ -23,29 +23,34 @@ import lombok.Setter;
 @Indexed
 public class MediaStatistic {
 
-	@Field
+	@GenericField
 	private int hitCount;
 	
-	@Field
+	@GenericField
 	private int likeCount;
 	
-	@Field
+	@GenericField
 	private int dislikeCount;
 	
-	@Field
+	@GenericField
 	private int commentCount;
+	
+	@GenericField
+	private double boostFactor;
 
-	public double computeBoost() {
+	private double computeBoost() {
 		return Math.log(Math.max(2.0, hitCount)) * Math.sqrt(Math.max(2.0, likeCount - dislikeCount));
 	}
 
 	public void increaseHitCount() {
 		hitCount++;
+		boostFactor = computeBoost();
 	}
 
 	public void updateApprovalCount(ApprovalModifier oldModifier, ApprovalModifier newModifier) {
 		likeCount += ApprovalModifier.computeLikeDelta(oldModifier, newModifier);
 		dislikeCount += ApprovalModifier.computeDislikeDelta(oldModifier, newModifier);
+		boostFactor = computeBoost();
 	}
 	
 	public void increateCommentCount() {

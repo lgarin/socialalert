@@ -9,10 +9,10 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.media.MediaEntity;
@@ -42,33 +42,33 @@ public class UserProfileEntity extends VersionedEntity {
 	@Getter
 	@Setter
 	@NonNull
-	@Field(analyze=Analyze.NO)
+	@KeywordField
 	private String username;
 	
 	@Getter
 	@Setter
 	@NonNull
-	@Field(analyze=Analyze.NO)
+	@KeywordField
 	private String email;
 	
 	@Getter
 	@Setter
-	@Field
+	@GenericField
 	private LocalDate birthdate;
 	
 	@Getter
 	@Setter
-	@Field
+	@KeywordField
 	private Gender gender;
 	
 	@Getter
 	@Setter
-	@Field(analyze=Analyze.NO)
+	@KeywordField
 	private String country;
 	
 	@Getter
 	@Setter
-	@Field(analyze=Analyze.NO)
+	@KeywordField
 	private String language;
 	
 	@Getter
@@ -77,13 +77,12 @@ public class UserProfileEntity extends VersionedEntity {
 	
 	@Getter
 	@Setter
-	@Field
-	@Analyzer(definition="languageAnalyzer")
+	@FullTextField(analyzer="languageAnalyzer")
 	private String biography;
 	
 	@Getter
 	@Setter
-	@Field
+	@GenericField
 	private Instant lastLogin;
 	
 	@Getter

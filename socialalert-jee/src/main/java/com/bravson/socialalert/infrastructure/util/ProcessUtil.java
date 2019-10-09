@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import com.google.common.io.CharStreams;
-
 import lombok.SneakyThrows;
 
 public class ProcessUtil {
@@ -18,8 +16,16 @@ public class ProcessUtil {
 		Process process = builder.start();
 		
 		InputStreamReader reader = new InputStreamReader(process.getInputStream());
-		CharStreams.copy(reader, output);
+		readAll(reader, output);
 		
 		return process.waitFor();
+	}
+
+	private static void readAll(InputStreamReader reader, StringBuilder output) throws IOException {
+		char[] buffer = new char[8 * 1024];
+	    int length;
+	    while ((length = reader.read(buffer)) > 0) {
+	    	output.append(buffer, 0, length);
+	    }
 	}
 }

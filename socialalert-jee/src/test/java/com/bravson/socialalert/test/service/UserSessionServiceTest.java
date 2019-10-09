@@ -1,6 +1,6 @@
 package com.bravson.socialalert.test.service;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
 import com.bravson.socialalert.business.user.session.UserSessionService;

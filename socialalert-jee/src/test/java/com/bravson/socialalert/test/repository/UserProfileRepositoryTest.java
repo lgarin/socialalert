@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import javax.persistence.EntityExistsException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
@@ -32,11 +32,11 @@ public class UserProfileRepositoryTest extends BaseRepositoryTest {
     	assertThat(entity.getId()).isEqualTo("test");
     }
     
-    @Test(expected=EntityExistsException.class)
+    @Test
     public void createExistingProfile() {
     	AuthenticationInfo authInfo = createTestAuthInfo();
     	repository.createProfile(authInfo, "1.2.3.4");
-    	repository.createProfile(authInfo, "1.2.3.4");
+    	assertThatThrownBy(() -> repository.createProfile(authInfo, "1.2.3.4")).isInstanceOf(EntityExistsException.class);
     }
     
     @Test

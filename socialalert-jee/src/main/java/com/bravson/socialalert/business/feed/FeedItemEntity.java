@@ -8,9 +8,12 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.dirtiness.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
@@ -31,6 +34,7 @@ public class FeedItemEntity {
 
 	@Getter
 	@Id
+	@GenericField
 	@GenericGenerator(name="system-uuid", strategy = "uuid2")
 	@GeneratedValue(generator="system-uuid")
 	private String id;
@@ -38,16 +42,18 @@ public class FeedItemEntity {
 	@Getter
 	@ManyToOne(fetch=FetchType.EAGER, optional = false)
 	@IndexedEmbedded(includePaths= {"id"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.NO)
 	private MediaEntity media;
 	
 	@Getter
 	@ManyToOne(fetch=FetchType.EAGER)
 	@IndexedEmbedded(includePaths= {"id"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.NO)
 	private MediaCommentEntity comment;
 
 	@Getter
 	@NonNull
-	@Field
+	@KeywordField
 	private FeedActivity activity;
 	
 	@NonNull

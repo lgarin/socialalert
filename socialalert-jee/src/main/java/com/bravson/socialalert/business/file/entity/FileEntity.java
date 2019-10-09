@@ -10,9 +10,9 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.bravson.socialalert.business.file.FileMetadata;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
@@ -35,7 +35,7 @@ public class FileEntity extends VersionedEntity {
 
 	@Getter
 	@NonNull
-	@Field
+	@KeywordField
 	private FileState state;
 	
 	@ElementCollection(fetch=FetchType.EAGER)

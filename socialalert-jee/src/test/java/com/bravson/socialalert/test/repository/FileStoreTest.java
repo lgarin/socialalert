@@ -8,9 +8,9 @@ import java.time.LocalDate;
 
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.business.file.store.FileStoreConfiguration;
@@ -22,14 +22,14 @@ public class FileStoreTest extends Assertions {
 	
 	private FileStore store = new FileStore(config);
 	
-	@Before
+	@BeforeEach
 	public void checkNoStore() throws IOException {
 		if (config.getBaseDirectory().exists()) {
 			throw new IOException("Base directory " + config.getBaseDirectory() + " must not exist");
 		}
 	}
 	
-	@After
+	@AfterEach
 	public void cleanupStore() throws IOException {
 		FileUtils.deleteDirectory(config.getBaseDirectory());
 	}
@@ -46,15 +46,15 @@ public class FileStoreTest extends Assertions {
 		assertThat(new File(config.getBaseDirectory(), "media/20170415/38c4297b9099b466eab20fea521ee2f6.jpg")).exists();
 	}
 	
-	@Test(expected=NoSuchFileException.class)
+	@Test
 	public void storeNonExistingFile() throws IOException {
-		store.storeFile(new File("src/main/resources/xyz.jpg"), "38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.MEDIA_JPG);
+		assertThatThrownBy(() -> store.storeFile(new File("src/main/resources/xyz.jpg"), "38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.MEDIA_JPG)).isInstanceOf(NoSuchFileException.class);
 	}
 	
-	@Test(expected=FileAlreadyExistsException.class)
+	@Test
 	public void storeFileTwice() throws IOException {
 		store.storeFile(new File("src/main/resources/logo.jpg"), "38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.MEDIA_JPG);
-		store.storeFile(new File("src/main/resources/logo.jpg"), "38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.MEDIA_JPG);
+		assertThatThrownBy(() -> store.storeFile(new File("src/main/resources/logo.jpg"), "38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.MEDIA_JPG)).isInstanceOf(FileAlreadyExistsException.class);
 	}
 	
 	@Test
@@ -63,15 +63,15 @@ public class FileStoreTest extends Assertions {
 		assertThat(new File(config.getBaseDirectory(), "preview/20161204/38c4297b9099b466eab20fea521ee2f6.mp4")).exists();
 	}
 	
-	@Test(expected=FileAlreadyExistsException.class)
+	@Test
 	public void storeNewFileTwice() throws IOException {
 		store.createEmptyFile("38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.PREVIEW_MP4);
-		store.createEmptyFile("38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.PREVIEW_MP4);
+		assertThatThrownBy(() -> store.createEmptyFile("38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.PREVIEW_MP4)).isInstanceOf(FileAlreadyExistsException.class);
 	}
 	
-	@Test(expected=NoSuchFileException.class)
+	@Test
 	public void getNonExistingMp4File() throws IOException {
-		store.getExistingFile("38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2016, 12, 4), MediaFileFormat.PREVIEW_MP4);
+		assertThatThrownBy(() -> store.getExistingFile("38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2016, 12, 4), MediaFileFormat.PREVIEW_MP4)).isInstanceOf(NoSuchFileException.class);
 	}
 	
 	@Test

@@ -1,16 +1,11 @@
 package com.bravson.socialalert.business.feed;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.hibernate.annotations.QueryHints;
-import org.hibernate.search.jpa.FullTextQuery;
-import org.hibernate.search.query.dsl.BooleanJunction;
-import org.hibernate.search.query.dsl.QueryBuilder;
+import org.hibernate.search.engine.search.query.SearchResult;
 
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
@@ -52,19 +47,13 @@ public class FeedItemRepository {
 		return persistenceManager.persist(entity);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public QueryResult<FeedItemEntity> getActivitiesByUsers(Collection<String> userIdList, @NonNull PagingParameter paging) {
-		QueryBuilder builder = persistenceManager.createQueryBuilder(FeedItemEntity.class);
-	    BooleanJunction<?> junction = builder.bool();
-		junction = junction.must(builder.range().onField("versionInfo.creation").below(paging.getTimestamp()).createQuery()).disableScoring();
-		junction = junction.must(builder.keyword().onField("versionInfo.userId").matching(userIdList.stream().collect(Collectors.joining(" "))).createQuery()).disableScoring();
-		FullTextQuery query = persistenceManager.createFullTextQuery(junction.createQuery(), FeedItemEntity.class);
-		List<FeedItemEntity> list = query
-				.setSort(builder.sort().byField("versionInfo.creation").desc().createSort())
-				.setFirstResult(paging.getPageNumber() * paging.getPageSize())
-				.setMaxResults(paging.getPageSize())
-				.setHint(QueryHints.READ_ONLY, true)
-				.getResultList();
-		return new QueryResult<>(list, query.getResultSize(), paging);
+	public QueryResult<FeedItemEntity> getActivitiesByUsers(@NonNull Collection<String> userIdList, @NonNull PagingParameter paging) {
+		SearchResult<FeedItemEntity> result = persistenceManager.search(FeedItemEntity.class)
+				.predicate(p -> p.bool()
+						.must(p.range().onField("versionInfo.creation").below(paging.getTimestamp()))
+						.must(p.match().onField("versionInfo.userId").matching(String.join(" ", userIdList))))
+				.sort(s -> s.byField("versionInfo.creation").desc())
+				.fetch(paging.getPageSize(), paging.getOffset());
+		return new QueryResult<>(result.getHits(), result.getTotalHitCount(), paging);
 	}
 }

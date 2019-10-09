@@ -1,7 +1,11 @@
 package com.bravson.socialalert.test.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -9,7 +13,7 @@ import java.util.Optional;
 import javax.enterprise.event.Event;
 import javax.ws.rs.NotFoundException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -24,7 +28,7 @@ import com.bravson.socialalert.business.user.session.UserSessionService;
 import com.bravson.socialalert.domain.media.MediaDetail;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 
-public class MediaServiceTest extends BaseServiceTest {
+public class MediaServiceTest {
 
 	@InjectMocks
 	MediaService mediaService;
@@ -43,6 +47,12 @@ public class MediaServiceTest extends BaseServiceTest {
 	
 	@Mock
 	Event<MediaEntity> mediaHitEvent;
+	
+	@Mock
+	Event<MediaEntity> mediaLikedEvent;
+	
+	@Mock
+	Event<MediaEntity> mediaDislikedEvent;
 	
 	@Test
 	public void viewExistingMedia() {
@@ -111,6 +121,8 @@ public class MediaServiceTest extends BaseServiceTest {
 		MediaDetail result = mediaService.setApprovalModifier(mediaUri, modifier, userId);
 		assertThat(result).isEqualTo(mediaDetail);
 		assertThat(result.getUserApprovalModifier()).isEqualTo(modifier);
+		
+		verify(mediaLikedEvent).fire(mediaEntity);
 	}
 	
 	@Test
@@ -119,17 +131,17 @@ public class MediaServiceTest extends BaseServiceTest {
 		String mediaUri = "uri1";
 		ApprovalModifier modifier = null;
 		MediaEntity mediaEntity = mock(MediaEntity.class);
-		MediaStatistic mediaStatistic = new MediaStatistic();
 		MediaDetail mediaDetail = new MediaDetail();
 		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.of(mediaEntity));
 		when(mediaEntity.toMediaDetail()).thenReturn(mediaDetail);
-		when(mediaEntity.getStatistic()).thenReturn(mediaStatistic);
 		when(userService.fillUserInfo(mediaDetail)).thenReturn(mediaDetail);
 		when(approvalRepository.changeApproval(mediaEntity, userId, modifier)).thenReturn(Optional.empty());
 		
 		MediaDetail result = mediaService.setApprovalModifier(mediaUri, modifier, userId);
 		assertThat(result).isEqualTo(mediaDetail);
 		assertThat(result.getUserApprovalModifier()).isEqualTo(modifier);
+		
+		verifyZeroInteractions(mediaLikedEvent, mediaDislikedEvent);
 	}
 	
 	@Test

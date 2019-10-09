@@ -5,12 +5,12 @@ import java.time.Instant;
 
 import javax.persistence.Embeddable;
 
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Latitude;
-import org.hibernate.search.annotations.Longitude;
-import org.hibernate.search.annotations.Spatial;
-import org.hibernate.search.annotations.SpatialMode;
+import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.GeoPointBinding;
+import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.Latitude;
+import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.Longitude;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -27,29 +27,29 @@ import lombok.Setter;
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Setter(AccessLevel.NONE)
 @Indexed
-@Spatial(name="coordinates", spatialMode=SpatialMode.RANGE)
+@GeoPointBinding(fieldName = "position")
 public class MediaMetadata {
 
 	@NonNull
-	@Field
+	@GenericField
 	private Integer width;
 	@NonNull
-	@Field
+	@GenericField
 	private Integer height;
-	@Field
+	@GenericField
 	private Instant timestamp;
-	@Field
+	@GenericField
 	private Duration duration;
-	@Longitude(of="coordinates")
-	private Double longitude;
-	@Latitude(of="coordinates")
+	@Latitude
 	private Double latitude;
-	@Field
+	@Longitude
+	private Double longitude;
+	@KeywordField
 	private String cameraMaker;
-	@Field
+	@KeywordField
 	private String cameraModel;
 
 	public boolean hasLocation() {
-		return longitude != null && latitude != null;
+		return latitude != null && longitude != null;
 	}
 }

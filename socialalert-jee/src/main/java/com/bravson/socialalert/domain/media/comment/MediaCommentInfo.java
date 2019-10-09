@@ -2,14 +2,16 @@ package com.bravson.socialalert.domain.media.comment;
 
 import java.time.Instant;
 
+import javax.json.bind.annotation.JsonbTypeDeserializer;
+import javax.json.bind.annotation.JsonbTypeSerializer;
+
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 import com.bravson.socialalert.domain.media.UserContent;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.infrastructure.rest.InstantDeserializer;
 import com.bravson.socialalert.infrastructure.rest.InstantSerializer;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Schema(description="The comment information.")
@@ -21,8 +23,8 @@ public class MediaCommentInfo implements UserContent {
 	private String creatorId;
 	
 	@Schema(description="The media timestamp in milliseconds since the epoch.")
-	@JsonSerialize(using=InstantSerializer.class)
-	@JsonDeserialize(using=InstantDeserializer.class)
+	@JsonbTypeSerializer(InstantSerializer.class)
+	@JsonbTypeDeserializer(InstantDeserializer.class)
 	private Instant creation;
 	
 	private String comment;

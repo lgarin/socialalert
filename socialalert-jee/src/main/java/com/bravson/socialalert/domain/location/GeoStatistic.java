@@ -1,6 +1,7 @@
 package com.bravson.socialalert.domain.location;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 import lombok.Builder;
 import lombok.Value;
 

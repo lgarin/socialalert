@@ -23,6 +23,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import com.bravson.socialalert.business.media.MediaConstants;
 import com.bravson.socialalert.business.media.MediaSearchService;
 import com.bravson.socialalert.business.media.MediaService;
@@ -43,13 +50,6 @@ import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name="media")
 @Path("/media")
@@ -77,10 +77,10 @@ public class MediaFacade {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Claim a media which has been uploaded recently.")
-	@ApiResponse(responseCode = "200", description = "This media has been successfully claimed.", content=@Content(schema=@Schema(implementation=MediaInfo.class)))
-	@ApiResponse(responseCode = "403", description = "This media does not belong to the current user.")
-	@ApiResponse(responseCode = "404", description = "No picture exists with this uri.")
-	@ApiResponse(responseCode = "409", description = "This media exists has already been claimed.")
+	@APIResponse(responseCode = "200", description = "This media has been successfully claimed.", content=@Content(schema=@Schema(implementation=MediaInfo.class)))
+	@APIResponse(responseCode = "403", description = "This media does not belong to the current user.")
+	@APIResponse(responseCode = "404", description = "No picture exists with this uri.")
+	@APIResponse(responseCode = "409", description = "This media exists has already been claimed.")
 	public MediaInfo claimMedia(
 			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("mediaUri") String fileUri,
 			@Valid @NotNull UpsertMediaParameter parameter,
@@ -93,9 +93,9 @@ public class MediaFacade {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Update the meta information about a media.")
-	@ApiResponse(responseCode = "200", description = "The metainformation have been successfully updated.", content=@Content(schema=@Schema(implementation=MediaInfo.class)))
-	@ApiResponse(responseCode = "403", description = "This media does not belong to the current user.")
-	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
+	@APIResponse(responseCode = "200", description = "The metainformation have been successfully updated.", content=@Content(schema=@Schema(implementation=MediaInfo.class)))
+	@APIResponse(responseCode = "403", description = "This media does not belong to the current user.")
+	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaInfo updateMedia(
 			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@Valid @NotNull UpsertMediaParameter parameter,
@@ -108,7 +108,7 @@ public class MediaFacade {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Search claimed media based on any combination of the provided parameters.")
 	public QueryResult<MediaInfo> searchMedia(
-			@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
+			@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") String mediaKind,
 			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("minLatitude") Double minLatitude,
 			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("maxLatitude") Double maxLatitude,
 			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("minLongitude") Double minLongitude,
@@ -124,7 +124,8 @@ public class MediaFacade {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
 		if (mediaKind != null) {
-			parameter.setMediaKind(mediaKind);
+			// TODO wait for smallrye openapi fix
+			//parameter.setMediaKind(mediaKind);
 		}
 		if (minLatitude != null || maxLatitude != null || minLongitude != null || maxLongitude != null) {
 			if (minLatitude == null || maxLatitude == null || minLongitude == null || maxLongitude == null) {
@@ -155,7 +156,7 @@ public class MediaFacade {
 			@Parameter(description="Define the location for the nearest media.", required=true) @QueryParam("latitude") Double latitude,
 			@Parameter(description="Define the location for the nearest media.", required=true) @QueryParam("longitude") Double longitude,
 			@Parameter(description="Define the maximum distance in kilometer for the nearest media.", required=true) @QueryParam("maxDistance") Double maxDistance,
-			@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
+			@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") String mediaKind,
 			@Parameter(description="Define the keywords for searching the media.", required=false) @QueryParam("keywords") String keywords,
 			@Parameter(description="Define the maximum age in milliseconds of the returned media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
@@ -167,7 +168,8 @@ public class MediaFacade {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
 		if (mediaKind != null) {
-			parameter.setMediaKind(mediaKind);
+			// TODO wait for smallrye openapi fix
+			//parameter.setMediaKind(mediaKind);
 		}
 		if (keywords != null) {
 			parameter.setKeywords(keywords);
@@ -189,8 +191,8 @@ public class MediaFacade {
 	@Path("/view/{mediaUri : .+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="View the media details. If it is the first call for this media in the user session, then the hit count will be increased by one.")
-	@ApiResponse(responseCode = "200", description = "The detail is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
-	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
+	@APIResponse(responseCode = "200", description = "The detail is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
+	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaDetail viewMediaDetail(
 			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
@@ -202,8 +204,8 @@ public class MediaFacade {
 	@Path("/approval/like/{mediaUri : .+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Set the approval modifier of the media to 'like'.")
-	@ApiResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
-	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
+	@APIResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
+	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaDetail likeMedia(
 			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
@@ -214,8 +216,8 @@ public class MediaFacade {
 	@Path("/approval/dislike/{mediaUri : .+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Set the approval modifier of the media to 'dislike'.")
-	@ApiResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
-	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
+	@APIResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
+	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaDetail dislikeMedia(
 			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
@@ -226,8 +228,8 @@ public class MediaFacade {
 	@Path("/approval/reset/{mediaUri : .+}")
 	@Operation(summary="Set the approval modifier of the media to 'null'.")
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
-	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
+	@APIResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
+	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaDetail resetMediaApproval(
 			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
@@ -239,8 +241,8 @@ public class MediaFacade {
 	@Operation(summary="Comment the specified media.")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiResponse(responseCode = "200", description = "The comment has been created.", content=@Content(schema=@Schema(implementation=MediaCommentInfo.class)))
-	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
+	@APIResponse(responseCode = "200", description = "The comment has been created.", content=@Content(schema=@Schema(implementation=MediaCommentInfo.class)))
+	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaCommentInfo commentMedia(
 			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@Parameter(description="The comment text.", required=true) @NotEmpty @Size(max=MediaConstants.MAX_COMMENT_LENGTH) String comment,
@@ -252,8 +254,8 @@ public class MediaFacade {
 	@Path("/comments/{mediaUri : .+}")
 	@Operation(summary="List the comments for the specified media.")
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiResponse(responseCode = "200", description = "The comments have been retrieved successfuly.", content=@Content(schema=@Schema(implementation=MediaCommentDetail.class)))
-	@ApiResponse(responseCode = "404", description = "No media exists with this uri.")
+	//@APIResponse(responseCode = "200", description = "The comments have been retrieved successfuly.", content=@Content(schema=@Schema(implementation=MediaCommentDetail.class)))
+	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public QueryResult<MediaCommentDetail> listComments(@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
 			@Parameter(description="Sets the page number to return.", required=false) @DefaultValue("0") @Min(0) @QueryParam("pageNumber") int pageNumber,
@@ -267,7 +269,7 @@ public class MediaFacade {
 	@Path("/mapCount")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Group count claimed media in the given area based on their geo hash.")
-	public List<GeoStatistic> mapMediaMatchCount(@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
+	public List<GeoStatistic> mapMediaMatchCount(@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") String mediaKind,
 			@Parameter(description="Define the area for the returned media.", required=true) @QueryParam("minLatitude") @NotNull Double minLatitude,
 			@Parameter(description="Define the area for the returned media.", required=true) @QueryParam("maxLatitude") @NotNull Double maxLatitude,
 			@Parameter(description="Define the area for the returned media.", required=true) @QueryParam("minLongitude") @NotNull Double minLongitude,
@@ -280,7 +282,8 @@ public class MediaFacade {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
 		if (mediaKind != null) {
-			parameter.setMediaKind(mediaKind);
+			// TODO wait for smallrye openapi fix
+			//parameter.setMediaKind(mediaKind);
 		}
 		
 		parameter.setArea(GeoBox.builder().minLat(minLatitude).maxLat(maxLatitude).minLon(minLongitude).maxLon(maxLongitude).build());

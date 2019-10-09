@@ -1,6 +1,5 @@
 package com.bravson.socialalert.business.media.comment;
 
-import java.util.List;
 import java.util.Optional;
 
 import javax.enterprise.event.Event;
@@ -8,10 +7,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 
-import org.hibernate.annotations.QueryHints;
-import org.hibernate.search.jpa.FullTextQuery;
-import org.hibernate.search.query.dsl.BooleanJunction;
-import org.hibernate.search.query.dsl.QueryBuilder;
+import org.hibernate.search.engine.search.query.SearchResult;
 
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.user.UserAccess;
@@ -53,21 +49,13 @@ public class MediaCommentRepository {
 		return persistenceManager.find(MediaCommentEntity.class, commentId);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public QueryResult<MediaCommentEntity> listByMediaUri(@NonNull String mediaUri, @NonNull PagingParameter paging) {
-		QueryBuilder builder = persistenceManager.createQueryBuilder(MediaCommentEntity.class);
-		BooleanJunction<?> junction = builder.bool();
-		junction = junction.must(builder.range().onField("versionInfo.creation").below(paging.getTimestamp()).createQuery()).disableScoring();
-		junction = junction.must(builder.keyword().onField("media.id").matching(mediaUri).createQuery()).disableScoring();
-		FullTextQuery query = persistenceManager.createFullTextQuery(junction.createQuery(), MediaCommentEntity.class)
-				.setFirstResult(paging.getPageNumber() * paging.getPageSize())
-				.setMaxResults(paging.getPageSize());
-		List<MediaCommentEntity> list = query
-				.setSort(builder.sort().byField("versionInfo.creation").desc().createSort())
-				.setFirstResult(paging.getPageNumber() * paging.getPageSize())
-				.setMaxResults(paging.getPageSize())
-				.setHint(QueryHints.READ_ONLY, true)
-				.getResultList();
-		return new QueryResult<>(list, query.getResultSize(), paging);
+		SearchResult<MediaCommentEntity> result = persistenceManager.search(MediaCommentEntity.class)
+				.predicate(p -> p.bool()
+						.must(p.range().onField("versionInfo.creation").below(paging.getTimestamp()))
+						.must(p.match().onField("media.id").matching(mediaUri)))
+				.sort(s -> s.byField("versionInfo.creation").desc())
+				.fetch(paging.getPageSize(), paging.getOffset());
+		return new QueryResult<>(result.getHits(), result.getTotalHitCount(), paging);
 	}
 }

@@ -13,19 +13,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import com.bravson.socialalert.business.feed.FeedService;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.domain.feed.FeedItemInfo;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name="feed")
 @Path("/feed")
@@ -43,7 +43,7 @@ public class FeedFacade {
 	@Path("/current")
 	@Operation(summary="Get the feed for the current user.")
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiResponse(responseCode = "200", description = "The feed has been retrieved successfuly.", content=@Content(schema=@Schema(implementation=FeedItemInfo.class)))
+	@APIResponse(responseCode = "200", description = "The feed has been retrieved successfuly.", content=@Content(schema=@Schema(implementation=FeedItemInfo.class)))
 	public QueryResult<FeedItemInfo> getFeed(
 			@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
 			@Parameter(description="Sets the page number to return.", required=false) @DefaultValue("0") @Min(0) @QueryParam("pageNumber") int pageNumber,

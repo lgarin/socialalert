@@ -6,11 +6,6 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.hibernate.annotations.QueryHints;
-import org.hibernate.search.jpa.FullTextQuery;
-import org.hibernate.search.query.dsl.BooleanJunction;
-import org.hibernate.search.query.dsl.QueryBuilder;
-
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
@@ -46,17 +41,10 @@ public class CommentApprovalRepository {
 		return persistenceManager.find(CommentApprovalEntity.class, new CommentApprovalKey(commentId, userId));
 	}
 	
-	@SuppressWarnings("unchecked")
 	public List<CommentApprovalEntity> findAllByMediaUri(@NonNull String mediaUri, @NonNull String userId) {
-		QueryBuilder builder = createQueryBuilder();
-		BooleanJunction<?> criteria = builder.bool()
-			.must(builder.keyword().onField("comment.media.id").matching(mediaUri).createQuery())
-			.must(builder.keyword().onField("id.userId").matching(userId).createQuery());
-		FullTextQuery query = persistenceManager.createFullTextQuery(criteria.createQuery(), CommentApprovalEntity.class);
-		return query.setHint(QueryHints.READ_ONLY, true).getResultList();
-	}
-	
-	private QueryBuilder createQueryBuilder() {
-		return persistenceManager.createQueryBuilder(CommentApprovalEntity.class);
+		return persistenceManager.createQuery("select a from CommentApproval where id.userId = :userId and comment.media.id = :mediaUri", CommentApprovalEntity.class)
+				.setParameter(":userId", userId)
+				.setParameter(":mediaUri", mediaUri)
+				.getResultList();
 	}
 }

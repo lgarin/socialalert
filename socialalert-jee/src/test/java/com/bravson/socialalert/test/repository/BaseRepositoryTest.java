@@ -1,21 +1,19 @@
 package com.bravson.socialalert.test.repository;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.logging.LogManager;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.SynchronizationType;
 
 import org.assertj.core.api.Assertions;
-import org.hibernate.search.jpa.FullTextEntityManager;
-import org.hibernate.search.jpa.Search;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import com.bravson.socialalert.business.file.FileMetadata;
 import com.bravson.socialalert.business.file.entity.FileEntity;
@@ -30,42 +28,43 @@ public class BaseRepositoryTest extends Assertions {
 
 	private static EntityManagerFactory entityManagerFactory;
 
-	private FullTextEntityManager entityManager;
+	private EntityManager entityManager;
 	
-    @BeforeClass
+    @BeforeAll
     public static void setUpEntityManagerFactory() throws SecurityException, IOException {
+    	/*
     	 final LogManager logManager = LogManager.getLogManager();
          try (final InputStream is = BaseRepositoryTest.class.getResourceAsStream("/logging.properties")) {
              logManager.readConfiguration(is);
          }
-    	
+    	*/
         entityManagerFactory = Persistence.createEntityManagerFactory("socialalert-test");
     }
 
-    @AfterClass
+    @AfterAll
     public static void closeEntityManagerFactory() {
     	if (entityManagerFactory != null) {
     		entityManagerFactory.close();
     	}
     }
     
-    @Before
+    private EntityManager getEntityManager() {
+    	if (entityManager == null) {
+    		entityManager = entityManagerFactory.createEntityManager(SynchronizationType.SYNCHRONIZED);
+    	}
+    	return entityManager;
+    }
+    
+    @BeforeEach
     public final void startTransaction() {
-    	entityManager.getTransaction().begin();
+    	getEntityManager().getTransaction().begin();
     }
 
-    @After
+    @AfterEach
     public final void closeEntityManager() {
     	if (entityManager != null) {
     		entityManager.close();
     	}
-    }
-    
-    protected final FullTextEntityManager getEntityManager() {
-    	if (entityManager == null) {
-    		entityManager = Search.getFullTextEntityManager(entityManagerFactory.createEntityManager());
-    	}
-    	return entityManager;
     }
     
     protected final PersistenceManager getPersistenceManager() {
@@ -74,8 +73,6 @@ public class BaseRepositoryTest extends Assertions {
     
     protected final <T> T persistAndIndex(T entity) {
     	getEntityManager().persist(entity);
-    	getEntityManager().index(entity);
-    	getEntityManager().flushToIndexes();
     	return entity;
     }
     

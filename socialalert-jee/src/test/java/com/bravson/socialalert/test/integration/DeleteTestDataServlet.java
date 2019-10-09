@@ -19,9 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.jpa.FullTextEntityManager;
-import org.hibernate.search.jpa.Search;
+import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.slf4j.Logger;
 
 @WebServlet("/unitTest/deleteData")
@@ -64,13 +63,11 @@ public class DeleteTestDataServlet extends HttpServlet {
 	}
 
 	private void deleteDatabase() {
-		FullTextEntityManager entityManager = Search.getFullTextEntityManager(em);
-		for (EntityType<?> entityType : entityManager.getMetamodel().getEntities()) {
-			entityManager.createNativeQuery("db." + entityType.getName() + ".drop()").executeUpdate();
-			if (entityType.getJavaType().getAnnotation(Indexed.class) != null) {
-				entityManager.purgeAll(entityType.getJavaType());
-			}
+		SearchSession entityManager = Search.session(em);
+		for (EntityType<?> entityType : em.getMetamodel().getEntities()) {
+			em.createNativeQuery("db." + entityType.getName() + ".drop()").executeUpdate();
 		}
-		entityManager.flushToIndexes();
+		entityManager.writer().purge();
+		entityManager.writer().flush();
 	}
 }

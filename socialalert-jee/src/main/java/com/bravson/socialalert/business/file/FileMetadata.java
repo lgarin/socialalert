@@ -5,9 +5,9 @@ import java.time.Instant;
 
 import javax.persistence.Embeddable;
 
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
@@ -20,11 +20,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.experimental.Wither;
+import lombok.With;
 
 @Data
 @Builder
-@Wither
+@With
 @AllArgsConstructor
 @Embeddable
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
@@ -35,19 +35,19 @@ public class FileMetadata implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@NonNull
-	@Field(analyze=Analyze.NO)
+	@KeywordField
 	private String md5;
 	
 	@NonNull
-	@Field
+	@GenericField
 	private Instant timestamp;
 	
 	@NonNull
-	@Field
+	@GenericField
 	private Long contentSize;
 
 	@NonNull
-	@Field
+	@KeywordField
 	private MediaFileFormat fileFormat;
 
 	public String buildFileUri() {

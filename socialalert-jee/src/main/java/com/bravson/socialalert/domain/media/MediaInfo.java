@@ -4,6 +4,11 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
+import javax.json.bind.annotation.JsonbTypeDeserializer;
+import javax.json.bind.annotation.JsonbTypeSerializer;
+
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.infrastructure.rest.DurationDeserializer;
@@ -11,10 +16,7 @@ import com.bravson.socialalert.infrastructure.rest.DurationSerializer;
 import com.bravson.socialalert.infrastructure.rest.InstantDeserializer;
 import com.bravson.socialalert.infrastructure.rest.InstantSerializer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Schema(description="The meta information for the media.")
@@ -32,13 +34,13 @@ public class MediaInfo implements UserContent {
     private String description;
 	
     @Schema(description="The media timestamp in milliseconds since the epoch.")
-	@JsonSerialize(using=InstantSerializer.class)
-	@JsonDeserialize(using=InstantDeserializer.class)
+    @JsonbTypeSerializer(InstantSerializer.class)
+    @JsonbTypeDeserializer(InstantDeserializer.class)
 	private Instant creation;
 	 
     @Schema(description="The upload timestamp in milliseconds since the epoch.")
-	@JsonSerialize(using=InstantSerializer.class)
-	@JsonDeserialize(using=InstantDeserializer.class)
+    @JsonbTypeSerializer(InstantSerializer.class)
+    @JsonbTypeDeserializer(InstantDeserializer.class)
 	private Instant timestamp;
 	
 	private MediaFileFormat fileFormat;
@@ -46,8 +48,8 @@ public class MediaInfo implements UserContent {
 	private MediaFileFormat previewFormat;
 	
 	@Schema(description="The duration of the video in milliseconds.", implementation=Long.class)
-	@JsonSerialize(using=DurationSerializer.class)
-	@JsonDeserialize(using=DurationDeserializer.class)
+	@JsonbTypeSerializer(DurationSerializer.class)
+	@JsonbTypeDeserializer(DurationDeserializer.class)
 	private Duration duration;
 
 	private Double longitude;

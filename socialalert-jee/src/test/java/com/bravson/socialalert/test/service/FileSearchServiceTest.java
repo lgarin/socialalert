@@ -1,12 +1,13 @@
 package com.bravson.socialalert.test.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -17,7 +18,7 @@ import com.bravson.socialalert.business.file.entity.FileState;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.file.FileInfo;
 
-public class FileSearchServiceTest extends BaseServiceTest {
+public class FileSearchServiceTest {
 
 	@InjectMocks
 	FileSearchService searchService;

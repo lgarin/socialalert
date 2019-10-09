@@ -7,11 +7,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserInfoService;
@@ -21,7 +20,9 @@ import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.media.UserContent;
 
-@RunWith(MockitoJUnitRunner.class)
+import io.quarkus.test.Mock;
+
+@ExtendWith(MockitoExtension.class)
 public class UserInfoServiceTest extends Assertions {
 
 	@Mock

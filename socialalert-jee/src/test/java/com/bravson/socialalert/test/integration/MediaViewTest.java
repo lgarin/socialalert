@@ -4,7 +4,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class MediaViewTest extends BaseIntegrationTest {
 

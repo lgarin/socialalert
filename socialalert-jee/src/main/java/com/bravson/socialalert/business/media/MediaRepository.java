@@ -3,26 +3,20 @@ package com.bravson.socialalert.business.media;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.hibernate.annotations.QueryHints;
-import org.hibernate.search.jpa.FullTextQuery;
-import org.hibernate.search.query.dsl.BooleanJunction;
-import org.hibernate.search.query.dsl.QueryBuilder;
-import org.hibernate.search.query.dsl.Unit;
-import org.hibernate.search.query.facet.Facet;
-import org.hibernate.search.query.facet.FacetSortOrder;
-import org.hibernate.search.query.facet.FacetingRequest;
-import org.hibernate.search.spatial.impl.SpatialHashQuery;
+import org.hibernate.search.engine.search.dsl.predicate.BooleanPredicateClausesStep;
+import org.hibernate.search.engine.search.dsl.predicate.PredicateFinalStep;
+import org.hibernate.search.engine.search.dsl.predicate.SearchPredicateFactory;
+import org.hibernate.search.engine.search.query.SearchResult;
+import org.hibernate.search.engine.spatial.DistanceUnit;
 
 import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.user.UserAccess;
-import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
@@ -67,48 +61,43 @@ public class MediaRepository {
 		newEntityEvent.fire(entity);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public QueryResult<MediaEntity> searchMedia(@NonNull SearchMediaParameter parameter, @NonNull PagingParameter paging) {
-		QueryBuilder builder = persistenceManager.createQueryBuilder(MediaEntity.class);
-		FullTextQuery query = createSearchQuery(parameter, paging.getTimestamp(), builder);
-		List<MediaEntity> list = query
-				.setSort(builder.sort().byScore().createSort())
-				.setFirstResult(paging.getPageNumber() * paging.getPageSize())
-				.setMaxResults(paging.getPageSize())
-				.setHint(QueryHints.READ_ONLY, true)
-				.getResultList();
-		return new QueryResult<>(list, query.getResultSize(), paging);
+		SearchResult<MediaEntity> result = persistenceManager.search(MediaEntity.class)
+				.predicate(f -> createSearchQuery(parameter, paging.getTimestamp(), f))
+				.sort(f -> f.byScore())
+				.fetch(paging.getPageSize(), paging.getOffset());
+		return new QueryResult<>(result.getHits(), result.getTotalHitCount(), paging);
 	}
 
-	private FullTextQuery createSearchQuery(SearchMediaParameter parameter, Instant pagingTimestamp, QueryBuilder builder) {
-		BooleanJunction<?> junction = builder.bool();
-		junction = junction.must(builder.range().onField("versionInfo.creation").below(pagingTimestamp).createQuery()).disableScoring();
+	private PredicateFinalStep createSearchQuery(SearchMediaParameter parameter, Instant timestamp, SearchPredicateFactory context) {
+		BooleanPredicateClausesStep junction = context.bool();
+		junction = junction.filter(context.range().onField("versionInfo.creation").below(timestamp).toPredicate());
 		if (parameter.getMaxAge() != null) {
-			junction = junction.must(builder.range().onField("versionInfo.creation").above(pagingTimestamp.minus(parameter.getMaxAge())).createQuery());
+			junction = junction.must(context.range().onField("versionInfo.creation").above(timestamp.minus(parameter.getMaxAge())).toPredicate());
 		}
 		if (parameter.getCreator() != null) {
-			junction = junction.must(builder.keyword().onField("versionInfo.userId").matching(parameter.getCreator()).createQuery());
+			junction = junction.must(context.match().onField("versionInfo.userId").matching(parameter.getCreator()).toPredicate());
 		}
 		if (parameter.getArea() != null) {
 			List<String> geoHashList = GeoHashUtil.computeGeoHashList(parameter.getArea());
 			int precision = geoHashList.stream().mapToInt(String::length).max().getAsInt();
 			if (precision >= MediaEntity.MIN_GEOHASH_PRECISION && precision <= MediaEntity.MAX_GEOHASH_PRECISION) {
-				junction.filteredBy(new SpatialHashQuery(geoHashList, "geoHash" + precision));
+				junction.filter(context.match().onField("geoHash" + precision).matching(String.join(" ", geoHashList)).toPredicate());
 			}
 		}
 		if (parameter.getLocation() != null) {
-			junction = junction.must(builder.spatial().boostedTo(10.0f).onField("location.coordinates").within(parameter.getLocation().getRadius(), Unit.KM).ofLatitude(parameter.getLocation().getLatitude()).andLongitude(parameter.getLocation().getLongitude()).createQuery());
+			junction = junction.must(context.spatial().within().onField("location.coordinates").circle(parameter.getLocation().getLatitude(), parameter.getLocation().getLongitude(), parameter.getLocation().getRadius(), DistanceUnit.KILOMETERS).boostedTo(10.0f).toPredicate());
 		}
 		if (parameter.getCategory() != null) {
-			junction = junction.must(builder.keyword().onField("categories").matching(parameter.getCategory()).createQuery());
+			junction = junction.must(context.match().onField("categories").matching(parameter.getCategory()).toPredicate());
 		}
 		if (parameter.getKeywords() != null) {
-			junction = junction.must(builder.keyword().fuzzy().onField("tags").boostedTo(4.0f).andField("title").boostedTo(2.0f).andField("description").matching(parameter.getKeywords()).createQuery());
+			junction = junction.must(context.match().onField("tags").boostedTo(4.0f).orField("title").boostedTo(2.0f).orField("description").matching(parameter.getKeywords()).fuzzy().toPredicate());
 		}
 		if (parameter.getMediaKind() != null) {
-			junction = junction.must(builder.keyword().onField("kind").matching(parameter.getMediaKind()).createQuery());
+			junction = junction.must(context.match().onField("kind").matching(parameter.getMediaKind()).toPredicate());
 		}
-		return persistenceManager.createFullTextQuery(junction.createQuery(), MediaEntity.class);
+		return junction;
 	}
 
 	void handleNewMediaHit(@Observes @HitEntity MediaEntity media) {
@@ -116,12 +105,15 @@ public class MediaRepository {
 	}
 
 	public List<GeoStatistic> groupByGeoHash(@NonNull SearchMediaParameter parameter) {
+		/*
 		int precision = 2;
 		if (parameter.getArea() != null) {
 			precision = Math.min(GeoHashUtil.computeGeoHashPrecision(parameter.getArea(), 64), MediaEntity.MAX_GEOHASH_PRECISION);
 		}
-		QueryBuilder builder = persistenceManager.createQueryBuilder(MediaEntity.class);
-		FullTextQuery query = createSearchQuery(parameter, Instant.now(), builder);
+		
+		persistenceManager.search(MediaEntity.class)
+			.predicate(f -> createSearchQuery(parameter, Instant.now(), f))
+			.
 		
 		FacetingRequest geoHashFacet = builder.facet()
 			    .name("geoHashFacet")
@@ -134,10 +126,13 @@ public class MediaRepository {
 		
 		return query.getFacetManager().enableFaceting(geoHashFacet).getFacets("geoHashFacet").stream()
 				.map(MediaRepository::toGeoStatistic).filter(s -> s.intersect(parameter.getArea())).collect(Collectors.toList());
+				*/
+		return null;
 	}
-
+	/*
 	private static GeoStatistic toGeoStatistic(Facet geoHashFacet) {
 		GeoBox box = GeoHashUtil.computeBoundingBox(geoHashFacet.getValue());
 		return GeoStatistic.builder().count(geoHashFacet.getCount()).minLat(box.getMinLat()).maxLat(box.getMaxLat()).minLon(box.getMinLon()).maxLon(box.getMaxLon()).build();
 	}
+	*/
 }

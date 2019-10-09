@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,10 +27,10 @@ public class QueryResult<T> {
 	
 	private PagingParameter nextPage;
 	
-	public QueryResult(@NonNull List<T> content, int matchCount, @NonNull PagingParameter currentPaging) {
+	public QueryResult(@NonNull List<T> content, long matchCount, @NonNull PagingParameter currentPaging) {
 		this.content = content;
 		this.pageNumber = currentPaging.getPageNumber();
-		this.pageCount = (matchCount + currentPaging.getPageSize() - 1) / currentPaging.getPageSize();
+		this.pageCount = (int) ((matchCount + currentPaging.getPageSize() - 1) / currentPaging.getPageSize());
 		if (pageNumber + 1 < pageCount) {
 			nextPage = new PagingParameter(currentPaging.getTimestamp(), pageNumber + 1, currentPaging.getPageSize());
 		} else {

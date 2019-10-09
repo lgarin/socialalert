@@ -3,7 +3,7 @@ package com.bravson.socialalert.test.repository;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.approval.CommentApprovalEntity;

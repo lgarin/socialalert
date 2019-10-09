@@ -2,13 +2,16 @@ package com.bravson.socialalert.test.repository;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.link.UserLinkEntity;
 import com.bravson.socialalert.business.user.link.UserLinkRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 
+import io.quarkus.test.junit.QuarkusTest;
+
+@QuarkusTest
 public class UserLinkRepositoryTest extends BaseRepositoryTest {
     
     private UserLinkRepository repository = new UserLinkRepository(getPersistenceManager());

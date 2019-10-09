@@ -56,7 +56,7 @@ public class MediaMetadataExtractor {
             .toFormatter();
 	
 	@Inject
-	private MediaConfiguration config;
+	MediaConfiguration config;
 	
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
