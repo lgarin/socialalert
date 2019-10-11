@@ -1,14 +1,19 @@
 package com.bravson.socialalert.business.feed;
 
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.IdentifierBridgeRef;
 import org.hibernate.search.mapper.pojo.dirtiness.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
@@ -20,6 +25,8 @@ import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.feed.FeedActivity;
 import com.bravson.socialalert.domain.feed.FeedItemInfo;
+import com.bravson.socialalert.infrastructure.entity.DefaultStringIdentifierBridge;
+import com.bravson.socialalert.infrastructure.entity.FieldLength;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 
 import lombok.AccessLevel;
@@ -34,6 +41,8 @@ public class FeedItemEntity {
 
 	@Getter
 	@Id
+	@Column(name = "id", length = FieldLength.ID)
+	@DocumentId(identifierBridge = @IdentifierBridgeRef(type=DefaultStringIdentifierBridge.class))
 	@GenericField
 	@GenericGenerator(name="system-uuid", strategy = "uuid2")
 	@GeneratedValue(generator="system-uuid")
@@ -41,16 +50,19 @@ public class FeedItemEntity {
 	
 	@Getter
 	@ManyToOne(fetch=FetchType.EAGER, optional = false)
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_FeedItem_Media"))
 	@IndexedEmbedded(includePaths= {"id"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.NO)
 	private MediaEntity media;
 	
 	@Getter
 	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_FeedItem_Comment"))
 	@IndexedEmbedded(includePaths= {"id"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.NO)
 	private MediaCommentEntity comment;
 
+	@Column(name = "activity", nullable = false)
 	@Getter
 	@NonNull
 	@KeywordField

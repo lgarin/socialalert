@@ -2,9 +2,12 @@ package com.bravson.socialalert.business.media.approval;
 
 import java.time.Instant;
 
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
@@ -38,14 +41,17 @@ public class MediaApprovalEntity {
 
 	@Getter
 	@Setter
+	@Column(name = "modifier", nullable = false)
 	private ApprovalModifier modifier;
 	
 	@Getter
 	@NonNull
+	@Column(name = "creation", nullable = false)
 	private Instant creation;
 	
 	@Getter
 	@ManyToOne(fetch=FetchType.LAZY, optional = false)
+	@JoinColumn(name = "media_id", foreignKey = @ForeignKey(name = "FK_MediaApproval_Media"))
 	@MapsId("mediaUri")
 	private MediaEntity media;
 

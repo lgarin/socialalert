@@ -2,6 +2,7 @@ package com.bravson.socialalert.infrastructure.entity;
 
 import java.time.Instant;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -21,15 +22,19 @@ import lombok.Setter;
 @Indexed
 public class VersionInfo {
 
+	@Column(name = "user_id", length = FieldLength.ID, nullable = false)
 	@KeywordField
 	private String userId;
 	
+	@Column(name = "ip_address", length = FieldLength.IP_ADDRESS, nullable = false)
 	@KeywordField
 	private String ipAddress;
 	
+	@Column(name = "creation", nullable = false)
 	@GenericField(sortable = Sortable.YES)
 	private Instant creation;
 	
+	@Column(name = "last_update", nullable = false)
 	private Instant lastUpdate;
 	
 	public static VersionInfo of(String userId, String ipAddress) {

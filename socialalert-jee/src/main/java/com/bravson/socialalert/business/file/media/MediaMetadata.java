@@ -3,6 +3,7 @@ package com.bravson.socialalert.business.file.media;
 import java.time.Duration;
 import java.time.Instant;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.GeoPointBinding;
@@ -11,6 +12,8 @@ import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.Longitude;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+
+import com.bravson.socialalert.infrastructure.entity.FieldLength;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -31,11 +34,14 @@ import lombok.Setter;
 public class MediaMetadata {
 
 	@NonNull
+	@Column(name = "width")
 	@GenericField
 	private Integer width;
 	@NonNull
+	@Column(name = "height")
 	@GenericField
 	private Integer height;
+	@Column(name = "media_timestamp")
 	@GenericField
 	private Instant timestamp;
 	@GenericField
@@ -44,8 +50,10 @@ public class MediaMetadata {
 	private Double latitude;
 	@Longitude
 	private Double longitude;
+	@Column(name = "camera_maker", length = FieldLength.NAME)
 	@KeywordField
 	private String cameraMaker;
+	@Column(name = "camera_model", length = FieldLength.NAME)
 	@KeywordField
 	private String cameraModel;
 

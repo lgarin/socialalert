@@ -5,10 +5,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
@@ -33,12 +37,14 @@ import lombok.NonNull;
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class FileEntity extends VersionedEntity {
 
+	@Column(name = "state", nullable = false)
 	@Getter
 	@NonNull
 	@KeywordField
 	private FileState state;
 	
 	@ElementCollection(fetch=FetchType.EAGER)
+	@CollectionTable(name = "FileVariant", joinColumns = @JoinColumn(name = "file_id", foreignKey = @ForeignKey(name = "FK_FileVariant_File")))
 	@IndexedEmbedded
 	private List<FileMetadata> fileVariants;
 		

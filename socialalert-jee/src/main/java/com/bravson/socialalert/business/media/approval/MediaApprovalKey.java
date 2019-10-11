@@ -2,6 +2,7 @@ package com.bravson.socialalert.business.media.approval;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -10,6 +11,8 @@ import org.hibernate.search.mapper.pojo.bridge.runtime.IdentifierBridgeFromDocum
 import org.hibernate.search.mapper.pojo.bridge.runtime.IdentifierBridgeToDocumentIdentifierContext;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+
+import com.bravson.socialalert.infrastructure.entity.FieldLength;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -28,10 +31,12 @@ public class MediaApprovalKey implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
+	@Column(name = "media_id", length = FieldLength.ID)
 	@GenericField(searchable = Searchable.NO)
 	@NonNull
 	private String mediaUri;
 	
+	@Column(name = "user_id", length = FieldLength.ID)
 	@GenericField(searchable = Searchable.NO)
 	@NonNull
 	private String userId;

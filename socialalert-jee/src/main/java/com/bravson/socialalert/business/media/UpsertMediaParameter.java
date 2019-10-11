@@ -28,11 +28,11 @@ public class UpsertMediaParameter {
 	
 	@NotNull @Size(max=MediaConstants.MAX_CATEGORY_COUNT)
 	@NonNull
-	private List<String> categories;
+	private List<@NotNull String> categories;
 	
 	@NotNull @Size(max=MediaConstants.MAX_TAG_COUNT)
 	@NonNull
-	private List<String> tags;
+	private List<@NotNull @Size(max=MediaConstants.MAX_TAG_LENGTH) String> tags;
 	
 	private GeoAddress location;
 }

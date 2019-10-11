@@ -2,9 +2,12 @@ package com.bravson.socialalert.business.user.link;
 
 import java.time.Instant;
 
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
@@ -35,10 +38,12 @@ public class UserLinkEntity {
 
 	@Getter
 	@NonNull
+	@Column(name = "creation", nullable = false)
 	private Instant creation;
 	
 	@Getter
 	@ManyToOne(fetch=FetchType.LAZY, optional = false)
+	@JoinColumn(name = "source_user_id", foreignKey = @ForeignKey(name = "FK_UserLink_SourceUser"))
 	@MapsId("sourceUserId")
 	@IndexedEmbedded(includePaths= {"id"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.NO)
@@ -47,6 +52,7 @@ public class UserLinkEntity {
 	@Getter
 	@ManyToOne(fetch=FetchType.LAZY, optional = false)
 	@MapsId("targetUserId")
+	@JoinColumn(name = "target_user_id", foreignKey = @ForeignKey(name = "FK_UserLink_TargetUser"))
 	@IndexedEmbedded(includePaths= {"id"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.NO)
 	private UserProfileEntity targetUser;

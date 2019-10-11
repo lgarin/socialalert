@@ -3,6 +3,7 @@ package com.bravson.socialalert.business.file;
 import java.io.Serializable;
 import java.time.Instant;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
@@ -11,6 +12,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
+import com.bravson.socialalert.infrastructure.entity.FieldLength;
 import com.bravson.socialalert.infrastructure.util.DateUtil;
 
 import lombok.AccessLevel;
@@ -34,18 +36,22 @@ public class FileMetadata implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	@Column(name = "md5", length = FieldLength.MD5, nullable = false)
 	@NonNull
 	@KeywordField
 	private String md5;
-	
+
+	@Column(name = "file_timestamp", nullable = false)
 	@NonNull
 	@GenericField
 	private Instant timestamp;
 	
+	@Column(name = "content_size", nullable = false)
 	@NonNull
 	@GenericField
 	private Long contentSize;
 
+	@Column(name = "file_format", nullable = false)
 	@NonNull
 	@KeywordField
 	private MediaFileFormat fileFormat;

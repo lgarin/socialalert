@@ -1,14 +1,19 @@
 package com.bravson.socialalert.business.media.comment;
 
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.IdentifierBridgeRef;
 import org.hibernate.search.mapper.pojo.dirtiness.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
@@ -20,6 +25,8 @@ import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.media.comment.MediaCommentDetail;
 import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
+import com.bravson.socialalert.infrastructure.entity.DefaultStringIdentifierBridge;
+import com.bravson.socialalert.infrastructure.entity.FieldLength;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 
 import lombok.AccessLevel;
@@ -38,6 +45,8 @@ public class MediaCommentEntity {
 	
 	@Getter
 	@Id
+	@Column(name = "id", length = FieldLength.ID)
+	@DocumentId(identifierBridge = @IdentifierBridgeRef(type=DefaultStringIdentifierBridge.class))
 	@GenericField
 	@GenericGenerator(name="system-uuid", strategy = "uuid2")
 	@GeneratedValue(generator="system-uuid")
@@ -45,20 +54,24 @@ public class MediaCommentEntity {
 	
 	@Getter
 	@ManyToOne(fetch=FetchType.LAZY, optional = false)
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_Comment_Media"))
 	@IndexedEmbedded(includePaths= {"id"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.NO)
 	private MediaEntity media;
 	
 	@Getter
 	@NonNull
+	@Column(name = "comment", length = FieldLength.ID, nullable = false)
 	@FullTextField(analyzer = "languageAnalyzer")
 	private String comment;
 	
 	@Getter
+	@Column(name = "like_count", nullable = false)
 	@GenericField
 	private int likeCount;
 	
 	@Getter
+	@Column(name = "dislike_count", nullable = false)
 	@GenericField
 	private int dislikeCount;
 	

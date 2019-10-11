@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -25,6 +26,7 @@ import com.bravson.socialalert.domain.user.Gender;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.domain.user.statistic.UserStatistic;
+import com.bravson.socialalert.infrastructure.entity.FieldLength;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
 
@@ -42,12 +44,14 @@ public class UserProfileEntity extends VersionedEntity {
 	@Getter
 	@Setter
 	@NonNull
+	@Column(name = "username", length = FieldLength.NAME, nullable = false)
 	@KeywordField
 	private String username;
 	
 	@Getter
 	@Setter
 	@NonNull
+	@Column(name = "email", length = FieldLength.NAME, nullable = false)
 	@KeywordField
 	private String email;
 	
@@ -63,25 +67,30 @@ public class UserProfileEntity extends VersionedEntity {
 	
 	@Getter
 	@Setter
+	@Column(name = "country", length = FieldLength.ISO_CODE)
 	@KeywordField
 	private String country;
 	
 	@Getter
 	@Setter
+	@Column(name = "language", length = FieldLength.ISO_CODE)
 	@KeywordField
 	private String language;
 	
 	@Getter
 	@Setter
+	@Column(name = "image_uri", length = FieldLength.ID)
 	private String imageUri;
 	
 	@Getter
 	@Setter
+	@Column(name = "biography", length = FieldLength.TEXT)
 	@FullTextField(analyzer="languageAnalyzer")
 	private String biography;
 	
 	@Getter
 	@Setter
+	@Column(name = "last_login")
 	@GenericField
 	private Instant lastLogin;
 	
@@ -89,16 +98,20 @@ public class UserProfileEntity extends VersionedEntity {
 	@NonNull
 	@Embedded
 	private UserStatistic statistic;
-	
+	/*
 	@OneToMany
+	@CollectionTable(name = "UserFile", joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_User_File")), uniqueConstraints = @UniqueConstraint(name = "UK_UserFile_File", columnNames = "files_id"))
 	private Set<FileEntity> files;
 	
 	@OneToMany
+	@JoinColumn(name = "media_id", foreignKey = @ForeignKey(name = "FK_Media_User"))
+	@CollectionTable(name = "UserMedia", joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_User_Media")), uniqueConstraints = @UniqueConstraint(name = "UK_UserMedia_Media", columnNames = "medias_id"))
 	private Set<MediaEntity> medias;
 	
 	@OneToMany
+	@CollectionTable(name = "UserComment", joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_User_Comment")), uniqueConstraints = @UniqueConstraint(name = "UK_UserComment_Comment", columnNames = "comments_id"))
 	private Set<MediaCommentEntity> comments;
-	
+	*/
 	@Getter
 	@OneToMany(mappedBy="sourceUser")
 	private Set<UserLinkEntity> followedUsers;
@@ -145,18 +158,22 @@ public class UserProfileEntity extends VersionedEntity {
 	}
 	
 	public void addFile(FileEntity file) {
+		/*
 		if (files == null) {
 			files = new HashSet<>();
 		}
 		files.add(file);
+		*/
 		statistic.incFileCount();
 	}
 	
 	public void addMedia(MediaEntity media) {
+		/*
 		if (medias == null) {
 			medias = new HashSet<>();
 		}
 		medias.add(media);
+		*/
 		if (media.getKind() == MediaKind.VIDEO) {
 			statistic.incVideoCount();
 		} else {
@@ -165,10 +182,12 @@ public class UserProfileEntity extends VersionedEntity {
 	}
 	
 	public void addComment(MediaCommentEntity comment) {
+		/*
 		if (comments == null) {
 			comments = new HashSet<>();
 		}
 		comments.add(comment);
+		*/
 		statistic.incCommentCount();
 	}
 

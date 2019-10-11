@@ -1,16 +1,22 @@
 package com.bravson.socialalert.business.media;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
-import javax.persistence.Transient;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
@@ -24,15 +30,18 @@ import com.bravson.socialalert.domain.media.MediaDetail;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.media.MediaKind;
 import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
+import com.bravson.socialalert.infrastructure.entity.FieldLength;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
 import com.bravson.socialalert.infrastructure.util.GeoHashUtil;
 
+import io.reactivex.annotations.NonNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity(name="Media")
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = "file_id", name = "UK_Media_File"))
 @Indexed
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class MediaEntity extends VersionedEntity {
@@ -42,17 +51,22 @@ public class MediaEntity extends VersionedEntity {
 
 	@Getter
 	@OneToOne(fetch=FetchType.LAZY, optional=false)
+	@JoinColumn(name = "file_id", foreignKey = @ForeignKey(name = "FK_Media_File"))
 	private FileEntity file;
 	
+	@NonNull
 	@Getter
+	@Column(name = "kind", nullable = false)
 	@GenericField
 	private MediaKind kind;
 	
 	@Getter
+	@Column(name = "title", length = FieldLength.NAME)
 	@FullTextField(analyzer="languageAnalyzer")
     private String title;
 	
 	@Getter
+	@Column(name = "description", length = FieldLength.TEXT)
 	@FullTextField(analyzer="languageAnalyzer")
 	private String description;
 
@@ -61,6 +75,7 @@ public class MediaEntity extends VersionedEntity {
 	@IndexedEmbedded
 	private GeoAddress location;
 	
+	@NonNull
 	@Getter
 	@Embedded
 	@IndexedEmbedded
@@ -68,36 +83,40 @@ public class MediaEntity extends VersionedEntity {
 	
 	@Getter
 	@ElementCollection(fetch=FetchType.EAGER)
+	@CollectionTable(name = "MediaCategory", joinColumns = @JoinColumn(name = "media_id", foreignKey = @ForeignKey(name = "FK_MediaCategory_Media")))
+	@Column(name = "category", length = FieldLength.NAME, nullable = false)
 	@GenericField
-	private List<String> categories;
+	private Set<String> categories;
 	
 	@Getter
 	@ElementCollection(fetch=FetchType.EAGER)
+	@CollectionTable(name = "MediaTag", joinColumns = @JoinColumn(name = "media_id", foreignKey = @ForeignKey(name = "FK_MediaTag_Media")))
+	@Column(name = "tag", length = FieldLength.NAME, nullable = false)
 	@FullTextField(analyzer="languageAnalyzer")
-	private List<String> tags;
+	private Set<String> tags;
 	
-	@Transient
+	@Column(name = "geo_hash1", length = 1) // TODO should be transient
 	@GenericField
 	private String geoHash1;
-	@Transient
+	@Column(name = "geo_hash2", length = 2) // TODO should be transient
 	@GenericField
 	private String geoHash2;
-	@Transient
+	@Column(name = "geo_hash3", length = 3) // TODO should be transient
 	@GenericField
 	private String geoHash3;
-	@Transient
+	@Column(name = "geo_hash4", length = 4) // TODO should be transient
 	@GenericField
 	private String geoHash4;
-	@Transient
+	@Column(name = "geo_hash5", length = 5) // TODO should be transient
 	@GenericField
 	private String geoHash5;
-	@Transient
+	@Column(name = "geo_hash6", length = 6) // TODO should be transient
 	@GenericField
 	private String geoHash6;
-	@Transient
+	@Column(name = "geo_hash7", length = 7) // TODO should be transient
 	@GenericField
 	private String geoHash7;
-	@Transient
+	@Column(name = "geo_hash8", length = 8) // TODO should be transient
 	@GenericField
 	private String geoHash8;
 	
@@ -149,10 +168,10 @@ public class MediaEntity extends VersionedEntity {
 			this.location = parameter.getLocation();
 		}
 		if (parameter.getCategories() != null) {
-			this.categories = new ArrayList<>(parameter.getCategories());
+			this.categories = new HashSet<>(parameter.getCategories());
 		}
 		if (parameter.getTags() != null) {
-			this.tags = new ArrayList<>(parameter.getTags());
+			this.tags = new HashSet<>(parameter.getTags());
 		}
 	}
 	

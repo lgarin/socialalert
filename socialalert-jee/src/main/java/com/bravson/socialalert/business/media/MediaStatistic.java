@@ -1,5 +1,6 @@
 package com.bravson.socialalert.business.media;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
@@ -23,18 +24,23 @@ import lombok.Setter;
 @Indexed
 public class MediaStatistic {
 
+	@Column(name = "hit_count", nullable = false)
 	@GenericField
 	private int hitCount;
 	
+	@Column(name = "like_count", nullable = false)
 	@GenericField
 	private int likeCount;
 	
+	@Column(name = "dislike_count", nullable = false)
 	@GenericField
 	private int dislikeCount;
 	
+	@Column(name = "comment_count", nullable = false)
 	@GenericField
 	private int commentCount;
 	
+	@Column(name = "boost_factor", nullable = false)
 	@GenericField
 	private double boostFactor;
 

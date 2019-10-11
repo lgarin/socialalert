@@ -2,6 +2,7 @@ package com.bravson.socialalert.business.media.approval;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -10,6 +11,8 @@ import org.hibernate.search.mapper.pojo.bridge.runtime.IdentifierBridgeFromDocum
 import org.hibernate.search.mapper.pojo.bridge.runtime.IdentifierBridgeToDocumentIdentifierContext;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+
+import com.bravson.socialalert.infrastructure.entity.FieldLength;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -29,10 +32,12 @@ public class CommentApprovalKey implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@GenericField(searchable = Searchable.NO)
+	@Column(name = "comment_id", length = FieldLength.ID, nullable = false)
 	@NonNull
 	private String commentId;
 	
 	@GenericField(searchable = Searchable.NO)
+	@Column(name = "user_id", length = FieldLength.ID, nullable = false)
 	@NonNull
 	private String userId;
 	

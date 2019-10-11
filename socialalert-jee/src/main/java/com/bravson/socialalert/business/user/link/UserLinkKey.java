@@ -2,6 +2,7 @@ package com.bravson.socialalert.business.user.link;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 import org.hibernate.search.mapper.pojo.bridge.IdentifierBridge;
@@ -9,6 +10,8 @@ import org.hibernate.search.mapper.pojo.bridge.runtime.IdentifierBridgeFromDocum
 import org.hibernate.search.mapper.pojo.bridge.runtime.IdentifierBridgeToDocumentIdentifierContext;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+
+import com.bravson.socialalert.infrastructure.entity.FieldLength;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -27,10 +30,12 @@ public class UserLinkKey implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
+	@Column(name = "source_user_id", length = FieldLength.ID, nullable = false)
 	@KeywordField
 	@NonNull
 	private String sourceUserId;
 	
+	@Column(name = "target_user_id", length = FieldLength.ID, nullable = false)
 	@KeywordField
 	@NonNull
 	private String targetUserId;
