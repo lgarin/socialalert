@@ -52,7 +52,7 @@ public class FileRepository {
 	}
 	
 	public List<FileEntity> findByUserIdAndState(@NonNull String userId, @NonNull FileState state) {
-		return persistenceManager.createQuery("select f from File where versionInfo.userId = :userId and state = :state", FileEntity.class)
+		return persistenceManager.createQuery("select f from File f where versionInfo.userId = :userId and state = :state", FileEntity.class)
 			.setParameter("userId", userId)
 			.setParameter("state", state)
 			.getResultList();

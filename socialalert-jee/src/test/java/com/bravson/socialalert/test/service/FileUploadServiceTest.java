@@ -1,7 +1,5 @@
 package com.bravson.socialalert.test.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -33,7 +31,7 @@ import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 import com.bravson.socialalert.infrastructure.rest.ConflictException;
 
-public class FileUploadServiceTest {
+public class FileUploadServiceTest extends BaseServiceTest {
 
 	@InjectMocks
 	FileUploadService fileUploadService;

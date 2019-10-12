@@ -1,8 +1,5 @@
 package com.bravson.socialalert.test.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -27,7 +24,7 @@ import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.infrastructure.rest.ConflictException;
 
-public class MediaUpsertServiceTest {
+public class MediaUpsertServiceTest extends BaseServiceTest {
 
 	@InjectMocks
 	MediaUpsertService mediaUpsertService;

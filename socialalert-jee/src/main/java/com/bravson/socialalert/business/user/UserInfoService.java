@@ -16,22 +16,18 @@ import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Service
 @Transactional(TxType.SUPPORTS)
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class UserInfoService {
 
 	@Inject
-	@NonNull
 	OnlineUserRepository onlineUserRepository;
 	
 	@Inject
-	@NonNull
 	UserProfileRepository profileRepository;
 	
 	private Function<UserProfileEntity, UserInfo> getUserInfoMapper(String userId) {

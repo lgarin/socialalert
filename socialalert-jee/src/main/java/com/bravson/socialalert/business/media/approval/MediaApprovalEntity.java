@@ -27,7 +27,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity(name="MediaApproval")
-@Indexed
+@Indexed(index = "MediaApproval")
 @EqualsAndHashCode(of="id")
 @ToString(of="id")
 @NoArgsConstructor(access=AccessLevel.PROTECTED)

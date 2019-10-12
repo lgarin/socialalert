@@ -3,6 +3,9 @@ package com.bravson.socialalert.test.repository;
 import java.util.List;
 import java.util.Optional;
 
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+
 import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.media.MediaEntity;
@@ -12,9 +15,14 @@ import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 
+import io.quarkus.test.junit.QuarkusTest;
+
+@QuarkusTest
+@Transactional
 public class CommentApprovalRepositoryTest extends BaseRepositoryTest {
     
-    private CommentApprovalRepository repository = new CommentApprovalRepository(getPersistenceManager());
+	@Inject
+    private CommentApprovalRepository repository;
 
     @Test
     public void createNewApproval() {

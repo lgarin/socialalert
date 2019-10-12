@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Entity(name="UserLink")
-@Indexed
+@Indexed(index = "UserLink")
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class UserLinkEntity {
 

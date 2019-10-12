@@ -33,7 +33,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Entity(name="File")
-@Indexed
+@Indexed(index = "File")
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class FileEntity extends VersionedEntity {
 

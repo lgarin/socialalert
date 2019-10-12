@@ -35,7 +35,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Entity(name="FeedItem")
-@Indexed
+@Indexed(index = "FeedItem")
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class FeedItemEntity {
 

@@ -4,6 +4,9 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+
 import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.file.FileMetadata;
@@ -13,9 +16,14 @@ import com.bravson.socialalert.business.file.entity.FileState;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 
+import io.quarkus.test.junit.QuarkusTest;
+
+@QuarkusTest
+@Transactional
 public class FileRepositoryTest extends BaseRepositoryTest {
     
-    private FileRepository repository = new FileRepository(getPersistenceManager(), new DummyEvent<>());
+	@Inject
+    private FileRepository repository;
     
     @Test
     public void findNonExistingFile() {

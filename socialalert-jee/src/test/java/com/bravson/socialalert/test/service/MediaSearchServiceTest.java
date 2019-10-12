@@ -1,6 +1,5 @@
 package com.bravson.socialalert.test.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -24,7 +23,7 @@ import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 
-public class MediaSearchServiceTest {
+public class MediaSearchServiceTest extends BaseServiceTest {
 
 	@InjectMocks
 	MediaSearchService searchService;

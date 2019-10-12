@@ -1,7 +1,5 @@
 package com.bravson.socialalert.test.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -34,7 +32,7 @@ import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 
-public class MediaCommentServiceTest {
+public class MediaCommentServiceTest extends BaseServiceTest {
 
 	@InjectMocks
 	MediaCommentService commentService;

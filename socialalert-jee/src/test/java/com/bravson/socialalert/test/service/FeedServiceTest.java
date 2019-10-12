@@ -1,7 +1,5 @@
 package com.bravson.socialalert.test.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
@@ -25,7 +23,7 @@ import com.bravson.socialalert.domain.feed.FeedItemInfo;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 
-public class FeedServiceTest {
+public class FeedServiceTest extends BaseServiceTest {
 
 	@InjectMocks
 	FeedService feedService;

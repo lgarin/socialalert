@@ -3,6 +3,9 @@ package com.bravson.socialalert.test.repository;
 import java.time.Instant;
 import java.util.Optional;
 
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+
 import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.media.MediaEntity;
@@ -12,9 +15,14 @@ import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 
+import io.quarkus.test.junit.QuarkusTest;
+
+@QuarkusTest
+@Transactional
 public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     
-    private MediaCommentRepository repository = new MediaCommentRepository(getPersistenceManager(), new DummyEvent<>());
+	@Inject
+    private MediaCommentRepository repository;
     
     @Test
     public void createNewComment() {

@@ -30,7 +30,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity(name="CommentApproval")
-@Indexed
+@Indexed(index = "CommentApproval")
 @EqualsAndHashCode(of="id")
 @ToString(of="id")
 @NoArgsConstructor(access=AccessLevel.PROTECTED)

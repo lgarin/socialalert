@@ -5,6 +5,9 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+
 import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.media.MediaEntity;
@@ -16,9 +19,14 @@ import com.bravson.socialalert.domain.media.MediaKind;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 
+import io.quarkus.test.junit.QuarkusTest;
+
+@QuarkusTest
+@Transactional
 public class MediaRepositoryTest extends BaseRepositoryTest {
     
-    private MediaRepository repository = new MediaRepository(getPersistenceManager(), new DummyEvent<>());
+	@Inject
+    private MediaRepository repository;
 
     @Test
     public void findMediaWithInvalidUri() {

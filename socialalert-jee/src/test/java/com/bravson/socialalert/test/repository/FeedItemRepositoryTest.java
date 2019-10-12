@@ -4,6 +4,9 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+
 import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.feed.FeedItemEntity;
@@ -15,9 +18,14 @@ import com.bravson.socialalert.domain.feed.FeedActivity;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 
+import io.quarkus.test.junit.QuarkusTest;
+
+@QuarkusTest
+@Transactional
 public class FeedItemRepositoryTest extends BaseRepositoryTest {
     
-    private FeedItemRepository repository = new FeedItemRepository(getPersistenceManager());
+	@Inject
+    private FeedItemRepository repository;
 
     @Test
     public void insertFeedItemWithNewMedia() {

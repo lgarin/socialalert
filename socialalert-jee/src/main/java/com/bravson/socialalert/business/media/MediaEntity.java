@@ -42,7 +42,7 @@ import lombok.NoArgsConstructor;
 
 @Entity(name="Media")
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = "file_id", name = "UK_Media_File"))
-@Indexed
+@Indexed(index = "Media")
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class MediaEntity extends VersionedEntity {
 	

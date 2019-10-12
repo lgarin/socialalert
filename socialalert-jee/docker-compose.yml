@@ -22,17 +22,18 @@ services:
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: password
       PGDATA: /var/lib/postgresql/data/dbdata
+    ports:
+      - "5432:5432"
     volumes:
       - "postgres:/var/lib/postgresql/data/dbdata"
-#  neo4j:
-#    image: neo4j:3.5.0
-#    environment:
-#      - discovery.type=single-node
-#    ports:
-#      - "7474:7474"
-#      - "7687:7687"
-#    volumes:
-#      - neo4j:/var/lib/neo4j/data
+  elastic:
+    image: elasticsearch:7.4.0
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+    volumes:
+      - "elastic:/usr/share/elasticsearch/data"
 #  pgadmin:
 #    image: "dpage/pgadmin4:3.6"
 #    environment:
@@ -42,21 +43,7 @@ services:
 #      - "8084:80"
 #    links:
 #      - "postgres:postgres"
-  mongo:
-    image: "mongo:4.0.6-xenial"
-    command: "--setParameter maxSessions=20 --smallfiles --port 27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password
-      MONGO_INITDB_DATABASE: test
-    ports:
-      - "27017:27017"
-    volumes:
-      - "mongodata:/data/db"
-      - "mongoconfig:/data/configdb"
 volumes:
   keycloak:
   postgres:
-  neo4j:
-  mongodata:
-  mongoconfig:
+  elastic:

@@ -1,4 +1,4 @@
-package com.bravson.socialalert.test.repository;
+package com.bravson.socialalert.test.service;
 
 import static org.mockito.Mockito.when;
 
@@ -6,11 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserInfoService;
@@ -22,8 +19,7 @@ import com.bravson.socialalert.domain.media.UserContent;
 
 import io.quarkus.test.Mock;
 
-@ExtendWith(MockitoExtension.class)
-public class UserInfoServiceTest extends Assertions {
+public class UserInfoServiceTest extends BaseServiceTest {
 
 	@Mock
 	UserProfileRepository profileRepository;

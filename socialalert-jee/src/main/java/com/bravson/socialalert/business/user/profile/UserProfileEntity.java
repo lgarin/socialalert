@@ -37,7 +37,7 @@ import lombok.NonNull;
 import lombok.Setter;
 
 @Entity(name="UserProfile")
-@Indexed
+@Indexed(index = "UserProfile")
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class UserProfileEntity extends VersionedEntity {
 

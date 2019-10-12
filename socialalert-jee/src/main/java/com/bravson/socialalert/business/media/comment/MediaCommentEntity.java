@@ -37,7 +37,7 @@ import lombok.NonNull;
 import lombok.ToString;
 
 @Entity(name="MediaComment")
-@Indexed
+@Indexed(index = "MediaComment")
 @ToString(of="id")
 @EqualsAndHashCode(of="id")
 @NoArgsConstructor(access=AccessLevel.PROTECTED)

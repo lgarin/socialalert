@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PersistenceManager {
 
-	@PersistenceContext(unitName = "socialalert")
+	@PersistenceContext
     EntityManager entityManager;
 	
 	public <T> HibernateOrmSearchQueryHitTypeStep<T> search(Class<T> entityClass) {

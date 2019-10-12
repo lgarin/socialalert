@@ -65,7 +65,7 @@ public class DeleteTestDataServlet extends HttpServlet {
 	private void deleteDatabase() {
 		SearchSession entityManager = Search.session(em);
 		for (EntityType<?> entityType : em.getMetamodel().getEntities()) {
-			em.createNativeQuery("db." + entityType.getName() + ".drop()").executeUpdate();
+			em.createNativeQuery("TRUNCATE TABLE " + entityType.getName()).executeUpdate();
 		}
 		entityManager.writer().purge();
 		entityManager.writer().flush();

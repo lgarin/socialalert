@@ -1,19 +1,25 @@
 package com.bravson.socialalert.test.repository;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.SynchronizationType;
+import javax.persistence.PersistenceContext;
+import javax.persistence.metamodel.EntityType;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterAll;
+import org.hibernate.search.mapper.orm.Search;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 
 import com.bravson.socialalert.business.file.FileMetadata;
 import com.bravson.socialalert.business.file.entity.FileEntity;
@@ -26,53 +32,33 @@ import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 
 public class BaseRepositoryTest extends Assertions {
 
-	private static EntityManagerFactory entityManagerFactory;
-
+	@PersistenceContext
 	private EntityManager entityManager;
 	
-    @BeforeAll
-    public static void setUpEntityManagerFactory() throws SecurityException, IOException {
-    	/*
-    	 final LogManager logManager = LogManager.getLogManager();
-         try (final InputStream is = BaseRepositoryTest.class.getResourceAsStream("/logging.properties")) {
-             logManager.readConfiguration(is);
-         }
-    	*/
-        entityManagerFactory = Persistence.createEntityManagerFactory("socialalert-test");
-    }
-
-    @AfterAll
-    public static void closeEntityManagerFactory() {
-    	if (entityManagerFactory != null) {
-    		entityManagerFactory.close();
-    	}
-    }
-    
-    private EntityManager getEntityManager() {
-    	if (entityManager == null) {
-    		entityManager = entityManagerFactory.createEntityManager(SynchronizationType.SYNCHRONIZED);
-    	}
-    	return entityManager;
-    }
-    
-    @BeforeEach
-    public final void startTransaction() {
-    	getEntityManager().getTransaction().begin();
-    }
-
     @AfterEach
-    public final void closeEntityManager() {
-    	if (entityManager != null) {
-    		entityManager.close();
-    	}
+    public void deleteAllData() {
+    	entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE");
+    	/*
+    	for (EntityType<?> entityType : entityManager.getMetamodel().getEntities()) {
+    		entityManager.createNativeQuery("DELETE FROM " + entityType.getName()).executeUpdate();
+		}
+		*/
+    	String allTables = entityManager.getMetamodel().getEntities().stream().map(EntityType::getName).collect(Collectors.joining(", "));
+    	entityManager.createNativeQuery("TRUNCATE TABLE " + allTables + " CASCADE").executeUpdate();
+    	entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE");
+    	Search.session(entityManager).writer().purge();
     }
     
-    protected final PersistenceManager getPersistenceManager() {
-    	return new PersistenceManager(getEntityManager());
+    @Deprecated
+    protected PersistenceManager getPersistenceManager() {
+    	return new PersistenceManager(entityManager);
     }
     
-    protected final <T> T persistAndIndex(T entity) {
-    	getEntityManager().persist(entity);
+    //@Transactional(value = TxType.REQUIRES_NEW)
+    protected <T> T persistAndIndex(T entity) {
+    	entityManager.persist(entity);
+//    	getEntityManager().flush();
+//    	Search.session(getEntityManager()).writer(entity.getClass()).flush();
     	return entity;
     }
     

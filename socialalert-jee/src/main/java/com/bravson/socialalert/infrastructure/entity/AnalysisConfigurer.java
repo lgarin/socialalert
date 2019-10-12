@@ -7,19 +7,22 @@ public class AnalysisConfigurer implements ElasticsearchAnalysisConfigurer {
 
     @Override
     public void configure(ElasticsearchAnalysisConfigurationContext context) {
+    	
+    	context.tokenFilter("autocompleteFilter").type("edge_ngram")
+	    	.param("min_gram", 3)
+			.param("max_gram", 5);
+    	
     	context.analyzer("languageAnalyzer").custom() 
         	.withTokenizer("standard")
         	.withTokenFilters("asciifolding", "lowercase", "porter_stem");
     	
-    	context.analyzer("autocompleteEdgeAnalyzer").type("edge_ngram")
-    		.param("min_gram", 3)
-    		.param("max_gram", 5)
-    		.param("token_chars", "letter", "digit");
+    	context.analyzer("autocompleteReverseAnalyzer").custom()
+    		.withTokenizer("standard")
+    		.withTokenFilters("asciifolding", "lowercase", "reverse", "autocompleteFilter", "reverse");
     	
-    	context.analyzer("autocompleteNGramAnalyzer").type("ngram")
-			.param("min_gram", 3)
-			.param("max_gram", 3)
-			.param("token_chars", "letter", "digit");
+    	context.analyzer("autocompleteAnalyzer").custom()
+    		.withTokenizer("standard")
+    		.withTokenFilters("asciifolding", "lowercase", "autocompleteFilter");
     }
 
 }

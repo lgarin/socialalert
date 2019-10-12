@@ -4,12 +4,14 @@ import java.lang.annotation.Annotation;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+import javax.annotation.Priority;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.NotificationOptions;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.util.TypeLiteral;
 
 @Alternative
+@Priority(1)
 public class DummyEvent<T> implements Event<T> {
 
 	@Override

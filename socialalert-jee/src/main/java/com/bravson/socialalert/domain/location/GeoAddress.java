@@ -34,10 +34,10 @@ public class GeoAddress {
 	@Longitude
 	private Double longitude;
 	@Column(name = "address", length = FieldLength.TEXT)
-	@FullTextField(analyzer = "")
+	@FullTextField(analyzer = "standard")
 	private String formattedAddress;
 	@Column(name = "locality", length = FieldLength.NAME)
-	@FullTextField(analyzer = "")
+	@FullTextField(analyzer = "standard")
 	private String locality;
 	@Column(name = "country", length = FieldLength.ISO_CODE)
 	@KeywordField
