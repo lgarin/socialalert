@@ -18,7 +18,6 @@ import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-@Transactional
 public class CommentApprovalRepositoryTest extends BaseRepositoryTest {
     
 	@Inject

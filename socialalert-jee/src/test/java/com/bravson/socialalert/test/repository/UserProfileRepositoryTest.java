@@ -3,7 +3,9 @@ package com.bravson.socialalert.test.repository;
 import java.time.Instant;
 import java.util.Optional;
 
+import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
+import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
 
@@ -11,9 +13,13 @@ import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 
+import io.quarkus.test.junit.QuarkusTest;
+
+@QuarkusTest
 public class UserProfileRepositoryTest extends BaseRepositoryTest {
     
-    private UserProfileRepository repository = new UserProfileRepository(getPersistenceManager());
+	@Inject
+    private UserProfileRepository repository;
 
     private AuthenticationInfo createTestAuthInfo() {
 		return AuthenticationInfo.builder()

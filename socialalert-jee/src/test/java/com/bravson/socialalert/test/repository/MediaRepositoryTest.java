@@ -22,7 +22,6 @@ import com.bravson.socialalert.domain.paging.QueryResult;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-@Transactional
 public class MediaRepositoryTest extends BaseRepositoryTest {
     
 	@Inject

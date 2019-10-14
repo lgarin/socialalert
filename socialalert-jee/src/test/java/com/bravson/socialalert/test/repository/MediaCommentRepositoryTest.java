@@ -18,7 +18,6 @@ import com.bravson.socialalert.domain.paging.QueryResult;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-@Transactional
 public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     
 	@Inject
@@ -59,12 +58,10 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     	UserAccess userAccess = UserAccess.of("usr1", "1.2.3.4");
     	MediaEntity media = storeDefaultMedia();
     	persistAndIndex(new MediaCommentEntity(media, "comment 1", userAccess));
-    	Thread.sleep(10);
     	MediaCommentEntity entity2 = persistAndIndex(new MediaCommentEntity(media, "comment 2", userAccess));
     	Instant instant = Instant.now();
     	Thread.sleep(10);
     	persistAndIndex(new MediaCommentEntity(media, "comment 3", userAccess));
-    	
     	QueryResult<MediaCommentEntity> result = repository.listByMediaUri(media.getId(), new PagingParameter(instant, 0, 1));
     	assertThat(result.getPageCount()).isEqualTo(2);
     	assertThat(result.getPageNumber()).isEqualTo(0);

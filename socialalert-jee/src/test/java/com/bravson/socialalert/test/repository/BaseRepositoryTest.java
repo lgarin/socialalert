@@ -4,16 +4,9 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.metamodel.EntityType;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-import javax.transaction.TransactionManager;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
@@ -36,8 +29,9 @@ public class BaseRepositoryTest extends Assertions {
 	private EntityManager entityManager;
 	
     @AfterEach
+    @Transactional
     public void deleteAllData() {
-    	entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE");
+    	//entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE");
     	/*
     	for (EntityType<?> entityType : entityManager.getMetamodel().getEntities()) {
     		entityManager.createNativeQuery("DELETE FROM " + entityType.getName()).executeUpdate();
@@ -45,7 +39,7 @@ public class BaseRepositoryTest extends Assertions {
 		*/
     	String allTables = entityManager.getMetamodel().getEntities().stream().map(EntityType::getName).collect(Collectors.joining(", "));
     	entityManager.createNativeQuery("TRUNCATE TABLE " + allTables + " CASCADE").executeUpdate();
-    	entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE");
+    	//entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE");
     	Search.session(entityManager).writer().purge();
     }
     
@@ -54,11 +48,11 @@ public class BaseRepositoryTest extends Assertions {
     	return new PersistenceManager(entityManager);
     }
     
-    //@Transactional(value = TxType.REQUIRES_NEW)
+    @Transactional(value = TxType.REQUIRES_NEW)
     protected <T> T persistAndIndex(T entity) {
     	entityManager.persist(entity);
-//    	getEntityManager().flush();
-//    	Search.session(getEntityManager()).writer(entity.getClass()).flush();
+    	entityManager.flush();
+    	Search.session(entityManager).writer(entity.getClass()).flush();
     	return entity;
     }
     

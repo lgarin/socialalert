@@ -19,7 +19,6 @@ import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-@Transactional
 public class FileRepositoryTest extends BaseRepositoryTest {
     
 	@Inject

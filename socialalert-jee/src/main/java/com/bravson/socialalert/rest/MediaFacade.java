@@ -44,6 +44,7 @@ import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.MediaDetail;
 import com.bravson.socialalert.domain.media.MediaInfo;
+import com.bravson.socialalert.domain.media.MediaKind;
 import com.bravson.socialalert.domain.media.comment.MediaCommentDetail;
 import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
 import com.bravson.socialalert.domain.paging.PagingParameter;
@@ -107,7 +108,7 @@ public class MediaFacade {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Search claimed media based on any combination of the provided parameters.")
 	public QueryResult<MediaInfo> searchMedia(
-			@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") String mediaKind,
+			@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
 			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("minLatitude") Double minLatitude,
 			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("maxLatitude") Double maxLatitude,
 			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("minLongitude") Double minLongitude,
@@ -123,8 +124,7 @@ public class MediaFacade {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
 		if (mediaKind != null) {
-			// TODO wait for smallrye openapi fix
-			//parameter.setMediaKind(mediaKind);
+			parameter.setMediaKind(mediaKind);
 		}
 		if (minLatitude != null || maxLatitude != null || minLongitude != null || maxLongitude != null) {
 			if (minLatitude == null || maxLatitude == null || minLongitude == null || maxLongitude == null) {
@@ -155,7 +155,7 @@ public class MediaFacade {
 			@Parameter(description="Define the location for the nearest media.", required=true) @QueryParam("latitude") Double latitude,
 			@Parameter(description="Define the location for the nearest media.", required=true) @QueryParam("longitude") Double longitude,
 			@Parameter(description="Define the maximum distance in kilometer for the nearest media.", required=true) @QueryParam("maxDistance") Double maxDistance,
-			@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") String mediaKind,
+			@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
 			@Parameter(description="Define the keywords for searching the media.", required=false) @QueryParam("keywords") String keywords,
 			@Parameter(description="Define the maximum age in milliseconds of the returned media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
@@ -167,8 +167,7 @@ public class MediaFacade {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
 		if (mediaKind != null) {
-			// TODO wait for smallrye openapi fix
-			//parameter.setMediaKind(mediaKind);
+			parameter.setMediaKind(mediaKind);
 		}
 		if (keywords != null) {
 			parameter.setKeywords(keywords);
@@ -268,7 +267,7 @@ public class MediaFacade {
 	@Path("/mapCount")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Group count claimed media in the given area based on their geo hash.")
-	public List<GeoStatistic> mapMediaMatchCount(@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") String mediaKind,
+	public List<GeoStatistic> mapMediaMatchCount(@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
 			@Parameter(description="Define the area for the returned media.", required=true) @QueryParam("minLatitude") @NotNull Double minLatitude,
 			@Parameter(description="Define the area for the returned media.", required=true) @QueryParam("maxLatitude") @NotNull Double maxLatitude,
 			@Parameter(description="Define the area for the returned media.", required=true) @QueryParam("minLongitude") @NotNull Double minLongitude,
@@ -281,8 +280,7 @@ public class MediaFacade {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
 		if (mediaKind != null) {
-			// TODO wait for smallrye openapi fix
-			//parameter.setMediaKind(mediaKind);
+			parameter.setMediaKind(mediaKind);
 		}
 		
 		parameter.setArea(GeoBox.builder().minLat(minLatitude).maxLat(maxLatitude).minLon(minLongitude).maxLon(maxLongitude).build());

@@ -15,7 +15,6 @@ import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-@Transactional
 public class MediaApprovalRepositoryTest extends BaseRepositoryTest {
     
 	@Inject

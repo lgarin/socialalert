@@ -13,7 +13,6 @@ import com.bravson.socialalert.business.media.tag.MediaTagRepository;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-@Transactional
 public class MediaTagRepositoryTest extends BaseRepositoryTest {
 	
 	@Inject

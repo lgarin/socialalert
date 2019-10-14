@@ -2,6 +2,9 @@ package com.bravson.socialalert.test.repository;
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+
 import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.user.UserAccess;
@@ -14,7 +17,8 @@ import io.quarkus.test.junit.QuarkusTest;
 @QuarkusTest
 public class UserLinkRepositoryTest extends BaseRepositoryTest {
     
-    private UserLinkRepository repository = new UserLinkRepository(getPersistenceManager());
+	@Inject
+    private UserLinkRepository repository;
 
     @Test
     public void findByNonExistingSource() {

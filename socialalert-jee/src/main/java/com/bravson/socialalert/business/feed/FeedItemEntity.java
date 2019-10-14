@@ -28,15 +28,20 @@ import com.bravson.socialalert.domain.feed.FeedItemInfo;
 import com.bravson.socialalert.infrastructure.entity.DefaultStringIdentifierBridge;
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
+import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.ToString;
 
 @Entity(name="FeedItem")
 @Indexed(index = "FeedItem")
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
+@ToString(of="id")
+@EqualsAndHashCode(of="id")
 public class FeedItemEntity {
 
 	@Getter
