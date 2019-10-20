@@ -6,6 +6,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
@@ -53,15 +54,16 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     }
     
     @Test
-    public void listByMediaUri() throws InterruptedException {
+    public void searchByMediaUri() throws InterruptedException {
     	UserAccess userAccess = UserAccess.of("usr1", "1.2.3.4");
     	MediaEntity media = storeDefaultMedia();
     	persistAndIndex(new MediaCommentEntity(media, "comment 1", userAccess));
     	MediaCommentEntity entity2 = persistAndIndex(new MediaCommentEntity(media, "comment 2", userAccess));
     	Instant instant = Instant.now();
+    	LoggerFactory.getLogger(getClass().getName()).info(instant.toString());
     	Thread.sleep(10);
     	persistAndIndex(new MediaCommentEntity(media, "comment 3", userAccess));
-    	QueryResult<MediaCommentEntity> result = repository.listByMediaUri(media.getId(), new PagingParameter(instant, 0, 1));
+    	QueryResult<MediaCommentEntity> result = repository.searchByMediaUri(media.getId(), new PagingParameter(instant, 0, 1));
     	assertThat(result.getPageCount()).isEqualTo(2);
     	assertThat(result.getPageNumber()).isEqualTo(0);
     	assertThat(result.getContent()).containsExactly(entity2);
@@ -76,7 +78,7 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     	persistAndIndex(new MediaCommentEntity(media, "comment 2", userAccess));
     	persistAndIndex(new MediaCommentEntity(media, "comment 3", userAccess));
     	
-    	QueryResult<MediaCommentEntity> result = repository.listByMediaUri("xyz", new PagingParameter(Instant.now(), 0, 10));
+    	QueryResult<MediaCommentEntity> result = repository.searchByMediaUri("xyz", new PagingParameter(Instant.now(), 0, 10));
     	assertThat(result.getPageCount()).isEqualTo(0);
     	assertThat(result.getPageNumber()).isEqualTo(0);
     	assertThat(result.getNextPage()).isNull();

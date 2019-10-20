@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
 
@@ -23,6 +24,7 @@ public class CommentApprovalRepositoryTest extends BaseRepositoryTest {
     private CommentApprovalRepository repository;
 
     @Test
+    @Transactional
     public void createNewApproval() {
     	MediaCommentEntity comment = persistAndIndex(new MediaCommentEntity(storeDefaultMedia(), "testComment", UserAccess.of("testUser", "1.2.3.4")));
     	Optional<CommentApprovalEntity> result = repository.changeApproval(comment, "userId1", ApprovalModifier.LIKE);
@@ -31,6 +33,7 @@ public class CommentApprovalRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
+    @Transactional
     public void changeExistingApproval() {
     	MediaCommentEntity comment = persistAndIndex(new MediaCommentEntity(storeDefaultMedia(), "testComment", UserAccess.of("testUser", "1.2.3.4")));
     	repository.changeApproval(comment, "userId1", ApprovalModifier.LIKE);
@@ -40,6 +43,7 @@ public class CommentApprovalRepositoryTest extends BaseRepositoryTest {
     }
     
     @Test
+    @Transactional
     public void resetExistingApproval() {
     	MediaCommentEntity comment = persistAndIndex(new MediaCommentEntity(storeDefaultMedia(), "testComment", UserAccess.of("testUser", "1.2.3.4")));
     	repository.changeApproval(comment, "userId1", ApprovalModifier.LIKE);
@@ -48,6 +52,7 @@ public class CommentApprovalRepositoryTest extends BaseRepositoryTest {
     }
     
     @Test
+    @Transactional
     public void listUserMediaApprovals() {
     	String userId = "testUser";
     	MediaEntity media = storeDefaultMedia();

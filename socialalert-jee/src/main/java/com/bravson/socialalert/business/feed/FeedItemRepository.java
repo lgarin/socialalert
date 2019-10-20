@@ -47,10 +47,10 @@ public class FeedItemRepository {
 		return persistenceManager.persist(entity);
 	}
 	
-	public QueryResult<FeedItemEntity> getActivitiesByUsers(@NonNull Collection<String> userIdList, @NonNull PagingParameter paging) {
+	public QueryResult<FeedItemEntity> searchActivitiesByUsers(@NonNull Collection<String> userIdList, @NonNull PagingParameter paging) {
 		SearchResult<FeedItemEntity> result = persistenceManager.search(FeedItemEntity.class)
 				.predicate(p -> p.bool()
-						.must(p.range().field("versionInfo.creation").lessThan(paging.getTimestamp()))
+						.must(p.range().field("versionInfo.creation").atMost(paging.getTimestamp()))
 						.must(p.match().field("versionInfo.userId").matching(String.join(" ", userIdList))))
 				.sort(s -> s.field("versionInfo.creation").desc())
 				.fetch(paging.getPageSize(), paging.getOffset());

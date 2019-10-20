@@ -93,7 +93,7 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 		QueryResult<MediaCommentEntity> entityResult = new QueryResult<>(Collections.emptyList(), 0, paging);
 		
 		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.of(mediaEntity));
-		when(commentRepository.listByMediaUri(mediaUri, paging)).thenReturn(entityResult);
+		when(commentRepository.searchByMediaUri(mediaUri, paging)).thenReturn(entityResult);
 		
 		QueryResult<MediaCommentDetail> result = commentService.listComments(mediaUri, userId, paging);
 		assertThat(result.getContent()).isEmpty();

@@ -21,7 +21,6 @@ import com.bravson.socialalert.business.media.UpsertMediaParameter;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
-import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 
 public class BaseRepositoryTest extends Assertions {
 
@@ -36,12 +35,7 @@ public class BaseRepositoryTest extends Assertions {
     	Search.session(entityManager).workspace().purge();
     }
     
-    @Deprecated
-    protected PersistenceManager getPersistenceManager() {
-    	return new PersistenceManager(entityManager);
-    }
-    
-    @Transactional(value = TxType.REQUIRES_NEW)
+    @Transactional
     protected <T> T persistAndIndex(T entity) {
     	entityManager.persist(entity);
     	entityManager.flush();
@@ -59,5 +53,17 @@ public class BaseRepositoryTest extends Assertions {
 		FileMetadata fileMetadata = FileMetadata.builder().md5("test").timestamp(Instant.now()).contentSize(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
 		FileEntity file = persistAndIndex(new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4")));
 		return persistAndIndex(new MediaEntity(file, claimParameter, UserAccess.of("test", "1.2.3.4")));
+	}
+    
+    protected MediaEntity createDefaultMedia() {
+		UpsertMediaParameter claimParameter = new UpsertMediaParameter();
+		claimParameter.setTitle("Test title");
+		claimParameter.setDescription("Test desc");
+		claimParameter.setTags(Arrays.asList("tag1", "tag2"));
+		claimParameter.setCategories(Arrays.asList("cat1", "cat2"));
+		claimParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
+		FileMetadata fileMetadata = FileMetadata.builder().md5("test").timestamp(Instant.now()).contentSize(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
+		FileEntity file = new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4"));
+		return new MediaEntity(file, claimParameter, UserAccess.of("test", "1.2.3.4"));
 	}
 }

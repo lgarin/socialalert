@@ -3,6 +3,7 @@ package com.bravson.socialalert.test.repository;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
 
@@ -20,6 +21,7 @@ public class MediaApprovalRepositoryTest extends BaseRepositoryTest {
     private MediaApprovalRepository repository;
 
     @Test
+    @Transactional
     public void createNewApproval() {
     	MediaEntity media = storeDefaultMedia();
     	Optional<MediaApprovalEntity> result = repository.changeApproval(media, "userId1", ApprovalModifier.LIKE);
@@ -28,6 +30,7 @@ public class MediaApprovalRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
+    @Transactional
     public void changeExistingApproval() {
     	MediaEntity media = storeDefaultMedia();
     	repository.changeApproval(media, "userId1", ApprovalModifier.LIKE);
@@ -37,6 +40,7 @@ public class MediaApprovalRepositoryTest extends BaseRepositoryTest {
     }
     
     @Test
+    @Transactional
     public void resetExistingApproval() {
     	MediaEntity media = storeDefaultMedia();
     	repository.changeApproval(media, "userId1", ApprovalModifier.LIKE);

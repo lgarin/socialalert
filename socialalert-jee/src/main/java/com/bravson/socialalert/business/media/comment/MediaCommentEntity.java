@@ -53,6 +53,7 @@ public class MediaCommentEntity {
 	private String id;
 	
 	@Getter
+	@NonNull
 	@ManyToOne(fetch=FetchType.LAZY, optional = false)
 	@JoinColumn(foreignKey = @ForeignKey(name = "FK_Comment_Media"))
 	@IndexedEmbedded(includePaths= {"id"})
@@ -79,10 +80,6 @@ public class MediaCommentEntity {
 	@Embedded
 	@IndexedEmbedded
 	private VersionInfo versionInfo;
-	
-	public MediaCommentEntity(@NonNull String commentId) {
-		this.id = commentId;
-	}
 	
 	public MediaCommentEntity(@NonNull MediaEntity media, @NonNull String comment, @NonNull UserAccess userAccess) {
 		this.media = media;

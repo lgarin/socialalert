@@ -54,22 +54,22 @@ public class FeedItemRepositoryTest extends BaseRepositoryTest {
     }
     
     @Test
-    public void getActivitiesBySingleUser() {
+    public void searchActivitiesBySingleUser() {
     	MediaEntity media = storeDefaultMedia();
     	FeedItemEntity entity = new FeedItemEntity(media, null, FeedActivity.NEW_MEDIA, UserAccess.of("test", "1.2.3.4"));
     	persistAndIndex(entity);
-    	QueryResult<FeedItemEntity> result = repository.getActivitiesByUsers(Collections.singleton("test"), new PagingParameter(Instant.now(), 0, 10));
+    	QueryResult<FeedItemEntity> result = repository.searchActivitiesByUsers(Collections.singleton("test"), new PagingParameter(Instant.now(), 0, 10));
     	assertThat(result.getContent()).containsExactly(entity);
     }
     
     @Test
-    public void getActivitiesByMultipleUsers() {
+    public void searchActivitiesByMultipleUsers() {
     	MediaEntity media = storeDefaultMedia();
     	FeedItemEntity entity1 = new FeedItemEntity(media, null, FeedActivity.NEW_MEDIA, UserAccess.of("test", "1.2.3.4"));
     	persistAndIndex(entity1);
     	FeedItemEntity entity2 = new FeedItemEntity(media, null, FeedActivity.NEW_MEDIA, UserAccess.of("test2", "1.2.3.4"));
     	persistAndIndex(entity2);
-    	QueryResult<FeedItemEntity> result = repository.getActivitiesByUsers(Arrays.asList("test", "test2"), new PagingParameter(Instant.now(), 0, 10));
+    	QueryResult<FeedItemEntity> result = repository.searchActivitiesByUsers(Arrays.asList("test", "test2"), new PagingParameter(Instant.now(), 0, 10));
     	assertThat(result.getContent()).containsExactly(entity2, entity1);
     }
 }

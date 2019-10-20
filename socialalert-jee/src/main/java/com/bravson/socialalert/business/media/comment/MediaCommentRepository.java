@@ -49,10 +49,10 @@ public class MediaCommentRepository {
 		return persistenceManager.find(MediaCommentEntity.class, commentId);
 	}
 	
-	public QueryResult<MediaCommentEntity> listByMediaUri(@NonNull String mediaUri, @NonNull PagingParameter paging) {
+	public QueryResult<MediaCommentEntity> searchByMediaUri(@NonNull String mediaUri, @NonNull PagingParameter paging) {
 		SearchResult<MediaCommentEntity> result = persistenceManager.search(MediaCommentEntity.class)
 				.predicate(p -> p.bool()
-						.must(p.range().field("versionInfo.creation").lessThan(paging.getTimestamp()))
+						.must(p.range().field("versionInfo.creation").atMost(paging.getTimestamp()))
 						.must(p.match().field("media.id").matching(mediaUri)))
 				.sort(s -> s.field("versionInfo.creation").desc())
 				.fetch(paging.getPageSize(), paging.getOffset());

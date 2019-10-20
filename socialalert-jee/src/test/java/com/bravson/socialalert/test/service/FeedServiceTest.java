@@ -43,7 +43,7 @@ public class FeedServiceTest extends BaseServiceTest {
 		QueryResult<FeedItemEntity> items = new QueryResult<>(Collections.emptyList(), 0, paging);
 		UserProfileEntity profile = new UserProfileEntity("test", "test@test.com", UserAccess.of("test", "1.2.3.4"));
 		when(profileRepository.findByUserId("test")).thenReturn(Optional.of(profile));
-		when(itemRepository.getActivitiesByUsers(Collections.emptyList(), paging)).thenReturn(items);
+		when(itemRepository.searchActivitiesByUsers(Collections.emptyList(), paging)).thenReturn(items);
 		when(userService.fillUserInfo(Collections.emptyList())).thenReturn(Collections.emptyList());
 		
 		QueryResult<FeedItemInfo> result = feedService.getFeed("test", paging);

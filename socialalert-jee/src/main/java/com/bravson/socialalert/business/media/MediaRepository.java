@@ -71,9 +71,9 @@ public class MediaRepository {
 
 	private PredicateFinalStep createSearchQuery(SearchMediaParameter parameter, Instant timestamp, SearchPredicateFactory context) {
 		BooleanPredicateClausesStep<?> junction = context.bool();
-		junction = junction.filter(context.range().field("versionInfo.creation").lessThan(timestamp).toPredicate());
+		junction = junction.filter(context.range().field("versionInfo.creation").atMost(timestamp).toPredicate());
 		if (parameter.getMaxAge() != null) {
-			junction = junction.must(context.range().field("versionInfo.creation").greaterThan(timestamp.minus(parameter.getMaxAge())).toPredicate());
+			junction = junction.must(context.range().field("versionInfo.creation").atLeast(timestamp.minus(parameter.getMaxAge())).toPredicate());
 		}
 		if (parameter.getCreator() != null) {
 			junction = junction.must(context.match().field("versionInfo.userId").matching(parameter.getCreator()).toPredicate());

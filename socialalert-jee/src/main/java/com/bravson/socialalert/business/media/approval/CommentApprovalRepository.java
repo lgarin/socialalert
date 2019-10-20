@@ -42,7 +42,7 @@ public class CommentApprovalRepository {
 	}
 	
 	public List<CommentApprovalEntity> findAllByMediaUri(@NonNull String mediaUri, @NonNull String userId) {
-		return persistenceManager.createQuery("select a from CommentApproval a where id.userId = :userId and comment.media.id = :mediaUri", CommentApprovalEntity.class)
+		return persistenceManager.createQuery("from CommentApproval where id.userId = :userId and comment.media.id = :mediaUri", CommentApprovalEntity.class)
 				.setParameter("userId", userId)
 				.setParameter("mediaUri", mediaUri)
 				.getResultList();

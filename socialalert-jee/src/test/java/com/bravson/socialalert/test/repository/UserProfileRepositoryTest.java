@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
+import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
 
@@ -38,6 +39,7 @@ public class UserProfileRepositoryTest extends BaseRepositoryTest {
     }
     
     @Test
+    @Transactional
     public void createExistingProfile() {
     	AuthenticationInfo authInfo = createTestAuthInfo();
     	repository.createProfile(authInfo, "1.2.3.4");

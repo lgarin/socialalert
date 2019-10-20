@@ -57,7 +57,7 @@ public class MediaCommentService {
 
 	public QueryResult<MediaCommentDetail> listComments(@NonNull String mediaUri, @NonNull String userId, @NonNull PagingParameter paging) {
 		mediaRepository.findMedia(mediaUri).orElseThrow(NotFoundException::new);
-		QueryResult<MediaCommentDetail> result = commentRepository.listByMediaUri(mediaUri, paging).map(MediaCommentEntity::toMediaCommentDetail);
+		QueryResult<MediaCommentDetail> result = commentRepository.searchByMediaUri(mediaUri, paging).map(MediaCommentEntity::toMediaCommentDetail);
 		Map<String, ApprovalModifier> approvalMap = buildUserCommentApprovalMap(mediaUri, userId);
 		userService.fillUserInfo(result.getContent());
 		for (MediaCommentDetail comment : result.getContent()) {

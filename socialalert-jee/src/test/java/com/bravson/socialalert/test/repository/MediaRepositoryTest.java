@@ -37,7 +37,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	MediaEntity media = storeDefaultMedia();
     	
     	Optional<MediaEntity> result = repository.findMedia(media.getId());
-    	assertThat(result).isNotEmpty();
+    	assertThat(result).contains(media);
     }
 
     @Test

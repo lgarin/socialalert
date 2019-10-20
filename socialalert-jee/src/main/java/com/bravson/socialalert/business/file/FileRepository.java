@@ -51,17 +51,9 @@ public class FileRepository {
 	}
 	
 	public List<FileEntity> findByUserIdAndState(@NonNull String userId, @NonNull FileState state) {
-		return persistenceManager.createQuery("select f from File f where versionInfo.userId = :userId and state = :state", FileEntity.class)
+		return persistenceManager.createQuery("from File where versionInfo.userId = :userId and state = :state", FileEntity.class)
 			.setParameter("userId", userId)
 			.setParameter("state", state)
 			.getResultList();
-		/*
-		return persistenceManager.search(FileEntity.class)
-				.predicate(p -> p.bool()
-						.must(p.match().onField("versionInfo.userId").matching(userId))
-						.must(p.match().onField("state").matching(state)))
-				.fetch()
-				.getHits();
-				*/
 	}
 }

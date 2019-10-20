@@ -35,7 +35,7 @@ public class FeedService {
 	public QueryResult<FeedItemInfo> getFeed(@NonNull String userId, @NonNull PagingParameter paging) {
 		UserProfileEntity profile = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
 		List<String> userIdList = profile.getFollowedUsers().stream().map(link -> link.getId().getTargetUserId()).collect(Collectors.toList());
-		QueryResult<FeedItemInfo> result = itemRepository.getActivitiesByUsers(userIdList, paging).map(FeedItemEntity::toItemInfo);
+		QueryResult<FeedItemInfo> result = itemRepository.searchActivitiesByUsers(userIdList, paging).map(FeedItemEntity::toItemInfo);
 		userService.fillUserInfo(result.getContent());
 		return result;
 	}
