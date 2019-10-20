@@ -52,9 +52,9 @@ public class MediaCommentRepository {
 	public QueryResult<MediaCommentEntity> listByMediaUri(@NonNull String mediaUri, @NonNull PagingParameter paging) {
 		SearchResult<MediaCommentEntity> result = persistenceManager.search(MediaCommentEntity.class)
 				.predicate(p -> p.bool()
-						.must(p.range().onField("versionInfo.creation").below(paging.getTimestamp()))
-						.must(p.match().onField("media.id").matching(mediaUri)))
-				.sort(s -> s.byField("versionInfo.creation").desc())
+						.must(p.range().field("versionInfo.creation").lessThan(paging.getTimestamp()))
+						.must(p.match().field("media.id").matching(mediaUri)))
+				.sort(s -> s.field("versionInfo.creation").desc())
 				.fetch(paging.getPageSize(), paging.getOffset());
 		return new QueryResult<>(result.getHits(), result.getTotalHitCount(), paging);
 	}

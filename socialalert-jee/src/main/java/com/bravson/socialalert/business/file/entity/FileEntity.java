@@ -36,6 +36,11 @@ import lombok.NonNull;
 @Indexed(index = "File")
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class FileEntity extends VersionedEntity {
+	
+	@NonNull
+	@Embedded
+	@IndexedEmbedded
+	private VersionInfo versionInfo;
 
 	@Column(name = "state", nullable = false)
 	@Getter

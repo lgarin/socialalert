@@ -46,9 +46,8 @@ public class FileRepository {
 	
 	public List<FileEntity> findByIpAddressPattern(@NonNull String ipAddressPattern) {
 		return persistenceManager.search(FileEntity.class)
-				.predicate(p -> p.wildcard().onField("versionInfo.ipAddress").matching(ipAddressPattern))
-				.fetch()
-				.getHits();
+				.predicate(p -> p.wildcard().field("versionInfo.ipAddress").matching(ipAddressPattern))
+				.fetchHits(100);
 	}
 	
 	public List<FileEntity> findByUserIdAndState(@NonNull String userId, @NonNull FileState state) {

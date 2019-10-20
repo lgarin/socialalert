@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
 

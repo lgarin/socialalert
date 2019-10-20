@@ -11,8 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.IdentifierBridgeRef;
-import org.hibernate.search.mapper.pojo.dirtiness.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
@@ -21,13 +21,17 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.ToString;
 
 @Entity(name="UserLink")
 @Indexed(index = "UserLink")
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
+@ToString(of="id")
+@EqualsAndHashCode(of="id")
 public class UserLinkEntity {
 
 	@EmbeddedId

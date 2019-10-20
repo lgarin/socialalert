@@ -9,9 +9,9 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.hibernate.search.engine.search.dsl.predicate.BooleanPredicateClausesStep;
-import org.hibernate.search.engine.search.dsl.predicate.PredicateFinalStep;
-import org.hibernate.search.engine.search.dsl.predicate.SearchPredicateFactory;
+import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateClausesStep;
+import org.hibernate.search.engine.search.predicate.dsl.PredicateFinalStep;
+import org.hibernate.search.engine.search.predicate.dsl.SearchPredicateFactory;
 import org.hibernate.search.engine.search.query.SearchResult;
 import org.hibernate.search.engine.spatial.DistanceUnit;
 
@@ -64,38 +64,38 @@ public class MediaRepository {
 	public QueryResult<MediaEntity> searchMedia(@NonNull SearchMediaParameter parameter, @NonNull PagingParameter paging) {
 		SearchResult<MediaEntity> result = persistenceManager.search(MediaEntity.class)
 				.predicate(f -> createSearchQuery(parameter, paging.getTimestamp(), f))
-				.sort(f -> f.byScore())
+				.sort(f -> f.score())
 				.fetch(paging.getPageSize(), paging.getOffset());
 		return new QueryResult<>(result.getHits(), result.getTotalHitCount(), paging);
 	}
 
 	private PredicateFinalStep createSearchQuery(SearchMediaParameter parameter, Instant timestamp, SearchPredicateFactory context) {
-		BooleanPredicateClausesStep junction = context.bool();
-		junction = junction.filter(context.range().onField("versionInfo.creation").below(timestamp).toPredicate());
+		BooleanPredicateClausesStep<?> junction = context.bool();
+		junction = junction.filter(context.range().field("versionInfo.creation").lessThan(timestamp).toPredicate());
 		if (parameter.getMaxAge() != null) {
-			junction = junction.must(context.range().onField("versionInfo.creation").above(timestamp.minus(parameter.getMaxAge())).toPredicate());
+			junction = junction.must(context.range().field("versionInfo.creation").greaterThan(timestamp.minus(parameter.getMaxAge())).toPredicate());
 		}
 		if (parameter.getCreator() != null) {
-			junction = junction.must(context.match().onField("versionInfo.userId").matching(parameter.getCreator()).toPredicate());
+			junction = junction.must(context.match().field("versionInfo.userId").matching(parameter.getCreator()).toPredicate());
 		}
 		if (parameter.getArea() != null) {
 			List<String> geoHashList = GeoHashUtil.computeGeoHashList(parameter.getArea());
 			int precision = geoHashList.stream().mapToInt(String::length).max().getAsInt();
 			if (precision >= MediaEntity.MIN_GEOHASH_PRECISION && precision <= MediaEntity.MAX_GEOHASH_PRECISION) {
-				junction.filter(context.match().onField("geoHash" + precision).matching(String.join(" ", geoHashList)).toPredicate());
+				junction.filter(context.match().field("geoHash" + precision).matching(String.join(" ", geoHashList)).toPredicate());
 			}
 		}
 		if (parameter.getLocation() != null) {
-			junction = junction.must(context.spatial().within().onField("location.coordinates").circle(parameter.getLocation().getLatitude(), parameter.getLocation().getLongitude(), parameter.getLocation().getRadius(), DistanceUnit.KILOMETERS).boostedTo(10.0f).toPredicate());
+			junction = junction.must(context.spatial().within().field("location.coordinates").circle(parameter.getLocation().getLatitude(), parameter.getLocation().getLongitude(), parameter.getLocation().getRadius(), DistanceUnit.KILOMETERS).boost(10.0f).toPredicate());
 		}
 		if (parameter.getCategory() != null) {
-			junction = junction.must(context.match().onField("categories").matching(parameter.getCategory()).toPredicate());
+			junction = junction.must(context.match().field("categories").matching(parameter.getCategory()).toPredicate());
 		}
 		if (parameter.getKeywords() != null) {
-			junction = junction.must(context.match().onField("tags").boostedTo(4.0f).orField("title").boostedTo(2.0f).orField("description").matching(parameter.getKeywords()).fuzzy().toPredicate());
+			junction = junction.must(context.match().field("tags").boost(4.0f).field("title").boost(2.0f).field("description").matching(parameter.getKeywords()).fuzzy().toPredicate());
 		}
 		if (parameter.getMediaKind() != null) {
-			junction = junction.must(context.match().onField("kind").matching(parameter.getMediaKind()).toPredicate());
+			junction = junction.must(context.match().field("kind").matching(parameter.getMediaKind()).toPredicate());
 		}
 		return junction;
 	}

@@ -10,7 +10,6 @@ import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.GeoPointBindin
 import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.Latitude;
 import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.Longitude;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
@@ -29,7 +28,6 @@ import lombok.Setter;
 @Embeddable
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Setter(AccessLevel.NONE)
-@Indexed
 @GeoPointBinding(fieldName = "position")
 public class MediaMetadata {
 

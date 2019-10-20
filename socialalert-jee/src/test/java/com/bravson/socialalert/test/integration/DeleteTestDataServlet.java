@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -20,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 
 import org.hibernate.search.mapper.orm.Search;
-import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.slf4j.Logger;
 
 @WebServlet("/unitTest/deleteData")
@@ -63,11 +63,8 @@ public class DeleteTestDataServlet extends HttpServlet {
 	}
 
 	private void deleteDatabase() {
-		SearchSession entityManager = Search.session(em);
-		for (EntityType<?> entityType : em.getMetamodel().getEntities()) {
-			em.createNativeQuery("TRUNCATE TABLE " + entityType.getName()).executeUpdate();
-		}
-		entityManager.writer().purge();
-		entityManager.writer().flush();
+		String allTables = em.getMetamodel().getEntities().stream().map(EntityType::getName).collect(Collectors.joining(", "));
+		em.createNativeQuery("TRUNCATE TABLE " + allTables + " CASCADE").executeUpdate();
+    	Search.session(em).workspace().purge();
 	}
 }

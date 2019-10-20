@@ -10,7 +10,7 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import org.hibernate.search.mapper.orm.Search;
-import org.hibernate.search.mapper.orm.search.dsl.query.HibernateOrmSearchQueryHitTypeStep;
+import org.hibernate.search.mapper.orm.search.query.dsl.HibernateOrmSearchQueryHitTypeStep;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

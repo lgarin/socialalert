@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
-import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
 

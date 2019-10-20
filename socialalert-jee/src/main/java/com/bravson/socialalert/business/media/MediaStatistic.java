@@ -4,7 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 
@@ -21,7 +20,6 @@ import lombok.Setter;
 @Embeddable
 @NoArgsConstructor()
 @Setter(AccessLevel.NONE)
-@Indexed
 public class MediaStatistic {
 
 	@Column(name = "hit_count", nullable = false)

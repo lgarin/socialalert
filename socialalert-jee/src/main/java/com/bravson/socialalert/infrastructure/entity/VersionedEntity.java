@@ -1,7 +1,6 @@
 package com.bravson.socialalert.infrastructure.entity;
 
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
@@ -9,7 +8,6 @@ import javax.persistence.Version;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.IdentifierBridgeRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -35,9 +33,4 @@ public abstract class VersionedEntity {
 	@Version
 	@Column(name = "version", nullable = false)
 	protected Integer version;
-	
-	@NonNull
-	@Embedded
-	@IndexedEmbedded
-	public VersionInfo versionInfo; // TODO should be protected
 }

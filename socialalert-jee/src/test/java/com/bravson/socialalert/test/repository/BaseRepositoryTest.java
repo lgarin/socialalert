@@ -29,18 +29,11 @@ public class BaseRepositoryTest extends Assertions {
 	private EntityManager entityManager;
 	
     @AfterEach
-    @Transactional
+    @Transactional(value = TxType.REQUIRES_NEW)
     public void deleteAllData() {
-    	//entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE");
-    	/*
-    	for (EntityType<?> entityType : entityManager.getMetamodel().getEntities()) {
-    		entityManager.createNativeQuery("DELETE FROM " + entityType.getName()).executeUpdate();
-		}
-		*/
     	String allTables = entityManager.getMetamodel().getEntities().stream().map(EntityType::getName).collect(Collectors.joining(", "));
     	entityManager.createNativeQuery("TRUNCATE TABLE " + allTables + " CASCADE").executeUpdate();
-    	//entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE");
-    	Search.session(entityManager).writer().purge();
+    	Search.session(entityManager).workspace().purge();
     }
     
     @Deprecated
@@ -52,7 +45,7 @@ public class BaseRepositoryTest extends Assertions {
     protected <T> T persistAndIndex(T entity) {
     	entityManager.persist(entity);
     	entityManager.flush();
-    	Search.session(entityManager).writer(entity.getClass()).flush();
+    	Search.session(entityManager).workspace(entity.getClass()).flush();
     	return entity;
     }
     

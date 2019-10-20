@@ -13,16 +13,16 @@ public class AnalysisConfigurer implements ElasticsearchAnalysisConfigurer {
 			.param("max_gram", 5);
     	
     	context.analyzer("languageAnalyzer").custom() 
-        	.withTokenizer("standard")
-        	.withTokenFilters("asciifolding", "lowercase", "porter_stem");
+        	.tokenizer("standard")
+        	.tokenFilters("asciifolding", "lowercase", "porter_stem");
     	
     	context.analyzer("autocompleteReverseAnalyzer").custom()
-    		.withTokenizer("standard")
-    		.withTokenFilters("asciifolding", "lowercase", "reverse", "autocompleteFilter", "reverse");
+    		.tokenizer("standard")
+    		.tokenFilters("asciifolding", "lowercase", "reverse", "autocompleteFilter", "reverse");
     	
     	context.analyzer("autocompleteAnalyzer").custom()
-    		.withTokenizer("standard")
-    		.withTokenFilters("asciifolding", "lowercase", "autocompleteFilter");
+    		.tokenizer("standard")
+    		.tokenFilters("asciifolding", "lowercase", "autocompleteFilter");
     }
 
 }

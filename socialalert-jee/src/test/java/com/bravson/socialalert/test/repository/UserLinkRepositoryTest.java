@@ -3,7 +3,6 @@ package com.bravson.socialalert.test.repository;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
 
@@ -29,9 +28,7 @@ public class UserLinkRepositoryTest extends BaseRepositoryTest {
     @Test
     public void findByExistingSource() {
     	UserProfileEntity sourceUser = new UserProfileEntity("xyz", "xyz@test.com", UserAccess.of("xyz", "1.2.3.4"));
-    	persistAndIndex(sourceUser);
     	UserProfileEntity targetUser = new UserProfileEntity("test", "test@test.com", UserAccess.of("test", "1.2.3.4"));
-    	persistAndIndex(targetUser);
     	UserLinkEntity entity = new UserLinkEntity(sourceUser, targetUser);
     	persistAndIndex(entity);
     	

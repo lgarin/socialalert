@@ -36,7 +36,7 @@ public class MediaTagRepository {
 	
 	public List<String> suggestTags(String searchTerm) {
 		return persistenceManager.search(MediaTagEntity.class).asProjection(p -> p.field("tag", String.class))
-				.predicate(p -> p.phrase().onField("startTag").boostedTo(10).orField("endTag").boostedTo(5).orField("langTag").boostedTo(3).matching(searchTerm))
-				.toQuery().fetchHits();
+				.predicate(p -> p.phrase().field("startTag").boost(10).field("endTag").boost(5).field("langTag").boost(3).matching(searchTerm))
+				.toQuery().fetchHits(100);
 	}
 }

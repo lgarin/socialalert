@@ -48,6 +48,11 @@ public class MediaEntity extends VersionedEntity {
 	
 	public static final int MIN_GEOHASH_PRECISION = 1;
 	public static final int MAX_GEOHASH_PRECISION = 8;
+	
+	@NonNull
+	@Embedded
+	@IndexedEmbedded
+	private VersionInfo versionInfo;
 
 	@Getter
 	@OneToOne(fetch=FetchType.LAZY, optional=false)

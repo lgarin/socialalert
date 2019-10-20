@@ -50,9 +50,9 @@ public class FeedItemRepository {
 	public QueryResult<FeedItemEntity> getActivitiesByUsers(@NonNull Collection<String> userIdList, @NonNull PagingParameter paging) {
 		SearchResult<FeedItemEntity> result = persistenceManager.search(FeedItemEntity.class)
 				.predicate(p -> p.bool()
-						.must(p.range().onField("versionInfo.creation").below(paging.getTimestamp()))
-						.must(p.match().onField("versionInfo.userId").matching(String.join(" ", userIdList))))
-				.sort(s -> s.byField("versionInfo.creation").desc())
+						.must(p.range().field("versionInfo.creation").lessThan(paging.getTimestamp()))
+						.must(p.match().field("versionInfo.userId").matching(String.join(" ", userIdList))))
+				.sort(s -> s.field("versionInfo.creation").desc())
 				.fetch(paging.getPageSize(), paging.getOffset());
 		return new QueryResult<>(result.getHits(), result.getTotalHitCount(), paging);
 	}

@@ -3,7 +3,6 @@ package com.bravson.socialalert.test.repository;
 import java.util.Optional;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
 

@@ -7,7 +7,6 @@ import javax.persistence.Embeddable;
 
 import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import lombok.AccessLevel;
@@ -19,7 +18,6 @@ import lombok.Setter;
 @Embeddable
 @NoArgsConstructor(access=AccessLevel.PUBLIC)
 @Setter(AccessLevel.NONE)
-@Indexed
 public class VersionInfo {
 
 	@Column(name = "user_id", length = FieldLength.ID, nullable = false)

@@ -13,6 +13,7 @@ import javax.persistence.OneToMany;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.bravson.socialalert.business.file.entity.FileEntity;
@@ -41,6 +42,11 @@ import lombok.Setter;
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class UserProfileEntity extends VersionedEntity {
 
+	@NonNull
+	@Embedded
+	@IndexedEmbedded
+	private VersionInfo versionInfo;
+	
 	@Getter
 	@Setter
 	@NonNull
