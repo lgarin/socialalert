@@ -69,7 +69,7 @@ public class MediaCommentService {
 	private Map<String, ApprovalModifier> buildUserCommentApprovalMap(String mediaUri, String userId) {
 		List<CommentApprovalEntity> approvals = approvalRepository.findAllByMediaUri(mediaUri, userId);
 		Map<String, ApprovalModifier> approvalMap = new HashMap<>(approvals.size());
-		approvals.stream().forEach(e -> approvalMap.put(e.getCommentId(), e.getModifier()));
+		approvals.forEach(e -> approvalMap.put(e.getCommentId(), e.getModifier()));
 		return approvalMap;
 	}
 	

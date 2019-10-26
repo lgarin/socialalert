@@ -47,7 +47,6 @@ public class MediaService {
 	Event<MediaEntity> mediaDislikedEvent;
 	
 	public MediaDetail viewMediaDetail(@NonNull String mediaUri, @NonNull String userId) {
-		
 		MediaEntity media = mediaRepository.findMedia(mediaUri).orElseThrow(NotFoundException::new);
 		if (sessionService.addViewedMedia(mediaUri)) {
 			mediaHitEvent.fire(media);
