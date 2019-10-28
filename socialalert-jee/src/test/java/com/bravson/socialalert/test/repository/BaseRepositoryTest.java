@@ -12,7 +12,7 @@ import javax.transaction.Transactional.TxType;
 
 import org.assertj.core.api.Assertions;
 import org.hibernate.search.mapper.orm.Search;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import com.bravson.socialalert.business.file.FileMetadata;
 import com.bravson.socialalert.business.file.entity.FileEntity;
@@ -27,7 +27,7 @@ public class BaseRepositoryTest extends Assertions {
 	@PersistenceContext
 	private EntityManager entityManager;
 	
-    @AfterEach
+    @BeforeEach
     @Transactional(value = TxType.REQUIRES_NEW)
     public void deleteAllData() {
     	String allTables = entityManager.getMetamodel().getEntities().stream().map(EntityType::getName).collect(Collectors.joining(", "));

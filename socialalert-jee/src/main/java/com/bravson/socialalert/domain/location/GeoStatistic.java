@@ -14,7 +14,7 @@ public class GeoStatistic {
 	private double maxLat;
 	private double minLon;
 	private double maxLon;
-	private int count;
+	private long count;
 	
 	public double getCenterLatitude() {
 		return (maxLat + minLat) / 2.0;

@@ -51,9 +51,9 @@ public class FeedItemRepository {
 		SearchResult<FeedItemEntity> result = persistenceManager.search(FeedItemEntity.class)
 				.predicate(p -> p.bool()
 						.must(p.range().field("versionInfo.creation").atMost(paging.getTimestamp()))
-						.must(p.match().field("versionInfo.userId").matching(String.join(" ", userIdList))))
+						.must(p.simpleQueryString().field("versionInfo.userId").matching(String.join(" ", userIdList))))
 				.sort(s -> s.field("versionInfo.creation").desc())
-				.fetch(paging.getPageSize(), paging.getOffset());
+				.fetch(paging.getOffset(), paging.getPageSize());
 		return new QueryResult<>(result.getHits(), result.getTotalHitCount(), paging);
 	}
 }

@@ -18,6 +18,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
@@ -101,28 +102,28 @@ public class MediaEntity extends VersionedEntity {
 	private Set<String> tags;
 	
 	@Column(name = "geo_hash1", length = 1) // TODO should be transient
-	@GenericField
+	@GenericField(aggregable = Aggregable.YES)
 	private String geoHash1;
 	@Column(name = "geo_hash2", length = 2) // TODO should be transient
-	@GenericField
+	@GenericField(aggregable = Aggregable.YES)
 	private String geoHash2;
 	@Column(name = "geo_hash3", length = 3) // TODO should be transient
-	@GenericField
+	@GenericField(aggregable = Aggregable.YES)
 	private String geoHash3;
 	@Column(name = "geo_hash4", length = 4) // TODO should be transient
-	@GenericField
+	@GenericField(aggregable = Aggregable.YES)
 	private String geoHash4;
 	@Column(name = "geo_hash5", length = 5) // TODO should be transient
-	@GenericField
+	@GenericField(aggregable = Aggregable.YES)
 	private String geoHash5;
 	@Column(name = "geo_hash6", length = 6) // TODO should be transient
-	@GenericField
+	@GenericField(aggregable = Aggregable.YES)
 	private String geoHash6;
 	@Column(name = "geo_hash7", length = 7) // TODO should be transient
-	@GenericField
+	@GenericField(aggregable = Aggregable.YES)
 	private String geoHash7;
 	@Column(name = "geo_hash8", length = 8) // TODO should be transient
-	@GenericField
+	@GenericField(aggregable = Aggregable.YES)
 	private String geoHash8;
 	
 	@PrePersist

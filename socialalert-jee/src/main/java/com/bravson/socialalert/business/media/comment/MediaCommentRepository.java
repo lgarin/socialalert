@@ -55,7 +55,7 @@ public class MediaCommentRepository {
 						.must(p.range().field("versionInfo.creation").atMost(paging.getTimestamp()))
 						.must(p.match().field("media.id").matching(mediaUri)))
 				.sort(s -> s.field("versionInfo.creation").desc())
-				.fetch(paging.getPageSize(), paging.getOffset());
+				.fetch(paging.getOffset(), paging.getPageSize());
 		return new QueryResult<>(result.getHits(), result.getTotalHitCount(), paging);
 	}
 }
