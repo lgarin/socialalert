@@ -13,6 +13,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.temporal.Temporal;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
@@ -37,6 +38,13 @@ public class FileStore {
 	@Inject
 	public FileStore(@NonNull FileStoreConfiguration config) {
 		baseDirectory = config.getBaseDirectory().toPath();
+	}
+	
+	@PostConstruct
+	protected void checkBaseDirectory() throws IOException {
+		if (!Files.isDirectory(baseDirectory) || !Files.exists(baseDirectory)) {
+			throw new IOException("Base directory " + baseDirectory + " must not exist");
+		}
 	}
 	
 	public String computeMd5Hex(@NonNull File file) throws IOException {
@@ -104,5 +112,18 @@ public class FileStore {
 	public boolean deleteFile(@NonNull String md5, @NonNull Temporal timestamp, @NonNull FileFormat format) throws IOException {
 		Path path = buildAbsolutePath(md5, timestamp, format);
 		return Files.deleteIfExists(path);
+	}
+	
+	public void deleteAllFiles() throws IOException {
+		Files.walk(baseDirectory)
+		  .filter(Files::isRegularFile)
+	      .map(Path::toFile)
+	      .forEach(File::delete);
+		
+		Files.walk(baseDirectory)
+			.filter(Files::isDirectory)
+			.filter(p -> !p.equals(baseDirectory))
+			.map(Path::toFile)
+		    .forEach(File::delete);
 	}
 }

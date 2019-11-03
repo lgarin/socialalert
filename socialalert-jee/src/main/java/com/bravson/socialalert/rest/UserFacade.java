@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import com.bravson.socialalert.business.user.RealUserAccess;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserLinkService;
 import com.bravson.socialalert.business.user.UserService;
@@ -52,10 +54,8 @@ public class UserFacade {
 	UserLinkService linkService;
 	
 	@Inject
-	HttpServletRequest request;
-	
-	@Inject
-	UserAccess userAccess;
+	@RealUserAccess
+	Instance<UserAccess> userAccess;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -66,7 +66,7 @@ public class UserFacade {
 	@APIResponse(responseCode = "200", description = "Login successfull.", content=@Content(schema=@Schema(implementation=LoginResponse.class)))
 	@APIResponse(responseCode = "401", description = "Login failed.")
 	public LoginResponse login(@Parameter(required=true) @Valid @NotNull LoginParameter param) {
-		return userService.login(param, request.getRemoteAddr()).orElseThrow(() -> new WebApplicationException(Status.UNAUTHORIZED));
+		return userService.login(param, userAccess.get().getIpAddress()).orElseThrow(() -> new WebApplicationException(Status.UNAUTHORIZED));
 	}
 	
 	@POST
@@ -91,7 +91,7 @@ public class UserFacade {
 	@APIResponse(responseCode = "200", description = "Current user returned with success.", content=@Content(schema=@Schema(implementation=UserInfo.class)))
 	@APIResponse(responseCode = "404", description = "Current user could not be found.")
 	public UserInfo current(@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
-		return userService.findUserInfo(userAccess.getUserId()).orElseThrow(NotFoundException::new);
+		return userService.findUserInfo(userAccess.get().getUserId()).orElseThrow(NotFoundException::new);
 	}
 	
 	@GET
@@ -116,7 +116,7 @@ public class UserFacade {
 	public Response follow(
 			@Parameter(description="The user id to follow", required=true) @NotEmpty @PathParam("userId") String userId,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
-		if (linkService.link(userAccess, userId)) {
+		if (linkService.link(userAccess.get(), userId)) {
 			return Response.status(Status.CREATED).build();
 		}
 		return Response.status(Status.OK).build();
@@ -131,7 +131,7 @@ public class UserFacade {
 	public Response unfollow(
 			@Parameter(description="The user id to unfollow", required=true) @NotEmpty @PathParam("userId") String userId,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
-		if (linkService.unlink(userAccess, userId)) {
+		if (linkService.unlink(userAccess.get(), userId)) {
 			return Response.status(Status.OK).build();
 		}
 		return Response.status(Status.GONE).build();
@@ -143,6 +143,6 @@ public class UserFacade {
 	@Operation(summary="List the followed users.")
 	@APIResponse(responseCode = "200", description = "The has been deleted.", content=@Content(schema=@Schema(implementation=UserInfo.class, type = SchemaType.ARRAY)))
 	public List<UserInfo> followedProfiles(@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
-		return linkService.getTargetProfiles(userAccess.getUserId());
+		return linkService.getTargetProfiles(userAccess.get().getUserId());
 	}
 }

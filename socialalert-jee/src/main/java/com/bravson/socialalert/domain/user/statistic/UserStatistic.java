@@ -5,16 +5,13 @@ import javax.persistence.Embeddable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Data
 @Builder
-@Setter(AccessLevel.NONE)
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)

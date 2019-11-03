@@ -6,7 +6,8 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.NoSuchFileException;
 import java.time.LocalDate;
 
-import org.apache.commons.io.FileUtils;
+import javax.inject.Inject;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,22 +17,22 @@ import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.business.file.store.FileStoreConfiguration;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 
+import io.quarkus.test.junit.QuarkusTest;
+
+@QuarkusTest
 public class FileStoreTest extends Assertions {
 
-	private static FileStoreConfiguration config = FileStoreConfiguration.builder().baseDirectory("C:/Temp/test").build();
+	@Inject
+	private FileStoreConfiguration config;
 	
-	private FileStore store = new FileStore(config);
+	@Inject
+	private FileStore store;
+	
 	
 	@BeforeEach
-	public void checkNoStore() throws IOException {
-		if (config.getBaseDirectory().exists()) {
-			throw new IOException("Base directory " + config.getBaseDirectory() + " must not exist");
-		}
-	}
-	
 	@AfterEach
 	public void cleanupStore() throws IOException {
-		FileUtils.deleteDirectory(config.getBaseDirectory());
+		store.deleteAllFiles();
 	}
 	
 	@Test

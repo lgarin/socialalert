@@ -6,6 +6,9 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.Test;
 
+import io.quarkus.test.junit.QuarkusTest;
+
+@QuarkusTest
 public class MediaViewTest extends BaseIntegrationTest {
 
 	@Test

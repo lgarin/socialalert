@@ -21,6 +21,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.bravson.socialalert.business.feed.FeedService;
+import com.bravson.socialalert.business.user.RealUserAccess;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.domain.feed.FeedItemInfo;
@@ -37,6 +38,7 @@ public class FeedFacade {
 	FeedService feedService;
 	
 	@Inject
+	@RealUserAccess
 	UserAccess userAccess;
 
 	@GET

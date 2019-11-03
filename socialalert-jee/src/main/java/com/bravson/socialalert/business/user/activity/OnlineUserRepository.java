@@ -2,7 +2,7 @@ package com.bravson.socialalert.business.user.activity;
 
 import java.security.Principal;
 import java.time.Instant;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.Destroyed;
 import javax.enterprise.context.Initialized;
@@ -18,10 +18,10 @@ import com.bravson.socialalert.infrastructure.layer.Repository;
 @Transactional(TxType.SUPPORTS)
 public class OnlineUserRepository {
 
-	private final HashMap<String, Instant> onlineUserCache = new HashMap<String, Instant>();
+	private final ConcurrentHashMap<String, Instant> onlineUserCache = new ConcurrentHashMap<>(100);
 	
-	public void addActiveUser(String userId) {
-		onlineUserCache.put(userId, Instant.now());
+	public Instant addActiveUser(String userId) {
+		return onlineUserCache.put(userId, Instant.now());
 	}
 
 	public boolean isUserActive(String userId) {

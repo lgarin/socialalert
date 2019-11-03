@@ -1,12 +1,14 @@
 package com.bravson.socialalert.infrastructure.entity;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.ManagedBean;
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.persistence.metamodel.EntityType;
 import javax.transaction.Transactional;
 
 import org.hibernate.search.mapper.orm.Search;
@@ -50,5 +52,11 @@ public class PersistenceManager {
 	
 	public <T> TypedQuery<T> createQuery(String qlString, Class<T> resultClass) {
 		return entityManager.createQuery(qlString, resultClass);
+	}
+	
+	public void deleteAll() {
+		String allTables = entityManager.getMetamodel().getEntities().stream().map(EntityType::getName).collect(Collectors.joining(", "));
+    	entityManager.createNativeQuery("TRUNCATE TABLE " + allTables + " CASCADE").executeUpdate();
+    	Search.session(entityManager).workspace().purge();
 	}
 }

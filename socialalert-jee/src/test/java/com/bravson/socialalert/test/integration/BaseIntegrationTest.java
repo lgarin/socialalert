@@ -1,30 +1,41 @@
 package com.bravson.socialalert.test.integration;
 
+import java.io.IOException;
 import java.net.URL;
 
-import javax.ws.rs.client.ClientBuilder;
+import javax.inject.Inject;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 
+import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.domain.user.LoginParameter;
 import com.bravson.socialalert.domain.user.LoginResponse;
+import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 
-import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.common.http.TestHTTPResource;
 
-@QuarkusTest
 public abstract class BaseIntegrationTest extends Assertions {
 
-
+	@TestHTTPResource
 	protected URL deploymentUrl;
 	
+	@Inject
+	private Client httpClient;
+	
+	@Inject
+	private FileStore fileStore;
+	
+	@Inject
+	private PersistenceManager persistenceManager;
+	
 	protected Builder createRequest(String path, String mediaType) {
-		return ClientBuilder.newClient().target(deploymentUrl.toString() + "rest" + path).request(mediaType);
+		return httpClient.target(deploymentUrl.toString() + "rest" + path).request(mediaType);
 	}
 	
 	protected Builder createAuthRequest(String path, String mediaType, String token) {
@@ -42,8 +53,8 @@ public abstract class BaseIntegrationTest extends Assertions {
 	}
 	
 	@BeforeEach
-	public void cleanAllData() {
-		Response response = ClientBuilder.newClient().target(deploymentUrl.toString() + "unitTest/deleteData").request().delete();
-		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	public void cleanAllData() throws IOException {
+		persistenceManager.deleteAll();
+		fileStore.deleteAllFiles();
 	}
 }

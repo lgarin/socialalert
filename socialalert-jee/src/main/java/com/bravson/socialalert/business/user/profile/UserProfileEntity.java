@@ -226,7 +226,7 @@ public class UserProfileEntity extends VersionedEntity {
 				.id(id)
 				.username(username)
 				.email(email)
-				.createdTimestamp(getCreation())
+				.createdTimestamp(getCreation()) // TODO extract from token
 				.online(true)
 				.biography(biography)
 				.birthdate(birthdate)

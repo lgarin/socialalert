@@ -12,17 +12,14 @@ import com.bravson.socialalert.infrastructure.rest.InstantSerializer;
 import com.bravson.socialalert.infrastructure.rest.LocalDateDeserializer;
 import com.bravson.socialalert.infrastructure.rest.LocalDateSerializer;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Setter;
 
 @Data
 @Builder
-@Setter(AccessLevel.NONE)
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserInfo {

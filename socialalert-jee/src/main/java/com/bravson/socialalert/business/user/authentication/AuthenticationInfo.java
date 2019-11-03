@@ -9,6 +9,7 @@ import javax.json.bind.annotation.JsonbTypeSerializer;
 import com.bravson.socialalert.infrastructure.rest.InstantDeserializer;
 import com.bravson.socialalert.infrastructure.rest.InstantSerializer;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ import lombok.NonNull;
 @Data
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class AuthenticationInfo {
 
 	@NonNull
@@ -34,18 +36,4 @@ public class AuthenticationInfo {
 	
 	@JsonbProperty("email_verified")
 	private boolean emailVerified;
-
-	public AuthenticationInfo(@NonNull @JsonbProperty("id") String id, 
-			@NonNull @JsonbProperty("username") String username,
-			@JsonbProperty("email") String email,
-			@NonNull @JsonbProperty("createdTimestamp") Instant createdTimestamp,
-			@JsonbProperty("email_verified") boolean emailVerified) {
-		this.id = id;
-		this.username = username;
-		this.email = email;
-		this.createdTimestamp = createdTimestamp;
-		this.emailVerified = emailVerified;
-	}
-	
-	
 }

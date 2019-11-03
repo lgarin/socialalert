@@ -2,11 +2,9 @@ package com.bravson.socialalert.test.repository;
 
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.metamodel.EntityType;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
@@ -21,6 +19,7 @@ import com.bravson.socialalert.business.media.UpsertMediaParameter;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
+import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 
 public class BaseRepositoryTest extends Assertions {
 
@@ -30,9 +29,7 @@ public class BaseRepositoryTest extends Assertions {
     @BeforeEach
     @Transactional(value = TxType.REQUIRES_NEW)
     public void deleteAllData() {
-    	String allTables = entityManager.getMetamodel().getEntities().stream().map(EntityType::getName).collect(Collectors.joining(", "));
-    	entityManager.createNativeQuery("TRUNCATE TABLE " + allTables + " CASCADE").executeUpdate();
-    	Search.session(entityManager).workspace().purge();
+    	new PersistenceManager(entityManager).deleteAll();
     }
     
     @Transactional
