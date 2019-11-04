@@ -19,6 +19,9 @@ import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.media.format.MediaFileConstants;
 
+import io.quarkus.test.junit.QuarkusTest;
+
+@QuarkusTest
 public class MediaClaimTest extends BaseIntegrationTest {
 
 	private static Entity<UpsertMediaParameter> getClaimMediaParameter() {

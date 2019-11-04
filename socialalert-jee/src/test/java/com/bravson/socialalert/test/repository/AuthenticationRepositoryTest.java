@@ -16,18 +16,7 @@ import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 public class AuthenticationRepositoryTest {
-	/*
-	private static AuthenticationConfiguration config = AuthenticationConfiguration
-			.builder()
-			.clientSecret("335e1a19-1c27-4612-8997-32bffacab26b")
-			.loginClientId("socialalert-jee")
-			.loginUrl("http://localhost:8081/auth/realms/SocialAlert-Dev/protocol/openid-connect/token")
-			.logoutUrl("http://localhost:8081/auth/realms/SocialAlert-Dev/protocol/openid-connect/logout")
-			.userInfoUrl("http://localhost:8081/auth/realms/SocialAlert-Dev/protocol/openid-connect/userinfo")
-			.build();  
-	
-	private AuthenticationRepository repository = new AuthenticationRepository(config, ClientBuilder.newClient());
-	*/
+
 	@Inject
 	private AuthenticationRepository repository;
 	

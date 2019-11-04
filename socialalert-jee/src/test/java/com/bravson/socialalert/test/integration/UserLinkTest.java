@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.domain.user.UserInfo;
 
+import io.quarkus.test.junit.QuarkusTest;
+
+@QuarkusTest
 public class UserLinkTest extends BaseIntegrationTest {
 
 	@Test

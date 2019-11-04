@@ -5,21 +5,21 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+import javax.inject.Inject;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.bravson.socialalert.business.file.media.MediaConfiguration;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.file.media.MediaMetadataExtractor;
 
+import io.quarkus.test.junit.QuarkusTest;
+
+@QuarkusTest
 public class MediaMetadataExtractorTest extends Assertions {
 
-	private static MediaConfiguration config = MediaConfiguration
-			.builder()
-			.metadataExtractorProgram("C:\\Dev\\exiftool.exe")
-			.build(); 
-	
-	private MediaMetadataExtractor extractor = new MediaMetadataExtractor(config);
+	@Inject
+	private MediaMetadataExtractor extractor;
 	
 	
 	@Test

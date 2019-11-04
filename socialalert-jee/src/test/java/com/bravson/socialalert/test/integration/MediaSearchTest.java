@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.paging.QueryResult;
 
+import io.quarkus.test.junit.QuarkusTest;
+
+@QuarkusTest
 public class MediaSearchTest extends BaseIntegrationTest {
 
 	@Test

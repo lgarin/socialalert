@@ -12,6 +12,9 @@ import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.domain.media.format.MediaFileConstants;
 
+import io.quarkus.test.junit.QuarkusTest;
+
+@QuarkusTest
 public class FileFacadeTest extends BaseIntegrationTest {
 
 	private static Entity<File> getPicture(String filename) {

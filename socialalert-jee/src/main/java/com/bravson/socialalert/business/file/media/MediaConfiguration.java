@@ -1,46 +1,23 @@
 package com.bravson.socialalert.business.file.media;
 
-import javax.annotation.ManagedBean;
-import javax.annotation.Resource;
-import javax.enterprise.context.ApplicationScoped;
+import io.quarkus.arc.config.ConfigProperties;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+@ConfigProperties(prefix = "media")
+public interface MediaConfiguration {
 
-@ManagedBean
-@ApplicationScoped
-@Data
-@Builder
-@AllArgsConstructor(access=AccessLevel.PRIVATE)
-@NoArgsConstructor(access=AccessLevel.PROTECTED)
-@Setter(AccessLevel.NONE)
-public class MediaConfiguration {
-
-	@Resource(name="videoSnapshotDelay")
-	long snapshotDelay;
+	long getSnapshotDelay();
 	
-	@Resource(name="mediaThumbnailHeight")
-	int thumbnailHeight;
+	int getThumbnailHeight();
 	
-	@Resource(name="mediaThumbnailWidth")
-	int thumbnailWidth;
+	int getThumbnailWidth();
 	
-	@Resource(name="mediaPreviewHeight")
-	int previewHeight;
+	int getPreviewHeight();
 	
-	@Resource(name="mediaPreviewWidth")
-	int previewWidth;
+	int getPreviewWidth();
 	
-	@Resource(name="mediaWatermarkFile")
-	String watermarkFile;
+	String getWatermarkFile();
 	
-	@Resource(name="videoEncodingProgram")
-	String videoEncodingProgram;
+	String getEncodingProgram();
 	
-	@Resource(name="metadataExtractorProgram")
-	String metadataExtractorProgram;
+	String getMetadataProgram();
 }

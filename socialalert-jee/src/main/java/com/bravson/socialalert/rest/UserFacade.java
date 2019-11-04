@@ -25,6 +25,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -33,7 +34,7 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import com.bravson.socialalert.business.user.RealUserAccess;
+import com.bravson.socialalert.business.user.TokenAccess;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserLinkService;
 import com.bravson.socialalert.business.user.UserService;
@@ -54,9 +55,12 @@ public class UserFacade {
 	UserLinkService linkService;
 	
 	@Inject
-	@RealUserAccess
+	@TokenAccess
 	Instance<UserAccess> userAccess;
-
+	
+	@ConfigProperty(name = "user.sessionTimeout")
+	Integer sessionTimeout;
+	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -65,7 +69,8 @@ public class UserFacade {
 	@Operation(summary="Login an existing user.")
 	@APIResponse(responseCode = "200", description = "Login successfull.", content=@Content(schema=@Schema(implementation=LoginResponse.class)))
 	@APIResponse(responseCode = "401", description = "Login failed.")
-	public LoginResponse login(@Parameter(required=true) @Valid @NotNull LoginParameter param) {
+	public LoginResponse login(@Parameter(required=true) @Valid @NotNull LoginParameter param, @Context HttpServletRequest httpRequest) throws ServletException {
+		httpRequest.getSession(true).setMaxInactiveInterval(sessionTimeout);
 		return userService.login(param, userAccess.get().getIpAddress()).orElseThrow(() -> new WebApplicationException(Status.UNAUTHORIZED));
 	}
 	
@@ -79,7 +84,6 @@ public class UserFacade {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
 		httpRequest.getSession().invalidate();
-		httpRequest.logout();
 		return Response.status(Status.NO_CONTENT).build();
 	}
 	
@@ -109,6 +113,7 @@ public class UserFacade {
 	
 	@POST
 	@Path("/follow/{userId : .+}")
+	@UserActivity
 	@Operation(summary="Start following the specified user.")
 	@APIResponse(responseCode = "200", description = "Link already exists.")
 	@APIResponse(responseCode = "201", description = "Link has been created.")
@@ -124,6 +129,7 @@ public class UserFacade {
 	
 	@POST
 	@Path("/unfollow/{userId : .+}")
+	@UserActivity
 	@Operation(summary="Stop following the specified user.")
 	@APIResponse(responseCode = "200", description = "Link has been deleted.")
 	@APIResponse(responseCode = "410", description = "Link does not exist.")
@@ -140,6 +146,7 @@ public class UserFacade {
 	@GET
 	@Path("/followed")
 	@Produces(MediaType.APPLICATION_JSON)
+	@UserActivity
 	@Operation(summary="List the followed users.")
 	@APIResponse(responseCode = "200", description = "The has been deleted.", content=@Content(schema=@Schema(implementation=UserInfo.class, type = SchemaType.ARRAY)))
 	public List<UserInfo> followedProfiles(@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {

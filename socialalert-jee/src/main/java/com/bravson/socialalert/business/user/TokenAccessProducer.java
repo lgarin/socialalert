@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @RequestScoped
-public class UserAccessProducer {
+public class TokenAccessProducer {
 	
 	@Inject
 	JsonWebToken token;
@@ -17,7 +17,7 @@ public class UserAccessProducer {
 	HttpServletRequest httpRequest;
 	
 	@Produces
-	@RealUserAccess
+	@TokenAccess
 	public UserAccess createUserAccess() {
 		String userId = token.getSubject();
 		String ipAddress = httpRequest.getRemoteAddr();

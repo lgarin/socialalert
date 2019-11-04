@@ -1,6 +1,7 @@
 package com.bravson.socialalert.rest;
 
 import javax.annotation.security.RolesAllowed;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -21,7 +22,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.bravson.socialalert.business.feed.FeedService;
-import com.bravson.socialalert.business.user.RealUserAccess;
+import com.bravson.socialalert.business.user.TokenAccess;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.domain.feed.FeedItemInfo;
@@ -38,8 +39,8 @@ public class FeedFacade {
 	FeedService feedService;
 	
 	@Inject
-	@RealUserAccess
-	UserAccess userAccess;
+	@TokenAccess
+	Instance<UserAccess> userAccess;
 
 	@GET
 	@Path("/current")
@@ -52,6 +53,6 @@ public class FeedFacade {
 			@Parameter(description="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		
-		return feedService.getFeed(userAccess.getUserId(), PagingParameter.of(pagingTimestamp, pageNumber, pageSize));
+		return feedService.getFeed(userAccess.get().getUserId(), PagingParameter.of(pagingTimestamp, pageNumber, pageSize));
 	}
 }

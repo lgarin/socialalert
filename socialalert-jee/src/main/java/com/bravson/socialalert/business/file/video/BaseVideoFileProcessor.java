@@ -44,7 +44,7 @@ public abstract class BaseVideoFileProcessor implements MediaFileProcessor {
 				"-y", targetFile.getAbsolutePath());
 		
 		StringBuilder output = new StringBuilder(16000);
-		int exitCode = ProcessUtil.execute(config.getVideoEncodingProgram(), arguments, output);
+		int exitCode = ProcessUtil.execute(config.getEncodingProgram(), arguments, output);
 		if (exitCode != 0) {
 			logger.error(output.toString());
 			throw new IOException("Cannot process file " + targetFile);

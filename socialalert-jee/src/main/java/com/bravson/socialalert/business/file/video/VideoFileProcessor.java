@@ -40,7 +40,7 @@ public class VideoFileProcessor extends BaseVideoFileProcessor {
 		//String filter = "thumbnail,scale=320:240:force_original_aspect_ratio=decrease,pad=320:240:(ow-iw)/2:(oh-ih)/2";
 		String filter = String.format("[0:v] scale='%1$d:%2$d:force_original_aspect_ratio=decrease',pad='%1$d:%2$d:(ow-iw)/2:(oh-ih)/2' [video]; [1] format=yuva420p,lutrgb='a=128' [watermark]; [video][watermark] overlay='x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2'; [0:a] aformat='sample_fmts=s16:sample_rates=44100:channel_layouts=mono'", config.getPreviewWidth(), config.getPreviewHeight());
 		
-		ProcessBuilder builder = new ProcessBuilder(config.getVideoEncodingProgram(), "-i", sourceFile.getAbsolutePath(), "-i", config.getWatermarkFile(), "-c:v", "libx264", "-preset", "fast", "-profile:v", "baseline", "-level", "3.0", "-movflags", "+faststart", "-c:a", "aac", "-b:a", "64k", "-ac", "1", "-filter_complex", filter, "-y", outputFile.getAbsolutePath());
+		ProcessBuilder builder = new ProcessBuilder(config.getEncodingProgram(), "-i", sourceFile.getAbsolutePath(), "-i", config.getWatermarkFile(), "-c:v", "libx264", "-preset", "fast", "-profile:v", "baseline", "-level", "3.0", "-movflags", "+faststart", "-c:a", "aac", "-b:a", "64k", "-ac", "1", "-filter_complex", filter, "-y", outputFile.getAbsolutePath());
 		builder.redirectErrorStream(true);
 		Process process = builder.start();
 		

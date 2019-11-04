@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -37,7 +38,7 @@ import com.bravson.socialalert.business.media.MediaUpsertService;
 import com.bravson.socialalert.business.media.SearchMediaParameter;
 import com.bravson.socialalert.business.media.UpsertMediaParameter;
 import com.bravson.socialalert.business.media.comment.MediaCommentService;
-import com.bravson.socialalert.business.user.RealUserAccess;
+import com.bravson.socialalert.business.user.TokenAccess;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.domain.location.GeoArea;
@@ -59,8 +60,8 @@ import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 public class MediaFacade {
 
 	@Inject
-	@RealUserAccess
-	UserAccess userAccess;
+	@TokenAccess
+	Instance<UserAccess> userAccess;
 	
 	@Inject
 	MediaUpsertService mediaUpsertService;
@@ -87,7 +88,7 @@ public class MediaFacade {
 			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("mediaUri") String fileUri,
 			@Valid @NotNull UpsertMediaParameter parameter,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
-		return mediaUpsertService.claimMedia(fileUri, parameter, userAccess);
+		return mediaUpsertService.claimMedia(fileUri, parameter, userAccess.get());
 	}
 	
 	@POST
@@ -102,7 +103,7 @@ public class MediaFacade {
 			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@Valid @NotNull UpsertMediaParameter parameter,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
-		return mediaUpsertService.updateMedia(mediaUri, parameter, userAccess);
+		return mediaUpsertService.updateMedia(mediaUri, parameter, userAccess.get());
 	}
 	
 	@GET
@@ -197,7 +198,7 @@ public class MediaFacade {
 			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		
-		return mediaService.viewMediaDetail(mediaUri, userAccess.getUserId());
+		return mediaService.viewMediaDetail(mediaUri, userAccess.get().getUserId());
 	}
 	
 	@POST
@@ -209,7 +210,7 @@ public class MediaFacade {
 	public MediaDetail likeMedia(
 			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
-		return mediaService.setApprovalModifier(mediaUri, ApprovalModifier.LIKE, userAccess.getUserId());
+		return mediaService.setApprovalModifier(mediaUri, ApprovalModifier.LIKE, userAccess.get().getUserId());
 	}
 	
 	@POST
@@ -221,7 +222,7 @@ public class MediaFacade {
 	public MediaDetail dislikeMedia(
 			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
-		return mediaService.setApprovalModifier(mediaUri, ApprovalModifier.DISLIKE, userAccess.getUserId());
+		return mediaService.setApprovalModifier(mediaUri, ApprovalModifier.DISLIKE, userAccess.get().getUserId());
 	}
 	
 	@POST
@@ -233,7 +234,7 @@ public class MediaFacade {
 	public MediaDetail resetMediaApproval(
 			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
-		return mediaService.setApprovalModifier(mediaUri, null, userAccess.getUserId());
+		return mediaService.setApprovalModifier(mediaUri, null, userAccess.get().getUserId());
 	}
 	
 	@POST
@@ -247,14 +248,14 @@ public class MediaFacade {
 			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@Parameter(description="The comment text.", required=true) @NotEmpty @Size(max=MediaConstants.MAX_COMMENT_LENGTH) String comment,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
-		return commentService.createComment(mediaUri, comment, userAccess);
+		return commentService.createComment(mediaUri, comment, userAccess.get());
 	}
 	
 	@GET
 	@Path("/comments/{mediaUri : .+}")
 	@Operation(summary="List the comments for the specified media.")
 	@Produces(MediaType.APPLICATION_JSON)
-	//@APIResponse(responseCode = "200", description = "The comments have been retrieved successfuly.", content=@Content(schema=@Schema(implementation=MediaCommentDetail.class)))
+	//@APIResponse(responseCode = "200", description = "The comments have been retrieved successfully.", content=@Content(schema=@Schema(implementation=MediaCommentDetail.class)))
 	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public QueryResult<MediaCommentDetail> listComments(@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
@@ -262,7 +263,7 @@ public class MediaFacade {
 			@Parameter(description="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		
-		return commentService.listComments(mediaUri, userAccess.getUserId(), PagingParameter.of(pagingTimestamp, pageNumber, pageSize));
+		return commentService.listComments(mediaUri, userAccess.get().getUserId(), PagingParameter.of(pagingTimestamp, pageNumber, pageSize));
 	}
 	
 	@GET

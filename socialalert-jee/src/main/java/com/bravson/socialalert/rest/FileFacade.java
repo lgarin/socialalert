@@ -6,9 +6,9 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +34,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.headers.Header;
@@ -49,7 +50,7 @@ import com.bravson.socialalert.business.file.FileResponse;
 import com.bravson.socialalert.business.file.FileSearchService;
 import com.bravson.socialalert.business.file.FileUploadParameter;
 import com.bravson.socialalert.business.file.FileUploadService;
-import com.bravson.socialalert.business.user.RealUserAccess;
+import com.bravson.socialalert.business.user.TokenAccess;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.domain.file.FileInfo;
@@ -61,15 +62,15 @@ import com.bravson.socialalert.domain.media.format.MediaFileConstants;
 @UserActivity
 public class FileFacade {
 	
-	@Resource(name="maxUploadSize")
+	@ConfigProperty(name="file.maxUploadSize")
 	long maxUploadSize;
 	
-	@Resource(name="mediaCacheMaxAge")
+	@ConfigProperty(name="file.cacheMaxAge")
 	int mediaCacheMaxAge;
 	
 	@Inject
-	@RealUserAccess
-	UserAccess userAccess;
+	@TokenAccess
+	Instance<UserAccess> userAccess;
 	
 	@Inject
 	HttpServletRequest httpRequest;
@@ -153,7 +154,7 @@ public class FileFacade {
 	@APIResponse(responseCode = "200", description = "List of file metadata is available in the response.", content=@Content(schema=@Schema(implementation=FileInfo.class, type=SchemaType.ARRAY)))
 	public List<FileInfo> listNewFiles(
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException {
-		return fileSearchService.findNewFilesByUserId(userAccess.getUserId());
+		return fileSearchService.findNewFilesByUserId(userAccess.get().getUserId());
 	}
 	
 	@PermitAll
@@ -183,7 +184,7 @@ public class FileFacade {
 	public Response uploadPicture(
 			@RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException, ServletException {
-		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), userAccess));
+		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), userAccess.get()));
 	}
 	
 	@POST
@@ -196,7 +197,7 @@ public class FileFacade {
 	public Response uploadVideo(
 		    @RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile,
 			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException, ServletException {
-		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), userAccess));
+		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), userAccess.get()));
 	}
 
 	private FileUploadParameter createUploadParameter(File inputFile) {

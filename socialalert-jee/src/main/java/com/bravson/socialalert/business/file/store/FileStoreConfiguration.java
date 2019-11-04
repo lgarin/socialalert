@@ -4,7 +4,7 @@ import java.io.File;
 
 import io.quarkus.arc.config.ConfigProperties;
 
-@ConfigProperties(prefix = "fileStore")
+@ConfigProperties(prefix = "file")
 public interface FileStoreConfiguration {
 
 	public File getBaseDirectory();

@@ -6,8 +6,10 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.Test;
 
-public class FeedTest extends BaseIntegrationTest {
+import io.quarkus.test.junit.QuarkusTest;
 
+@QuarkusTest
+public class FeedTest extends BaseIntegrationTest {
 
 	@Test
 	public void listEmptyFeedForKnownUser() {

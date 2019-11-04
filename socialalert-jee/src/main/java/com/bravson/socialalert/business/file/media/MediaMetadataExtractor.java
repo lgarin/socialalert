@@ -75,7 +75,7 @@ public class MediaMetadataExtractor {
 		// -d "%Y-%m-%dT%H:%M:%S%z" -c "%.6f"
 		
 		StringBuilder output = new StringBuilder(16000);
-		int exitCode = ProcessUtil.execute(config.getMetadataExtractorProgram(), arguments, output);
+		int exitCode = ProcessUtil.execute(config.getMetadataProgram(), arguments, output);
 		
 		if (exitCode != 0) {
 			logger.error(output.toString());

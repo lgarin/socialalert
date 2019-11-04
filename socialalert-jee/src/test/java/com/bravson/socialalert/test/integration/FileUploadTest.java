@@ -14,6 +14,9 @@ import org.junit.jupiter.api.Test;
 import com.bravson.socialalert.domain.media.format.MediaFileConstants;
 import com.google.common.io.Files;
 
+import io.quarkus.test.junit.QuarkusTest;
+
+@QuarkusTest
 public class FileUploadTest extends BaseIntegrationTest {
 	
 	private static Entity<String> getPlainText(String content) {
@@ -31,7 +34,7 @@ public class FileUploadTest extends BaseIntegrationTest {
 	@Test
 	public void uploadPictureWithoutPrincial() throws Exception {
 		Response response = createRequest("/file/upload/picture", MediaType.WILDCARD).post(getPicture("src/main/resources/logo.jpg"));
-		assertThat(response.getStatus()).isEqualTo(Status.FORBIDDEN.getStatusCode());
+		assertThat(response.getStatus()).isEqualTo(Status.FOUND.getStatusCode());
 	}
 	
 	private static Predicate<File> contentEquals(String sourceFile) {
