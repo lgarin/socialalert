@@ -34,6 +34,14 @@ services:
       - "9200:9200"
     volumes:
       - "elastic:/usr/share/elasticsearch/data"
+  artemis:
+    image: vromero/activemq-artemis:2.9.0-alpine
+    environment:
+      ARTEMIS_USERNAME: quarkus
+      ARTEMIS_PASSWORD: quarkus
+    ports:
+      - "8161:8161"
+      - "61616:61616"
 #  pgadmin:
 #    image: "dpage/pgadmin4:3.6"
 #    environment:
