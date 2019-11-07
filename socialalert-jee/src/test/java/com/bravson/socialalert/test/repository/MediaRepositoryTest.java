@@ -46,7 +46,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	PagingParameter paging = new PagingParameter(Instant.now(), 0, 10);
     	QueryResult<MediaEntity> result = repository.searchMedia(parameter, paging);
     	assertThat(result).isNotNull();
-    	assertThat(result.getPageCount()).isEqualTo(1);
+    	assertThat(result.getPageCount()).isEqualTo(0);
     	assertThat(result.getPageNumber()).isEqualTo(0);
     	assertThat(result.getContent()).isEmpty();
     }

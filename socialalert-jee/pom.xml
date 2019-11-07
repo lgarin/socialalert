@@ -11,6 +11,7 @@
 	<properties>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<surefire-plugin.version>2.22.0</surefire-plugin.version>
+		<compiler-plugin.version>3.8.1</compiler-plugin.version>
 		<quarkus.version>0.27.0</quarkus.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -84,16 +85,18 @@
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-hibernate-search-elasticsearch</artifactId>
 		</dependency>
+		<!-- 
 		<dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-artemis-jms</artifactId>
-            <exclusions>
-            	<exclusion>
-            		<groupId>org.apache.geronimo.specs</groupId>
-            		<artifactId>geronimo-json_1.0_spec</artifactId>
-            	</exclusion>
-            </exclusions>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-artemis-jms</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.geronimo.specs</groupId>
+					<artifactId>geronimo-json_1.0_spec</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+		 -->
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-arc</artifactId>
@@ -118,11 +121,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.quarkus</groupId>
-			<artifactId>quarkus-junit5</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-junit-jupiter</artifactId>
 			<version>3.1.0</version>
@@ -144,6 +142,10 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${compiler-plugin.version}</version>
+			</plugin>
+			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>${surefire-plugin.version}</version>
 				<configuration>
@@ -154,50 +156,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<profiles>
-		<profile>
-			<id>native</id>
-			<activation>
-				<property>
-					<name>native</name>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>io.quarkus</groupId>
-						<artifactId>quarkus-maven-plugin</artifactId>
-						<version>${quarkus.version}</version>
-						<executions>
-							<execution>
-								<goals>
-									<goal>native-image</goal>
-								</goals>
-								<configuration>
-									<enableHttpUrlHandler>true</enableHttpUrlHandler>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<artifactId>maven-failsafe-plugin</artifactId>
-						<version>${surefire-plugin.version}</version>
-						<executions>
-							<execution>
-								<goals>
-									<goal>integration-test</goal>
-									<goal>verify</goal>
-								</goals>
-								<configuration>
-									<systemProperties>
-										<native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
-									</systemProperties>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 </project>

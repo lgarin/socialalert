@@ -1,6 +1,5 @@
 package com.bravson.socialalert.infrastructure.rest;
 
-import javax.annotation.ManagedBean;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Disposes;
@@ -11,7 +10,6 @@ import javax.ws.rs.client.ClientBuilder;
 
 import org.slf4j.Logger;
 
-@ManagedBean
 @ApplicationScoped
 public class RestClientProducer {
 

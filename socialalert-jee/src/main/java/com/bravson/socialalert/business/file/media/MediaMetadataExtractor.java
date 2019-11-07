@@ -13,12 +13,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonNumber;
 import javax.json.JsonObject;
+import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
-import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
@@ -82,13 +82,14 @@ public class MediaMetadataExtractor {
 			throw new IOException("Cannot process file " + inputFile);
 		}
 		
-		JsonParser parser = Json.createParser(new StringReader(output.toString()));
-		if (parser.next() != Event.START_ARRAY) {
+		JsonReader reader = Json.createReader(new StringReader(output.toString()));
+		JsonArray array = reader.readArray();
+		if (array == null) {
 			logger.error(output.toString());
 			throw new IOException("Cannot process file " + inputFile);
 		}
 
-		JsonObject item = parser.getArray().get(0).asJsonObject();
+		JsonObject item = array.get(0).asJsonObject();
 		return MediaMetadata.builder()
 			.width(readInteger(item, "ImageWidth"))
 			.height(readInteger(item, "ImageHeight"))

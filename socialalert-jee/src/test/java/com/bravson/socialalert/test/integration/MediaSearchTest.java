@@ -1,5 +1,6 @@
 package com.bravson.socialalert.test.integration;
 
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -19,8 +20,7 @@ public class MediaSearchTest extends BaseIntegrationTest {
 		String token = requestLoginToken("test@test.com", "123");
 		Response response = createAuthRequest("/media/search", MediaType.APPLICATION_JSON, token).get();
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
-		@SuppressWarnings("unchecked")
-		QueryResult<MediaInfo> result = (QueryResult<MediaInfo>) response.readEntity(QueryResult.class);
+		QueryResult<MediaInfo> result = response.readEntity(new GenericType<QueryResult<MediaInfo>>() {});
 		assertThat(result.getContent()).isEmpty();
 	}
 

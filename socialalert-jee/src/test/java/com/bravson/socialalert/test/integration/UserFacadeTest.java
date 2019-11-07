@@ -79,7 +79,7 @@ public class UserFacadeTest extends BaseIntegrationTest {
 	@Test
 	public void logoutWithoutToken() throws Exception {
 		Response response = createRequest("/user/logout", MediaType.TEXT_PLAIN).post(null);
-		assertThat(response.getStatus()).isEqualTo(Status.FOUND.getStatusCode());
+		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
 	
 	@Test
@@ -92,7 +92,7 @@ public class UserFacadeTest extends BaseIntegrationTest {
 	@Test
 	public void logoutWithInvalidToken() throws Exception {
 		Response response = createAuthRequest("/user/logout", MediaType.TEXT_PLAIN, "Bearer 12344334").post(null);
-		assertThat(response.getStatus()).isEqualTo(Status.INTERNAL_SERVER_ERROR.getStatusCode());
+		assertThat(response.getStatus()).isEqualTo(Status.FORBIDDEN.getStatusCode());
 	}
 	
 	@Test
@@ -110,6 +110,6 @@ public class UserFacadeTest extends BaseIntegrationTest {
 	@Test
 	public void getCurrentUserWithoutToken() throws Exception {
 		Response response = createRequest("/user/current", MediaType.APPLICATION_JSON).get();
-		assertThat(response.getStatus()).isEqualTo(Status.FOUND.getStatusCode());
+		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
 }

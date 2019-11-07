@@ -3,6 +3,7 @@ package com.bravson.socialalert.test.repository;
 import java.time.Instant;
 import java.util.Arrays;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
@@ -26,10 +27,13 @@ public class BaseRepositoryTest extends Assertions {
 	@PersistenceContext
 	private EntityManager entityManager;
 	
+	@Inject
+	private PersistenceManager persistenceManager;
+	
     @BeforeEach
     @Transactional(value = TxType.REQUIRES_NEW)
     public void deleteAllData() {
-    	new PersistenceManager(entityManager).deleteAll();
+    	persistenceManager.deleteAll();
     }
     
     @Transactional

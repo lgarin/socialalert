@@ -21,6 +21,9 @@ public class OnlineUserRepository {
 	private final ConcurrentHashMap<String, Instant> onlineUserCache = new ConcurrentHashMap<>(100);
 	
 	public Instant addActiveUser(String userId) {
+		if (userId == null) {
+			return null;
+		}
 		return onlineUserCache.put(userId, Instant.now());
 	}
 

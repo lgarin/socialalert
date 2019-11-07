@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
+import java.nio.file.Files;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -80,8 +81,10 @@ public class FileUploadService {
 	}
 	
 	private MediaFileFormat determineFileFormat(FileUploadParameter parameter) throws IOException {
-		//String detectedContentType = Files.probeContentType(parameter.getInputFile().toPath());
 		String detectedContentType = guessContentType(parameter.getInputFile());
+		if (detectedContentType == null) {
+			detectedContentType = Files.probeContentType(parameter.getInputFile().toPath());
+		}
 		MediaFileFormat detectedFileFormat = MediaFileFormat.fromMediaContentType(detectedContentType).orElseThrow(NotSupportedException::new);
 		MediaFileFormat fileFormat = MediaFileFormat.fromMediaContentType(parameter.getContentType()).orElseThrow(NotSupportedException::new);
 		if (detectedFileFormat != fileFormat) {

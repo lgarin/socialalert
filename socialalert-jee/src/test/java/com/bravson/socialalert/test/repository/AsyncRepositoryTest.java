@@ -4,9 +4,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
+import javax.enterprise.event.ObservesAsync;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +31,7 @@ public class AsyncRepositoryTest {
 	public static class AsyncEventObserver {
 		private final CountDownLatch asyncCountDown = new CountDownLatch(1);
 		
-		public void observerAsyncEvent(@Observes TestEvent event) {
+		public void observerAsyncEvent(@ObservesAsync TestEvent event) {
 			asyncCountDown.countDown();
 		}
 		

@@ -34,7 +34,7 @@ public class FileUploadTest extends BaseIntegrationTest {
 	@Test
 	public void uploadPictureWithoutPrincial() throws Exception {
 		Response response = createRequest("/file/upload/picture", MediaType.WILDCARD).post(getPicture("src/main/resources/logo.jpg"));
-		assertThat(response.getStatus()).isEqualTo(Status.FOUND.getStatusCode());
+		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
 	
 	private static Predicate<File> contentEquals(String sourceFile) {

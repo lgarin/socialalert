@@ -3,7 +3,6 @@ package com.bravson.socialalert.infrastructure.entity;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.ManagedBean;
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -17,7 +16,6 @@ import org.hibernate.search.mapper.orm.search.query.dsl.HibernateOrmSearchQueryH
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-@ManagedBean
 @ApplicationScoped
 @Transactional
 @NoArgsConstructor
