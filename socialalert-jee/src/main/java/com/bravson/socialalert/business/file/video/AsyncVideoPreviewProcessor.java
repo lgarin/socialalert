@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 
-import javax.enterprise.event.Observes;
+import javax.enterprise.event.ObservesAsync;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
@@ -39,7 +39,7 @@ public class AsyncVideoPreviewProcessor {
 	@Inject
 	Logger logger;
 	
-	public void onAsyncEvent(@Observes AsyncVideoPreviewEvent event) {
+	public void onAsyncEvent(@ObservesAsync AsyncVideoPreviewEvent event) {
 		fileRepository.findFile(event.getFileUri()).ifPresent(this::createPreview);
 	}
 	

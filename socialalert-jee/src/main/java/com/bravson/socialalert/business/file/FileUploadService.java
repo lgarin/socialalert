@@ -1,12 +1,6 @@
 package com.bravson.socialalert.business.file;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
-import java.nio.file.Files;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -74,22 +68,18 @@ public class FileUploadService {
 		return userService.fillUserInfo(fileEntity.toFileInfo());
 	}
 
-	private static String guessContentType(File file) throws IOException {
-		try (InputStream is = new BufferedInputStream(new FileInputStream(file))) {
-			return URLConnection.guessContentTypeFromStream(is);
-		}
-	}
-	
+
 	private MediaFileFormat determineFileFormat(FileUploadParameter parameter) throws IOException {
-		String detectedContentType = guessContentType(parameter.getInputFile());
-		if (detectedContentType == null) {
-			detectedContentType = Files.probeContentType(parameter.getInputFile().toPath());
-		}
+		/*
+		String detectedContentType = Files.probeContentType(parameter.getInputFile().toPath());
 		MediaFileFormat detectedFileFormat = MediaFileFormat.fromMediaContentType(detectedContentType).orElseThrow(NotSupportedException::new);
+		*/
 		MediaFileFormat fileFormat = MediaFileFormat.fromMediaContentType(parameter.getContentType()).orElseThrow(NotSupportedException::new);
+		/*
 		if (detectedFileFormat != fileFormat) {
 			throw new NotSupportedException();
 		}
+		*/
 		return fileFormat;
 	}
 }

@@ -6,8 +6,11 @@ import java.util.concurrent.Executors;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.NotificationOptions;
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.Any;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
@@ -24,15 +27,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class AsyncRepository implements Runnable {
-
-	private static final String ASYNC_QUEUE_NAME = "async";
 	/*
+	private static final String ASYNC_QUEUE_NAME = "async";
+	
 	@Inject
 	ConnectionFactory connectionFactory;
 	*/
 	@Inject
 	@Any
 	Event<AsyncEvent> eventTrigger;
+	
+	@Inject
+	Event<TransactionEvent> transactionTrigger;
 	
 	@Inject
 	Logger logger;
@@ -72,13 +78,18 @@ public class AsyncRepository implements Runnable {
 		*/
 	}
 
+	@Transactional(value = TxType.MANDATORY)
 	public void fireAsync(AsyncEvent event) {
-		eventTrigger.fireAsync(event, NotificationOptions.ofExecutor(scheduler));
+		transactionTrigger.fire(TransactionEvent.of(event));
 		/*
 		try (JMSContext context = connectionFactory.createContext(Session.SESSION_TRANSACTED)) {
             context.createProducer().send(context.createQueue(ASYNC_QUEUE_NAME), event);
             context.commit(); // TODO commit should be delayed
         }
         */
+	}
+	
+	void onCommit(@Observes(during = TransactionPhase.AFTER_SUCCESS) TransactionEvent event) {
+		eventTrigger.fireAsync(event.getSourceEvent(), NotificationOptions.ofExecutor(scheduler));
 	}
 }

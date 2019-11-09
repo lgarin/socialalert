@@ -2,7 +2,7 @@ package com.bravson.socialalert.business.file.media;
 
 import java.io.File;
 
-import javax.enterprise.event.Observes;
+import javax.enterprise.event.ObservesAsync;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
@@ -46,7 +46,7 @@ public class AsyncMediaFileEnricher {
 	@Inject
 	Logger logger;
 	
-	public void onAsyncEvent(@Observes AsyncMediaEnrichEvent event) {
+	public void onAsyncEvent(@ObservesAsync AsyncMediaEnrichEvent event) {
 		fileRepository.findFile(event.getFileUri()).ifPresent(this::addMetadata);
 	}
 	
