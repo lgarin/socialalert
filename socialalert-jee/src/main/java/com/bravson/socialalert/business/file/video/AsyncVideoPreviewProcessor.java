@@ -13,8 +13,10 @@ import org.slf4j.Logger;
 import com.bravson.socialalert.business.file.FileMetadata;
 import com.bravson.socialalert.business.file.FileRepository;
 import com.bravson.socialalert.business.file.entity.FileEntity;
+import com.bravson.socialalert.business.file.media.AsyncMediaProcessedEvent;
 import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
+import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
 import lombok.AccessLevel;
@@ -39,6 +41,9 @@ public class AsyncVideoPreviewProcessor {
 	@Inject
 	Logger logger;
 	
+	@Inject
+	AsyncRepository asyncRepository;
+	
 	public void onAsyncEvent(@ObservesAsync AsyncVideoPreviewEvent event) {
 		fileRepository.findFile(event.getFileUri()).ifPresent(this::createPreview);
 	}
@@ -50,6 +55,7 @@ public class AsyncVideoPreviewProcessor {
 			File previewFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), videoFileProcessor.getPreviewFormat());
 			videoFileProcessor.createPreview(inputFile, previewFile);
 			fileEntity.addVariant(buildFileMetadata(previewFile, videoFileProcessor.getPreviewFormat(), fileMetadata));
+			asyncRepository.fireAsync(AsyncMediaProcessedEvent.of(fileEntity.getId()));
 		} catch (IOException e) {
 			logger.error("Cannot process video " + fileEntity.getId(), e);
 			// TODO add to error queue

@@ -57,7 +57,9 @@ public class AsyncMediaFileEnricher {
 			File inputFile = fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileMetadata.getFileFormat());
 			
 			MediaMetadata mediaMetadata = metadataExtractor.parseMetadata(inputFile);
-			fileEntity.markProcessed(mediaMetadata);
+			if (!fileEntity.markProcessed(mediaMetadata)) {
+				throw new IllegalStateException();
+			}
 			
 			FileMetadata thumbnailMetadata = mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);
 			fileEntity.addVariant(thumbnailMetadata);
@@ -66,6 +68,8 @@ public class AsyncMediaFileEnricher {
 			fileEntity.addVariant(previewMetadata);
 			if (fileMetadata.isVideo()) {
 				asyncRepository.fireAsync(AsyncVideoPreviewEvent.of(fileEntity.getId()));
+			} else {
+				asyncRepository.fireAsync(AsyncMediaProcessedEvent.of(fileEntity.getId()));
 			}
 			
 		} catch (Exception e) {

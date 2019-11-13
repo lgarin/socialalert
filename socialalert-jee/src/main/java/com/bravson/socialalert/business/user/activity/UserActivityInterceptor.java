@@ -1,12 +1,12 @@
 package com.bravson.socialalert.business.user.activity;
 
-import java.security.Principal;
-
 import javax.annotation.Priority;
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
+
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @UserActivity
 @Interceptor
@@ -17,12 +17,12 @@ public class UserActivityInterceptor {
 	OnlineUserRepository onlineUserRepository;
 	
 	@Inject
-	Principal principal;
+	JsonWebToken principal;
 	
 	@AroundInvoke
     public Object updateUserActivity(InvocationContext invocationContext) throws Exception {
 		if (principal != null) {
-			onlineUserRepository.addActiveUser(principal.getName());
+			onlineUserRepository.addActiveUser(principal.getSubject());
 		}
 		return invocationContext.proceed();
 	}

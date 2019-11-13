@@ -22,8 +22,8 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @Embeddable
-@NoArgsConstructor(access=AccessLevel.PROTECTED)
-@Setter(AccessLevel.NONE)
+@NoArgsConstructor(access=AccessLevel.PUBLIC)
+@Setter(AccessLevel.PUBLIC)
 @GeoPointBinding(fieldName = "position")
 public class GeoAddress {
 

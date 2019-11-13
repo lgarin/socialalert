@@ -2,7 +2,13 @@ package com.bravson.socialalert.test.integration;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.ObservesAsync;
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -16,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.domain.user.LoginParameter;
 import com.bravson.socialalert.domain.user.LoginResponse;
+import com.bravson.socialalert.infrastructure.async.AsyncEvent;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 
 import io.quarkus.test.common.http.TestHTTPResource;
@@ -33,6 +40,9 @@ public abstract class BaseIntegrationTest extends Assertions {
 	
 	@Inject
 	private PersistenceManager persistenceManager;
+	
+	@Inject
+	private AsyncEventObserver asyncEventObserver;
 	
 	protected Builder createRequest(String path, String mediaType) {
 		return httpClient.target(deploymentUrl.toString() + "rest" + path).request(mediaType);
@@ -56,5 +66,29 @@ public abstract class BaseIntegrationTest extends Assertions {
 	public void cleanAllData() throws IOException {
 		persistenceManager.deleteAll();
 		fileStore.deleteAllFiles();
+	}
+	
+	@ApplicationScoped
+	public static class AsyncEventObserver {
+		private final Map<Class<? extends AsyncEvent>, Semaphore> map = new ConcurrentHashMap<>();
+		
+		public void observerAsyncEvent(@ObservesAsync AsyncEvent event) {
+			getSemaphore(event.getClass()).release();
+		}
+
+		private Semaphore getSemaphore(Class<? extends AsyncEvent> eventClass) {
+			return map.computeIfAbsent(eventClass, k -> new Semaphore(0));
+		}
+		
+		public void waitEvent(Class<? extends AsyncEvent> eventClass) throws InterruptedException {
+			boolean eventHandled = getSemaphore(eventClass).tryAcquire(30, TimeUnit.SECONDS);
+			if (!eventHandled) {
+				throw new InterruptedException("Event not received");
+			}
+		}
+	}
+	
+	protected void awaitAsyncEvent(Class<? extends AsyncEvent> eventClass) throws InterruptedException {
+		asyncEventObserver.waitEvent(eventClass);
 	}
 }

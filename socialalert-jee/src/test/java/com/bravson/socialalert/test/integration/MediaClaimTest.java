@@ -14,6 +14,7 @@ import javax.ws.rs.core.Response.Status;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
 
+import com.bravson.socialalert.business.file.media.AsyncMediaProcessedEvent;
 import com.bravson.socialalert.business.media.UpsertMediaParameter;
 import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.media.MediaInfo;
@@ -52,9 +53,10 @@ public class MediaClaimTest extends BaseIntegrationTest {
 	}
 	
 	@Test
-	public void claimExistingPicture() {
+	public void claimExistingPicture() throws InterruptedException {
 		String token = requestLoginToken("test@test.com", "123");
 		String uri = uploadPicture(token);
+		awaitAsyncEvent(AsyncMediaProcessedEvent.class);
 		Response response = createAuthRequest("/media/claim/" + uri, MediaType.APPLICATION_JSON, token).post(getClaimMediaParameter());
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 		MediaInfo result = response.readEntity(MediaInfo.class); 
@@ -86,9 +88,10 @@ public class MediaClaimTest extends BaseIntegrationTest {
 	}
 	
 	@Test
-	public void claimExistingVideo() {
+	public void claimExistingVideo() throws InterruptedException {
 		String token = requestLoginToken("test@test.com", "123");
 		String uri = uploadVideo(token);
+		awaitAsyncEvent(AsyncMediaProcessedEvent.class);
 		Response response = createAuthRequest("/media/claim/" + uri, MediaType.APPLICATION_JSON, token).post(getClaimMediaParameter());
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 		MediaInfo result = response.readEntity(MediaInfo.class); 
@@ -103,8 +106,8 @@ public class MediaClaimTest extends BaseIntegrationTest {
 		assertThat(result.getLatitude()).isCloseTo(46.95, Offset.offset(0.001));
 		assertThat(result.getCameraMaker()).isEqualTo("Apple");
 		assertThat(result.getCameraModel()).isEqualTo("iPhone 6");
-		assertThat(result.getDuration()).isEqualTo(Duration.ofSeconds(23));
-		assertThat(result.getCreation()).isEqualTo(LocalDateTime.of(2015, 1, 7, 21, 13, 32).atOffset(ZoneOffset.UTC).toInstant());
+		assertThat(result.getDuration()).isEqualTo(Duration.ofSeconds(23, 428000000));
+		assertThat(result.getCreation()).isEqualTo(LocalDateTime.of(2014, 12, 28, 14, 21, 49).atOffset(ZoneOffset.UTC).toInstant());
 		assertThat(result.getHitCount()).isEqualTo(0);
 		assertThat(result.getLikeCount()).isEqualTo(0);
 		assertThat(result.getCategories()).containsExactly("cat1");

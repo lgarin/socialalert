@@ -1,14 +1,16 @@
 package com.bravson.socialalert.infrastructure.async;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.event.NotificationOptions;
 import javax.enterprise.event.Observes;
-import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.Any;
 import javax.inject.Inject;
+import javax.transaction.Status;
+import javax.transaction.Synchronization;
+import javax.transaction.TransactionSynchronizationRegistry;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
@@ -38,18 +40,18 @@ public class AsyncRepository implements Runnable {
 	Event<AsyncEvent> eventTrigger;
 	
 	@Inject
-	Event<TransactionEvent> transactionTrigger;
+	Logger logger;
 	
 	@Inject
-	Logger logger;
+	TransactionSynchronizationRegistry txRegistry;
 	
 	@ConfigProperty(name = "async.threadCount", defaultValue = "1")
 	int threadCount;
 	
-	ExecutorService scheduler;
+	ScheduledExecutorService scheduler;
 	
 	void onStart(@Observes StartupEvent ev) {
-		scheduler = Executors.newFixedThreadPool(threadCount);
+		scheduler = Executors.newScheduledThreadPool(threadCount);
 		scheduler.submit(this);
 	}
 
@@ -80,16 +82,25 @@ public class AsyncRepository implements Runnable {
 
 	@Transactional(value = TxType.MANDATORY)
 	public void fireAsync(AsyncEvent event) {
-		transactionTrigger.fire(TransactionEvent.of(event));
+		txRegistry.registerInterposedSynchronization(new Synchronization() {
+			
+			@Override
+			public void beforeCompletion() {
+			}
+			
+			@Override
+			public void afterCompletion(int status) {
+				if (status == Status.STATUS_COMMITTED) {
+					eventTrigger.fireAsync(event, NotificationOptions.ofExecutor(scheduler));
+				}
+				
+			}
+		});
 		/*
 		try (JMSContext context = connectionFactory.createContext(Session.SESSION_TRANSACTED)) {
             context.createProducer().send(context.createQueue(ASYNC_QUEUE_NAME), event);
             context.commit(); // TODO commit should be delayed
         }
         */
-	}
-	
-	void onCommit(@Observes(during = TransactionPhase.AFTER_SUCCESS) TransactionEvent event) {
-		eventTrigger.fireAsync(event.getSourceEvent(), NotificationOptions.ofExecutor(scheduler));
 	}
 }

@@ -196,21 +196,21 @@ public class MediaEntity extends VersionedEntity {
 
 	private <T extends MediaInfo> T fillMediaInfo(T info) {
 		info.setMediaUri(getFile().getId());
-		info.setKind(kind);
-		info.setTitle(title);
-		info.setDescription(description);
-		info.setTags(new ArrayList<>(tags));
-		info.setCategories(new ArrayList<>(categories));
-		if (location != null) {
-			info.setCountry(location.getCountry());
-			info.setLocality(location.getLocality());
-			info.setLongitude(location.getLongitude());
-			info.setLatitude(location.getLatitude());
+		info.setKind(getKind());
+		info.setTitle(getTitle());
+		info.setDescription(getDescription());
+		info.setTags(new ArrayList<>(getTags()));
+		info.setCategories(new ArrayList<>(getCategories()));
+		if (getLocation() != null) {
+			info.setCountry(getLocation().getCountry());
+			info.setLocality(getLocation().getLocality());
+			info.setLongitude(getLocation().getLongitude());
+			info.setLatitude(getLocation().getLatitude());
 		}
-		info.setHitCount(statistic.getHitCount());
-		info.setLikeCount(statistic.getLikeCount());
-		info.setDislikeCount(statistic.getDislikeCount());
-		info.setCommentCount(statistic.getCommentCount());
+		info.setHitCount(getStatistic().getHitCount());
+		info.setLikeCount(getStatistic().getLikeCount());
+		info.setDislikeCount(getStatistic().getDislikeCount());
+		info.setCommentCount(getStatistic().getCommentCount());
 		info.setCreatorId(getFile().getUserId());
 		info.setTimestamp(getFile().getFileMetadata().getTimestamp());
 		info.setCameraMaker(getFile().getMediaMetadata().getCameraMaker());
