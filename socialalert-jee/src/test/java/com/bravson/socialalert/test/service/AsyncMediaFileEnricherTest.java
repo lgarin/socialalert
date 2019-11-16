@@ -1,6 +1,6 @@
 package com.bravson.socialalert.test.service;
 
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -20,6 +20,7 @@ import com.bravson.socialalert.business.file.MediaFileStore;
 import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.file.media.AsyncMediaEnrichEvent;
 import com.bravson.socialalert.business.file.media.AsyncMediaFileEnricher;
+import com.bravson.socialalert.business.file.media.AsyncMediaProcessedEvent;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.file.media.MediaMetadataExtractor;
 import com.bravson.socialalert.business.file.store.FileStore;
@@ -72,7 +73,8 @@ public class AsyncMediaFileEnricherTest extends BaseServiceTest {
 		assertThat(fileEntity.findVariantFormat(MediaSizeVariant.PREVIEW)).isPresent();
 		assertThat(fileEntity.findVariantFormat(MediaSizeVariant.THUMBNAIL)).isPresent();
 		
-		verifyNoMoreInteractions(logger, asyncRepository);
+		verify(asyncRepository).fireAsync(AsyncMediaProcessedEvent.of(fileEntity.getId()));
+		verifyZeroInteractions(logger);
 	}
 	
 	@Test

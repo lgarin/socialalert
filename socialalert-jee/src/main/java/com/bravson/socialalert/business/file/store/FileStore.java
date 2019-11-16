@@ -43,7 +43,7 @@ public class FileStore {
 	@PostConstruct
 	protected void checkBaseDirectory() throws IOException {
 		if (!Files.isDirectory(baseDirectory) || !Files.exists(baseDirectory)) {
-			throw new IOException("Base directory " + baseDirectory + " must not exist");
+			throw new IOException("Base directory " + baseDirectory + " must exist");
 		}
 	}
 	

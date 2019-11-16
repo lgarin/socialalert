@@ -12,7 +12,6 @@ import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.TransactionSynchronizationRegistry;
 import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
@@ -80,7 +79,7 @@ public class AsyncRepository implements Runnable {
 		*/
 	}
 
-	@Transactional(value = TxType.MANDATORY)
+	@Transactional
 	public void fireAsync(AsyncEvent event) {
 		txRegistry.registerInterposedSynchronization(new Synchronization() {
 			
