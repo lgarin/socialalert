@@ -32,6 +32,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.bravson.socialalert.business.user.TokenAccess;
@@ -77,6 +78,7 @@ public class UserFacade {
 	@POST
 	@Path("/logout")
 	@Operation(summary="Logout an existing user.")
+	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "204", description = "Logout successfull.")
 	@APIResponse(responseCode = "400", description = "Logout failed.")
 	public Response logout(@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization, @Context HttpServletRequest httpRequest) throws ServletException {
@@ -92,6 +94,7 @@ public class UserFacade {
 	@Path("/current")
 	@UserActivity
 	@Operation(summary="Read information about the currently logged in user.")
+	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "Current user returned with success.", content=@Content(schema=@Schema(implementation=UserInfo.class)))
 	@APIResponse(responseCode = "404", description = "Current user could not be found.")
 	public UserInfo current(@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
@@ -103,6 +106,7 @@ public class UserFacade {
 	@Path("/info/{userId : .+}")
 	@UserActivity
 	@Operation(summary="Read information about the specified user.")
+	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "Specified user returned with success.", content=@Content(schema=@Schema(implementation=UserInfo.class)))
 	@APIResponse(responseCode = "404", description = "Specified user could not be found.")
 	public UserInfo info(
@@ -115,6 +119,7 @@ public class UserFacade {
 	@Path("/follow/{userId : .+}")
 	@UserActivity
 	@Operation(summary="Start following the specified user.")
+	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "Link already exists.")
 	@APIResponse(responseCode = "201", description = "Link has been created.")
 	@APIResponse(responseCode = "404", description = "Specified user could not be found.")
@@ -131,6 +136,7 @@ public class UserFacade {
 	@Path("/unfollow/{userId : .+}")
 	@UserActivity
 	@Operation(summary="Stop following the specified user.")
+	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "Link has been deleted.")
 	@APIResponse(responseCode = "410", description = "Link does not exist.")
 	@APIResponse(responseCode = "404", description = "Specified user could not be found.")
@@ -148,6 +154,7 @@ public class UserFacade {
 	@Produces(MediaType.APPLICATION_JSON)
 	@UserActivity
 	@Operation(summary="List the followed users.")
+	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "The has been deleted.", content=@Content(schema=@Schema(implementation=UserInfo.class, type = SchemaType.ARRAY)))
 	public List<UserInfo> followedProfiles(@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
 		return linkService.getTargetProfiles(userAccess.get().getUserId());

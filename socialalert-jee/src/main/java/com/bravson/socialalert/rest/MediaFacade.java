@@ -16,7 +16,6 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -29,6 +28,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.bravson.socialalert.business.media.MediaConstants;
@@ -80,14 +80,14 @@ public class MediaFacade {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Claim a media which has been uploaded recently.")
+	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "This media has been successfully claimed.", content=@Content(schema=@Schema(implementation=MediaInfo.class)))
 	@APIResponse(responseCode = "403", description = "This media does not belong to the current user.")
 	@APIResponse(responseCode = "404", description = "No picture exists with this uri.")
 	@APIResponse(responseCode = "409", description = "This media exists has already been claimed.")
 	public MediaInfo claimMedia(
 			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("mediaUri") String fileUri,
-			@Valid @NotNull UpsertMediaParameter parameter,
-			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+			@Valid @NotNull UpsertMediaParameter parameter) {
 		return mediaUpsertService.claimMedia(fileUri, parameter, userAccess.get());
 	}
 	
@@ -96,13 +96,13 @@ public class MediaFacade {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Update the meta information about a media.")
+	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "The metainformation have been successfully updated.", content=@Content(schema=@Schema(implementation=MediaInfo.class)))
 	@APIResponse(responseCode = "403", description = "This media does not belong to the current user.")
 	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaInfo updateMedia(
 			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
-			@Valid @NotNull UpsertMediaParameter parameter,
-			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+			@Valid @NotNull UpsertMediaParameter parameter) {
 		return mediaUpsertService.updateMedia(mediaUri, parameter, userAccess.get());
 	}
 	
@@ -110,6 +110,7 @@ public class MediaFacade {
 	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Search claimed media based on any combination of the provided parameters.")
+	@SecurityRequirement(name = "JWT")
 	public QueryResult<MediaInfo> searchMedia(
 			@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
 			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("minLatitude") Double minLatitude,
@@ -122,8 +123,7 @@ public class MediaFacade {
 			@Parameter(description="Define the user id of the creator for searching the media.", required=false) @QueryParam("creator") String creator,
 			@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
 			@Parameter(description="Sets the page number to return.", required=false) @DefaultValue("0") @Min(0) @QueryParam("pageNumber") int pageNumber,
-			@Parameter(description="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize,
-			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+			@Parameter(description="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize) {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
 		if (mediaKind != null) {
@@ -154,6 +154,7 @@ public class MediaFacade {
 	@Path("/searchNearest")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Search claimed media based on any combination of the provided parameters.")
+	@SecurityRequirement(name = "JWT")
 	public QueryResult<MediaInfo> searchNearestMedia(
 			@Parameter(description="Define the location for the nearest media.", required=true) @QueryParam("latitude") Double latitude,
 			@Parameter(description="Define the location for the nearest media.", required=true) @QueryParam("longitude") Double longitude,
@@ -165,8 +166,7 @@ public class MediaFacade {
 			@Parameter(description="Define the user id of the creator for searching the media.", required=false) @QueryParam("creator") String creator,
 			@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
 			@Parameter(description="Sets the page number to return.", required=false) @DefaultValue("0") @Min(0) @QueryParam("pageNumber") int pageNumber,
-			@Parameter(description="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize,
-			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+			@Parameter(description="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize) {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
 		if (mediaKind != null) {
@@ -192,11 +192,11 @@ public class MediaFacade {
 	@Path("/view/{mediaUri : .+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="View the media details. If it is the first call for this media in the user session, then the hit count will be increased by one.")
+	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "The detail is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
 	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaDetail viewMediaDetail(
-			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
-			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri) {
 		
 		return mediaService.viewMediaDetail(mediaUri, userAccess.get().getUserId());
 	}
@@ -205,11 +205,11 @@ public class MediaFacade {
 	@Path("/approval/like/{mediaUri : .+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Set the approval modifier of the media to 'like'.")
+	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
 	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaDetail likeMedia(
-			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
-			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri) {
 		return mediaService.setApprovalModifier(mediaUri, ApprovalModifier.LIKE, userAccess.get().getUserId());
 	}
 	
@@ -217,51 +217,51 @@ public class MediaFacade {
 	@Path("/approval/dislike/{mediaUri : .+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Set the approval modifier of the media to 'dislike'.")
+	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
 	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaDetail dislikeMedia(
-			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
-			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri) {
 		return mediaService.setApprovalModifier(mediaUri, ApprovalModifier.DISLIKE, userAccess.get().getUserId());
 	}
 	
 	@POST
 	@Path("/approval/reset/{mediaUri : .+}")
 	@Operation(summary="Set the approval modifier of the media to 'null'.")
+	@SecurityRequirement(name = "JWT")
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
 	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaDetail resetMediaApproval(
-			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
-			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri) {
 		return mediaService.setApprovalModifier(mediaUri, null, userAccess.get().getUserId());
 	}
 	
 	@POST
 	@Path("/comment/{mediaUri : .+}")
 	@Operation(summary="Comment the specified media.")
+	@SecurityRequirement(name = "JWT")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	@APIResponse(responseCode = "200", description = "The comment has been created.", content=@Content(schema=@Schema(implementation=MediaCommentInfo.class)))
 	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaCommentInfo commentMedia(
 			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
-			@Parameter(description="The comment text.", required=true) @NotEmpty @Size(max=MediaConstants.MAX_COMMENT_LENGTH) String comment,
-			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+			@Parameter(description="The comment text.", required=true) @NotEmpty @Size(max=MediaConstants.MAX_COMMENT_LENGTH) String comment) {
 		return commentService.createComment(mediaUri, comment, userAccess.get());
 	}
 	
 	@GET
 	@Path("/comments/{mediaUri : .+}")
-	@Operation(summary="List the comments for the specified media.")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Operation(summary="List the comments for the specified media.")
+	@SecurityRequirement(name = "JWT")
 	//@APIResponse(responseCode = "200", description = "The comments have been retrieved successfully.", content=@Content(schema=@Schema(implementation=MediaCommentDetail.class)))
 	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public QueryResult<MediaCommentDetail> listComments(@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
 			@Parameter(description="Sets the page number to return.", required=false) @DefaultValue("0") @Min(0) @QueryParam("pageNumber") int pageNumber,
-			@Parameter(description="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize,
-			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+			@Parameter(description="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize) {
 		
 		return commentService.listComments(mediaUri, userAccess.get().getUserId(), PagingParameter.of(pagingTimestamp, pageNumber, pageSize));
 	}
@@ -270,6 +270,7 @@ public class MediaFacade {
 	@Path("/mapCount")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Group count claimed media in the given area based on their geo hash.")
+	@SecurityRequirement(name = "JWT")
 	public List<GeoStatistic> mapMediaMatchCount(@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
 			@Parameter(description="Define the area for the returned media.", required=true) @QueryParam("minLatitude") @NotNull Double minLatitude,
 			@Parameter(description="Define the area for the returned media.", required=true) @QueryParam("maxLatitude") @NotNull Double maxLatitude,
@@ -278,8 +279,7 @@ public class MediaFacade {
 			@Parameter(description="Define the keywords for searching the media.", required=false) @QueryParam("keywords") String keywords,
 			@Parameter(description="Define the maximum age in milliseconds of the returned media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
-			@Parameter(description="Define the user id of the creator for searching the media.", required=false) @QueryParam("creator") String creator,
-			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+			@Parameter(description="Define the user id of the creator for searching the media.", required=false) @QueryParam("creator") String creator) {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
 		if (mediaKind != null) {

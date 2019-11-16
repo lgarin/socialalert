@@ -16,7 +16,6 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -43,6 +42,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.bravson.socialalert.business.file.FileReadService;
@@ -138,22 +138,22 @@ public class FileFacade {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Access the file metadata.")
+	@SecurityRequirement(name = "JWT")
 	@Path("/metadata/{mediaUri : .+}")
 	@APIResponse(responseCode = "200", description = "File metadata are available in the response.", content=@Content(schema=@Schema(implementation=FileInfo.class)))
 	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public FileInfo getMetadata(
-			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("mediaUri") String fileUri,
-			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException {
+			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("mediaUri") String fileUri) throws IOException {
 		return fileSearchService.findFileByUri(fileUri).orElseThrow(NotFoundException::new);
 	}
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="List the new files for the current user.")
+	@SecurityRequirement(name = "JWT")
 	@Path("/list/new")
 	@APIResponse(responseCode = "200", description = "List of file metadata is available in the response.", content=@Content(schema=@Schema(implementation=FileInfo.class, type=SchemaType.ARRAY)))
-	public List<FileInfo> listNewFiles(
-			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException {
+	public List<FileInfo> listNewFiles() throws IOException {
 		return fileSearchService.findNewFilesByUserId(userAccess.get().getUserId());
 	}
 	
@@ -178,12 +178,12 @@ public class FileFacade {
 	@Consumes(MediaFileConstants.JPG_MEDIA_TYPE)
 	@Path("/upload/picture")
 	@Operation(summary="Upload a picture file.")
+	@SecurityRequirement(name = "JWT")
     @APIResponse(responseCode = "201", description = "The picture is ready to be claimed.", headers = @Header(name = "Location", description = "The media url", schema = @Schema(type=SchemaType.STRING, format="uri")))
     @APIResponse(responseCode = "413", description = "The file is too large.")
 	@APIResponse(responseCode = "415", description = "The media is not in the expected format.")
 	public Response uploadPicture(
-			@RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile,
-			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException, ServletException {
+			@RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile) throws IOException, ServletException {
 		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), userAccess.get()));
 	}
 	
@@ -195,8 +195,7 @@ public class FileFacade {
     @APIResponse(responseCode = "413", description = "The file is too large.")
     @APIResponse(responseCode = "415", description = "The media is not in the expected format.")
 	public Response uploadVideo(
-		    @RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile,
-			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) throws IOException, ServletException {
+		    @RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile) throws IOException, ServletException {
 		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), userAccess.get()));
 	}
 
