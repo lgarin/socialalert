@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.Test;
 
+import com.bravson.socialalert.business.file.media.AsyncMediaProcessedEvent;
 import com.bravson.socialalert.domain.media.format.MediaFileConstants;
 import com.google.common.io.Files;
 
@@ -52,6 +53,7 @@ public class FileUploadTest extends BaseIntegrationTest {
 		String token = requestLoginToken("test@test.com", "123");
 		Response response = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token).post(getPicture("src/test/resources/media/IMG_0397.JPG"));
 		assertThat(response.getStatus()).isEqualTo(Status.CREATED.getStatusCode());
+		awaitAsyncEvent(AsyncMediaProcessedEvent.class);
 		File content = createAuthRequest(getLocationPath(response), MediaType.WILDCARD, token).get(File.class);
 		assertThat(content).isFile().matches(contentEquals("src/test/resources/media/IMG_0397.JPG"));
 	}
@@ -61,6 +63,7 @@ public class FileUploadTest extends BaseIntegrationTest {
 		String token = requestLoginToken("test@test.com", "123");
 		Response response = createAuthRequest("/file/upload/video", MediaType.WILDCARD, token).post(getVideo("src/test/resources/media/IMG_0236.MOV"));
 		assertThat(response.getStatus()).isEqualTo(Status.CREATED.getStatusCode());
+		awaitAsyncEvent(AsyncMediaProcessedEvent.class);
 		File content = createAuthRequest(getLocationPath(response), MediaType.WILDCARD, token).get(File.class);
 		assertThat(content).isFile().matches(contentEquals("src/test/resources/media/IMG_0236.MOV"));
 	}

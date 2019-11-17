@@ -10,6 +10,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.Test;
 
+import com.bravson.socialalert.business.file.media.AsyncMediaProcessedEvent;
 import com.bravson.socialalert.domain.media.format.MediaFileConstants;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -21,9 +22,10 @@ public class FileFacadeTest extends BaseIntegrationTest {
 		return Entity.entity(new File(filename), MediaFileConstants.JPG_MEDIA_TYPE);
 	}
 	
-	private String uploadPicture(String token) {
+	private String uploadPicture(String token) throws InterruptedException {
 		Response upload = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token).post(getPicture("src/test/resources/media/IMG_0397.JPG"));
 		assertThat(upload.getStatus()).isEqualTo(Status.CREATED.getStatusCode());
+		awaitAsyncEvent(AsyncMediaProcessedEvent.class);
 		return getLocationPath(upload);
 	}
 	
