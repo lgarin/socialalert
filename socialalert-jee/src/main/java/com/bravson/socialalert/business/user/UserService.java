@@ -8,6 +8,7 @@ import javax.ws.rs.NotFoundException;
 import com.bravson.socialalert.business.user.activity.OnlineUserRepository;
 import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
 import com.bravson.socialalert.business.user.authentication.AuthenticationRepository;
+import com.bravson.socialalert.business.user.authentication.LoginToken;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.user.LoginParameter;
@@ -45,13 +46,15 @@ public class UserService {
 		return userProfile;
 	}
 	
-	private LoginResponse toLoginResponse(String accessToken, String ipAddress) {
-		UserProfileEntity profile = updateOrCreateProfile(accessToken, authenticationRepository.extractUserId(accessToken).get(), ipAddress);
-		return profile.toLoginResponse(accessToken);
+	private LoginResponse toLoginResponse(LoginToken loginToken, String ipAddress) {
+		String accessToken = loginToken.getAccessToken();
+		String userId = authenticationRepository.extractUserId(accessToken).get();
+		UserProfileEntity profile = updateOrCreateProfile(accessToken, userId, ipAddress);
+		return profile.toLoginResponse(loginToken);
 	}
 	
 	public Optional<LoginResponse> login(@NonNull LoginParameter param, @NonNull String ipAddress) {
-		return authenticationRepository.requestAccessToken(param.getUsername(), param.getPassword())
+		return authenticationRepository.requestLoginToken(param.getUsername(), param.getPassword())
 				.map(token -> toLoginResponse(token, ipAddress));
 	}
 	

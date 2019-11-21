@@ -21,6 +21,7 @@ import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
+import com.bravson.socialalert.business.user.authentication.LoginToken;
 import com.bravson.socialalert.business.user.link.UserLinkEntity;
 import com.bravson.socialalert.domain.media.MediaKind;
 import com.bravson.socialalert.domain.user.Gender;
@@ -220,9 +221,10 @@ public class UserProfileEntity extends VersionedEntity {
 		setLastLogin(Instant.now());
 	}
 
-	public LoginResponse toLoginResponse(String accessToken) {
+	public LoginResponse toLoginResponse(LoginToken loginToken) {
 		return LoginResponse.builder()
-				.accessToken(accessToken)
+				.accessToken(loginToken.getAccessToken())
+				.refreshToken(loginToken.getRefreshToken())
 				.id(id)
 				.username(username)
 				.email(email)

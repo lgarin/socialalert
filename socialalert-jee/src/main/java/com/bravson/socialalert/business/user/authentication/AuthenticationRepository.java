@@ -54,14 +54,25 @@ public class AuthenticationRepository {
 		return Optional.empty();
 	}
 
-	public Optional<String> requestAccessToken(@NonNull String username, @NonNull String password) {
+	public Optional<LoginToken> requestLoginToken(@NonNull String username, @NonNull String password) {
 		Form form = new Form().param("username", username).param("password", password).param("grant_type", "password").param("client_id", config.getLoginClientId()).param("client_secret", config.getClientSecret());
+		return postLoginTokenRequest(form);
+	}
+
+	private Optional<LoginToken> postLoginTokenRequest(Form form) {
 		Response response = httpClient.target(config.getLoginUrl()).request().post(Entity.form(form));
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return Optional.empty();
 		}
 		JsonObject payload = response.readEntity(JsonObject.class);
-		return Optional.of("Bearer " + payload.getString("access_token"));
+		String accessToken = "Bearer " + payload.getString("access_token");
+		String refreshToken = payload.getString("refresh_token");
+		return Optional.of(LoginToken.of(accessToken, refreshToken));
+	}
+	
+	public Optional<LoginToken> refreshLoginToken(@NonNull String refreshToken) {
+		Form form = new Form().param("refresh_token", refreshToken).param("grant_type", "refresh_token").param("client_id", config.getLoginClientId()).param("client_secret", config.getClientSecret());
+		return postLoginTokenRequest(form);
 	}
 	
 	public boolean invalidateAccessToken(@NonNull String authorization) {

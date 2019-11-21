@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
 import com.bravson.socialalert.business.user.authentication.AuthenticationRepository;
+import com.bravson.socialalert.business.user.authentication.LoginToken;
 
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -35,15 +36,24 @@ public class AuthenticationRepositoryTest {
 	}
 	
 	@Test
-	public void requestAccessTokenWithValidCredentials() {
-		Optional<String> result = repository.requestAccessToken("test@test.com", "123");
+	public void requestLoginTokenWithValidCredentials() {
+		Optional<LoginToken> result = repository.requestLoginToken("test@test.com", "123");
 		assertThat(result).isPresent();
 	}
 	
 	@Test
-	public void requestAccessTokenWithInvalidCredentials() {
-		Optional<String> result = repository.requestAccessToken("test@test.com", "abc");
+	public void requestLoginTokenWithInvalidCredentials() {
+		Optional<LoginToken> result = repository.requestLoginToken("test@test.com", "abc");
 		assertThat(result).isEmpty();
+	}
+	
+	@Test
+	public void refreshAccessTokenWithValidCredentials() {
+		LoginToken loginToken = repository.requestLoginToken("test@test.com", "123").get();
+		Optional<LoginToken> result = repository.refreshLoginToken(loginToken.getRefreshToken());
+		assertThat(result).isPresent();
+		assertThat(result.get().getRefreshToken()).isNotEqualTo(loginToken.getRefreshToken());
+		assertThat(result.get().getAccessToken()).isNotEqualTo(loginToken.getAccessToken());
 	}
 	
 	@Test
@@ -54,8 +64,8 @@ public class AuthenticationRepositoryTest {
 	
 	@Test
 	public void invalidateValidAccessToken() {
-		Optional<String> token = repository.requestAccessToken("test@test.com", "123");
-		boolean result = repository.invalidateAccessToken(token.get());
+		Optional<LoginToken> token = repository.requestLoginToken("test@test.com", "123");
+		boolean result = repository.invalidateAccessToken(token.get().getAccessToken());
 		assertThat(result).isTrue();
 	}
 	
@@ -71,8 +81,8 @@ public class AuthenticationRepositoryTest {
 	
 	@Test
 	public void findExistingAuthenticationInfo() {
-		Optional<String> token = repository.requestAccessToken("test@test.com", "123");
-		Optional<AuthenticationInfo> result = repository.findAuthenticationInfo(token.get());
+		Optional<LoginToken> token = repository.requestLoginToken("test@test.com", "123");
+		Optional<AuthenticationInfo> result = repository.findAuthenticationInfo(token.get().getAccessToken());
 		assertThat(result).isPresent().hasValue(createExistingAuthenticationInfo());
 	}
 	
