@@ -13,6 +13,7 @@ import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.user.LoginParameter;
 import com.bravson.socialalert.domain.user.LoginResponse;
+import com.bravson.socialalert.domain.user.LoginTokenResponse;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
@@ -39,18 +40,13 @@ public class UserService {
 	OnlineUserRepository onlineUserRepository;
 
 
-	public UserProfileEntity updateOrCreateProfile(String accessToken, String userId, String ipAddress) {
-		AuthenticationInfo authInfo = authenticationRepository.findAuthenticationInfo(accessToken).orElseThrow(NotFoundException::new);
-		UserProfileEntity userProfile = profileRepository.findByUserId(userId).orElseGet(() -> profileRepository.createProfile(authInfo, ipAddress));
-		userProfile.login(authInfo);
-		return userProfile;
-	}
-	
 	private LoginResponse toLoginResponse(LoginToken loginToken, String ipAddress) {
 		String accessToken = loginToken.getAccessToken();
 		String userId = authenticationRepository.extractUserId(accessToken).get();
-		UserProfileEntity profile = updateOrCreateProfile(accessToken, userId, ipAddress);
-		return profile.toLoginResponse(loginToken);
+		AuthenticationInfo authInfo = authenticationRepository.findAuthenticationInfo(accessToken).orElseThrow(NotFoundException::new);
+		UserProfileEntity userProfile = profileRepository.findByUserId(userId).orElseGet(() -> profileRepository.createProfile(authInfo, ipAddress));
+		userProfile.login(authInfo);
+		return userProfile.toLoginResponse(loginToken);
 	}
 	
 	public Optional<LoginResponse> login(@NonNull LoginParameter param, @NonNull String ipAddress) {
@@ -58,6 +54,23 @@ public class UserService {
 				.map(token -> toLoginResponse(token, ipAddress));
 	}
 	
+	public Optional<LoginTokenResponse> renewLogin(@NonNull String refreshToken, @NonNull String ipAddress) {
+		return authenticationRepository.refreshLoginToken(refreshToken)
+				.map(token -> toLoginTokenResponse(token));
+	}
+	
+	private LoginTokenResponse toLoginTokenResponse(LoginToken loginToken) {
+		String accessToken = loginToken.getAccessToken();
+		String userId = authenticationRepository.extractUserId(accessToken).get();
+		UserProfileEntity userProfile = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
+		userProfile.markActive();
+		return LoginTokenResponse.builder()
+				.accessToken(loginToken.getAccessToken())
+				.refreshToken(loginToken.getRefreshToken())
+				.expiration(loginToken.getExpiration())
+				.build();
+	}
+
 	public boolean logout(@NonNull String authorization) {
 		return authenticationRepository.invalidateAccessToken(authorization);
 	}

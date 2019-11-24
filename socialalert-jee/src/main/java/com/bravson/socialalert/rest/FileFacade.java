@@ -30,6 +30,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
@@ -72,7 +73,7 @@ public class FileFacade {
 	@TokenAccess
 	Instance<UserAccess> userAccess;
 	
-	@Inject
+	@Context
 	HttpServletRequest httpRequest;
 
 	@Context
@@ -183,7 +184,11 @@ public class FileFacade {
     @APIResponse(responseCode = "413", description = "The file is too large.")
 	@APIResponse(responseCode = "415", description = "The media is not in the expected format.")
 	public Response uploadPicture(
-			@RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile) throws IOException, ServletException {
+			@RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile, @Context SecurityContext securityContext) throws IOException, ServletException {
+		if (!securityContext.isUserInRole("user")) {
+			// TODO bug with @RolesAllowed and @RequestBody
+			return Response.status(Status.UNAUTHORIZED).build();
+		}
 		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), userAccess.get()));
 	}
 	
@@ -191,11 +196,16 @@ public class FileFacade {
 	@Consumes({MediaFileConstants.MOV_MEDIA_TYPE, MediaFileConstants.MP4_MEDIA_TYPE})
 	@Path("/upload/video")
 	@Operation(summary="Upload a video file.")
+	@SecurityRequirement(name = "JWT")
     @APIResponse(responseCode = "201", description = "The video is ready to be claimed.", headers = @Header(name = "Location", description = "The media url", schema = @Schema(type=SchemaType.STRING, format="uri")))
     @APIResponse(responseCode = "413", description = "The file is too large.")
     @APIResponse(responseCode = "415", description = "The media is not in the expected format.")
 	public Response uploadVideo(
-		    @RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile) throws IOException, ServletException {
+		    @RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile, @Context SecurityContext securityContext) throws IOException, ServletException {
+		if (!securityContext.isUserInRole("user")) {
+			// TODO bug with @RolesAllowed and @RequestBody
+			return Response.status(Status.UNAUTHORIZED).build();
+		}
 		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), userAccess.get()));
 	}
 

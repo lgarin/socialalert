@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-public class FeedTest extends BaseIntegrationTest {
+public class FeedFacadeTest extends BaseIntegrationTest {
 
 	@Test
 	public void listEmptyFeedForKnownUser() {

@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import com.bravson.socialalert.business.file.store.FileStore;
@@ -60,6 +61,11 @@ public abstract class BaseIntegrationTest extends Assertions {
 	
 	protected String getLocationPath(Response response) {
 		return response.getLocation().toString().replaceFirst("^(http://.*/rest)", "");
+	}
+	
+	@AfterEach
+	public void closeHttpClient() {
+		httpClient.close();
 	}
 	
 	@BeforeEach

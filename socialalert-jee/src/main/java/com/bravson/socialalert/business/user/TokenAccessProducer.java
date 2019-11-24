@@ -1,26 +1,22 @@
 package com.bravson.socialalert.business.user;
 
+import java.util.Optional;
+
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @RequestScoped
 public class TokenAccessProducer {
 	
-	@Inject
-	JsonWebToken token;
-	
-	@Inject
-	HttpServletRequest httpRequest;
-	
 	@Produces
 	@TokenAccess
-	public UserAccess createUserAccess() {
-		String userId = token.getSubject();
-		String ipAddress = httpRequest.getRemoteAddr();
-		return UserAccess.of(userId != null ? userId : "anonym", ipAddress != null ? ipAddress : "0.0.0.0");
+	public UserAccess createUserAccess(@Context JsonWebToken token, @Context HttpServletRequest httpRequest) {
+		Optional<String> userId = Optional.ofNullable(token).map(JsonWebToken::getSubject);
+		Optional<String> ipAddress = Optional.ofNullable(httpRequest).map(HttpServletRequest::getRemoteAddr);
+		return UserAccess.of(userId.orElse("annoym"), ipAddress.orElse("0.0.0.0"));
 	}
 }

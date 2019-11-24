@@ -13,22 +13,18 @@ import com.bravson.socialalert.infrastructure.rest.LocalDateDeserializer;
 import com.bravson.socialalert.infrastructure.rest.LocalDateSerializer;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
+@EqualsAndHashCode(callSuper = true)
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginResponse {
-
-	@NonNull
-	private String accessToken;
-	
-	@NonNull
-	private String refreshToken;
+public class LoginResponse extends LoginTokenResponse {
 	
 	@NonNull
 	private String id;

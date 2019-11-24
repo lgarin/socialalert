@@ -13,7 +13,6 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -24,8 +23,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -42,6 +43,7 @@ import com.bravson.socialalert.business.user.UserService;
 import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.domain.user.LoginParameter;
 import com.bravson.socialalert.domain.user.LoginResponse;
+import com.bravson.socialalert.domain.user.LoginTokenResponse;
 import com.bravson.socialalert.domain.user.UserInfo;
 
 @Tag(name="user")
@@ -76,17 +78,33 @@ public class UserFacade {
 	}
 	
 	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/renewLogin")
+	@PermitAll
+	@Operation(summary="Renew an existing login using the previous refresh token.")
+	@APIResponse(responseCode = "200", description = "Login successfull.", content=@Content(schema=@Schema(implementation=LoginResponse.class)))
+	@APIResponse(responseCode = "401", description = "Login failed.")
+	public LoginTokenResponse renewLogin(@Parameter(required=true) @Valid @NotNull String refreshToken) throws ServletException {
+		return userService.renewLogin(refreshToken, userAccess.get().getIpAddress()).orElseThrow(() -> new WebApplicationException(Status.UNAUTHORIZED));
+	}
+	
+	@POST
 	@Path("/logout")
 	@Operation(summary="Logout an existing user.")
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "204", description = "Logout successfull.")
 	@APIResponse(responseCode = "400", description = "Logout failed.")
-	public Response logout(@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization, @Context HttpServletRequest httpRequest) throws ServletException {
-		if (!userService.logout(authorization)) {
-			return Response.status(Status.BAD_REQUEST).build();
+	public Response logout(@Context SecurityContext securityContext, @Context HttpServletRequest httpRequest) throws ServletException {
+		if (securityContext.getUserPrincipal() instanceof JsonWebToken) {
+			JsonWebToken token = (JsonWebToken) securityContext.getUserPrincipal();
+			if (!userService.logout("Bearer" + token.getRawToken())) {
+				return Response.status(Status.BAD_REQUEST).build();
+			}
+			httpRequest.getSession().invalidate();
+			return Response.status(Status.NO_CONTENT).build();
 		}
-		httpRequest.getSession().invalidate();
-		return Response.status(Status.NO_CONTENT).build();
+		return Response.status(Status.FORBIDDEN).build();
 	}
 	
 	@GET
@@ -97,7 +115,7 @@ public class UserFacade {
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "Current user returned with success.", content=@Content(schema=@Schema(implementation=UserInfo.class)))
 	@APIResponse(responseCode = "404", description = "Current user could not be found.")
-	public UserInfo current(@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+	public UserInfo current() {
 		return userService.findUserInfo(userAccess.get().getUserId()).orElseThrow(NotFoundException::new);
 	}
 	
@@ -110,8 +128,7 @@ public class UserFacade {
 	@APIResponse(responseCode = "200", description = "Specified user returned with success.", content=@Content(schema=@Schema(implementation=UserInfo.class)))
 	@APIResponse(responseCode = "404", description = "Specified user could not be found.")
 	public UserInfo info(
-			@Parameter(description="The user id to return", required=true) @NotEmpty @PathParam("userId") String userId,
-			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+			@Parameter(description="The user id to return", required=true) @NotEmpty @PathParam("userId") String userId) {
 		return userService.findUserInfo(userId).orElseThrow(NotFoundException::new);
 	}
 	
@@ -124,8 +141,7 @@ public class UserFacade {
 	@APIResponse(responseCode = "201", description = "Link has been created.")
 	@APIResponse(responseCode = "404", description = "Specified user could not be found.")
 	public Response follow(
-			@Parameter(description="The user id to follow", required=true) @NotEmpty @PathParam("userId") String userId,
-			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+			@Parameter(description="The user id to follow", required=true) @NotEmpty @PathParam("userId") String userId) {
 		if (linkService.link(userAccess.get(), userId)) {
 			return Response.status(Status.CREATED).build();
 		}
@@ -141,8 +157,7 @@ public class UserFacade {
 	@APIResponse(responseCode = "410", description = "Link does not exist.")
 	@APIResponse(responseCode = "404", description = "Specified user could not be found.")
 	public Response unfollow(
-			@Parameter(description="The user id to unfollow", required=true) @NotEmpty @PathParam("userId") String userId,
-			@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+			@Parameter(description="The user id to unfollow", required=true) @NotEmpty @PathParam("userId") String userId) {
 		if (linkService.unlink(userAccess.get(), userId)) {
 			return Response.status(Status.OK).build();
 		}
@@ -156,7 +171,7 @@ public class UserFacade {
 	@Operation(summary="List the followed users.")
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "The has been deleted.", content=@Content(schema=@Schema(implementation=UserInfo.class, type = SchemaType.ARRAY)))
-	public List<UserInfo> followedProfiles(@Parameter(description="The authorization token returned by the login function.", required=true) @NotEmpty @HeaderParam("Authorization") String authorization) {
+	public List<UserInfo> followedProfiles() {
 		return linkService.getTargetProfiles(userAccess.get().getUserId());
 	}
 }

@@ -22,7 +22,7 @@ import com.bravson.socialalert.business.media.MediaStatistic;
 import com.bravson.socialalert.business.media.approval.MediaApprovalEntity;
 import com.bravson.socialalert.business.media.approval.MediaApprovalRepository;
 import com.bravson.socialalert.business.user.UserInfoService;
-import com.bravson.socialalert.business.user.session.UserSessionService;
+import com.bravson.socialalert.business.user.activity.OnlineUserRepository;
 import com.bravson.socialalert.domain.media.MediaDetail;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 
@@ -38,7 +38,7 @@ public class MediaServiceTest extends BaseServiceTest {
 	UserInfoService userService;
 	
 	@Mock
-	UserSessionService sessionService;
+	OnlineUserRepository onlineUserRepository;
 	
 	@Mock
 	MediaApprovalRepository approvalRepository;
@@ -58,7 +58,7 @@ public class MediaServiceTest extends BaseServiceTest {
 		String mediaUri = "uri1";
 		MediaEntity mediaEntity = mock(MediaEntity.class);
 		MediaDetail mediaDetail = new MediaDetail();
-		when(sessionService.addViewedMedia(mediaUri)).thenReturn(true);
+		when(onlineUserRepository.addViewedMedia(userId, mediaUri)).thenReturn(true);
 		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.of(mediaEntity));
 		when(mediaEntity.toMediaDetail()).thenReturn(mediaDetail);
 		when(userService.fillUserInfo(mediaDetail)).thenReturn(mediaDetail);
@@ -78,7 +78,7 @@ public class MediaServiceTest extends BaseServiceTest {
 		MediaDetail mediaDetail = new MediaDetail();
 		MediaApprovalEntity approvalEntity = new MediaApprovalEntity(mediaEntity, userId);
 		approvalEntity.setModifier(ApprovalModifier.LIKE);
-		when(sessionService.addViewedMedia(mediaUri)).thenReturn(true);
+		when(onlineUserRepository.addViewedMedia(userId, mediaUri)).thenReturn(true);
 		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.of(mediaEntity));
 		when(mediaEntity.toMediaDetail()).thenReturn(mediaDetail);
 		when(userService.fillUserInfo(mediaDetail)).thenReturn(mediaDetail);

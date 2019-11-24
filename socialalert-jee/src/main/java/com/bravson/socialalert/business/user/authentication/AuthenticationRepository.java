@@ -1,6 +1,7 @@
 package com.bravson.socialalert.business.user.authentication;
 
 import java.io.ByteArrayInputStream;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -67,7 +68,9 @@ public class AuthenticationRepository {
 		JsonObject payload = response.readEntity(JsonObject.class);
 		String accessToken = "Bearer " + payload.getString("access_token");
 		String refreshToken = payload.getString("refresh_token");
-		return Optional.of(LoginToken.of(accessToken, refreshToken));
+		int expirationPeriod = payload.getInt("expires_in");
+		Instant expiration = Instant.now().plusSeconds(expirationPeriod - 1);
+		return Optional.of(LoginToken.of(accessToken, refreshToken, expiration));
 	}
 	
 	public Optional<LoginToken> refreshLoginToken(@NonNull String refreshToken) {

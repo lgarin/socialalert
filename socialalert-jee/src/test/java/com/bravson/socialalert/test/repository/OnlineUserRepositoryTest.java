@@ -25,4 +25,17 @@ public class OnlineUserRepositoryTest extends Assertions {
 	public void unknownUserIsInactive() {
 		assertThat(repository.isUserActive("xyz")).isFalse();
 	}
+	
+	@Test
+	public void addNewViewedMedia() {
+		boolean result = repository.addViewedMedia("xyz", "media1");
+		assertThat(result).isTrue();
+	}
+	
+	@Test
+	public void addAlreadyViewedMedia() {
+		repository.addViewedMedia("test", "media1");
+		boolean result = repository.addViewedMedia("test", "media1");
+		assertThat(result).isFalse();
+	}
 }

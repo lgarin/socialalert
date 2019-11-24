@@ -102,6 +102,12 @@ public class UserProfileEntity extends VersionedEntity {
 	private Instant lastLogin;
 	
 	@Getter
+	@Setter
+	@Column(name = "last_activity")
+	@GenericField
+	private Instant lastActivity;
+	
+	@Getter
 	@NonNull
 	@Embedded
 	private UserStatistic statistic;
@@ -144,7 +150,7 @@ public class UserProfileEntity extends VersionedEntity {
 		return toUserInfo(false);
 	}
 	
-	public UserInfo toUserInfo(boolean online) {
+	private UserInfo toUserInfo(boolean online) {
 		return UserInfo.builder()
 				.id(id)
 				.username(username)
@@ -172,6 +178,7 @@ public class UserProfileEntity extends VersionedEntity {
 		files.add(file);
 		*/
 		statistic.incFileCount();
+		setLastActivity(Instant.now());
 	}
 	
 	public void addMedia(MediaEntity media) {
@@ -186,6 +193,7 @@ public class UserProfileEntity extends VersionedEntity {
 		} else {
 			statistic.incPictureCount();
 		}
+		setLastActivity(Instant.now());
 	}
 	
 	public void addComment(MediaCommentEntity comment) {
@@ -196,22 +204,27 @@ public class UserProfileEntity extends VersionedEntity {
 		comments.add(comment);
 		*/
 		statistic.incCommentCount();
+		setLastActivity(Instant.now());
 	}
 
 	public void addMediaHit() {
 		statistic.incHitCount();
+		setLastActivity(Instant.now());
 	}
 	
 	public void addMediaLike() {
 		statistic.incLikeCount();
+		setLastActivity(Instant.now());
 	}
 	
 	public void addMediaDislike() {
 		statistic.incDislikeCount();
+		setLastActivity(Instant.now());
 	}
 	
 	public void addFollower() {
 		statistic.incFollowerCount();
+		setLastActivity(Instant.now());
 	}
 
 	public void login(AuthenticationInfo authInfo) {
@@ -219,12 +232,18 @@ public class UserProfileEntity extends VersionedEntity {
 		setUsername(authInfo.getUsername());
 		getStatistic().incLoginCount();
 		setLastLogin(Instant.now());
+		setLastActivity(getLastLogin());
+	}
+	
+	public void markActive() {
+		setLastActivity(Instant.now());
 	}
 
 	public LoginResponse toLoginResponse(LoginToken loginToken) {
 		return LoginResponse.builder()
 				.accessToken(loginToken.getAccessToken())
 				.refreshToken(loginToken.getRefreshToken())
+				.expiration(loginToken.getExpiration())
 				.id(id)
 				.username(username)
 				.email(email)
