@@ -34,6 +34,13 @@ services:
       - "9200:9200"
     volumes:
       - "elastic:/usr/share/elasticsearch/data"
+#  infinispan:
+#    image: infinispan/server:10.0.1.Final-1
+#    environment:
+#      USER: quarkus
+#      PASS: quarkus
+#    ports:
+#      - "11222:11222"
 #  artemis:
 #    image: vromero/activemq-artemis:2.9.0-alpine
 #    environment:

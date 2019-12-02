@@ -1,61 +1,46 @@
 package com.bravson.socialalert.business.user.activity;
 
+import java.time.Duration;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
-import javax.enterprise.context.Destroyed;
-import javax.enterprise.context.Initialized;
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.event.Observes;
-import javax.servlet.http.HttpSession;
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.bravson.socialalert.infrastructure.layer.Repository;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 
 @Repository
 @Transactional(TxType.SUPPORTS)
 public class OnlineUserRepository {
 
-	// TODO use infinispan
-	private final ConcurrentHashMap<String, Instant> onlineUserCache = new ConcurrentHashMap<>(100);
+	private Cache<String, UserSession> onlineUserCache;
 	
-	private final ConcurrentHashMap<String, Set<String>> viewedMediaCache = new ConcurrentHashMap<>(100);
+	@ConfigProperty(name = "user.sessionTimeout")
+	Duration sessionTimeout;
 	
-	public Instant addActiveUser(String userId) {
+	@PostConstruct
+	void init() {
+		onlineUserCache = Caffeine.newBuilder().expireAfterWrite(sessionTimeout).build();
+	}
+	
+	public void addActiveUser(String userId) {
 		if (userId == null) {
-			return null;
+			return;
 		}
-		return onlineUserCache.put(userId, Instant.now());
+		UserSession session = onlineUserCache.get(userId, UserSession::new);
+		session.setLastAccess(Instant.now());
 	}
 
 	public boolean isUserActive(String userId) {
-		return onlineUserCache.containsKey(userId);
+		return onlineUserCache.getIfPresent(userId) != null;
 	}
 	
 	public boolean addViewedMedia(String userId, String mediaUri) {
-		Set<String> viewedMedia = viewedMediaCache.get(userId);
-		if (viewedMedia == null) {
-			viewedMedia = new HashSet<>();
-			viewedMediaCache.put(userId, viewedMedia);
-		}
-		return viewedMedia.add(mediaUri);
-	}
-	
-	void handleNewSession(@Observes @Initialized(SessionScoped.class) HttpSession session, JsonWebToken principal) {
-		if (principal != null) {
-			addActiveUser(principal.getSubject());
-		}
-	}
-
-	void handleTerminatedSession(@Observes @Destroyed(SessionScoped.class) HttpSession session, JsonWebToken principal) {
-		if (principal != null) {
-			onlineUserCache.remove(principal.getSubject());
-			viewedMediaCache.remove(principal.getSubject());
-		}
+		UserSession session = onlineUserCache.get(userId, UserSession::new);
+		return session.addViewedMedia(mediaUri);
 	}
 }

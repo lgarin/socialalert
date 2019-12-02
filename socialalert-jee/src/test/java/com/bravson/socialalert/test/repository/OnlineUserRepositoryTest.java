@@ -23,7 +23,7 @@ public class OnlineUserRepositoryTest extends Assertions {
 	
 	@Test
 	public void unknownUserIsInactive() {
-		assertThat(repository.isUserActive("xyz")).isFalse();
+		assertThat(repository.isUserActive("abc")).isFalse();
 	}
 	
 	@Test
