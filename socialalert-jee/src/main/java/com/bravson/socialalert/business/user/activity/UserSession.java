@@ -11,7 +11,7 @@ import lombok.NonNull;
 import lombok.Setter;
 
 @Data
-public class UserSession {
+class UserSession {
 
 	@NonNull
 	private final String userId;
