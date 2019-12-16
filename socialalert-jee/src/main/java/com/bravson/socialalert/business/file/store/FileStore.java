@@ -3,14 +3,11 @@ package com.bravson.socialalert.business.file.store;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.temporal.Temporal;
 
 import javax.annotation.PostConstruct;
@@ -21,6 +18,7 @@ import javax.transaction.Transactional.TxType;
 import com.bravson.socialalert.domain.media.format.FileFormat;
 import com.bravson.socialalert.infrastructure.layer.Service;
 import com.bravson.socialalert.infrastructure.util.DateUtil;
+import com.bravson.socialalert.infrastructure.util.Md5Util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -31,8 +29,6 @@ import lombok.NonNull;
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class FileStore {
 
-	private static final String MD5_ALGORITHM = "MD5";
-	
 	private Path baseDirectory;
 
 	@Inject
@@ -48,28 +44,7 @@ public class FileStore {
 	}
 	
 	public String computeMd5Hex(@NonNull File file) throws IOException {
-		try {
-			return digest(file, MD5_ALGORITHM);
-		} catch (NoSuchAlgorithmException e) {
-			throw new IllegalArgumentException("Algorithm not supported: " + MD5_ALGORITHM, e);
-		}
-	}
-	
-	private static String digest(File file, String algorithm) throws NoSuchAlgorithmException, IOException {
-		MessageDigest md5 = MessageDigest.getInstance(algorithm);
-		try (InputStream is = Files.newInputStream(file.toPath())) {
-			
-			byte[] buffer = new byte[8192];
-			int read;
-			while ((read = is.read(buffer)) > 0) {
-                md5.update(buffer, 0, read);
-            }
-		}
-		return toHex(md5.digest());
-	}
-
-	private static String toHex(byte[] data) {
-		return new BigInteger(1, data).toString(16);
+		return Md5Util.computeMd5Hex(file);
 	}
 
 	public File storeFile(@NonNull File source, @NonNull String md5, @NonNull Temporal timestamp, @NonNull FileFormat format) throws IOException {
