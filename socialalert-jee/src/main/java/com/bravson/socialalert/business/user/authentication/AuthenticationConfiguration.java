@@ -11,6 +11,8 @@ public interface AuthenticationConfiguration {
 	
 	String getUserInfoUrl();
 	
+	String getConfigUrl();
+	
 	String getLoginClientId();
 	
 	String getClientSecret();

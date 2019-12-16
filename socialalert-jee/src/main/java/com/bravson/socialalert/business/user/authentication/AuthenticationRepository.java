@@ -90,4 +90,12 @@ public class AuthenticationRepository {
 		}
 		return Optional.of(response.readEntity(AuthenticationInfo.class));
 	}
+	
+	public boolean isAvailable() {
+		Response response = httpClient.target(config.getConfigUrl()).request().get();
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return false;
+		}
+		return true;
+	}
 }
