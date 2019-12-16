@@ -12,7 +12,7 @@ import org.mockito.Mock;
 
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserInfoService;
-import com.bravson.socialalert.business.user.activity.OnlineUserRepository;
+import com.bravson.socialalert.business.user.activity.OnlineUserCache;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.media.MediaInfo;
@@ -24,7 +24,7 @@ public class UserInfoServiceTest extends BaseServiceTest {
 	UserProfileRepository profileRepository;
 	
 	@Mock
-	OnlineUserRepository onlineUserRepository;
+	OnlineUserCache onlineUserRepository;
 	
 	@InjectMocks
 	UserInfoService userService;

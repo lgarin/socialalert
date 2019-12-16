@@ -6,7 +6,7 @@ import java.util.List;
 
 import lombok.SneakyThrows;
 
-public class ProcessUtil {
+public interface ProcessUtil {
 
 	@SneakyThrows(InterruptedException.class)
 	public static int execute(String program, List<String> arguments, StringBuilder output) throws IOException {

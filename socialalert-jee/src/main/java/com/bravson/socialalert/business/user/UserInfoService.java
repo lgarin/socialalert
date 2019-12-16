@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
-import com.bravson.socialalert.business.user.activity.OnlineUserRepository;
+import com.bravson.socialalert.business.user.activity.OnlineUserCache;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.media.UserContent;
@@ -25,7 +25,7 @@ import lombok.NonNull;
 public class UserInfoService {
 
 	@Inject
-	OnlineUserRepository onlineUserRepository;
+	OnlineUserCache onlineUserRepository;
 	
 	@Inject
 	UserProfileRepository profileRepository;

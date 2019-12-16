@@ -15,32 +15,41 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 
 @Repository
 @Transactional(TxType.SUPPORTS)
-public class OnlineUserRepository {
+public class OnlineUserCache {
 
-	private Cache<String, UserSession> onlineUserCache;
+	// TODO use infinispan
+	private Cache<String, UserSession> localCache;
 	
 	@ConfigProperty(name = "user.sessionTimeout")
 	Duration sessionTimeout;
 	
 	@PostConstruct
 	void init() {
-		onlineUserCache = Caffeine.newBuilder().expireAfterWrite(sessionTimeout).build();
+		localCache = Caffeine.newBuilder().expireAfterWrite(sessionTimeout).build();
 	}
 	
 	public void addActiveUser(String userId) {
 		if (userId == null) {
 			return;
 		}
-		UserSession session = onlineUserCache.get(userId, UserSession::new);
+		UserSession session = localCache.get(userId, UserSession::new);
 		session.setLastAccess(Instant.now());
 	}
 
 	public boolean isUserActive(String userId) {
-		return onlineUserCache.getIfPresent(userId) != null;
+		return localCache.getIfPresent(userId) != null;
 	}
 	
 	public boolean addViewedMedia(String userId, String mediaUri) {
-		UserSession session = onlineUserCache.get(userId, UserSession::new);
+		UserSession session = localCache.get(userId, UserSession::new);
 		return session.addViewedMedia(mediaUri);
+	}
+	
+	public void removeUser(String userId) {
+		localCache.invalidate(userId);
+	}
+	
+	public void clearAll() {
+		localCache.invalidateAll();
 	}
 }

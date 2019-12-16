@@ -8,7 +8,7 @@ import javax.ws.rs.NotFoundException;
 import com.bravson.socialalert.business.media.approval.MediaApprovalEntity;
 import com.bravson.socialalert.business.media.approval.MediaApprovalRepository;
 import com.bravson.socialalert.business.user.UserInfoService;
-import com.bravson.socialalert.business.user.activity.OnlineUserRepository;
+import com.bravson.socialalert.business.user.activity.OnlineUserCache;
 import com.bravson.socialalert.domain.media.MediaDetail;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 import com.bravson.socialalert.infrastructure.entity.DislikedEntity;
@@ -29,7 +29,7 @@ public class MediaService {
 	UserInfoService userService;
 	
 	@Inject
-	OnlineUserRepository onlineUserRepository;
+	OnlineUserCache onlineUserCache;
 	
 	@Inject
 	MediaApprovalRepository approvalRepository;
@@ -48,7 +48,7 @@ public class MediaService {
 	
 	public MediaDetail viewMediaDetail(@NonNull String mediaUri, @NonNull String userId) {
 		MediaEntity media = mediaRepository.findMedia(mediaUri).orElseThrow(NotFoundException::new);
-		if (onlineUserRepository.addViewedMedia(userId, mediaUri)) {
+		if (onlineUserCache.addViewedMedia(userId, mediaUri)) {
 			mediaHitEvent.fire(media);
 		}
 		

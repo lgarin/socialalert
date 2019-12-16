@@ -22,7 +22,7 @@ import com.bravson.socialalert.business.media.MediaStatistic;
 import com.bravson.socialalert.business.media.approval.MediaApprovalEntity;
 import com.bravson.socialalert.business.media.approval.MediaApprovalRepository;
 import com.bravson.socialalert.business.user.UserInfoService;
-import com.bravson.socialalert.business.user.activity.OnlineUserRepository;
+import com.bravson.socialalert.business.user.activity.OnlineUserCache;
 import com.bravson.socialalert.domain.media.MediaDetail;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 
@@ -38,7 +38,7 @@ public class MediaServiceTest extends BaseServiceTest {
 	UserInfoService userService;
 	
 	@Mock
-	OnlineUserRepository onlineUserRepository;
+	OnlineUserCache onlineUserRepository;
 	
 	@Mock
 	MediaApprovalRepository approvalRepository;

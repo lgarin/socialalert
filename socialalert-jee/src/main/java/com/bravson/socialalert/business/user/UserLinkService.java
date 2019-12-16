@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 
-import com.bravson.socialalert.business.user.activity.OnlineUserRepository;
+import com.bravson.socialalert.business.user.activity.OnlineUserCache;
 import com.bravson.socialalert.business.user.link.UserLinkEntity;
 import com.bravson.socialalert.business.user.link.UserLinkRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Service
+@Transactional
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class UserLinkService {
@@ -35,7 +36,7 @@ public class UserLinkService {
 	
 	@Inject
 	@NonNull
-	OnlineUserRepository onlineUserRepository;
+	OnlineUserCache onlineUserCache;
 
 	public boolean link(UserAccess userAccess, String userId) {
 		UserProfileEntity targetUser = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
@@ -56,14 +57,13 @@ public class UserLinkService {
 		return false;
 	}
 
-	@Transactional
 	public List<UserInfo> getTargetProfiles(String userId) {
 		UserProfileEntity profile = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
 		return profile.getFollowedUsers().stream().map(this::getTargetUserInfo).collect(Collectors.toList());
 	}
 	
 	private UserInfo getTargetUserInfo(UserLinkEntity entity) {
-		if (onlineUserRepository.isUserActive(entity.getId().getTargetUserId())) {
+		if (onlineUserCache.isUserActive(entity.getId().getTargetUserId())) {
 			return entity.getTargetUser().toOnlineUserInfo();
 		} else {
 			return entity.getTargetUser().toOfflineUserInfo();

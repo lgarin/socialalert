@@ -9,7 +9,7 @@ import ch.hsr.geohash.BoundingBox;
 import ch.hsr.geohash.GeoHash;
 import ch.hsr.geohash.util.GeoHashSizeTable;
 
-public class GeoHashUtil {
+public interface GeoHashUtil {
 
 	public static String computeGeoHash(double latitude, double longitude, int precision) {
 		return GeoHash.withCharacterPrecision(latitude, longitude, precision).toBase32();

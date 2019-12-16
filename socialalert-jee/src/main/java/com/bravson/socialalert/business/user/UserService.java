@@ -3,9 +3,10 @@ package com.bravson.socialalert.business.user;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 
-import com.bravson.socialalert.business.user.activity.OnlineUserRepository;
+import com.bravson.socialalert.business.user.activity.OnlineUserCache;
 import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
 import com.bravson.socialalert.business.user.authentication.AuthenticationRepository;
 import com.bravson.socialalert.business.user.authentication.LoginToken;
@@ -16,6 +17,7 @@ import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.LoginTokenResponse;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.infrastructure.layer.Service;
+import com.bravson.socialalert.infrastructure.util.JwtUtil;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -37,23 +39,25 @@ public class UserService {
 	
 	@Inject
 	@NonNull
-	OnlineUserRepository onlineUserRepository;
+	OnlineUserCache onlineUserCache;
 
 
 	private LoginResponse toLoginResponse(LoginToken loginToken, String ipAddress) {
 		String accessToken = loginToken.getAccessToken();
-		String userId = authenticationRepository.extractUserId(accessToken).get();
+		String userId = JwtUtil.extractUserId(accessToken).get();
 		AuthenticationInfo authInfo = authenticationRepository.findAuthenticationInfo(accessToken).orElseThrow(NotFoundException::new);
 		UserProfileEntity userProfile = profileRepository.findByUserId(userId).orElseGet(() -> profileRepository.createProfile(authInfo, ipAddress));
 		userProfile.login(authInfo);
 		return userProfile.toLoginResponse(loginToken);
 	}
 	
+	@Transactional
 	public Optional<LoginResponse> login(@NonNull LoginParameter param, @NonNull String ipAddress) {
 		return authenticationRepository.requestLoginToken(param.getUsername(), param.getPassword())
 				.map(token -> toLoginResponse(token, ipAddress));
 	}
 	
+	@Transactional
 	public Optional<LoginTokenResponse> renewLogin(@NonNull String refreshToken, @NonNull String ipAddress) {
 		return authenticationRepository.refreshLoginToken(refreshToken)
 				.map(token -> toLoginTokenResponse(token));
@@ -61,7 +65,7 @@ public class UserService {
 	
 	private LoginTokenResponse toLoginTokenResponse(LoginToken loginToken) {
 		String accessToken = loginToken.getAccessToken();
-		String userId = authenticationRepository.extractUserId(accessToken).get();
+		String userId = JwtUtil.extractUserId(accessToken).get();
 		UserProfileEntity userProfile = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
 		userProfile.markActive();
 		return LoginTokenResponse.builder()
@@ -72,6 +76,7 @@ public class UserService {
 	}
 
 	public boolean logout(@NonNull String authorization) {
+		JwtUtil.extractUserId(authorization).ifPresent(onlineUserCache::removeUser); 
 		return authenticationRepository.invalidateAccessToken(authorization);
 	}
 
@@ -80,7 +85,7 @@ public class UserService {
 	}
 	
 	private UserInfo getUserInfo(UserProfileEntity entity) {
-		if (onlineUserRepository.isUserActive(entity.getId())) {
+		if (onlineUserCache.isUserActive(entity.getId())) {
 			return entity.toOnlineUserInfo();
 		} else {
 			return entity.toOfflineUserInfo();

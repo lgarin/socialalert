@@ -21,6 +21,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import com.bravson.socialalert.business.file.store.FileStore;
+import com.bravson.socialalert.business.user.activity.OnlineUserCache;
 import com.bravson.socialalert.domain.user.LoginParameter;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.infrastructure.async.AsyncEvent;
@@ -44,6 +45,9 @@ public abstract class BaseIntegrationTest extends Assertions {
 	
 	@Inject
 	private AsyncEventObserver asyncEventObserver;
+	
+	@Inject
+	private OnlineUserCache onlineUserCache;
 	
 	protected Builder createRequest(String path, String mediaType) {
 		return httpClient.target(deploymentUrl.toString() + "rest" + path).request(mediaType);
@@ -72,6 +76,7 @@ public abstract class BaseIntegrationTest extends Assertions {
 	public void cleanAllData() throws IOException {
 		persistenceManager.deleteAll();
 		fileStore.deleteAllFiles();
+		onlineUserCache.clearAll();
 	}
 	
 	@ApplicationScoped
