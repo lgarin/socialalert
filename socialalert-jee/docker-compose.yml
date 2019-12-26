@@ -34,6 +34,19 @@ services:
       - "9200:9200"
     volumes:
       - "elastic:/usr/share/elasticsearch/data"
+  quarkus:
+    build:
+      dockerfile: src/main/docker/Dockerfile.jvm
+      context: .
+    restart: on-failure
+    ports:
+      - "7080:7080"
+    depends_on:
+      - keycloak
+      - elastic
+      - postgres
+    volumes:
+      - "quarkus:/data"
 #  infinispan:
 #    image: infinispan/server:10.0.1.Final-1
 #    environment:
@@ -62,3 +75,4 @@ volumes:
   keycloak:
   postgres:
   elastic:
+  quarkus:
