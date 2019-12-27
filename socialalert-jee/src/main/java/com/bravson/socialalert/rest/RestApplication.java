@@ -12,7 +12,7 @@ import org.eclipse.microprofile.openapi.annotations.servers.Server;
 
 @OpenAPIDefinition(
 		info = @Info(title = "Socialalert API", version = "1.2"),
-        servers = {@Server(description = "Test server", url = "http://3ft8uk98qmfq79pc.myfritz.net:18788/socialalert-jee"),
+        servers = {@Server(description = "Test server", url = "http://3ft8uk98qmfq79pc.myfritz.net:18774"),
         		   @Server(description = "Dev server", url = "http://localhost:7082")},
         components = @Components(securitySchemes = 
         				{@SecurityScheme(securitySchemeName = "JWT", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT"),
