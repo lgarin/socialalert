@@ -7,6 +7,7 @@ services:
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: admin
 #     KEYCLOAK_IMPORT: /opt/jboss/keycloak/standalone/tmp/realm-export.json
+    restart: on-failure
     volumes:
       - "keycloak:/opt/jboss/keycloak/standalone"
     ports:
@@ -22,18 +23,42 @@ services:
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: password
       PGDATA: /var/lib/postgresql/data/dbdata
+    restart: on-failure
     ports:
       - "5432:5432"
     volumes:
       - "postgres:/var/lib/postgresql/data/dbdata"
   elastic:
-    image: elasticsearch:7.4.0
+    image: elasticsearch:7.5.1
     environment:
       - discovery.type=single-node
+    restart: on-failure
     ports:
       - "9200:9200"
     volumes:
       - "elastic:/usr/share/elasticsearch/data"
+  logstash:
+    build:
+      dockerfile: src/main/docker/Logstash.custom
+      context: .
+    restart: on-failure
+    ports:
+      - "12201:12201/udp"
+      - "5000:5000"
+      - "9600:9600"
+    links:
+      - elastic:elasticsearch
+    depends_on:
+      - elastic
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.5.1
+    restart: on-failure
+    ports:
+      - "5601:5601"
+    links:
+      - elastic:elasticsearch
+    depends_on:
+      - elastic
   quarkus:
     build:
       dockerfile: src/main/docker/Dockerfile.jvm
@@ -45,6 +70,7 @@ services:
       - keycloak
       - elastic
       - postgres
+      - logstash
     volumes:
       - "quarkus:/data"
 #  infinispan:

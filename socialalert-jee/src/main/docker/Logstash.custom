@@ -1,0 +1,2 @@
+FROM docker.elastic.co/logstash/logstash:7.5.1
+COPY src/main/docker/gelf.conf /usr/share/logstash/pipeline/gelf.conf
