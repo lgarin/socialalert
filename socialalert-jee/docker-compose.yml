@@ -33,7 +33,7 @@ services:
       - discovery.type=single-node
     restart: on-failure
     ports:
-      - "9200:9200"
+      - "9201:9200"
     volumes:
       - "elastic:/usr/share/elasticsearch/data"
   logstash:
