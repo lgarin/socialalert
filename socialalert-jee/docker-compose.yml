@@ -6,7 +6,6 @@ services:
     environment:
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: admin
-#     KEYCLOAK_IMPORT: /opt/jboss/keycloak/standalone/tmp/realm-export.json
     restart: on-failure
     volumes:
       - "keycloak:/opt/jboss/keycloak/standalone"
@@ -44,7 +43,6 @@ services:
     restart: on-failure
     ports:
       - "12201:12201/udp"
-      - "5000:5000"
       - "9600:9600"
     links:
       - elastic:elasticsearch
@@ -59,20 +57,6 @@ services:
       - elastic:elasticsearch
     depends_on:
       - elastic
-  quarkus:
-    build:
-      dockerfile: src/main/docker/Dockerfile.jvm
-      context: .
-    restart: on-failure
-    ports:
-      - "7080:7080"
-    depends_on:
-      - keycloak
-      - elastic
-      - postgres
-      - logstash
-    volumes:
-      - "quarkus:/data"
 #  infinispan:
 #    image: infinispan/server:10.0.1.Final-1
 #    environment:
@@ -101,4 +85,3 @@ volumes:
   keycloak:
   postgres:
   elastic:
-  quarkus:
