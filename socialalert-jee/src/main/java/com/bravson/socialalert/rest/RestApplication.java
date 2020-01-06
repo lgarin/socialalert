@@ -11,13 +11,10 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 import org.eclipse.microprofile.openapi.annotations.servers.Server;
 
 @OpenAPIDefinition(
-		info = @Info(title = "Socialalert API", version = "1.2"),
+		info = @Info(title = "Socialalert API", version = "2.0"),
         servers = {@Server(description = "Test server", url = "http://3ft8uk98qmfq79pc.myfritz.net:18774"),
         		   @Server(description = "Dev server", url = "http://localhost:7080")},
-        components = @Components(securitySchemes = 
-        				{@SecurityScheme(securitySchemeName = "JWT", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT"),
-        				 @SecurityScheme(securitySchemeName = "Dev", type = SecuritySchemeType.OPENIDCONNECT, openIdConnectUrl = "http://localhost:8081/auth/realms/SocialAlert-Dev/.well-known/openid-configuration"),
-        				 @SecurityScheme(securitySchemeName = "Test", type = SecuritySchemeType.OPENIDCONNECT, openIdConnectUrl = "http://3ft8uk98qmfq79pc.myfritz.net:18788/auth/realms/SocialAlert-Dev/.well-known/openid-configuration")})
+        components = @Components(securitySchemes = @SecurityScheme(securitySchemeName = "JWT", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT"))
 )
 @ApplicationPath("/rest")
 public class RestApplication extends Application {
