@@ -7,12 +7,14 @@ import javax.inject.Inject;
 import javax.json.JsonObject;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.bravson.socialalert.domain.user.NewUserParameter;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 
 import lombok.AccessLevel;
@@ -76,5 +78,34 @@ public class AuthenticationRepository {
 			return false;
 		}
 		return true;
+	}
+	
+	public boolean createUser(@NonNull NewUserParameter param) {
+		String authorization = getAdminAuthorization();
+		
+		UserRepresentation user = UserRepresentation.builder()
+				.username(param.getUsername())
+				.email(param.getEmail())
+				.firstName(param.getFirstName())
+				.lastName(param.getLastName())
+				.credential(new CredentialRepresentation(false, "PASSWORD", param.getPassword()))
+				.build();
+		Response response = httpClient.target(config.getUserCreateUrl()).request().header("Authorization", authorization).post(Entity.json(user));
+		if (response.getStatus() == Status.CREATED.getStatusCode()) {
+			return true;
+		} else if (response.getStatus() == Status.CONFLICT.getStatusCode()) {
+			return false;
+		}
+		throw new ClientErrorException(response.getStatus());
+	}
+
+	private String getAdminAuthorization() {
+		Form form = new Form().param("username", config.getAdminUsername()).param("password", config.getAdminPassword()).param("grant_type", "password").param("client_id", config.getAdminClientId());
+		Response response = httpClient.target(config.getAdminLoginUrl()).request().post(Entity.form(form));
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			throw new ClientErrorException(response.getStatus());
+		}
+		JsonObject payload = response.readEntity(JsonObject.class);
+		return "Bearer " + payload.getString("access_token");
 	}
 }

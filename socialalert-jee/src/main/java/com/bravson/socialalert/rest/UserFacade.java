@@ -43,6 +43,7 @@ import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.domain.user.LoginParameter;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.LoginTokenResponse;
+import com.bravson.socialalert.domain.user.NewUserParameter;
 import com.bravson.socialalert.domain.user.UserInfo;
 
 @Tag(name="user")
@@ -59,6 +60,21 @@ public class UserFacade {
 	@Inject
 	@TokenAccess
 	Instance<UserAccess> userAccess;
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/create")
+	@PermitAll
+	@Operation(summary="Create a new user.")
+	@APIResponse(responseCode = "409", description = "User already exists.")
+	@APIResponse(responseCode = "201", description = "User created with success.")
+	public Response create(@Parameter(required = true) @Valid @NotNull NewUserParameter param) {
+		if (userService.createUser(param)) {
+			return Response.status(Status.CREATED).build();
+		}
+		return Response.status(Status.CONFLICT).build();
+	}
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -164,7 +180,7 @@ public class UserFacade {
 	@UserActivity
 	@Operation(summary="List the followed users.")
 	@SecurityRequirement(name = "JWT")
-	@APIResponse(responseCode = "200", description = "The has been deleted.", content=@Content(schema=@Schema(implementation=UserInfo.class, type = SchemaType.ARRAY)))
+	@APIResponse(responseCode = "200", description = "List of users returned with success.", content=@Content(schema=@Schema(implementation=UserInfo.class, type = SchemaType.ARRAY)))
 	public List<UserInfo> followedProfiles() {
 		return linkService.getTargetProfiles(userAccess.get().getUserId());
 	}

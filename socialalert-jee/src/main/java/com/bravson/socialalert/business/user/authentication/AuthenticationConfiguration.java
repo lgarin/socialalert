@@ -13,6 +13,16 @@ public interface AuthenticationConfiguration {
 	
 	String getConfigUrl();
 	
+	String getAdminLoginUrl();
+	
+	String getAdminClientId();
+	
+	String getAdminUsername();
+	
+	String getAdminPassword();
+	
+	String getUserCreateUrl();
+	
 	String getLoginClientId();
 	
 	String getClientSecret();

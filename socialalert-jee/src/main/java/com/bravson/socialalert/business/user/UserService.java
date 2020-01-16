@@ -15,6 +15,7 @@ import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.user.LoginParameter;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.LoginTokenResponse;
+import com.bravson.socialalert.domain.user.NewUserParameter;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.infrastructure.layer.Service;
 import com.bravson.socialalert.infrastructure.util.JwtUtil;
@@ -90,5 +91,9 @@ public class UserService {
 		} else {
 			return entity.toOfflineUserInfo();
 		}
+	}
+	
+	public boolean createUser(@NonNull NewUserParameter param) {
+		return authenticationRepository.createUser(param);
 	}
 }
