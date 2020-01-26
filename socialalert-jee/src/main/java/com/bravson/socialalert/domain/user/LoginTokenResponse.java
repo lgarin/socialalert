@@ -2,11 +2,7 @@ package com.bravson.socialalert.domain.user;
 
 import java.time.Instant;
 
-import javax.json.bind.annotation.JsonbTypeDeserializer;
-import javax.json.bind.annotation.JsonbTypeSerializer;
-
-import com.bravson.socialalert.infrastructure.rest.InstantDeserializer;
-import com.bravson.socialalert.infrastructure.rest.InstantSerializer;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,8 +22,7 @@ public class LoginTokenResponse {
 	@NonNull
 	private String refreshToken;
 	
-	@JsonbTypeSerializer(InstantSerializer.class)
-	@JsonbTypeDeserializer(InstantDeserializer.class)
 	@NonNull
+	@Schema(description="The access token expiration timestamp in milliseconds since the epoch.", implementation=Long.class)
 	private Instant expiration;
 }

@@ -2,6 +2,8 @@ package com.bravson.socialalert.domain.paging;
 
 import java.time.Instant;
 
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.Value;
@@ -11,6 +13,7 @@ import lombok.Value;
 public class PagingParameter {
 
 	@NonNull
+	@Schema(description="The paging start timestamp in milliseconds since the epoch.", implementation=Long.class)
 	private Instant timestamp;
 	private int pageNumber;
 	private int pageSize;

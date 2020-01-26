@@ -3,14 +3,9 @@ package com.bravson.socialalert.domain.user;
 import java.time.Instant;
 import java.time.LocalDate;
 
-import javax.json.bind.annotation.JsonbTypeDeserializer;
-import javax.json.bind.annotation.JsonbTypeSerializer;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import com.bravson.socialalert.domain.user.statistic.UserStatistic;
-import com.bravson.socialalert.infrastructure.rest.InstantDeserializer;
-import com.bravson.socialalert.infrastructure.rest.InstantSerializer;
-import com.bravson.socialalert.infrastructure.rest.LocalDateDeserializer;
-import com.bravson.socialalert.infrastructure.rest.LocalDateSerializer;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,15 +29,12 @@ public class LoginResponse extends LoginTokenResponse {
 	
 	private String email;
 	
-	@JsonbTypeSerializer(InstantSerializer.class)
-	@JsonbTypeDeserializer(InstantDeserializer.class)
 	@NonNull
+	@Schema(description="The creation timestamp in milliseconds since the epoch.", implementation=Long.class)
 	private Instant createdTimestamp;
 	
 	private boolean online;
 	
-	@JsonbTypeSerializer(LocalDateSerializer.class)
-	@JsonbTypeDeserializer(LocalDateDeserializer.class)
 	private LocalDate birthdate;
 	
 	private Gender gender;
