@@ -3,6 +3,11 @@ package com.bravson.socialalert.business.user.authentication;
 import java.time.Instant;
 
 import javax.json.bind.annotation.JsonbProperty;
+import javax.json.bind.annotation.JsonbTypeDeserializer;
+import javax.json.bind.annotation.JsonbTypeSerializer;
+
+import com.bravson.socialalert.infrastructure.rest.InstantDeserializer;
+import com.bravson.socialalert.infrastructure.rest.InstantSerializer;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +29,8 @@ public class AuthenticationInfo {
 	
 	private String email;
 	
+	@JsonbTypeSerializer(InstantSerializer.class)
+	@JsonbTypeDeserializer(InstantDeserializer.class)
 	@NonNull
 	private Instant createdTimestamp;
 	
