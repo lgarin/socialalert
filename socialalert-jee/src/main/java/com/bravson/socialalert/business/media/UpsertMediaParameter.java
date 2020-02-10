@@ -26,9 +26,7 @@ public class UpsertMediaParameter {
 	@NotBlank @Size(max=MediaConstants.MAX_DESCRIPTION_LENGTH)
 	private String description;
 	
-	@NotNull @Size(max=MediaConstants.MAX_CATEGORY_COUNT)
-	@NonNull
-	private List<@NotNull String> categories;
+	private String category;
 	
 	@NotNull @Size(max=MediaConstants.MAX_TAG_COUNT)
 	@NonNull

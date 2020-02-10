@@ -88,11 +88,9 @@ public class MediaEntity extends VersionedEntity {
 	private MediaStatistic statistic;
 	
 	@Getter
-	@ElementCollection(fetch=FetchType.EAGER)
-	@CollectionTable(name = "MediaCategory", joinColumns = @JoinColumn(name = "media_id", foreignKey = @ForeignKey(name = "FK_MediaCategory_Media")))
-	@Column(name = "category", length = FieldLength.NAME, nullable = false)
+	@Column(name = "category", length = FieldLength.NAME)
 	@GenericField
-	private Set<String> categories;
+	private String category;
 	
 	@Getter
 	@ElementCollection(fetch=FetchType.EAGER)
@@ -173,8 +171,8 @@ public class MediaEntity extends VersionedEntity {
 		if (parameter.getLocation() != null) {
 			this.location = parameter.getLocation();
 		}
-		if (parameter.getCategories() != null) {
-			this.categories = new HashSet<>(parameter.getCategories());
+		if (parameter.getCategory() != null) {
+			this.category = parameter.getCategory();
 		}
 		if (parameter.getTags() != null) {
 			this.tags = new HashSet<>(parameter.getTags());
@@ -200,7 +198,7 @@ public class MediaEntity extends VersionedEntity {
 		info.setTitle(getTitle());
 		info.setDescription(getDescription());
 		info.setTags(new ArrayList<>(getTags()));
-		info.setCategories(new ArrayList<>(getCategories()));
+		info.setCategory(getCategory());
 		if (getLocation() != null) {
 			info.setCountry(getLocation().getCountry());
 			info.setLocality(getLocation().getLocality());

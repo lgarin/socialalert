@@ -59,7 +59,7 @@ public class MediaInfo implements UserContent {
 	
 	private int commentCount;
 	
-	private List<String> categories;
+	private String category;
 	
 	private List<String> tags;
 	

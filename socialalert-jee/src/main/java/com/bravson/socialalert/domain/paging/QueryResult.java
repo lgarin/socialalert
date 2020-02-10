@@ -19,6 +19,7 @@ import lombok.NonNull;
 public class QueryResult<T> {
 	
 	@NonNull
+	@Schema(description = "the list of results for this page")
 	private List<T> content;
 	private int pageNumber;
 	private int pageCount;

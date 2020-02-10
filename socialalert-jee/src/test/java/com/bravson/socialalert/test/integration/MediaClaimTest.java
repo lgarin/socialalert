@@ -30,7 +30,7 @@ public class MediaClaimTest extends BaseIntegrationTest {
 		param.setTitle("Test title");
 		param.setDescription("Test desc");
 		param.setTags(Arrays.asList("tag1", "tag2"));
-		param.setCategories(Arrays.asList("cat1"));
+		param.setCategory("cat1");
 		param.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
 		return Entity.entity(param, MediaType.APPLICATION_JSON_TYPE);
 	}
@@ -73,7 +73,7 @@ public class MediaClaimTest extends BaseIntegrationTest {
 		assertThat(result.getCameraModel()).isEqualTo("iPhone 5");
 		assertThat(result.getHitCount()).isEqualTo(0);
 		assertThat(result.getLikeCount()).isEqualTo(0);
-		assertThat(result.getCategories()).containsExactly("cat1");
+		assertThat(result.getCategory()).isEqualTo("cat1");
 		assertThat(result.getTags()).containsExactly("tag1", "tag2");
 	}
 	
@@ -110,7 +110,7 @@ public class MediaClaimTest extends BaseIntegrationTest {
 		assertThat(result.getCreation()).isEqualTo(LocalDateTime.of(2014, 12, 28, 14, 21, 49).atOffset(ZoneOffset.UTC).toInstant());
 		assertThat(result.getHitCount()).isEqualTo(0);
 		assertThat(result.getLikeCount()).isEqualTo(0);
-		assertThat(result.getCategories()).containsExactly("cat1");
+		assertThat(result.getCategory()).isEqualTo("cat1");
 		assertThat(result.getTags()).containsExactly("tag1", "tag2");
 	}
 }

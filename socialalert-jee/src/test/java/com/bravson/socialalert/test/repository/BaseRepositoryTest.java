@@ -45,24 +45,24 @@ public class BaseRepositoryTest extends Assertions {
     }
     
     protected MediaEntity storeDefaultMedia() {
-		UpsertMediaParameter claimParameter = new UpsertMediaParameter();
-		claimParameter.setTitle("Test title");
-		claimParameter.setDescription("Test desc");
-		claimParameter.setTags(Arrays.asList("tag1", "tag2"));
-		claimParameter.setCategories(Arrays.asList("cat1", "cat2"));
-		claimParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
+		UpsertMediaParameter claimParameter = buildDefaultClaimParameter();
 		FileMetadata fileMetadata = FileMetadata.builder().md5("test").timestamp(Instant.now()).contentSize(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
 		FileEntity file = persistAndIndex(new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4")));
 		return persistAndIndex(new MediaEntity(file, claimParameter, UserAccess.of("test", "1.2.3.4")));
 	}
-    
-    protected MediaEntity createDefaultMedia() {
+
+	private UpsertMediaParameter buildDefaultClaimParameter() {
 		UpsertMediaParameter claimParameter = new UpsertMediaParameter();
 		claimParameter.setTitle("Test title");
 		claimParameter.setDescription("Test desc");
 		claimParameter.setTags(Arrays.asList("tag1", "tag2"));
-		claimParameter.setCategories(Arrays.asList("cat1", "cat2"));
+		claimParameter.setCategory("cat1");
 		claimParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
+		return claimParameter;
+	}
+    
+    protected MediaEntity createDefaultMedia() {
+		UpsertMediaParameter claimParameter = buildDefaultClaimParameter();
 		FileMetadata fileMetadata = FileMetadata.builder().md5("test").timestamp(Instant.now()).contentSize(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
 		FileEntity file = new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4"));
 		return new MediaEntity(file, claimParameter, UserAccess.of("test", "1.2.3.4"));

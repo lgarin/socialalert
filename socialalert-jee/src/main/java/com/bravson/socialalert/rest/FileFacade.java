@@ -30,7 +30,6 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
@@ -184,7 +183,7 @@ public class FileFacade {
     @APIResponse(responseCode = "413", description = "The file is too large.")
 	@APIResponse(responseCode = "415", description = "The media is not in the expected format.")
 	public Response uploadPicture(
-			@RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile, @Context SecurityContext securityContext) throws IOException, ServletException {
+			@RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile) throws IOException, ServletException {
 		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), userAccess.get()));
 	}
 	
@@ -197,7 +196,7 @@ public class FileFacade {
     @APIResponse(responseCode = "413", description = "The file is too large.")
     @APIResponse(responseCode = "415", description = "The media is not in the expected format.")
 	public Response uploadVideo(
-		    @RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile, @Context SecurityContext securityContext) throws IOException, ServletException {
+		    @RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile) throws IOException, ServletException {
 		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), userAccess.get()));
 	}
 

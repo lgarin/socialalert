@@ -52,7 +52,7 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 		mediaParameter.setTitle("Test title");
 		mediaParameter.setDescription("Test desc");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
-		mediaParameter.setCategories(Arrays.asList("cat1"));
+		mediaParameter.setCategory("cat1");
 		mediaParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
 		
 		when(mediaRepository.findMedia(fileUri)).thenReturn(Optional.empty());
@@ -70,7 +70,7 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 		mediaParameter.setTitle("Test title");
 		mediaParameter.setDescription("Test desc");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
-		mediaParameter.setCategories(Arrays.asList("cat1"));
+		mediaParameter.setCategory("cat1");
 		mediaParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
 		
 		when(mediaRepository.findMedia(fileUri)).thenReturn(Optional.of(mediaEntity));
@@ -86,7 +86,7 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 		mediaParameter.setTitle("Test title");
 		mediaParameter.setDescription("Test desc");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
-		mediaParameter.setCategories(Arrays.asList("cat1"));
+		mediaParameter.setCategory("cat1");
 		mediaParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
 		
 		when(mediaRepository.findMedia(fileUri)).thenReturn(Optional.empty());
@@ -104,7 +104,7 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 		mediaParameter.setTitle("Test title");
 		mediaParameter.setDescription("Test desc");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
-		mediaParameter.setCategories(Arrays.asList("cat1"));
+		mediaParameter.setCategory("cat1");
 		mediaParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
 		
 		MediaInfo mediaInfo = new MediaInfo();
@@ -128,7 +128,7 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 		mediaParameter.setTitle("Test title");
 		mediaParameter.setDescription("Test desc");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
-		mediaParameter.setCategories(Arrays.asList("cat1"));
+		mediaParameter.setCategory("cat1");
 		mediaParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
 		
 		MediaInfo mediaInfo = new MediaInfo();
@@ -150,7 +150,7 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 		mediaParameter.setTitle("Test title");
 		mediaParameter.setDescription("Test desc");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
-		mediaParameter.setCategories(Arrays.asList("cat1"));
+		mediaParameter.setCategory("cat1");
 		mediaParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
 		
 		when(mediaRepository.findMedia(fileUri)).thenReturn(Optional.empty());
@@ -167,7 +167,7 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 		mediaParameter.setTitle("Test title");
 		mediaParameter.setDescription("Test desc");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
-		mediaParameter.setCategories(Arrays.asList("cat1"));
+		mediaParameter.setCategory("cat1");
 		mediaParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
 		
 		when(mediaRepository.findMedia(fileUri)).thenReturn(Optional.of(mediaEntity));
