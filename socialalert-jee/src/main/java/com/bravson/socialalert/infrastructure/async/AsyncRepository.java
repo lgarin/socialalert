@@ -81,6 +81,7 @@ public class AsyncRepository implements Runnable {
 
 	@Transactional
 	public void fireAsync(AsyncEvent event) {
+		// TODO use JMS
 		txRegistry.registerInterposedSynchronization(new Synchronization() {
 			
 			@Override

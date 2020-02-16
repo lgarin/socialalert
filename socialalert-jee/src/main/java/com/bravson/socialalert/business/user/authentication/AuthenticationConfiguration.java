@@ -1,8 +1,9 @@
 package com.bravson.socialalert.business.user.authentication;
 
 import io.quarkus.arc.config.ConfigProperties;
+import io.quarkus.arc.config.ConfigProperties.NamingStrategy;
 
-@ConfigProperties(prefix = "auth")
+@ConfigProperties(prefix = "auth", namingStrategy = NamingStrategy.VERBATIM)
 public interface AuthenticationConfiguration {
 
 	String getLoginUrl();

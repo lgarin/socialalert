@@ -1,8 +1,9 @@
 package com.bravson.socialalert.business.file.media;
 
 import io.quarkus.arc.config.ConfigProperties;
+import io.quarkus.arc.config.ConfigProperties.NamingStrategy;
 
-@ConfigProperties(prefix = "media")
+@ConfigProperties(prefix = "media", namingStrategy = NamingStrategy.VERBATIM)
 public interface MediaConfiguration {
 
 	long getSnapshotDelay();
