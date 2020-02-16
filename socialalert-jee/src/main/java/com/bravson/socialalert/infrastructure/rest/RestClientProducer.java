@@ -1,5 +1,6 @@
 package com.bravson.socialalert.infrastructure.rest;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Disposes;
@@ -10,14 +11,25 @@ import javax.ws.rs.client.ClientBuilder;
 
 import org.slf4j.Logger;
 
+import io.quarkus.resteasy.jsonb.runtime.QuarkusJsonbContextResolver;
+
 @ApplicationScoped
 public class RestClientProducer {
 
 	@Inject
 	Logger logger;
 	
-	private ClientBuilder httpClientBuilder = ClientBuilder.newBuilder();
-
+	@Inject
+	QuarkusJsonbContextResolver jsonbContextResolver;
+	
+	private ClientBuilder httpClientBuilder;
+	
+	@PostConstruct
+	void init() {
+		httpClientBuilder = ClientBuilder.newBuilder();
+		httpClientBuilder.register(jsonbContextResolver);
+	}
+	
 	@Produces
 	@RequestScoped
 	public Client httpClient() {

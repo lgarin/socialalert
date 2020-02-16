@@ -93,7 +93,7 @@ public class MediaRepository {
 			junction = junction.must(context.spatial().within().field("location.coordinates").circle(parameter.getLocation().getLatitude(), parameter.getLocation().getLongitude(), parameter.getLocation().getRadius(), DistanceUnit.KILOMETERS).boost(10.0f).toPredicate());
 		}
 		if (parameter.getCategory() != null) {
-			junction = junction.must(context.simpleQueryString().field("categories").matching(parameter.getCategory()).toPredicate());
+			junction = junction.must(context.simpleQueryString().field("category").matching(parameter.getCategory()).toPredicate());
 		}
 		if (parameter.getKeywords() != null) {
 			junction = junction.must(context.match().field("tags").boost(4.0f).field("title").boost(2.0f).field("description").matching(parameter.getKeywords()).fuzzy().toPredicate());
