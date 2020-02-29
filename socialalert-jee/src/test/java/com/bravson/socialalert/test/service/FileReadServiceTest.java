@@ -1,6 +1,6 @@
 package com.bravson.socialalert.test.service;
 
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -40,7 +40,7 @@ public class FileReadServiceTest extends BaseServiceTest {
 		Optional<FileResponse> result = fileService.download(fileUri);
 		assertThat(result).isEmpty();
 		
-		verifyZeroInteractions(fileStore);
+		verifyNoInteractions(fileStore);
 	}
 	
 	@Test
@@ -68,7 +68,7 @@ public class FileReadServiceTest extends BaseServiceTest {
 		Optional<FileResponse> result = fileService.preview(fileUri);
 		assertThat(result).isEmpty();
 		
-		verifyZeroInteractions(fileStore);
+		verifyNoInteractions(fileStore);
 	}
 	
 	@Test

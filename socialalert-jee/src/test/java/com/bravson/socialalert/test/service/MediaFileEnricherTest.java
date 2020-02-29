@@ -1,26 +1,24 @@
 package com.bravson.socialalert.test.service;
 
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.slf4j.Logger;
 
 import com.bravson.socialalert.business.file.FileMetadata;
 import com.bravson.socialalert.business.file.FileRepository;
 import com.bravson.socialalert.business.file.MediaFileStore;
 import com.bravson.socialalert.business.file.entity.FileEntity;
-import com.bravson.socialalert.business.file.media.AsyncMediaEnrichEvent;
-import com.bravson.socialalert.business.file.media.AsyncMediaFileEnricher;
 import com.bravson.socialalert.business.file.media.AsyncMediaProcessedEvent;
+import com.bravson.socialalert.business.file.media.MediaFileEnricher;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.file.media.MediaMetadataExtractor;
 import com.bravson.socialalert.business.file.store.FileStore;
@@ -30,10 +28,10 @@ import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 
-public class AsyncMediaFileEnricherTest extends BaseServiceTest {
+public class MediaFileEnricherTest extends BaseServiceTest {
 
 	@InjectMocks
-	AsyncMediaFileEnricher asyncEnricher;
+	MediaFileEnricher enricher;
 	
 	@Mock
 	FileRepository fileRepository;
@@ -50,9 +48,6 @@ public class AsyncMediaFileEnricherTest extends BaseServiceTest {
 	@Mock
 	AsyncRepository asyncRepository;
 	
-	@Mock
-	Logger logger;
-	
 	@Test
 	public void buildPictureMetadata() throws Exception {
 		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
@@ -60,13 +55,12 @@ public class AsyncMediaFileEnricherTest extends BaseServiceTest {
 		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4"));
 		MediaMetadata metadata = MediaMetadata.builder().cameraMaker("a").cameraModel("b").width(1200).height(1600).timestamp(Instant.EPOCH).build();
 		
-		when(fileRepository.findFile(fileEntity.getId())).thenReturn(Optional.of(fileEntity));
 		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileMetadata.getFileFormat())).thenReturn(inputFile);
 		when(metadataExtractor.parseMetadata(inputFile)).thenReturn(metadata);
 		when(mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.PREVIEW)).thenReturn(fileMetadata.withFileFormat(MediaFileFormat.PREVIEW_JPG));
 		when(mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL)).thenReturn(fileMetadata.withFileFormat(MediaFileFormat.THUMBNAIL_JPG));
 		
-		asyncEnricher.onAsyncEvent(AsyncMediaEnrichEvent.of(fileEntity.getId()));
+		enricher.handleNewMedia(fileEntity);
 		
 		assertThat(fileEntity.getMediaMetadata()).isEqualTo(metadata);
 		assertThat(fileEntity.isProcessed()).isTrue();
@@ -74,7 +68,6 @@ public class AsyncMediaFileEnricherTest extends BaseServiceTest {
 		assertThat(fileEntity.findVariantFormat(MediaSizeVariant.THUMBNAIL)).isPresent();
 		
 		verify(asyncRepository).fireAsync(AsyncMediaProcessedEvent.of(fileEntity.getId()));
-		verifyZeroInteractions(logger);
 	}
 	
 	@Test
@@ -84,13 +77,12 @@ public class AsyncMediaFileEnricherTest extends BaseServiceTest {
 		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4"));
 		MediaMetadata metadata = MediaMetadata.builder().cameraMaker("a").cameraModel("b").width(1200).height(1600).timestamp(Instant.EPOCH).build();
 		
-		when(fileRepository.findFile(fileEntity.getId())).thenReturn(Optional.of(fileEntity));
 		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileMetadata.getFileFormat())).thenReturn(inputFile);
 		when(metadataExtractor.parseMetadata(inputFile)).thenReturn(metadata);
 		when(mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.PREVIEW)).thenReturn(fileMetadata.withFileFormat(MediaFileFormat.PREVIEW_JPG));
 		when(mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL)).thenReturn(fileMetadata.withFileFormat(MediaFileFormat.THUMBNAIL_JPG));
 		
-		asyncEnricher.onAsyncEvent(AsyncMediaEnrichEvent.of(fileEntity.getId()));
+		enricher.handleNewMedia(fileEntity);
 		
 		assertThat(fileEntity.getMediaMetadata()).isEqualTo(metadata);
 		assertThat(fileEntity.isProcessed()).isTrue();
@@ -98,7 +90,7 @@ public class AsyncMediaFileEnricherTest extends BaseServiceTest {
 		assertThat(fileEntity.findVariantFormat(MediaSizeVariant.THUMBNAIL)).isPresent();
 		
 		verify(asyncRepository).fireAsync(AsyncVideoPreviewEvent.of(fileEntity.getId()));
-		verifyNoMoreInteractions(logger, asyncRepository);
+		verifyNoMoreInteractions(asyncRepository);
 	}
 	
 	@Test
@@ -108,16 +100,14 @@ public class AsyncMediaFileEnricherTest extends BaseServiceTest {
 		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4"));
 		IOException exception = new IOException();
 		
-		when(fileRepository.findFile(fileEntity.getId())).thenReturn(Optional.of(fileEntity));
 		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileMetadata.getFileFormat())).thenReturn(inputFile);
 		when(metadataExtractor.parseMetadata(inputFile)).thenThrow(exception);
 		
-		asyncEnricher.onAsyncEvent(AsyncMediaEnrichEvent.of(fileEntity.getId()));
+		assertThrows(IOException.class, () -> enricher.handleNewMedia(fileEntity));
 		
 		assertThat(fileEntity.getMediaMetadata()).isNull();;
 		assertThat(fileEntity.isProcessed()).isFalse();
 
-		verify(logger).error("Cannot process media " + fileEntity.getId(), exception);
-		verifyNoMoreInteractions(logger, asyncRepository);
+		verifyNoMoreInteractions(asyncRepository);
 	}
 }

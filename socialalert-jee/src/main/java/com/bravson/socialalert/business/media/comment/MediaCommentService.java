@@ -21,6 +21,7 @@ import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 import com.bravson.socialalert.infrastructure.entity.DislikedEntity;
 import com.bravson.socialalert.infrastructure.entity.LikedEntity;
+import com.bravson.socialalert.infrastructure.entity.NewEntity;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
 import lombok.NonNull;
@@ -49,9 +50,14 @@ public class MediaCommentService {
 	@DislikedEntity
 	Event<MediaCommentEntity> commentDislikedEvent;
 	
+	@Inject
+	@NewEntity
+	Event<MediaCommentEntity> newCommentEvent;
+	
 	public MediaCommentInfo createComment(@NonNull String mediaUri, @NonNull String comment, @NonNull UserAccess userAccess) {
 		mediaRepository.findMedia(mediaUri).orElseThrow(NotFoundException::new);
 		MediaCommentEntity entity = commentRepository.create(mediaUri, comment, userAccess);
+		newCommentEvent.fire(entity);
 		return userService.fillUserInfo(entity.toMediaCommentInfo());
 	}
 

@@ -3,6 +3,7 @@ package com.bravson.socialalert.business.file;
 import java.io.IOException;
 import java.util.Optional;
 
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.NotSupportedException;
@@ -10,13 +11,12 @@ import javax.ws.rs.NotSupportedException;
 import org.slf4j.Logger;
 
 import com.bravson.socialalert.business.file.entity.FileEntity;
-import com.bravson.socialalert.business.file.media.AsyncMediaEnrichEvent;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.file.FileInfo;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
-import com.bravson.socialalert.infrastructure.async.AsyncRepository;
+import com.bravson.socialalert.infrastructure.entity.NewEntity;
 import com.bravson.socialalert.infrastructure.layer.Service;
 import com.bravson.socialalert.infrastructure.rest.ConflictException;
 
@@ -36,10 +36,11 @@ public class FileUploadService {
 	MediaFileStore mediaFileStore;
 	
 	@Inject
-	AsyncRepository asyncRepository;
+	UserInfoService userService;
 	
 	@Inject
-	UserInfoService userService;
+	@NewEntity
+	Event<FileEntity> newFileEvent;
 	
 	@Inject
 	Logger logger;
@@ -63,7 +64,7 @@ public class FileUploadService {
 		
 		mediaFileStore.storeVariant(parameter.getInputFile(), fileMetadata, MediaSizeVariant.MEDIA);
 		FileEntity fileEntity = mediaRepository.storeMedia(fileMetadata, userAccess);
-		asyncRepository.fireAsync(AsyncMediaEnrichEvent.of(fileEntity.getId()));
+		newFileEvent.fire(fileEntity);
 		
 		return userService.fillUserInfo(fileEntity.toFileInfo());
 	}

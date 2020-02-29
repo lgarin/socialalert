@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -25,7 +24,6 @@ import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.infrastructure.entity.HitEntity;
-import com.bravson.socialalert.infrastructure.entity.NewEntity;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 import com.bravson.socialalert.infrastructure.util.GeoHashUtil;
@@ -45,10 +43,6 @@ public class MediaRepository {
 	@NonNull
 	PersistenceManager persistenceManager;
 	
-	@Inject
-	@NewEntity
-	Event<MediaEntity> newEntityEvent;
-	
 	public Optional<MediaEntity> findMedia(@NonNull String mediaUri) {
 		return persistenceManager.find(MediaEntity.class, mediaUri);
 	}
@@ -56,13 +50,7 @@ public class MediaRepository {
 	public MediaEntity storeMedia(@NonNull FileEntity file, @NonNull UpsertMediaParameter parameter, @NonNull UserAccess userAccess) {
 		MediaEntity entity = new MediaEntity(file, parameter, userAccess);
 		persistenceManager.persist(entity);
-		newEntityEvent.fire(entity);
 		return entity;
-	}
-	
-	public void updateMedia(@NonNull MediaEntity entity) {
-		persistenceManager.merge(entity);
-		newEntityEvent.fire(entity);
 	}
 	
 	public QueryResult<MediaEntity> searchMedia(@NonNull SearchMediaParameter parameter, @NonNull PagingParameter paging) {

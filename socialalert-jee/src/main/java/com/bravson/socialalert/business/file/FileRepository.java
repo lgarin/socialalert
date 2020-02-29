@@ -3,14 +3,12 @@ package com.bravson.socialalert.business.file;
 import java.util.List;
 import java.util.Optional;
 
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.file.entity.FileState;
 import com.bravson.socialalert.business.user.UserAccess;
-import com.bravson.socialalert.infrastructure.entity.NewEntity;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 
@@ -29,14 +27,9 @@ public class FileRepository {
 	@NonNull
 	PersistenceManager persistenceManager;
 	
-	@Inject
-	@NewEntity
-	Event<FileEntity> newEntityEvent;
-
 	public FileEntity storeMedia(@NonNull FileMetadata fileMetadata, @NonNull UserAccess userAccess) {
 		FileEntity entity = new FileEntity(fileMetadata, userAccess);
 		persistenceManager.persist(entity);
-		newEntityEvent.fire(entity);
 		return entity;
 	}
 	

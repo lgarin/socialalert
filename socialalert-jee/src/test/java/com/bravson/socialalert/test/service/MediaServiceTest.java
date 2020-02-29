@@ -3,7 +3,7 @@ package com.bravson.socialalert.test.service;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -139,7 +139,7 @@ public class MediaServiceTest extends BaseServiceTest {
 		assertThat(result).isEqualTo(mediaDetail);
 		assertThat(result.getUserApprovalModifier()).isEqualTo(modifier);
 		
-		verifyZeroInteractions(mediaLikedEvent, mediaDislikedEvent);
+		verifyNoInteractions(mediaLikedEvent, mediaDislikedEvent);
 	}
 	
 	@Test

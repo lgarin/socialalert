@@ -1,5 +1,6 @@
 package com.bravson.socialalert.business.media;
 
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.ForbiddenException;
@@ -10,6 +11,7 @@ import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.media.MediaInfo;
+import com.bravson.socialalert.infrastructure.entity.NewEntity;
 import com.bravson.socialalert.infrastructure.layer.Service;
 import com.bravson.socialalert.infrastructure.rest.ConflictException;
 
@@ -28,6 +30,10 @@ public class MediaUpsertService {
 	@Inject
 	UserInfoService userService;
 	
+	@Inject
+	@NewEntity
+	Event<MediaEntity> newMediaEvent;
+	
 	public MediaInfo claimMedia(@NonNull String fileUri, @NonNull UpsertMediaParameter mediaParameter, @NonNull UserAccess userAccess) {
 		if (mediaRepository.findMedia(fileUri).isPresent()) {
 			throw new ConflictException();
@@ -37,6 +43,7 @@ public class MediaUpsertService {
 			throw new ForbiddenException();
 		}
 		MediaEntity mediaEntity = mediaRepository.storeMedia(fileEntity, mediaParameter, userAccess);
+		newMediaEvent.fire(mediaEntity);
 		return userService.fillUserInfo(mediaEntity.toMediaInfo());
 	}
 	
@@ -46,7 +53,7 @@ public class MediaUpsertService {
 			throw new ForbiddenException();
 		}
 		mediaEntity.update(mediaParameter, userAccess);
-		mediaRepository.updateMedia(mediaEntity); // TODO dirty solution for updating the tags in MediaTagRepository
+		newMediaEvent.fire(mediaEntity); // TODO dirty solution for updating the tags in MediaTagRepository
 		return userService.fillUserInfo(mediaEntity.toMediaInfo());
 	}
 }

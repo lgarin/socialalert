@@ -25,13 +25,17 @@ public class LoggedInterceptor implements Serializable {
 	@AroundInvoke
     public Object logMethodEntry(InvocationContext invocationContext) throws Exception {
 		Logger logger = LoggerFactory.getLogger(invocationContext.getMethod().getDeclaringClass());
-		logger.info("Calling method {} with {}", invocationContext.getMethod().getName(), Arrays.toString(invocationContext.getParameters()));
+		logger.info("Calling method {}.{} with {}", invocationContext.getMethod().getDeclaringClass().getSimpleName(), invocationContext.getMethod().getName(), Arrays.toString(invocationContext.getParameters()));
 		try {
 			Object result = invocationContext.proceed();
-			logger.info("Returning from method {} with {}", invocationContext.getMethod().getName(), mapResult(result));
+			if (invocationContext.getMethod().getReturnType() == Void.class) {
+				logger.info("Returning from method {}.{}", invocationContext.getMethod().getDeclaringClass().getSimpleName(), invocationContext.getMethod().getName());
+			} else {
+				logger.info("Returning from method {}.{} with {}", invocationContext.getMethod().getDeclaringClass().getSimpleName(), invocationContext.getMethod().getName(), mapResult(result));
+			}
 			return result;
 		} catch (Exception e) {
-			logger.error("Failed method {} with {}", invocationContext.getMethod().getName(), e);
+			logger.error("Failed method {}.{} with {}", invocationContext.getMethod().getDeclaringClass().getSimpleName(), invocationContext.getMethod().getName(), e);
 			throw e;
 		}
     }

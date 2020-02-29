@@ -22,7 +22,7 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     
 	@Inject
     private MediaCommentRepository repository;
-    
+	
     @Test
     public void createNewComment() {
     	UserAccess userAccess = UserAccess.of("usr1", "1.2.3.4");

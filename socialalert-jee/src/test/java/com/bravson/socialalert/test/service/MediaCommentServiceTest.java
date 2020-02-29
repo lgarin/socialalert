@@ -3,7 +3,7 @@ package com.bravson.socialalert.test.service;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
@@ -55,6 +55,9 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 	@Mock
 	Event<MediaCommentEntity> commentLikedEvent;
 	
+	@Mock
+	Event<MediaCommentEntity> newCommentEvent;
+	
 	@Test
 	public void createCommentForExitingMedia() {
 		String mediaUri = "uri1";
@@ -70,6 +73,8 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 		
 		MediaCommentInfo result = commentService.createComment(mediaUri, comment, userAccess);
 		assertThat(result).isSameAs(commentInfo);
+		
+		verify(newCommentEvent).fire(commentEntity);
 	}
 	
 	@Test
@@ -81,7 +86,7 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.empty());
 		
 		assertThatThrownBy(() -> commentService.createComment(mediaUri, comment, userAccess)).isInstanceOf(NotFoundException.class);
-		verifyZeroInteractions(commentRepository, userService);
+		verifyNoInteractions(commentRepository, userService);
 	}
 	
 	@Test
@@ -107,7 +112,7 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.empty());
 		
 		assertThatThrownBy(() -> commentService.listComments(mediaUri, userId, new PagingParameter(Instant.now(), 0, 10))).isInstanceOf(NotFoundException.class);
-		verifyZeroInteractions(commentRepository, userService);
+		verifyNoInteractions(commentRepository, userService);
 	}
 	
 	@Test

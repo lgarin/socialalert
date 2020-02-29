@@ -1,13 +1,14 @@
 package com.bravson.socialalert.test.service;
 
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.time.Instant;
 import java.util.Optional;
 
+import javax.enterprise.event.Event;
 import javax.ws.rs.NotSupportedException;
 
 import org.junit.jupiter.api.Test;
@@ -21,14 +22,12 @@ import com.bravson.socialalert.business.file.FileUploadParameter;
 import com.bravson.socialalert.business.file.FileUploadService;
 import com.bravson.socialalert.business.file.MediaFileStore;
 import com.bravson.socialalert.business.file.entity.FileEntity;
-import com.bravson.socialalert.business.file.media.AsyncMediaEnrichEvent;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.file.FileInfo;
 import com.bravson.socialalert.domain.media.format.MediaFileConstants;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
-import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 import com.bravson.socialalert.infrastructure.rest.ConflictException;
 
 public class FileUploadServiceTest extends BaseServiceTest {
@@ -43,13 +42,13 @@ public class FileUploadServiceTest extends BaseServiceTest {
 	MediaFileStore mediaFileStore;
 	
 	@Mock
-	AsyncRepository asyncRepository;
-	
-	@Mock
 	UserInfoService userService;
 	
 	@Mock
 	Logger logger;
+	
+	@Mock
+	Event<FileEntity> newFileEvent;
 	
 	@Test
 	public void uploadExistingPictureWithSameUser() throws Exception {
@@ -70,7 +69,7 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		FileInfo result = fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress));
 		
 		assertThat(result).isEqualTo(fileEntity.toFileInfo());
-		verifyZeroInteractions(asyncRepository, logger);
+		verifyNoInteractions(logger, newFileEvent);
 	}
 	
 	@Test
@@ -89,7 +88,7 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
 		assertThatExceptionOfType(ConflictException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress)));
 		
-		verifyZeroInteractions(asyncRepository, logger);
+		verifyNoInteractions(logger, newFileEvent);
 	}
 	
 	@Test
@@ -110,7 +109,7 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
 		assertThatExceptionOfType(ConflictException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress)));
 		
-		verifyZeroInteractions(asyncRepository, logger);
+		verifyNoInteractions(logger, newFileEvent);
 	}
 	
 	@Test
@@ -133,8 +132,8 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		FileInfo result = fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress));
 		
 		assertThat(result.getFileUri()).isEqualTo(fileMetadata.buildFileUri());
-		verify(asyncRepository).fireAsync(AsyncMediaEnrichEvent.of(fileEntity.getId()));
-		verifyZeroInteractions(logger);
+		verifyNoInteractions(logger);
+		verify(newFileEvent).fire(fileEntity);
 	}
 	
 	@Test
@@ -145,7 +144,7 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType("image/bmp").build();
 		assertThatExceptionOfType(NotSupportedException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress)));
-		verifyZeroInteractions(asyncRepository, logger, userService);
+		verifyNoInteractions(logger, userService, newFileEvent);
 	}
 	
 	@Test
@@ -169,7 +168,7 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		FileInfo result = fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress));
 		
 		assertThat(result.getFileUri()).isEqualTo(fileMetadata.buildFileUri());
-		verify(asyncRepository).fireAsync(AsyncMediaEnrichEvent.of(fileEntity.getId()));
-		verifyZeroInteractions(logger);
+		verifyNoInteractions(logger);
+		verify(newFileEvent).fire(fileEntity);
 	}
 }

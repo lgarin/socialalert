@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.Optional;
 
+import javax.enterprise.event.Event;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
 
@@ -43,6 +44,9 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 	
 	@Mock
 	FileEntity fileEntity;
+	
+	@Mock
+	Event<MediaEntity> newMediaEvent;
 	
 	@Test
 	public void claimUnknownPicture() {

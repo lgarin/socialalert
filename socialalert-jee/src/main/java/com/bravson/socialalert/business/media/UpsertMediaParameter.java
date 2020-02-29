@@ -23,7 +23,7 @@ public class UpsertMediaParameter {
 	@NonNull
 	private String title;
 	
-	@NotBlank @Size(max=MediaConstants.MAX_DESCRIPTION_LENGTH)
+	@Size(min=1, max=MediaConstants.MAX_DESCRIPTION_LENGTH)
 	private String description;
 	
 	private String category;
