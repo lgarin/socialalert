@@ -29,7 +29,7 @@ public class FileSearchService {
 	FileRepository fileRepository;
 	
 	public List<FileInfo> findNewFilesByUserId(@NonNull String userId) {
-		return userService.fillUserInfo(fileRepository.findByUserIdAndState(userId, FileState.UPLOADED).stream().map(FileEntity::toFileInfo).collect(Collectors.toList()));
+		return userService.fillUserInfo(fileRepository.findByUserIdAndState(userId, FileState.PROCESSED).stream().map(FileEntity::toFileInfo).collect(Collectors.toList()));
 	}
 	
 	public Optional<FileInfo> findFileByUri(@NonNull String fileUri) {

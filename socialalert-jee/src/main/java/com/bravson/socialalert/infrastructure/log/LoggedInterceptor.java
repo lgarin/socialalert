@@ -28,7 +28,7 @@ public class LoggedInterceptor implements Serializable {
 		logger.info("Calling method {}.{} with {}", invocationContext.getMethod().getDeclaringClass().getSimpleName(), invocationContext.getMethod().getName(), Arrays.toString(invocationContext.getParameters()));
 		try {
 			Object result = invocationContext.proceed();
-			if (invocationContext.getMethod().getReturnType() == Void.class) {
+			if (invocationContext.getMethod().getReturnType() == Void.TYPE) {
 				logger.info("Returning from method {}.{}", invocationContext.getMethod().getDeclaringClass().getSimpleName(), invocationContext.getMethod().getName());
 			} else {
 				logger.info("Returning from method {}.{} with {}", invocationContext.getMethod().getDeclaringClass().getSimpleName(), invocationContext.getMethod().getName(), mapResult(result));

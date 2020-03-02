@@ -56,7 +56,7 @@ public class MediaEntity extends VersionedEntity {
 	private VersionInfo versionInfo;
 
 	@Getter
-	@OneToOne(fetch=FetchType.LAZY, optional=false)
+	@OneToOne(fetch=FetchType.EAGER, optional=false)
 	@JoinColumn(name = "file_id", foreignKey = @ForeignKey(name = "FK_Media_File"))
 	private FileEntity file;
 	
