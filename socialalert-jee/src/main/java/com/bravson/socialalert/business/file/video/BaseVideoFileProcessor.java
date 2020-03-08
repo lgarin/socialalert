@@ -28,13 +28,17 @@ public abstract class BaseVideoFileProcessor implements MediaFileProcessor {
 		this.config = config;
 	}
 	
-	protected File takeSnapshot(File sourceFile, File targetFile, int width, int height) throws IOException {
+	protected File takeSnapshot(File sourceFile, File targetFile, int width, int height, boolean watermark) throws IOException {
 		if (!sourceFile.canRead()) {
 			throw new IOException("Cannot read file " + sourceFile);
 		}
 		
-		//String filter = "thumbnail,scale=320:240:force_original_aspect_ratio=decrease,pad=320:240:(ow-iw)/2:(oh-ih)/2";
-		String filter = String.format("[0] thumbnail,scale=(iw*sar)*max(%1$d/(iw*sar)\\,%2$d/ih):ih*max(%1$d/(iw*sar)\\,%2$d/ih),crop=%1$d:%2$d [thumbnail]; [1] format=yuva420p,lutrgb='a=128' [watermark]; [thumbnail][watermark] overlay='x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2'", width, height);
+		String filter = String.format("[0] thumbnail,scale=(iw*sar)*max(%1$d/(iw*sar)\\,%2$d/ih):ih*max(%1$d/(iw*sar)\\,%2$d/ih),crop=%1$d:%2$d [thumbnail]; ", width, height);
+		if (watermark) {
+			filter += "[1] format=yuva420p,lutrgb='a=128' [watermark]; [thumbnail][watermark] overlay='x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2'";
+		} else {
+			filter += "[thumbnail] null";
+		}
 		
 		List<String> arguments = Arrays.asList(
 				"-i", sourceFile.getAbsolutePath(), 
@@ -56,7 +60,7 @@ public abstract class BaseVideoFileProcessor implements MediaFileProcessor {
 	
 	@Override
 	public MediaFileFormat createThumbnail(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
-		takeSnapshot(sourceFile, outputFile, config.getThumbnailWidth(), config.getThumbnailHeight());
+		takeSnapshot(sourceFile, outputFile, config.getThumbnailWidth(), config.getThumbnailHeight(), false);
 		return getThumbnailFormat();
 	}
 }

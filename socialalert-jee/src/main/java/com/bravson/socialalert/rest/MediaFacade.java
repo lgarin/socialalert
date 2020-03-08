@@ -302,4 +302,14 @@ public class MediaFacade {
 		}
 		return mediaSearchService.groupByGeoHash(parameter);
 	}
+	
+	@GET
+	@Path("/suggestTags")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Operation(summary="Suggest some tags based on the given term.")
+	@SecurityRequirement(name = "JWT")
+	public List<String> suggestTags(@Parameter(description="Define the term for searching the tags.", required=true) @QueryParam("term") String term,
+			@Parameter(description="Define the maximum number of matching tags to be returned.", required=true) @QueryParam("maxHitCount") int maxHitCount) {
+		return mediaSearchService.suggestTags(term, maxHitCount);
+	}
 }

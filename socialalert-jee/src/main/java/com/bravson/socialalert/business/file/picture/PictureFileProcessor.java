@@ -41,7 +41,6 @@ public class PictureFileProcessor implements MediaFileProcessor {
 	public MediaFileFormat createThumbnail(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
 		Thumbnails
 			.of(sourceFile)
-			.watermark(Positions.CENTER, watermarkImage, 0.25f)
 			.size(config.getThumbnailWidth(), config.getThumbnailHeight())
 			.crop(Positions.CENTER)
 			.outputFormat(JPG_EXTENSION)

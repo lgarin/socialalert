@@ -76,9 +76,9 @@ public class MediaSearchServiceTest extends BaseServiceTest {
 	@Test
 	public void suggestTags() {
 		String searchTerm = "test";
-		when(tagRepository.suggestTags(searchTerm)).thenReturn(Arrays.asList("test", "testimonial"));
+		when(tagRepository.suggestTags(searchTerm, 10)).thenReturn(Arrays.asList("test", "testimonial"));
 		
-		List<String> result = searchService.suggestTags(searchTerm);
+		List<String> result = searchService.suggestTags(searchTerm, 10);
 		assertThat(result).containsExactly("test", "testimonial");
 	}
 }

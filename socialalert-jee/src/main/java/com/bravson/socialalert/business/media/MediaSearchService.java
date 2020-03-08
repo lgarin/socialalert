@@ -44,7 +44,7 @@ public class MediaSearchService {
 		return userService.fillUserInfo(mediaRepository.findMedia(mediaUri).map(MediaEntity::toMediaInfo));
 	}
 	
-	public List<String> suggestTags(@NonNull String searchTerm) {
-		return tagRepository.suggestTags(searchTerm);
+	public List<String> suggestTags(@NonNull String searchTerm, int maxHitCount) {
+		return tagRepository.suggestTags(searchTerm, maxHitCount);
 	}
 }
