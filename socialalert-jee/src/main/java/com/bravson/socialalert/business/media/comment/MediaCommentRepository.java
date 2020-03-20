@@ -44,7 +44,7 @@ public class MediaCommentRepository {
 	
 	public QueryResult<MediaCommentEntity> searchByMediaUri(@NonNull String mediaUri, @NonNull PagingParameter paging) {
 		SearchResult<MediaCommentEntity> result = persistenceManager.search(MediaCommentEntity.class)
-				.predicate(p -> p.bool()
+				.where(p -> p.bool()
 						.must(p.range().field("versionInfo.creation").atMost(paging.getTimestamp()))
 						.must(p.match().field("media.id").matching(mediaUri)))
 				.sort(s -> s.field("versionInfo.creation").desc())

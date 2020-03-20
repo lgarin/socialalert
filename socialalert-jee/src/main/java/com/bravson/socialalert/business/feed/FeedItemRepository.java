@@ -49,7 +49,7 @@ public class FeedItemRepository {
 	
 	public QueryResult<FeedItemEntity> searchActivitiesByUsers(@NonNull Collection<String> userIdList, @NonNull PagingParameter paging) {
 		SearchResult<FeedItemEntity> result = persistenceManager.search(FeedItemEntity.class)
-				.predicate(p -> p.bool()
+				.where(p -> p.bool()
 						.must(p.range().field("versionInfo.creation").atMost(paging.getTimestamp()))
 						.must(p.simpleQueryString().field("versionInfo.userId").matching(String.join(" ", userIdList))))
 				.sort(s -> s.field("versionInfo.creation").desc())

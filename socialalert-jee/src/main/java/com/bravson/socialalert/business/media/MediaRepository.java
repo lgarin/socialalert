@@ -55,7 +55,7 @@ public class MediaRepository {
 	
 	public QueryResult<MediaEntity> searchMedia(@NonNull SearchMediaParameter parameter, @NonNull PagingParameter paging) {
 		SearchResult<MediaEntity> result = persistenceManager.search(MediaEntity.class)
-				.predicate(f -> createSearchQuery(parameter, paging.getTimestamp(), f))
+				.where(f -> createSearchQuery(parameter, paging.getTimestamp(), f))
 				.sort(f -> f.score())
 				.fetch(paging.getOffset(), paging.getPageSize());
 		return new QueryResult<>(result.getHits(), result.getTotalHitCount(), paging);
@@ -107,7 +107,7 @@ public class MediaRepository {
 		AggregationKey<Map<String, Long>> countsByGeoHashKey = AggregationKey.of("geoHash" + precision);
 		
 		SearchResult<MediaEntity> result = persistenceManager.search(MediaEntity.class)
-			.predicate(f -> createSearchQuery(parameter, Instant.now(), f))
+			.where(f -> createSearchQuery(parameter, Instant.now(), f))
 			.aggregation(countsByGeoHashKey, f -> f.terms()
 					.field("geoHash" + precision, String.class)
 					.orderByCountDescending())

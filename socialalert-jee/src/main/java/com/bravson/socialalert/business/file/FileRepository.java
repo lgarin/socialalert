@@ -39,7 +39,7 @@ public class FileRepository {
 	
 	public List<FileEntity> findByIpAddressPattern(@NonNull String ipAddressPattern) {
 		return persistenceManager.search(FileEntity.class)
-				.predicate(p -> p.wildcard().field("versionInfo.ipAddress").matching(ipAddressPattern))
+				.where(p -> p.wildcard().field("versionInfo.ipAddress").matching(ipAddressPattern))
 				.fetchHits(100);
 	}
 	

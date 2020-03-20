@@ -11,7 +11,7 @@ import javax.persistence.metamodel.EntityType;
 import javax.transaction.Transactional;
 
 import org.hibernate.search.mapper.orm.Search;
-import org.hibernate.search.mapper.orm.search.query.dsl.HibernateOrmSearchQueryHitTypeStep;
+import org.hibernate.search.mapper.orm.search.query.dsl.HibernateOrmSearchQuerySelectStep;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -25,7 +25,7 @@ public class PersistenceManager {
 	@PersistenceContext
     EntityManager entityManager;
 	
-	public <T> HibernateOrmSearchQueryHitTypeStep<T> search(Class<T> entityClass) {
+	public <T> HibernateOrmSearchQuerySelectStep<T> search(Class<T> entityClass) {
 		return Search.session(entityManager).search(entityClass);
 	}
 	

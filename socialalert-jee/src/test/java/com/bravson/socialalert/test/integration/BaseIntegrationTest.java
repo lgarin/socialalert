@@ -35,19 +35,19 @@ public abstract class BaseIntegrationTest extends Assertions {
 	protected URL deploymentUrl;
 	
 	@Inject
-	private Client httpClient;
+	Client httpClient;
 	
 	@Inject
-	private FileStore fileStore;
+	FileStore fileStore;
 	
 	@Inject
-	private PersistenceManager persistenceManager;
+	PersistenceManager persistenceManager;
 	
 	@Inject
-	private AsyncEventObserver asyncEventObserver;
+	AsyncEventObserver asyncEventObserver;
 	
 	@Inject
-	private OnlineUserCache onlineUserCache;
+	OnlineUserCache onlineUserCache;
 	
 	protected Builder createRequest(String path, String mediaType) {
 		return httpClient.target(deploymentUrl.toString() + "rest" + path).request(mediaType);
