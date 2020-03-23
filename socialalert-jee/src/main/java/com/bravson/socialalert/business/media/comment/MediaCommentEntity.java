@@ -20,6 +20,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
+import com.bravson.socialalert.business.media.MediaConstants;
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.media.comment.MediaCommentDetail;
@@ -62,7 +63,7 @@ public class MediaCommentEntity {
 	
 	@Getter
 	@NonNull
-	@Column(name = "comment", length = FieldLength.ID, nullable = false)
+	@Column(name = "comment", length = MediaConstants.MAX_COMMENT_LENGTH, nullable = false)
 	@FullTextField(analyzer = "languageAnalyzer")
 	private String comment;
 	
