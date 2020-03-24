@@ -79,7 +79,7 @@ public class MediaCommentService {
 		return approvalMap;
 	}
 	
-	public MediaCommentDetail setCommentModifier(@NonNull String commentId, ApprovalModifier modifier, @NonNull String userId) {
+	public MediaCommentDetail setApprovalModifier(@NonNull String commentId, ApprovalModifier modifier, @NonNull String userId) {
 		MediaCommentEntity entity = commentRepository.find(commentId).orElseThrow(NotFoundException::new);
 		
 		ApprovalModifier oldModifier = approvalRepository.find(commentId, userId).map(CommentApprovalEntity::getModifier).orElse(null);

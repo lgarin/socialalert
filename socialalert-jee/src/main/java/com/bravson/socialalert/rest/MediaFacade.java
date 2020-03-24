@@ -251,6 +251,42 @@ public class MediaFacade {
 		return commentService.createComment(mediaUri, comment, userAccess.get());
 	}
 	
+	@POST
+	@Path("/comment/approval/like/{commentId : .+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Operation(summary="Set the approval modifier of the comment to 'like'.")
+	@SecurityRequirement(name = "JWT")
+	@APIResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
+	@APIResponse(responseCode = "404", description = "No comment exists with this id.")
+	public MediaCommentDetail likeComment(
+			@Parameter(description="The comment id.", required=true) @NotEmpty @PathParam("commentId") String commentId) {
+		return commentService.setApprovalModifier(commentId, ApprovalModifier.LIKE, userAccess.get().getUserId());
+	}
+	
+	@POST
+	@Path("/comment/approval/dislike/{commentId : .+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Operation(summary="Set the approval modifier of the comment to 'dislike'.")
+	@SecurityRequirement(name = "JWT")
+	@APIResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
+	@APIResponse(responseCode = "404", description = "No comment exists with this id.")
+	public MediaCommentDetail dislikeComment(
+			@Parameter(description="The comment id.", required=true) @NotEmpty @PathParam("commentId") String commentId) {
+		return commentService.setApprovalModifier(commentId, ApprovalModifier.DISLIKE, userAccess.get().getUserId());
+	}
+	
+	@POST
+	@Path("/comment/approval/reset/{commentId : .+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Operation(summary="Set the approval modifier of the comment to 'null'.")
+	@SecurityRequirement(name = "JWT")
+	@APIResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
+	@APIResponse(responseCode = "404", description = "No comment exists with this id.")
+	public MediaCommentDetail resetCommentApproval(
+			@Parameter(description="The comment id.", required=true) @NotEmpty @PathParam("commentId") String commentId) {
+		return commentService.setApprovalModifier(commentId, null, userAccess.get().getUserId());
+	}
+	
 	@GET
 	@Path("/comments/{mediaUri : .+}")
 	@Produces(MediaType.APPLICATION_JSON)

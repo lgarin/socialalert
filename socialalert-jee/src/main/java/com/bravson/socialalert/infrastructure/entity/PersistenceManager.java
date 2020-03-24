@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -13,6 +14,7 @@ import javax.transaction.Transactional;
 import org.hibernate.search.mapper.orm.Search;
 import org.hibernate.search.mapper.orm.search.query.dsl.HibernateOrmSearchQuerySelectStep;
 
+import io.quarkus.runtime.StartupEvent;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -56,5 +58,9 @@ public class PersistenceManager {
 		String allTables = entityManager.getMetamodel().getEntities().stream().map(EntityType::getName).collect(Collectors.joining(", "));
     	entityManager.createNativeQuery("TRUNCATE TABLE " + allTables + " CASCADE").executeUpdate();
     	Search.session(entityManager).workspace().purge();
+	}
+	
+	void onStart(@Observes StartupEvent ev) throws InterruptedException {
+		Search.session(entityManager).massIndexer().startAndWait();
 	}
 }

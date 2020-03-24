@@ -130,7 +130,7 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 		when(commentEntity.toMediaCommentDetail()).thenReturn(commentDetail);
 		when(userService.fillUserInfo(commentDetail)).thenReturn(commentDetail);
 		
-		MediaCommentDetail result = commentService.setCommentModifier(commentId, modifier, userId);
+		MediaCommentDetail result = commentService.setApprovalModifier(commentId, modifier, userId);
 		assertThat(result).isEqualTo(commentDetail);
 		assertThat(result.getUserApprovalModifier()).isEqualTo(modifier);
 		
@@ -153,7 +153,7 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 		when(commentEntity.toMediaCommentDetail()).thenReturn(commentDetail);
 		when(userService.fillUserInfo(commentDetail)).thenReturn(commentDetail);
 		
-		MediaCommentDetail result = commentService.setCommentModifier(commentId, modifier, userId);
+		MediaCommentDetail result = commentService.setApprovalModifier(commentId, modifier, userId);
 		assertThat(result).isEqualTo(commentDetail);
 		assertThat(result.getUserApprovalModifier()).isEqualTo(modifier);
 	}
@@ -165,7 +165,7 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 		ApprovalModifier modifier = ApprovalModifier.DISLIKE;
 		when(commentRepository.find(commentId)).thenReturn(Optional.empty());
 		
-		assertThatThrownBy(() -> commentService.setCommentModifier(commentId, modifier, userId)).isInstanceOf(NotFoundException.class);
+		assertThatThrownBy(() -> commentService.setApprovalModifier(commentId, modifier, userId)).isInstanceOf(NotFoundException.class);
 		verifyNoMoreInteractions(approvalRepository, userService);
 	}
 }
