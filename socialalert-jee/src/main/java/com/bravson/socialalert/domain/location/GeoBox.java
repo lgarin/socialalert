@@ -1,5 +1,7 @@
 package com.bravson.socialalert.domain.location;
 
+import javax.json.bind.annotation.JsonbTransient;
+
 import lombok.Builder;
 import lombok.Value;
 
@@ -12,19 +14,23 @@ public class GeoBox {
 	private double minLon;
 	private double maxLon;
 	
-	public double getLatitudeSize() {
+	@JsonbTransient
+	public double getLatDelta() {
 		return maxLat - minLat;
 	}
 
-	public double getLongitudeSize() {
+	@JsonbTransient
+	public double getLonDelta() {
 		return maxLon - minLon;
 	}
 	
-	public double getCenterLatitude() {
+	@JsonbTransient
+	public double getCenterLat() {
 		return (maxLat + minLat) / 2.0;
 	}
 	
-	public double getCenterLongitude() {
+	@JsonbTransient
+	public double getCenterLon() {
 		return (maxLon + minLon) / 2.0;
 	}
 }

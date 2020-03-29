@@ -34,7 +34,7 @@ public interface GeoHashUtil {
 		List<String> searchHashes = new ArrayList<>();
 		BoundingBox boundingBox = toBoundingBox(geoArea);
 		int precision = (GeoHashSizeTable.numberOfBitsForOverlappingGeoHash(boundingBox) + 4) / 5;
-		GeoHash centerHash = GeoHash.withCharacterPrecision(geoArea.getCenterLatitude(), geoArea.getCenterLongitude(), precision);
+		GeoHash centerHash = GeoHash.withCharacterPrecision(geoArea.getCenterLat(), geoArea.getCenterLon(), precision);
 		searchHashes.add(centerHash.toBase32());
 		if (!centerHash.contains(boundingBox.getUpperLeft()) || !centerHash.contains(boundingBox.getLowerRight())) {
 			for (GeoHash adjacent : centerHash.getAdjacent()) {

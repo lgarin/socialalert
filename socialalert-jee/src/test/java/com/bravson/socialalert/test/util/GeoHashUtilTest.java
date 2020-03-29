@@ -21,7 +21,7 @@ public class GeoHashUtilTest extends Assertions {
 		 int precision = GeoHashUtil.computeGeoHashPrecision(geoBox, 64);
 		 assertThat(precision).isEqualTo(6);
 		 
-		 String geoHash = GeoHashUtil.computeGeoHash(geoBox.getCenterLatitude(), geoBox.getCenterLongitude(), 4);
+		 String geoHash = GeoHashUtil.computeGeoHash(geoBox.getCenterLat(), geoBox.getCenterLon(), 4);
 		 assertThat(geoHash).isEqualTo("u0m9");
 	 }
 

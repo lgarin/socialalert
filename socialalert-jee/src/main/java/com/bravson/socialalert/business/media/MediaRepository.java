@@ -56,7 +56,7 @@ public class MediaRepository {
 	public QueryResult<MediaEntity> searchMedia(@NonNull SearchMediaParameter parameter, @NonNull PagingParameter paging) {
 		SearchResult<MediaEntity> result = persistenceManager.search(MediaEntity.class)
 				.where(f -> createSearchQuery(parameter, paging.getTimestamp(), f))
-				.sort(f -> f.score())
+				.sort(f -> f.score().desc())
 				.fetch(paging.getOffset(), paging.getPageSize());
 		return new QueryResult<>(result.getHits(), result.getTotalHitCount(), paging);
 	}
