@@ -10,7 +10,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -27,6 +26,7 @@ import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.domain.feed.FeedItemInfo;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
+import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
 @Tag(name="feed")
 @Path("/feed")
@@ -45,7 +45,7 @@ public class FeedFacade {
 	@Path("/current")
 	@Operation(summary="Get the feed for the current user.")
 	@SecurityRequirement(name = "JWT")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@APIResponse(responseCode = "200", description = "The feed has been retrieved successfuly.", content=@Content(schema=@Schema(implementation=FeedItemInfo.class)))
 	public QueryResult<FeedItemInfo> getFeed(
 			@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,

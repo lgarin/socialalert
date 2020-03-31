@@ -25,7 +25,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -55,6 +54,7 @@ import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.domain.file.FileInfo;
 import com.bravson.socialalert.domain.media.format.MediaFileConstants;
+import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
 @Tag(name="file")
 @Path("/file")
@@ -136,7 +136,7 @@ public class FileFacade {
 	}
 	
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Operation(summary="Access the file metadata.")
 	@SecurityRequirement(name = "JWT")
 	@Path("/metadata/{mediaUri : .+}")
@@ -148,7 +148,7 @@ public class FileFacade {
 	}
 	
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Operation(summary="List the new files for the current user.")
 	@SecurityRequirement(name = "JWT")
 	@Path("/list/new")

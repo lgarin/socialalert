@@ -16,6 +16,7 @@ import com.bravson.socialalert.business.media.UpsertMediaParameter;
 import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.media.MediaDetail;
 import com.bravson.socialalert.domain.media.format.MediaFileConstants;
+import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -29,7 +30,7 @@ public class MediaQueryTest extends BaseIntegrationTest {
 		param.setTags(Arrays.asList("tag1", "tag2"));
 		param.setCategory("cat1");
 		param.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
-		return Entity.entity(param, MediaType.APPLICATION_JSON_TYPE);
+		return Entity.entity(param, MediaTypeConstants.JSON);
 	}
 
 	private static Entity<File> getPicture(String filename) {
@@ -47,9 +48,9 @@ public class MediaQueryTest extends BaseIntegrationTest {
 		String token = requestLoginToken("test@test.com", "123");
 		String uri = uploadPicture(token);
 		awaitAsyncEvent(AsyncMediaProcessedEvent.class);
-		Response claim = createAuthRequest("/media/claim/" + uri, MediaType.APPLICATION_JSON, token).post(getClaimMediaParameter());
+		Response claim = createAuthRequest("/media/claim/" + uri, MediaTypeConstants.JSON, token).post(getClaimMediaParameter());
 		assertThat(claim.getStatus()).isEqualTo(Status.OK.getStatusCode());
-		MediaDetail result = createAuthRequest("/media/view/" + uri, MediaType.APPLICATION_JSON, token).get(MediaDetail.class);
+		MediaDetail result = createAuthRequest("/media/view/" + uri, MediaTypeConstants.JSON, token).get(MediaDetail.class);
 		assertThat(result).isNotNull();
 		assertThat(result.getCreator().getUsername()).isEqualTo("test@test.com");
 		assertThat(result.getCreator().isOnline()).isTrue();

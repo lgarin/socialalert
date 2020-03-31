@@ -52,8 +52,8 @@ public class PictureFileProcessor implements MediaFileProcessor {
 	public MediaFileFormat createPreview(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
 		Thumbnails
 			.of(sourceFile)
-			.watermark(Positions.CENTER, watermarkImage, 0.25f)
 			.size(config.getPreviewWidth(), config.getPreviewHeight())
+			//.watermark(Positions.BOTTOM_RIGHT, watermarkImage, 0.25f)
 			.outputFormat(JPG_EXTENSION)
 			.toFile(outputFile);
 		return getPreviewFormat();

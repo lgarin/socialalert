@@ -4,7 +4,6 @@ import java.time.Instant;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -16,6 +15,7 @@ import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.user.LoginParameter;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -30,7 +30,7 @@ public class UserFacadeTest extends BaseIntegrationTest {
 		createProfile("test@test.com");
 		
 		LoginParameter param = new LoginParameter("test@test.com", "123");
-		Response response = createRequest("/user/login", MediaType.APPLICATION_JSON).post(Entity.json(param));
+		Response response = createRequest("/user/login", MediaTypeConstants.JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 		LoginResponse result = response.readEntity(LoginResponse.class); 
 		assertThat(result).isNotNull();
@@ -51,71 +51,71 @@ public class UserFacadeTest extends BaseIntegrationTest {
 	@Test
 	public void loginWithEmptyPassword() throws Exception {
 		LoginParameter param = new LoginParameter("test@test.com", "");
-		Response response = createRequest("/user/login", MediaType.APPLICATION_JSON).post(Entity.json(param));
+		Response response = createRequest("/user/login", MediaTypeConstants.JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 	}
 	
 	@Test
 	public void loginWithEmptyUserId() throws Exception {
 		LoginParameter param = new LoginParameter("", "abc");
-		Response response = createRequest("/user/login", MediaType.APPLICATION_JSON).post(Entity.json(param));
+		Response response = createRequest("/user/login", MediaTypeConstants.JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 	}
 	
 	@Test
 	public void loginWithInvalidPassword() throws Exception {
 		LoginParameter param = new LoginParameter("test@test.com", "abc");
-		Response response = createRequest("/user/login", MediaType.APPLICATION_JSON).post(Entity.json(param));
+		Response response = createRequest("/user/login", MediaTypeConstants.JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
 	
 	@Test
 	public void loginWithUnknownUser() throws Exception {
 		LoginParameter param = new LoginParameter("xyz@test.com", "abc");
-		Response response = createRequest("/user/login", MediaType.APPLICATION_JSON).post(Entity.json(param));
+		Response response = createRequest("/user/login", MediaTypeConstants.JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
 	
 	@Test
 	public void renewLoginWithInvalidToken() throws Exception {
-		Response response = createRequest("/user/renewLogin", MediaType.APPLICATION_JSON).post(Entity.json("1234"));
+		Response response = createRequest("/user/renewLogin", MediaTypeConstants.JSON).post(Entity.json("1234"));
 		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
 	
 	@Test
 	public void renewLoginWithValidToken() throws Exception {
 		LoginParameter param = new LoginParameter("test@test.com", "123");
-		LoginResponse loginResponse = createRequest("/user/login", MediaType.APPLICATION_JSON).post(Entity.json(param)).readEntity(LoginResponse.class);
-		Response response = createRequest("/user/renewLogin", MediaType.APPLICATION_JSON).post(Entity.json(loginResponse.getRefreshToken()));
+		LoginResponse loginResponse = createRequest("/user/login", MediaTypeConstants.JSON).post(Entity.json(param)).readEntity(LoginResponse.class);
+		Response response = createRequest("/user/renewLogin", MediaTypeConstants.JSON).post(Entity.json(loginResponse.getRefreshToken()));
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 	}
 	
 	@Test
 	public void renewLoginTwiceWithSameToken() throws Exception {
 		LoginParameter param = new LoginParameter("test@test.com", "123");
-		LoginResponse loginResponse = createRequest("/user/login", MediaType.APPLICATION_JSON).post(Entity.json(param)).readEntity(LoginResponse.class);
-		Response response1 = createRequest("/user/renewLogin", MediaType.APPLICATION_JSON).post(Entity.json(loginResponse.getRefreshToken()));
+		LoginResponse loginResponse = createRequest("/user/login", MediaTypeConstants.JSON).post(Entity.json(param)).readEntity(LoginResponse.class);
+		Response response1 = createRequest("/user/renewLogin", MediaTypeConstants.JSON).post(Entity.json(loginResponse.getRefreshToken()));
 		assertThat(response1.getStatus()).isEqualTo(Status.OK.getStatusCode());
-		Response response2 = createRequest("/user/renewLogin", MediaType.APPLICATION_JSON).post(Entity.json(loginResponse.getRefreshToken()));
+		Response response2 = createRequest("/user/renewLogin", MediaTypeConstants.JSON).post(Entity.json(loginResponse.getRefreshToken()));
 		assertThat(response2.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
 	
 	@Test
 	public void logoutWithoutToken() throws Exception {
-		Response response = createRequest("/user/logout", MediaType.TEXT_PLAIN).post(null);
+		Response response = createRequest("/user/logout", MediaTypeConstants.TEXT_PLAIN).post(null);
 		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
 	
 	@Test
 	public void logoutWithToken() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/user/logout", MediaType.TEXT_PLAIN, token).post(null);
+		Response response = createAuthRequest("/user/logout", MediaTypeConstants.TEXT_PLAIN, token).post(null);
 		assertThat(response.getStatus()).isEqualTo(Status.NO_CONTENT.getStatusCode());
 	}
 	
 	@Test
 	public void logoutWithInvalidToken() throws Exception {
-		Response response = createAuthRequest("/user/logout", MediaType.TEXT_PLAIN, "Bearer 12344334").post(null);
+		Response response = createAuthRequest("/user/logout", MediaTypeConstants.TEXT_PLAIN, "Bearer 12344334").post(null);
 		assertThat(response.getStatus()).isEqualTo(Status.FORBIDDEN.getStatusCode());
 	}
 	
@@ -124,7 +124,7 @@ public class UserFacadeTest extends BaseIntegrationTest {
 		createProfile("test@test.com");
 		
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/user/current", MediaType.APPLICATION_JSON, token).get();
+		Response response = createAuthRequest("/user/current", MediaTypeConstants.JSON, token).get();
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 		UserInfo user = response.readEntity(UserInfo.class);
 		assertThat(user).isNotNull();
@@ -133,7 +133,7 @@ public class UserFacadeTest extends BaseIntegrationTest {
 	
 	@Test
 	public void getCurrentUserWithoutToken() throws Exception {
-		Response response = createRequest("/user/current", MediaType.APPLICATION_JSON).get();
+		Response response = createRequest("/user/current", MediaTypeConstants.JSON).get();
 		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
 }

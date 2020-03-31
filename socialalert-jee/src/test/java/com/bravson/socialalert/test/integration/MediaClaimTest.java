@@ -19,6 +19,7 @@ import com.bravson.socialalert.business.media.UpsertMediaParameter;
 import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.media.format.MediaFileConstants;
+import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -32,13 +33,13 @@ public class MediaClaimTest extends BaseIntegrationTest {
 		param.setTags(Arrays.asList("tag1", "tag2"));
 		param.setCategory("cat1");
 		param.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
-		return Entity.entity(param, MediaType.APPLICATION_JSON_TYPE);
+		return Entity.entity(param, MediaTypeConstants.JSON);
 	}
 	
 	@Test
 	public void claimNonExistingPicture() {
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/media/claim/20170407/58b28c6b28011a1ad4180419", MediaType.APPLICATION_JSON, token).post(getClaimMediaParameter());
+		Response response = createAuthRequest("/media/claim/20170407/58b28c6b28011a1ad4180419", MediaTypeConstants.JSON, token).post(getClaimMediaParameter());
 		assertThat(response.getStatus()).isEqualTo(Status.NOT_FOUND.getStatusCode());
 	}
 	
@@ -57,7 +58,7 @@ public class MediaClaimTest extends BaseIntegrationTest {
 		String token = requestLoginToken("test@test.com", "123");
 		String uri = uploadPicture(token);
 		awaitAsyncEvent(AsyncMediaProcessedEvent.class);
-		Response response = createAuthRequest("/media/claim/" + uri, MediaType.APPLICATION_JSON, token).post(getClaimMediaParameter());
+		Response response = createAuthRequest("/media/claim/" + uri, MediaTypeConstants.JSON, token).post(getClaimMediaParameter());
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 		MediaInfo result = response.readEntity(MediaInfo.class); 
 		assertThat(result).isNotNull();
@@ -92,7 +93,7 @@ public class MediaClaimTest extends BaseIntegrationTest {
 		String token = requestLoginToken("test@test.com", "123");
 		String uri = uploadVideo(token);
 		awaitAsyncEvent(AsyncMediaProcessedEvent.class);
-		Response response = createAuthRequest("/media/claim/" + uri, MediaType.APPLICATION_JSON, token).post(getClaimMediaParameter());
+		Response response = createAuthRequest("/media/claim/" + uri, MediaTypeConstants.JSON, token).post(getClaimMediaParameter());
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 		MediaInfo result = response.readEntity(MediaInfo.class); 
 		assertThat(result).isNotNull();

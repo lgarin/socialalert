@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.file.media.AsyncMediaProcessedEvent;
 import com.bravson.socialalert.domain.media.format.MediaFileConstants;
+import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 import com.google.common.io.Files;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -21,7 +22,7 @@ import io.quarkus.test.junit.QuarkusTest;
 public class FileUploadTest extends BaseIntegrationTest {
 	
 	private static Entity<String> getPlainText(String content) {
-		return Entity.entity(content, MediaType.TEXT_PLAIN_TYPE);
+		return Entity.entity(content, MediaTypeConstants.TEXT_PLAIN);
 	}
 	
 	private static Entity<File> getPicture(String filename) {

@@ -13,7 +13,6 @@ import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.assertj.core.api.Assertions;
@@ -26,6 +25,7 @@ import com.bravson.socialalert.domain.user.LoginParameter;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.infrastructure.async.AsyncEvent;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
+import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
 import io.quarkus.test.common.http.TestHTTPResource;
 
@@ -59,7 +59,7 @@ public abstract class BaseIntegrationTest extends Assertions {
 	
 	protected String requestLoginToken(String userId, String password) {
 		LoginParameter param = new LoginParameter(userId,password);
-		LoginResponse response = createRequest("/user/login", MediaType.APPLICATION_JSON).post(Entity.json(param)).readEntity(LoginResponse.class);
+		LoginResponse response = createRequest("/user/login", MediaTypeConstants.JSON).post(Entity.json(param)).readEntity(LoginResponse.class);
 		return response.getAccessToken();
 	}
 	

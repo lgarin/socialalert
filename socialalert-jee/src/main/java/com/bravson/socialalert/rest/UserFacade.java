@@ -20,7 +20,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
@@ -45,6 +44,7 @@ import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.LoginTokenResponse;
 import com.bravson.socialalert.domain.user.NewUserParameter;
 import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
 @Tag(name="user")
 @Path("/user")
@@ -62,8 +62,8 @@ public class UserFacade {
 	Instance<UserAccess> userAccess;
 	
 	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaTypeConstants.JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Path("/create")
 	@PermitAll
 	@Operation(summary="Create a new user.")
@@ -77,8 +77,8 @@ public class UserFacade {
 	}
 	
 	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaTypeConstants.JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Path("/login")
 	@PermitAll
 	@Operation(summary="Login an existing user.")
@@ -89,8 +89,8 @@ public class UserFacade {
 	}
 	
 	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaTypeConstants.JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Path("/renewLogin")
 	@PermitAll
 	@Operation(summary="Renew an existing login using the previous refresh token.")
@@ -118,7 +118,7 @@ public class UserFacade {
 	}
 	
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Path("/current")
 	@UserActivity
 	@Operation(summary="Read information about the currently logged in user.")
@@ -130,7 +130,7 @@ public class UserFacade {
 	}
 	
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Path("/info/{userId : .+}")
 	@UserActivity
 	@Operation(summary="Read information about the specified user.")
@@ -176,7 +176,7 @@ public class UserFacade {
 	
 	@GET
 	@Path("/followed")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@UserActivity
 	@Operation(summary="List the followed users.")
 	@SecurityRequirement(name = "JWT")

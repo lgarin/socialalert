@@ -21,7 +21,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -52,6 +51,7 @@ import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
+import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
 @Tag(name="media")
 @Path("/media")
@@ -77,8 +77,8 @@ public class MediaFacade {
 	
 	@POST
 	@Path("/claim/{mediaUri : .+}")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaTypeConstants.JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Operation(summary="Claim a media which has been uploaded recently.")
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "This media has been successfully claimed.", content=@Content(schema=@Schema(implementation=MediaInfo.class)))
@@ -93,8 +93,8 @@ public class MediaFacade {
 	
 	@POST
 	@Path("/update/{mediaUri : .+}")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaTypeConstants.JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Operation(summary="Update the meta information about a media.")
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "The metainformation have been successfully updated.", content=@Content(schema=@Schema(implementation=MediaInfo.class)))
@@ -108,7 +108,7 @@ public class MediaFacade {
 	
 	@GET
 	@Path("/search")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Operation(summary="Search claimed media based on any combination of the provided parameters.")
 	@SecurityRequirement(name = "JWT")
 	public QueryResult<MediaInfo> searchMedia(
@@ -152,7 +152,7 @@ public class MediaFacade {
 	
 	@GET
 	@Path("/searchNearest")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Operation(summary="Search claimed media based on any combination of the provided parameters.")
 	@SecurityRequirement(name = "JWT")
 	public QueryResult<MediaInfo> searchNearestMedia(
@@ -190,7 +190,7 @@ public class MediaFacade {
 	
 	@GET
 	@Path("/view/{mediaUri : .+}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Operation(summary="View the media details. If it is the first call for this media in the user session, then the hit count will be increased by one.")
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "The detail is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
@@ -203,7 +203,7 @@ public class MediaFacade {
 	
 	@POST
 	@Path("/approval/like/{mediaUri : .+}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Operation(summary="Set the approval modifier of the media to 'like'.")
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
@@ -215,7 +215,7 @@ public class MediaFacade {
 	
 	@POST
 	@Path("/approval/dislike/{mediaUri : .+}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Operation(summary="Set the approval modifier of the media to 'dislike'.")
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
@@ -229,7 +229,7 @@ public class MediaFacade {
 	@Path("/approval/reset/{mediaUri : .+}")
 	@Operation(summary="Set the approval modifier of the media to 'null'.")
 	@SecurityRequirement(name = "JWT")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@APIResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
 	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaDetail resetMediaApproval(
@@ -241,8 +241,8 @@ public class MediaFacade {
 	@Path("/comment/{mediaUri : .+}")
 	@Operation(summary="Comment the specified media.")
 	@SecurityRequirement(name = "JWT")
-	@Consumes(MediaType.TEXT_PLAIN)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaTypeConstants.TEXT_PLAIN)
+	@Produces(MediaTypeConstants.JSON)
 	@APIResponse(responseCode = "200", description = "The comment has been created.", content=@Content(schema=@Schema(implementation=MediaCommentInfo.class)))
 	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public MediaCommentInfo commentMedia(
@@ -253,7 +253,7 @@ public class MediaFacade {
 	
 	@POST
 	@Path("/comment/approval/like/{commentId : .+}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Operation(summary="Set the approval modifier of the comment to 'like'.")
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
@@ -265,7 +265,7 @@ public class MediaFacade {
 	
 	@POST
 	@Path("/comment/approval/dislike/{commentId : .+}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Operation(summary="Set the approval modifier of the comment to 'dislike'.")
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
@@ -277,7 +277,7 @@ public class MediaFacade {
 	
 	@POST
 	@Path("/comment/approval/reset/{commentId : .+}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Operation(summary="Set the approval modifier of the comment to 'null'.")
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "The new status is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
@@ -289,7 +289,7 @@ public class MediaFacade {
 	
 	@GET
 	@Path("/comments/{mediaUri : .+}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Operation(summary="List the comments for the specified media.")
 	@SecurityRequirement(name = "JWT")
 	//@APIResponse(responseCode = "200", description = "The comments have been retrieved successfully.", content=@Content(schema=@Schema(implementation=MediaCommentDetail.class)))
@@ -304,7 +304,7 @@ public class MediaFacade {
 	
 	@GET
 	@Path("/mapCount")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Operation(summary="Group count claimed media in the given area based on their geo hash.")
 	@SecurityRequirement(name = "JWT")
 	public List<GeoStatistic> mapMediaMatchCount(@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
@@ -341,7 +341,7 @@ public class MediaFacade {
 	
 	@GET
 	@Path("/suggestTags")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Operation(summary="Suggest some tags based on the given term.")
 	@SecurityRequirement(name = "JWT")
 	public List<String> suggestTags(@Parameter(description="Define the term for searching the tags.", required=true) @QueryParam("term") String term,
