@@ -73,4 +73,8 @@ public class FileMetadata implements Serializable {
 	public boolean isPicture() {
 		return MediaFileFormat.PICTURE_SET.contains(fileFormat);
 	}
+	
+	public String getFormattedDate() {
+		return DateUtil.COMPACT_DATE_FORMATTER.format(timestamp);
+	}
 }

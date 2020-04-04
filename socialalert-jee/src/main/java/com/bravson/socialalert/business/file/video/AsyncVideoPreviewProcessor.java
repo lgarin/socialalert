@@ -51,8 +51,8 @@ public class AsyncVideoPreviewProcessor {
 	private void createPreview(FileEntity fileEntity) {
 		try {
 			FileMetadata fileMetadata = fileEntity.getFileMetadata();
-			File inputFile = fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileMetadata.getFileFormat());
-			File previewFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), videoFileProcessor.getPreviewFormat());
+			File inputFile = fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), fileMetadata.getFileFormat());
+			File previewFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), videoFileProcessor.getPreviewFormat());
 			videoFileProcessor.createPreview(inputFile, previewFile);
 			fileEntity.addVariant(buildFileMetadata(previewFile, videoFileProcessor.getPreviewFormat(), fileMetadata));
 			asyncRepository.fireAsync(AsyncMediaProcessedEvent.of(fileEntity.getId()));

@@ -45,7 +45,7 @@ public class MediaFileEnricher {
 	
 	public void handleNewMedia(@Observes @NewEntity FileEntity fileEntity) throws IOException {
 		FileMetadata fileMetadata = fileEntity.getFileMetadata();
-		File inputFile = fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileMetadata.getFileFormat());
+		File inputFile = fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), fileMetadata.getFileFormat());
 		
 		MediaMetadata mediaMetadata = metadataExtractor.parseMetadata(inputFile);
 		if (!fileEntity.markProcessed(mediaMetadata)) {

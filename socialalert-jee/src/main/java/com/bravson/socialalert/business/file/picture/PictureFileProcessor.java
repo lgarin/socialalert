@@ -38,25 +38,23 @@ public class PictureFileProcessor implements MediaFileProcessor {
 	}
 
 	@Override
-	public MediaFileFormat createThumbnail(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
+	public void createThumbnail(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
 		Thumbnails
 			.of(sourceFile)
 			.size(config.getThumbnailWidth(), config.getThumbnailHeight())
 			.crop(Positions.CENTER)
 			.outputFormat(JPG_EXTENSION)
 			.toFile(outputFile);
-		return getThumbnailFormat();
 	}
 	
 	@Override
-	public MediaFileFormat createPreview(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
+	public void createPreview(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
 		Thumbnails
 			.of(sourceFile)
 			.size(config.getPreviewWidth(), config.getPreviewHeight())
 			//.watermark(Positions.BOTTOM_RIGHT, watermarkImage, 0.25f)
 			.outputFormat(JPG_EXTENSION)
 			.toFile(outputFile);
-		return getPreviewFormat();
 	}
 	
 	@Override

@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import com.bravson.socialalert.business.file.media.MediaConfiguration;
 import com.bravson.socialalert.business.file.media.MediaFileProcessor;
-import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.infrastructure.util.ProcessUtil;
 
 import lombok.AccessLevel;
@@ -59,8 +58,7 @@ public abstract class BaseVideoFileProcessor implements MediaFileProcessor {
 
 	
 	@Override
-	public MediaFileFormat createThumbnail(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
+	public void createThumbnail(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
 		takeSnapshot(sourceFile, outputFile, config.getThumbnailWidth(), config.getThumbnailHeight(), false);
-		return getThumbnailFormat();
 	}
 }

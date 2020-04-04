@@ -68,7 +68,7 @@ public class MediaFileStoreTest extends BaseServiceTest {
 		FileMetadata result = mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.MEDIA);
 		assertThat(result).isSameAs(fileMetadata);
 		
-		verify(fileStore).storeFile(inputFile, fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileMetadata.getFileFormat());
+		verify(fileStore).storeFile(inputFile, fileMetadata.getMd5(), fileMetadata.getFormattedDate(), fileMetadata.getFileFormat());
 		verifyNoMoreInteractions(fileStore, videoFileProcessor, pictureFileProcessor);
 	}
 	
@@ -79,10 +79,10 @@ public class MediaFileStoreTest extends BaseServiceTest {
 		File tempFile = new File("src/test/resources/media/temp.jpg");
 		File outputFile = new File("src/test/resources/media/out.jpg");
 		
-		when(fileStore.createEmptyFile(eq(fileMetadata.getMd5()), eq(fileMetadata.getTimestamp()), any(TempFileFormat.class))).thenReturn(tempFile);
+		when(fileStore.createEmptyFile(eq(fileMetadata.getMd5()), eq(fileMetadata.getFormattedDate()), any(TempFileFormat.class))).thenReturn(tempFile);
 		when(pictureFileProcessor.createVariant(inputFile, tempFile, MediaSizeVariant.THUMBNAIL)).thenReturn(MediaFileFormat.THUMBNAIL_JPG);
 		when(pictureFileProcessor.getFormat(Mockito.any())).thenReturn(MediaFileFormat.THUMBNAIL_JPG);
-		when(fileStore.changeFileFormat(eq(fileMetadata.getMd5()), eq(fileMetadata.getTimestamp()), any(TempFileFormat.class), eq(MediaFileFormat.THUMBNAIL_JPG))).thenReturn(outputFile);
+		when(fileStore.changeFileFormat(eq(fileMetadata.getMd5()), eq(fileMetadata.getFormattedDate()), any(TempFileFormat.class), eq(MediaFileFormat.THUMBNAIL_JPG))).thenReturn(outputFile);
 		when(fileStore.computeMd5Hex(outputFile)).thenReturn("456");
 		
 		FileMetadata result = mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL);
@@ -96,10 +96,10 @@ public class MediaFileStoreTest extends BaseServiceTest {
 		File tempFile = new File("src/test/resources/media/temp.jpg");
 		File outputFile = new File("src/test/resources/media/out.jpg");
 		
-		when(fileStore.createEmptyFile(eq(fileMetadata.getMd5()), eq(fileMetadata.getTimestamp()), any(TempFileFormat.class))).thenReturn(tempFile);
+		when(fileStore.createEmptyFile(eq(fileMetadata.getMd5()), eq(fileMetadata.getFormattedDate()), any(TempFileFormat.class))).thenReturn(tempFile);
 		when(videoFileProcessor.createVariant(inputFile, tempFile, MediaSizeVariant.PREVIEW)).thenReturn(MediaFileFormat.PREVIEW_JPG);
 		when(videoFileProcessor.getFormat(Mockito.any())).thenReturn(MediaFileFormat.MEDIA_MP4);
-		when(fileStore.changeFileFormat(eq(fileMetadata.getMd5()), eq(fileMetadata.getTimestamp()), any(TempFileFormat.class), eq(MediaFileFormat.PREVIEW_JPG))).thenReturn(outputFile);
+		when(fileStore.changeFileFormat(eq(fileMetadata.getMd5()), eq(fileMetadata.getFormattedDate()), any(TempFileFormat.class), eq(MediaFileFormat.PREVIEW_JPG))).thenReturn(outputFile);
 		when(fileStore.computeMd5Hex(outputFile)).thenReturn("456");
 		
 		FileMetadata result = mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.PREVIEW);

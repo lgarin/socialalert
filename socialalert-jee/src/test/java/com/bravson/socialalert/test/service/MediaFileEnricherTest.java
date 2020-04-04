@@ -55,7 +55,7 @@ public class MediaFileEnricherTest extends BaseServiceTest {
 		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4"));
 		MediaMetadata metadata = MediaMetadata.builder().cameraMaker("a").cameraModel("b").width(1200).height(1600).timestamp(Instant.EPOCH).build();
 		
-		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileMetadata.getFileFormat())).thenReturn(inputFile);
+		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), fileMetadata.getFileFormat())).thenReturn(inputFile);
 		when(metadataExtractor.parseMetadata(inputFile)).thenReturn(metadata);
 		when(mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.PREVIEW)).thenReturn(fileMetadata.withFileFormat(MediaFileFormat.PREVIEW_JPG));
 		when(mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL)).thenReturn(fileMetadata.withFileFormat(MediaFileFormat.THUMBNAIL_JPG));
@@ -77,7 +77,7 @@ public class MediaFileEnricherTest extends BaseServiceTest {
 		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4"));
 		MediaMetadata metadata = MediaMetadata.builder().cameraMaker("a").cameraModel("b").width(1200).height(1600).timestamp(Instant.EPOCH).build();
 		
-		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileMetadata.getFileFormat())).thenReturn(inputFile);
+		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), fileMetadata.getFileFormat())).thenReturn(inputFile);
 		when(metadataExtractor.parseMetadata(inputFile)).thenReturn(metadata);
 		when(mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.PREVIEW)).thenReturn(fileMetadata.withFileFormat(MediaFileFormat.PREVIEW_JPG));
 		when(mediaFileStore.storeVariant(inputFile, fileMetadata, MediaSizeVariant.THUMBNAIL)).thenReturn(fileMetadata.withFileFormat(MediaFileFormat.THUMBNAIL_JPG));
@@ -100,7 +100,7 @@ public class MediaFileEnricherTest extends BaseServiceTest {
 		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4"));
 		IOException exception = new IOException();
 		
-		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileMetadata.getFileFormat())).thenReturn(inputFile);
+		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), fileMetadata.getFileFormat())).thenReturn(inputFile);
 		when(metadataExtractor.parseMetadata(inputFile)).thenThrow(exception);
 		
 		assertThrows(IOException.class, () -> enricher.handleNewMedia(fileEntity));

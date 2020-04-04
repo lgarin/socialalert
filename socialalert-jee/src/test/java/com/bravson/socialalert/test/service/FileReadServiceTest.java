@@ -52,7 +52,7 @@ public class FileReadServiceTest extends BaseServiceTest {
 		FileEntity entity = new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4"));
 		
 		when(mediaRepository.findFile(fileUri)).thenReturn(Optional.of(entity));
-		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileMetadata.getFileFormat())).thenReturn(outputFile);
+		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), fileMetadata.getFileFormat())).thenReturn(outputFile);
 		
 		Optional<FileResponse> result = fileService.download(fileUri);
 		assertThat(result).hasValue(FileResponse.builder().file(outputFile).format(format).temporary(false).build());
@@ -82,7 +82,7 @@ public class FileReadServiceTest extends BaseServiceTest {
 		entity.addVariant(thumbnailMetadata);
 		
 		when(mediaRepository.findFile(fileUri)).thenReturn(Optional.of(entity));
-		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), thumbnailMetadata.getFileFormat())).thenReturn(outputFile);
+		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), thumbnailMetadata.getFileFormat())).thenReturn(outputFile);
 		
 		Optional<FileResponse> result = fileService.thumbnail(fileUri);
 		assertThat(result).hasValue(FileResponse.builder().file(outputFile).format(format).temporary(false).build());

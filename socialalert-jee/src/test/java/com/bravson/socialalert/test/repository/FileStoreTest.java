@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.NoSuchFileException;
-import java.time.LocalDate;
 
 import javax.inject.Inject;
 
@@ -43,42 +42,42 @@ public class FileStoreTest extends Assertions {
 	
 	@Test
 	public void storeExistingFile() throws IOException {
-		store.storeFile(new File("src/main/resources/logo.jpg"), "38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.MEDIA_JPG);
+		store.storeFile(new File("src/main/resources/logo.jpg"), "38c4297b9099b466eab20fea521ee2f6", "20170415", MediaFileFormat.MEDIA_JPG);
 		assertThat(new File(config.getBaseDirectory(), "media/20170415/38c4297b9099b466eab20fea521ee2f6.jpg")).exists();
 	}
 	
 	@Test
 	public void storeNonExistingFile() throws IOException {
-		assertThatThrownBy(() -> store.storeFile(new File("src/main/resources/xyz.jpg"), "38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.MEDIA_JPG)).isInstanceOf(NoSuchFileException.class);
+		assertThatThrownBy(() -> store.storeFile(new File("src/main/resources/xyz.jpg"), "38c4297b9099b466eab20fea521ee2f6", "20170415", MediaFileFormat.MEDIA_JPG)).isInstanceOf(NoSuchFileException.class);
 	}
 	
 	@Test
 	public void storeFileTwice() throws IOException {
-		store.storeFile(new File("src/main/resources/logo.jpg"), "38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.MEDIA_JPG);
-		assertThatThrownBy(() -> store.storeFile(new File("src/main/resources/logo.jpg"), "38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.MEDIA_JPG)).isInstanceOf(FileAlreadyExistsException.class);
+		store.storeFile(new File("src/main/resources/logo.jpg"), "38c4297b9099b466eab20fea521ee2f6", "20170415", MediaFileFormat.MEDIA_JPG);
+		assertThatThrownBy(() -> store.storeFile(new File("src/main/resources/logo.jpg"), "38c4297b9099b466eab20fea521ee2f6", "20170415", MediaFileFormat.MEDIA_JPG)).isInstanceOf(FileAlreadyExistsException.class);
 	}
 	
 	@Test
 	public void storeNewMp4File() throws IOException {
-		store.createEmptyFile("38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2016, 12, 4), MediaFileFormat.PREVIEW_MP4);
+		store.createEmptyFile("38c4297b9099b466eab20fea521ee2f6", "20161204", MediaFileFormat.PREVIEW_MP4);
 		assertThat(new File(config.getBaseDirectory(), "preview/20161204/38c4297b9099b466eab20fea521ee2f6.mp4")).exists();
 	}
 	
 	@Test
 	public void storeNewFileTwice() throws IOException {
-		store.createEmptyFile("38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.PREVIEW_MP4);
-		assertThatThrownBy(() -> store.createEmptyFile("38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2017, 4, 15), MediaFileFormat.PREVIEW_MP4)).isInstanceOf(FileAlreadyExistsException.class);
+		store.createEmptyFile("38c4297b9099b466eab20fea521ee2f6", "20170415", MediaFileFormat.PREVIEW_MP4);
+		assertThatThrownBy(() -> store.createEmptyFile("38c4297b9099b466eab20fea521ee2f6", "20170415", MediaFileFormat.PREVIEW_MP4)).isInstanceOf(FileAlreadyExistsException.class);
 	}
 	
 	@Test
 	public void getNonExistingMp4File() throws IOException {
-		assertThatThrownBy(() -> store.getExistingFile("38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2016, 12, 4), MediaFileFormat.PREVIEW_MP4)).isInstanceOf(NoSuchFileException.class);
+		assertThatThrownBy(() -> store.getExistingFile("38c4297b9099b466eab20fea521ee2f6", "20161204", MediaFileFormat.PREVIEW_MP4)).isInstanceOf(NoSuchFileException.class);
 	}
 	
 	@Test
 	public void getExistingMp4File() throws IOException {
-		store.createEmptyFile("38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2016, 12, 4), MediaFileFormat.PREVIEW_MP4);
-		File file = store.getExistingFile("38c4297b9099b466eab20fea521ee2f6", LocalDate.of(2016, 12, 4), MediaFileFormat.PREVIEW_MP4);
+		store.createEmptyFile("38c4297b9099b466eab20fea521ee2f6", "20161204", MediaFileFormat.PREVIEW_MP4);
+		File file = store.getExistingFile("38c4297b9099b466eab20fea521ee2f6", "20161204", MediaFileFormat.PREVIEW_MP4);
 		assertThat(file).exists();
 	}
 }

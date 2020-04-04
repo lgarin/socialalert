@@ -39,7 +39,7 @@ public class FileReadService {
 			return Optional.empty();
 		}
 		FileMetadata fileMetadata = fileEntity.getFileMetadata();
-		File file = fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileFormat);
+		File file = fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), fileFormat);
 		return Optional.of(new FileResponse(file, fileFormat, fileEntity.isTemporary(fileFormat)));
 	}
 

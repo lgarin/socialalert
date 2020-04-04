@@ -26,9 +26,8 @@ public class SnapshotVideoFileProcessor extends BaseVideoFileProcessor {
 	}
 	
 	@Override
-	public MediaFileFormat createPreview(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
+	public void createPreview(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
 		takeSnapshot(sourceFile, outputFile, config.getPreviewWidth(), config.getPreviewHeight(), true);
-		return getPreviewFormat();
 	}
 	
 	@Override

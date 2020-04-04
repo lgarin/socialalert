@@ -31,7 +31,7 @@ public class VideoFileProcessor extends BaseVideoFileProcessor {
 	
 	@SneakyThrows(InterruptedException.class)
 	@Override
-	public MediaFileFormat createPreview(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
+	public void createPreview(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
 		
 		if (!sourceFile.canRead()) {
 			throw new IOException("Cannot read file " + sourceFile);
@@ -55,8 +55,6 @@ public class VideoFileProcessor extends BaseVideoFileProcessor {
 		if (result != 0) {
 			throw new IOException("Cannot process file " + outputFile);
 		}
-
-		return getPreviewFormat();
 	}
 	
 	@Override

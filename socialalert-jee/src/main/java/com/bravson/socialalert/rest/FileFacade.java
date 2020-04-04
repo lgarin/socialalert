@@ -52,8 +52,10 @@ import com.bravson.socialalert.business.file.FileUploadService;
 import com.bravson.socialalert.business.user.TokenAccess;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.activity.UserActivity;
+import com.bravson.socialalert.business.user.avatar.UserAvatarService;
 import com.bravson.socialalert.domain.file.FileInfo;
 import com.bravson.socialalert.domain.media.format.MediaFileConstants;
+import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
 @Tag(name="file")
@@ -89,6 +91,9 @@ public class FileFacade {
 	
 	@Inject
 	FileSearchService fileSearchService;
+	
+	@Inject
+	UserAvatarService userAvatarService;
 	
 	private static StreamingOutput createStreamingOutput(File file) {
 		return os -> Files.copy(file.toPath(), os);
@@ -205,5 +210,42 @@ public class FileFacade {
 			throw new WebApplicationException(Status.REQUEST_ENTITY_TOO_LARGE);
 		}
 		return FileUploadParameter.builder().inputFile(inputFile).contentType(httpRequest.getContentType()).build();
+	}
+	
+	@POST
+	@Consumes(MediaFileConstants.JPG_MEDIA_TYPE)
+	@Path("/upload/avatar")
+	@Operation(summary="Upload a profile picture.")
+	@SecurityRequirement(name = "JWT")
+    @APIResponse(responseCode = "200", description = "The profile picture has been set.")
+    @APIResponse(responseCode = "413", description = "The file is too large.")
+	@APIResponse(responseCode = "415", description = "The media is not in the expected format.")
+	public UserInfo uploadAvatar(
+			@RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile) throws IOException, ServletException {
+		return userAvatarService.storeAvatar(createUploadParameter(inputFile), userAccess.get());
+	}
+
+	@PermitAll
+	@GET
+	@Path("/avatar/small/{imageUri : .+}")
+	@Produces(MediaFileConstants.JPG_MEDIA_TYPE)
+	@Operation(summary="Download a small profile picture of the specified user.")
+	@APIResponse(responseCode = "200", description = "File will be streamed.")
+	@APIResponse(responseCode = "404", description = "Specified image could not be found.")
+	public Response smallAvatar(
+			@Parameter(description="The user id to return", required=true) @NotEmpty @PathParam("imageUri") String imageUri) throws NotFoundException, IOException {
+		return createStreamResponse(userAvatarService.small(imageUri).orElseThrow(NotFoundException::new));
+	}
+	
+	@PermitAll
+	@GET
+	@Path("/avatar/large/{imageUri : .+}")
+	@Produces(MediaFileConstants.JPG_MEDIA_TYPE)
+	@Operation(summary="Download a large profile picture of the specified user.")
+	@APIResponse(responseCode = "200", description = "File will be streamed.")
+	@APIResponse(responseCode = "404", description = "Specified image could not be found.")
+	public Response largeAvatar(
+			@Parameter(description="The user id to return", required=true) @NotEmpty @PathParam("imageUri") String imageUri) throws NotFoundException, IOException {
+		return createStreamResponse(userAvatarService.large(imageUri).orElseThrow(NotFoundException::new));
 	}
 }

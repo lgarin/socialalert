@@ -8,11 +8,11 @@ import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 
 public interface MediaFileProcessor {
 
-	MediaFileFormat createPreview(File inputFile, File outputFile) throws IOException;
+	void createPreview(File inputFile, File outputFile) throws IOException;
 	
 	MediaFileFormat getPreviewFormat();
 	
-	MediaFileFormat createThumbnail(File inputFile, File outputFile) throws IOException;
+	void createThumbnail(File inputFile, File outputFile) throws IOException;
 	
 	default MediaFileFormat getThumbnailFormat() {
 		return MediaFileFormat.THUMBNAIL_JPG;
@@ -33,9 +33,11 @@ public interface MediaFileProcessor {
 	default MediaFileFormat createVariant(File inputFile, File outputFile, MediaSizeVariant sizeVariant) throws IOException {
 		switch (sizeVariant) {
 		case PREVIEW:
-			return createPreview(inputFile, outputFile);
+			createPreview(inputFile, outputFile);
+			return getPreviewFormat();
 		case THUMBNAIL:
-			return createThumbnail(inputFile, outputFile);
+			createThumbnail(inputFile, outputFile);
+			return getThumbnailFormat();
 		case MEDIA:
 		default:
 			throw new IllegalArgumentException();

@@ -63,14 +63,14 @@ public class MediaFileStore {
 	private FileMetadata storedDerivedMedia(File inputFile, FileMetadata fileMetadata, MediaSizeVariant sizeVariant) throws IOException {
 		MediaFileProcessor processor = fileMetadata.isVideo() ? videoFileProcessor : pictureFileProcessor;
 		TempFileFormat tempFormat = new TempFileFormat(processor.getFormat(sizeVariant));
-		File tempFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getTimestamp(), tempFormat);
+		File tempFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), tempFormat);
 		MediaFileFormat fileFormat = processor.createVariant(inputFile, tempFile, sizeVariant);
-		File outputFile = fileStore.changeFileFormat(fileMetadata.getMd5(), fileMetadata.getTimestamp(), tempFormat, fileFormat);
+		File outputFile = fileStore.changeFileFormat(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), tempFormat, fileFormat);
 		return buildFileMetadata(outputFile, fileFormat);
 	}
 
 	private FileMetadata storeMedia(File inputFile, FileMetadata fileMetadata) throws IOException {
-		fileStore.storeFile(inputFile, fileMetadata.getMd5(), fileMetadata.getTimestamp(), fileMetadata.getFileFormat());
+		fileStore.storeFile(inputFile, fileMetadata.getMd5(), fileMetadata.getFormattedDate(), fileMetadata.getFileFormat());
 		return fileMetadata;
 	}
 }

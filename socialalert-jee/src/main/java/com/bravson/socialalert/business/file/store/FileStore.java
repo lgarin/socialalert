@@ -8,7 +8,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.time.temporal.Temporal;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -17,7 +17,6 @@ import javax.transaction.Transactional.TxType;
 
 import com.bravson.socialalert.domain.media.format.FileFormat;
 import com.bravson.socialalert.infrastructure.layer.Service;
-import com.bravson.socialalert.infrastructure.util.DateUtil;
 import com.bravson.socialalert.infrastructure.util.Md5Util;
 
 import lombok.AccessLevel;
@@ -47,45 +46,53 @@ public class FileStore {
 		return Md5Util.computeMd5Hex(file);
 	}
 
-	public File storeFile(@NonNull File source, @NonNull String md5, @NonNull Temporal timestamp, @NonNull FileFormat format) throws IOException {
-		Path targetPath = buildAbsolutePath(md5, timestamp, format);
+	public File storeFile(@NonNull File source, @NonNull String md5, @NonNull String folder, @NonNull FileFormat format) throws IOException {
+		Path targetPath = buildAbsolutePath(md5, folder, format);
 		try (InputStream is = Files.newInputStream(source.toPath())) {
 			Files.copy(is, targetPath);
 		}
 		return targetPath.toFile();
 	}
 	
-	private Path buildRelativePath(String md5, Temporal timestamp, FileFormat format) {
-		return Paths.get(format.getSizeVariant(), DateUtil.COMPACT_DATE_FORMATTER.format(timestamp), md5 + format.getExtension());
+	private Path buildRelativePath(String md5, String folder, FileFormat format) {
+		return Paths.get(format.getSizeVariant(), folder, md5 + format.getExtension());
 	}
 	
-	private Path buildAbsolutePath(String md5, Temporal timestamp, FileFormat format) throws IOException {
-		Path path = baseDirectory.resolve(buildRelativePath(md5, timestamp, format));
+	private Path buildAbsolutePath(String md5, String folder, FileFormat format) throws IOException {
+		Path path = baseDirectory.resolve(buildRelativePath(md5, folder, format));
 		Files.createDirectories(path.getParent());
 		return path;
 	}
 
-	public File createEmptyFile(@NonNull String md5, @NonNull Temporal timestamp, @NonNull FileFormat format) throws IOException {
-		Path path = buildAbsolutePath(md5, timestamp, format);
+	public File createEmptyFile(@NonNull String md5, @NonNull String folder, @NonNull FileFormat format) throws IOException {
+		Path path = buildAbsolutePath(md5, folder, format);
 		return Files.createFile(path).toFile();
 	}
 	
-	public File changeFileFormat(@NonNull String md5, @NonNull Temporal timestamp, @NonNull FileFormat oldFormat, @NonNull FileFormat newFormat) throws IOException {
-		Path oldPath = buildAbsolutePath(md5, timestamp, oldFormat);
-		Path newPath = buildAbsolutePath(md5, timestamp, newFormat);
+	public File changeFileFormat(@NonNull String md5, @NonNull String folder, @NonNull FileFormat oldFormat, @NonNull FileFormat newFormat) throws IOException {
+		Path oldPath = buildAbsolutePath(md5, folder, oldFormat);
+		Path newPath = buildAbsolutePath(md5, folder, newFormat);
 		return Files.move(oldPath, newPath, StandardCopyOption.ATOMIC_MOVE).toFile();
 	}
 	
-	public File getExistingFile(@NonNull String md5, @NonNull Temporal timestamp, @NonNull FileFormat format) throws IOException {
-		Path path = buildAbsolutePath(md5, timestamp, format);
+	public File getExistingFile(@NonNull String md5, @NonNull String folder, @NonNull FileFormat format) throws IOException {
+		Path path = buildAbsolutePath(md5, folder, format);
 		if (!Files.exists(path)) {
 			throw new NoSuchFileException(path.toString());
 		}
 		return path.toFile();
 	}
 	
-	public boolean deleteFile(@NonNull String md5, @NonNull Temporal timestamp, @NonNull FileFormat format) throws IOException {
-		Path path = buildAbsolutePath(md5, timestamp, format);
+	public Optional<File> findExistingFile(@NonNull String md5, @NonNull String folder, @NonNull FileFormat format) throws IOException {
+		Path path = buildAbsolutePath(md5, folder, format);
+		if (!Files.exists(path)) {
+			return Optional.empty();
+		}
+		return Optional.of(path.toFile());
+	}
+	
+	public boolean deleteFile(@NonNull String md5, @NonNull String folder, @NonNull FileFormat format) throws IOException {
+		Path path = buildAbsolutePath(md5, folder, format);
 		return Files.deleteIfExists(path);
 	}
 	
