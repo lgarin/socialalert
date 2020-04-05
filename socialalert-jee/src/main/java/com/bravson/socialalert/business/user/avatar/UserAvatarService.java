@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.NotSupportedException;
 
@@ -17,9 +18,15 @@ import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.infrastructure.layer.Service;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@Service
+@Transactional
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class UserAvatarService {
 
 	@Inject

@@ -214,6 +214,7 @@ public class FileFacade {
 	
 	@POST
 	@Consumes(MediaFileConstants.JPG_MEDIA_TYPE)
+	@Produces(MediaTypeConstants.JSON)
 	@Path("/upload/avatar")
 	@Operation(summary="Upload a profile picture.")
 	@SecurityRequirement(name = "JWT")

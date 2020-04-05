@@ -86,7 +86,7 @@ public class UserProfileEntity extends VersionedEntity {
 	
 	@Getter
 	@Setter
-	@Column(name = "image_uri", length = FieldLength.ID)
+	@Column(name = "image_uri", length = FieldLength.ID + FieldLength.MD5)
 	private String imageUri;
 	
 	@Getter

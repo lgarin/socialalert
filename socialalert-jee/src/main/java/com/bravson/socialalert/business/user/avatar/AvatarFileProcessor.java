@@ -6,13 +6,21 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import com.bravson.socialalert.business.file.media.MediaFileProcessor;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
+import com.bravson.socialalert.infrastructure.layer.Service;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
 
+@Service
+@Transactional(TxType.SUPPORTS)
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
 public class AvatarFileProcessor implements MediaFileProcessor {
 
 	@Inject

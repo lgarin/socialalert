@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.file.media.AsyncMediaProcessedEvent;
 import com.bravson.socialalert.domain.media.format.MediaFileConstants;
+import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 import com.google.common.io.Files;
 
@@ -83,4 +84,12 @@ public class FileUploadTest extends BaseIntegrationTest {
 		assertThat(response.getStatus()).isEqualTo(Status.UNSUPPORTED_MEDIA_TYPE.getStatusCode());
 	}
 
+	@Test
+	public void uploadAvatarWithLogin() throws Exception {
+		String token = requestLoginToken("test@test.com", "123");
+		Response response = createAuthRequest("/file/upload/avatar", MediaType.WILDCARD, token).post(getPicture("src/test/resources/media/IMG_0397.JPG"));
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+		UserInfo userInfo = response.readEntity(UserInfo.class);
+		assertThat(userInfo.getImageUri()).isNotNull();
+	}
 }
