@@ -49,8 +49,4 @@ public enum MediaFileFormat implements FileFormat, Comparable<MediaFileFormat> {
 	public String getSizeVariant() {
 		return mediaSizeVariant.getVariantName();
 	}
-	
-	public boolean isPicture() {
-		return PICTURE_SET.contains(this);
-	}
 }

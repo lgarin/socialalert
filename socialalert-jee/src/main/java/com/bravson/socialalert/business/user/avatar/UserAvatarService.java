@@ -2,7 +2,6 @@ package com.bravson.socialalert.business.user.avatar;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.ws.rs.NotFoundException;
@@ -33,9 +32,9 @@ public class UserAvatarService {
 	AvatarFileProcessor processor;
 	
 	private static void checkFileFormat(FileUploadParameter parameter) {
-		MediaFileFormat.fromMediaContentType(parameter.getContentType())
-				.filter(MediaFileFormat::isPicture)
-				.orElseThrow(NotSupportedException::new);
+		if (!MediaFileFormat.MEDIA_JPG.getContentType().equals(parameter.getContentType())) {
+			throw new NotSupportedException();
+		}
 	}
 	
 	public UserInfo storeAvatar(@NonNull FileUploadParameter upload, @NonNull UserAccess userAccess) throws IOException {
@@ -54,30 +53,30 @@ public class UserAvatarService {
 
 	private String storeMedia(File inputFile, String userId) throws IOException {
 		String md5 = fileStore.computeMd5Hex(inputFile);
-		fileStore.storeFile(inputFile, md5, userId, processor.getFormat(MediaSizeVariant.MEDIA));
+		fileStore.storeFile(inputFile, md5, userId, MediaFileFormat.MEDIA_JPG);
 		return md5;
 	}
 
 	private File storeVariant(String md5, String userId, MediaSizeVariant sizeVariant) throws IOException {
-		File sourceFile = fileStore.getExistingFile(md5, userId, processor.getFormat(MediaSizeVariant.MEDIA));
+		File sourceFile = fileStore.getExistingFile(md5, userId, MediaFileFormat.MEDIA_JPG);
 		TempFileFormat tempFormat = new TempFileFormat(processor.getFormat(sizeVariant));
 		File thumbnailFile = fileStore.createEmptyFile(md5, userId, tempFormat);
 		MediaFileFormat fileFormat = processor.createVariant(sourceFile, thumbnailFile, sizeVariant);
 		return fileStore.changeFileFormat(md5, userId, tempFormat, fileFormat);
 	}
 
-	public Optional<FileResponse> small(@NonNull String imageUri) throws IOException {
-		return findFile(imageUri, MediaSizeVariant.THUMBNAIL);
+	public FileResponse getSmallImage(@NonNull String imageUri) throws IOException {
+		return getImage(imageUri, MediaSizeVariant.THUMBNAIL);
 	}
 	
-	public Optional<FileResponse> large(@NonNull String imageUri) throws IOException {
-		return findFile(imageUri, MediaSizeVariant.PREVIEW);
+	public FileResponse getLargeImage(@NonNull String imageUri) throws IOException {
+		return getImage(imageUri, MediaSizeVariant.PREVIEW);
 	}
 
-	private Optional<FileResponse> findFile(String imageUri, MediaSizeVariant sizeVariant) throws IOException {
+	private FileResponse getImage(String imageUri, MediaSizeVariant sizeVariant) throws IOException {
 		File inputFile = new File(imageUri);
 		MediaFileFormat fileFormat = processor.getFormat(sizeVariant);
-		Optional<File> outputFile = fileStore.findExistingFile(inputFile.getName(), inputFile.getParent(), fileFormat);
-		return outputFile.map(file -> FileResponse.builder().file(file).format(fileFormat).temporary(true).build());
+		File outputFile = fileStore.findExistingFile(inputFile.getName(), inputFile.getParent(), fileFormat).orElseThrow(NotFoundException::new);
+		return FileResponse.builder().file(outputFile).format(fileFormat).temporary(true).build();
 	}
 }

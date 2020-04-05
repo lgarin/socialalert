@@ -31,7 +31,7 @@ public class FileSearchServiceTest extends BaseServiceTest {
 	@Test
 	public void findNewFileByUserIdWithNoMatch() {
 		String userId = "testUser";
-		when(mediaRepository.findByUserIdAndState(userId, FileState.UPLOADED)).thenReturn(Collections.emptyList());
+		when(mediaRepository.findByUserIdAndState(userId, FileState.PROCESSED)).thenReturn(Collections.emptyList());
 
 		List<FileInfo> result = searchService.findNewFilesByUserId(userId);
 		assertThat(result).isEmpty();
@@ -42,7 +42,7 @@ public class FileSearchServiceTest extends BaseServiceTest {
 		FileEntity entity = mock(FileEntity.class);
 		FileInfo fileInfo = new FileInfo();
 		String userId = "testUser";
-		when(mediaRepository.findByUserIdAndState(userId, FileState.UPLOADED)).thenReturn(Collections.singletonList(entity));
+		when(mediaRepository.findByUserIdAndState(userId, FileState.PROCESSED)).thenReturn(Collections.singletonList(entity));
 		when(entity.toFileInfo()).thenReturn(fileInfo);
 		when(userService.fillUserInfo(Collections.singletonList(fileInfo))).thenReturn(Collections.singletonList(fileInfo));
 		

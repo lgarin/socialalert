@@ -7,7 +7,7 @@ import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 
 public interface MediaFileProcessor {
-
+	
 	void createPreview(File inputFile, File outputFile) throws IOException;
 	
 	MediaFileFormat getPreviewFormat();

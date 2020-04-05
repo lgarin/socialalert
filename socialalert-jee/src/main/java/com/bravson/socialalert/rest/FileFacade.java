@@ -234,7 +234,7 @@ public class FileFacade {
 	@APIResponse(responseCode = "404", description = "Specified image could not be found.")
 	public Response smallAvatar(
 			@Parameter(description="The user id to return", required=true) @NotEmpty @PathParam("imageUri") String imageUri) throws NotFoundException, IOException {
-		return createStreamResponse(userAvatarService.small(imageUri).orElseThrow(NotFoundException::new));
+		return createStreamResponse(userAvatarService.getSmallImage(imageUri));
 	}
 	
 	@PermitAll
@@ -246,6 +246,6 @@ public class FileFacade {
 	@APIResponse(responseCode = "404", description = "Specified image could not be found.")
 	public Response largeAvatar(
 			@Parameter(description="The user id to return", required=true) @NotEmpty @PathParam("imageUri") String imageUri) throws NotFoundException, IOException {
-		return createStreamResponse(userAvatarService.large(imageUri).orElseThrow(NotFoundException::new));
+		return createStreamResponse(userAvatarService.getLargeImage(imageUri));
 	}
 }
