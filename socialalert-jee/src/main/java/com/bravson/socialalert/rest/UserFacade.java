@@ -191,11 +191,13 @@ public class UserFacade {
 	}
 	
 	@POST
+	@Consumes(MediaTypeConstants.JSON)
+	@Produces(MediaTypeConstants.JSON)
 	@Path("/profile")
 	@UserActivity
 	@Operation(summary="Update own profile.")
 	@SecurityRequirement(name = "JWT")
-	@APIResponse(responseCode = "200", description = "Profile has been updated.")
+	@APIResponse(responseCode = "200", description = "Profile has been updated.", content=@Content(schema=@Schema(implementation=UserInfo.class)))
 	public UserInfo updateProfile(@Parameter(required = true) @Valid @NotNull UpdateProfileParameter param) {
 		return profileService.updateProfile(param, userAccess.get());
 	}
