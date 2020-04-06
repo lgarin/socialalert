@@ -2,7 +2,10 @@ package com.bravson.socialalert.domain.user.profile;
 
 import java.time.LocalDate;
 
+import javax.validation.constraints.Size;
+
 import com.bravson.socialalert.domain.user.Gender;
+import com.bravson.socialalert.infrastructure.entity.FieldLength;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,9 +22,12 @@ public class UpdateProfileParameter {
 	
 	private Gender gender;
 	
+	@Size(max=FieldLength.ISO_CODE)
 	private String country;
 	
+	@Size(max=FieldLength.ISO_CODE)
 	private String language;
 	
+	@Size(max=FieldLength.TEXT)
 	private String biography;
 }

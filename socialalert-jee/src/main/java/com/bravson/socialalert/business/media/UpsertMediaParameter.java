@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.bravson.socialalert.domain.location.GeoAddress;
+import com.bravson.socialalert.infrastructure.entity.FieldLength;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,4 +34,10 @@ public class UpsertMediaParameter {
 	private List<@NotNull @Size(max=MediaConstants.MAX_TAG_LENGTH) String> tags;
 	
 	private GeoAddress location;
+	
+	@Size(max=FieldLength.NAME)
+	private String cameraMaker;
+	
+	@Size(max=FieldLength.NAME)
+	private String cameraModel;
 }

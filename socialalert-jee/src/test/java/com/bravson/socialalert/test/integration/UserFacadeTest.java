@@ -148,6 +148,14 @@ public class UserFacadeTest extends BaseIntegrationTest {
 	}
 	
 	@Test
+	public void updateProfileWithInvalidParameter() throws Exception {
+		String token = requestLoginToken("test@test.com", "123");
+		UpdateProfileParameter param = UpdateProfileParameter.builder().country("Switzerland").language("French").build();
+		Response response = createAuthRequest("/user/profile", MediaTypeConstants.JSON, token).post(Entity.json(param));
+		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+	}
+	
+	@Test
 	public void updateProfileWithoutToken() throws Exception {
 		UpdateProfileParameter param = UpdateProfileParameter.builder().country("CH").language("FR").build();
 		Response response = createRequest("/user/profile", MediaTypeConstants.JSON).post(Entity.json(param));

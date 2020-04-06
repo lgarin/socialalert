@@ -12,6 +12,7 @@ import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.Longitude;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
+import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
 
 import lombok.AccessLevel;
@@ -57,5 +58,9 @@ public class MediaMetadata {
 
 	public boolean hasLocation() {
 		return latitude != null && longitude != null;
+	}
+	
+	public GeoAddress getLocation() {
+		return GeoAddress.builder().latitude(latitude).longitude(longitude).build();
 	}
 }

@@ -23,6 +23,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextFi
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.user.UserAccess;
@@ -80,6 +81,16 @@ public class MediaEntity extends VersionedEntity {
 	@Embedded
 	@IndexedEmbedded
 	private GeoAddress location;
+	
+	@Getter
+	@Column(name = "camera_maker", length = FieldLength.NAME)
+	@KeywordField
+	private String cameraMaker;
+	
+	@Getter
+	@Column(name = "camera_model", length = FieldLength.NAME)
+	@KeywordField
+	private String cameraModel;
 	
 	@NonNull
 	@Getter
@@ -154,6 +165,13 @@ public class MediaEntity extends VersionedEntity {
 		this.id = file.getId();
 		this.kind = file.isVideo() ? MediaKind.VIDEO : MediaKind.PICTURE;
 		this.statistic = new MediaStatistic();
+		if (file.getMediaMetadata() != null && file.getMediaMetadata().hasLocation()) {
+			this.location = file.getMediaMetadata().getLocation();
+		}
+		if (file.getMediaMetadata() != null) {
+			this.cameraMaker = file.getMediaMetadata().getCameraMaker();
+			this.cameraModel = file.getMediaMetadata().getCameraModel();
+		}
 		setMetaInformation(parameter);
 	}
 	
@@ -176,6 +194,12 @@ public class MediaEntity extends VersionedEntity {
 		}
 		if (parameter.getTags() != null) {
 			this.tags = new HashSet<>(parameter.getTags());
+		}
+		if (parameter.getCameraMaker() != null) {
+			this.cameraMaker = parameter.getCameraMaker();
+		}
+		if (parameter.getCameraModel() != null) {
+			this.cameraModel = parameter.getCameraModel();
 		}
 	}
 	
@@ -211,8 +235,8 @@ public class MediaEntity extends VersionedEntity {
 		info.setCommentCount(getStatistic().getCommentCount());
 		info.setCreatorId(getFile().getUserId());
 		info.setTimestamp(getFile().getFileMetadata().getTimestamp());
-		info.setCameraMaker(getFile().getMediaMetadata().getCameraMaker());
-		info.setCameraModel(getFile().getMediaMetadata().getCameraModel());
+		info.setCameraMaker(getCameraMaker());
+		info.setCameraModel(getCameraModel());
 		info.setDuration(getFile().getMediaMetadata().getDuration());
 		info.setCreation(getFile().getMediaMetadata().getTimestamp());
 		info.setFileFormat(getFile().getFileMetadata().getFileFormat());
