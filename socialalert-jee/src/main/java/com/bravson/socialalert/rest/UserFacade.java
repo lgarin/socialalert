@@ -193,7 +193,7 @@ public class UserFacade {
 	@POST
 	@Path("/profile")
 	@UserActivity
-	@Operation(summary="Update the own profile.")
+	@Operation(summary="Update own profile.")
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "Profile has been updated.")
 	public UserInfo updateProfile(@Parameter(required = true) @Valid @NotNull UpdateProfileParameter param) {
