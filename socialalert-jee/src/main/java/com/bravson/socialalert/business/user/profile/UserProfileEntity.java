@@ -27,6 +27,7 @@ import com.bravson.socialalert.domain.media.MediaKind;
 import com.bravson.socialalert.domain.user.Gender;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
 import com.bravson.socialalert.domain.user.statistic.UserStatistic;
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
@@ -49,60 +50,60 @@ public class UserProfileEntity extends VersionedEntity {
 	private VersionInfo versionInfo;
 	
 	@Getter
-	@Setter
+	@Setter(AccessLevel.PROTECTED)
 	@NonNull
 	@Column(name = "username", length = FieldLength.NAME, nullable = false)
 	@KeywordField
 	private String username;
 	
 	@Getter
-	@Setter
+	@Setter(AccessLevel.PROTECTED)
 	@NonNull
 	@Column(name = "email", length = FieldLength.NAME, nullable = false)
 	@KeywordField
 	private String email;
 	
 	@Getter
-	@Setter
+	@Setter(AccessLevel.PROTECTED)
 	@GenericField
 	private LocalDate birthdate;
 	
 	@Getter
-	@Setter
+	@Setter(AccessLevel.PROTECTED)
 	@KeywordField
 	private Gender gender;
 	
 	@Getter
-	@Setter
+	@Setter(AccessLevel.PROTECTED)
 	@Column(name = "country", length = FieldLength.ISO_CODE)
 	@KeywordField
 	private String country;
 	
 	@Getter
-	@Setter
+	@Setter(AccessLevel.PROTECTED)
 	@Column(name = "language", length = FieldLength.ISO_CODE)
 	@KeywordField
 	private String language;
 	
 	@Getter
-	@Setter
+	@Setter(AccessLevel.PROTECTED)
 	@Column(name = "image_uri", length = FieldLength.ID + FieldLength.MD5)
 	private String imageUri;
 	
 	@Getter
-	@Setter
+	@Setter(AccessLevel.PROTECTED)
 	@Column(name = "biography", length = FieldLength.TEXT)
 	@FullTextField(analyzer="languageAnalyzer")
 	private String biography;
 	
 	@Getter
-	@Setter
+	@Setter(AccessLevel.PROTECTED)
 	@Column(name = "last_login")
 	@GenericField
 	private Instant lastLogin;
 	
 	@Getter
-	@Setter
+	@Setter(AccessLevel.PROTECTED)
 	@Column(name = "last_activity")
 	@GenericField
 	private Instant lastActivity;
@@ -159,6 +160,7 @@ public class UserProfileEntity extends VersionedEntity {
 				.online(online)
 				.biography(biography)
 				.birthdate(birthdate)
+				.gender(gender)
 				.country(country)
 				.language(language)
 				.imageUri(imageUri)
@@ -257,5 +259,29 @@ public class UserProfileEntity extends VersionedEntity {
 				.statistic(statistic)
 				.build();
 	}
+
+	public void changeAvatar(String imageUri, @NonNull UserAccess userAccess) {
+		setImageUri(imageUri);
+		versionInfo.touch(userAccess.getUserId(), userAccess.getIpAddress());
+		setLastActivity(versionInfo.getLastUpdate());
+	}
 	
+	public void updateProfile(@NonNull UpdateProfileParameter param, @NonNull UserAccess userAccess) {
+		if (param.getBirthdate() != null) {
+			setBirthdate(param.getBirthdate());
+		}
+		if (param.getCountry() != null) {
+			setCountry(param.getCountry());
+		}
+		if (param.getLanguage() != null) {
+			setLanguage(param.getLanguage());
+		}
+		if (param.getGender() != null) {
+			setGender(param.getGender());
+		}
+		if (param.getBiography() != null) {
+			setBiography(param.getBiography());
+		}
+		versionInfo.touch(userAccess.getUserId(), userAccess.getIpAddress());
+	}
 }

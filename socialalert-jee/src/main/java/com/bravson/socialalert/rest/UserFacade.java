@@ -37,6 +37,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import com.bravson.socialalert.business.user.TokenAccess;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserLinkService;
+import com.bravson.socialalert.business.user.UserProfileService;
 import com.bravson.socialalert.business.user.UserService;
 import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.domain.user.LoginParameter;
@@ -44,6 +45,7 @@ import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.LoginTokenResponse;
 import com.bravson.socialalert.domain.user.NewUserParameter;
 import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
 import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
 @Tag(name="user")
@@ -56,6 +58,9 @@ public class UserFacade {
 	
 	@Inject
 	UserLinkService linkService;
+	
+	@Inject
+	UserProfileService profileService;
 	
 	@Inject
 	@TokenAccess
@@ -183,5 +188,15 @@ public class UserFacade {
 	@APIResponse(responseCode = "200", description = "List of users returned with success.", content=@Content(schema=@Schema(implementation=UserInfo.class, type = SchemaType.ARRAY)))
 	public List<UserInfo> followedProfiles() {
 		return linkService.getTargetProfiles(userAccess.get().getUserId());
+	}
+	
+	@POST
+	@Path("/profile")
+	@UserActivity
+	@Operation(summary="Update the own profile.")
+	@SecurityRequirement(name = "JWT")
+	@APIResponse(responseCode = "200", description = "Profile has been updated.")
+	public UserInfo updateProfile(@Parameter(required = true) @Valid @NotNull UpdateProfileParameter param) {
+		return profileService.updateProfile(param, userAccess.get());
 	}
 }

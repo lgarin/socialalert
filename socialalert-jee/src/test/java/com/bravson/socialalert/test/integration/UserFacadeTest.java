@@ -15,6 +15,7 @@ import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.user.LoginParameter;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
 import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -134,6 +135,22 @@ public class UserFacadeTest extends BaseIntegrationTest {
 	@Test
 	public void getCurrentUserWithoutToken() throws Exception {
 		Response response = createRequest("/user/current", MediaTypeConstants.JSON).get();
+		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
+	}
+	
+	@Test
+	public void updateExistingProfile() throws Exception {
+		String token = requestLoginToken("test@test.com", "123");
+		UpdateProfileParameter param = UpdateProfileParameter.builder().country("CH").language("FR").build();
+		UserInfo response = createAuthRequest("/user/profile", MediaTypeConstants.JSON, token).post(Entity.json(param), UserInfo.class);
+		assertThat(response.getCountry()).isEqualTo("CH");
+		assertThat(response.getLanguage()).isEqualTo("FR");
+	}
+	
+	@Test
+	public void updateProfileWithoutToken() throws Exception {
+		UpdateProfileParameter param = UpdateProfileParameter.builder().country("CH").language("FR").build();
+		Response response = createRequest("/user/profile", MediaTypeConstants.JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
 }

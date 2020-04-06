@@ -53,7 +53,7 @@ public class UserAvatarService {
 		storeVariant(md5, profile.getId(), MediaSizeVariant.THUMBNAIL);
 		storeVariant(md5, profile.getId(), MediaSizeVariant.PREVIEW);
 		
-		profile.setImageUri(profile.getId() + "/" + md5);
+		profile.changeAvatar(profile.getId() + "/" + md5, userAccess);
 
 		return profile.toOnlineUserInfo();
 	}
