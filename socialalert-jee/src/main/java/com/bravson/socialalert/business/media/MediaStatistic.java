@@ -3,6 +3,7 @@ package com.bravson.socialalert.business.media;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
@@ -39,11 +40,11 @@ public class MediaStatistic {
 	private int commentCount;
 	
 	@Column(name = "boost_factor", nullable = false)
-	@GenericField
-	private double boostFactor;
+	@GenericField(sortable = Sortable.YES)
+	private float boostFactor;
 
-	private double computeBoost() {
-		return Math.log(Math.max(2.0, hitCount)) * Math.sqrt(Math.max(2.0, likeCount - dislikeCount));
+	private float computeBoost() {
+		return (float) (Math.log(Math.max(2.0, hitCount)) * Math.sqrt(Math.max(2.0, likeCount - dislikeCount)));
 	}
 
 	public void increaseHitCount() {

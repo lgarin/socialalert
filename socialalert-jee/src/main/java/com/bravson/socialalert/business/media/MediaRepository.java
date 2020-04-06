@@ -10,6 +10,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.hibernate.search.backend.elasticsearch.ElasticsearchExtension;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;
 import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateClausesStep;
 import org.hibernate.search.engine.search.predicate.dsl.PredicateFinalStep;
@@ -27,6 +28,7 @@ import com.bravson.socialalert.infrastructure.entity.HitEntity;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 import com.bravson.socialalert.infrastructure.util.GeoHashUtil;
+import com.google.gson.JsonObject;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -54,9 +56,19 @@ public class MediaRepository {
 	}
 	
 	public QueryResult<MediaEntity> searchMedia(@NonNull SearchMediaParameter parameter, @NonNull PagingParameter paging) {
+		JsonObject sortSource = new JsonObject();
+		sortSource.addProperty("lang", "painless");
+		sortSource.addProperty("source", "_score * doc['statistic.boostFactor'].value");
+		JsonObject sortScript = new JsonObject();
+		sortScript.addProperty("type", "number");
+		sortScript.add("script", sortSource);
+		sortScript.addProperty("order", "desc");
+		JsonObject sortCriteria = new JsonObject();
+		sortCriteria.add("_script", sortScript);
 		SearchResult<MediaEntity> result = persistenceManager.search(MediaEntity.class)
+				.extension( ElasticsearchExtension.get() )
 				.where(f -> createSearchQuery(parameter, paging.getTimestamp(), f))
-				.sort(f -> f.score().desc())
+				.sort(f -> f.fromJson(sortCriteria))
 				.fetch(paging.getOffset(), paging.getPageSize());
 		return new QueryResult<>(result.getHits(), result.getTotalHitCount(), paging);
 	}
@@ -65,10 +77,10 @@ public class MediaRepository {
 		BooleanPredicateClausesStep<?> junction = context.bool();
 		junction = junction.filter(context.range().field("versionInfo.creation").atMost(timestamp).toPredicate());
 		if (parameter.getMaxAge() != null) {
-			junction = junction.must(context.range().field("versionInfo.creation").atLeast(timestamp.minus(parameter.getMaxAge())).toPredicate());
+			junction = junction.filter(context.range().field("versionInfo.creation").atLeast(timestamp.minus(parameter.getMaxAge())).toPredicate());
 		}
 		if (parameter.getCreator() != null) {
-			junction = junction.must(context.match().field("versionInfo.userId").matching(parameter.getCreator()).toPredicate());
+			junction = junction.filter(context.match().field("versionInfo.userId").matching(parameter.getCreator()).toPredicate());
 		}
 		if (parameter.getArea() != null) {
 			List<String> geoHashList = GeoHashUtil.computeGeoHashList(parameter.getArea());
@@ -78,16 +90,16 @@ public class MediaRepository {
 			}
 		}
 		if (parameter.getLocation() != null) {
-			junction = junction.must(context.spatial().within().field("location.coordinates").circle(parameter.getLocation().getLatitude(), parameter.getLocation().getLongitude(), parameter.getLocation().getRadius(), DistanceUnit.KILOMETERS).boost(10.0f).toPredicate());
+			junction = junction.must(context.spatial().within().field("location.coordinates").circle(parameter.getLocation().getLatitude(), parameter.getLocation().getLongitude(), parameter.getLocation().getRadius(), DistanceUnit.KILOMETERS).boost(8.0f).toPredicate());
 		}
 		if (parameter.getCategory() != null) {
-			junction = junction.must(context.simpleQueryString().field("category").matching(parameter.getCategory()).toPredicate());
+			junction = junction.filter(context.simpleQueryString().field("category").matching(parameter.getCategory()).toPredicate());
 		}
 		if (parameter.getKeywords() != null) {
 			junction = junction.must(context.match().field("tags").boost(4.0f).field("title").boost(2.0f).field("description").matching(parameter.getKeywords()).fuzzy().toPredicate());
 		}
 		if (parameter.getMediaKind() != null) {
-			junction = junction.must(context.match().field("kind").matching(parameter.getMediaKind()).toPredicate());
+			junction = junction.filter(context.match().field("kind").matching(parameter.getMediaKind()).toPredicate());
 		}
 		return junction;
 	}
