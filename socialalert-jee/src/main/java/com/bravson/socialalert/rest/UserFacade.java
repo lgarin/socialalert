@@ -94,7 +94,7 @@ public class UserFacade {
 	}
 	
 	@POST
-	@Consumes(MediaTypeConstants.JSON)
+	@Consumes(MediaTypeConstants.TEXT_PLAIN)
 	@Produces(MediaTypeConstants.JSON)
 	@Path("/renewLogin")
 	@PermitAll
