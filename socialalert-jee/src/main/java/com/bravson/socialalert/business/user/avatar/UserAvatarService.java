@@ -60,6 +60,7 @@ public class UserAvatarService {
 
 	private String storeMedia(File inputFile, String userId) throws IOException {
 		String md5 = fileStore.computeMd5Hex(inputFile);
+		fileStore.deleteFile(md5, userId, MediaFileFormat.MEDIA_JPG);
 		fileStore.storeFile(inputFile, md5, userId, MediaFileFormat.MEDIA_JPG);
 		return md5;
 	}
@@ -69,6 +70,7 @@ public class UserAvatarService {
 		TempFileFormat tempFormat = new TempFileFormat(processor.getFormat(sizeVariant));
 		File thumbnailFile = fileStore.createEmptyFile(md5, userId, tempFormat);
 		MediaFileFormat fileFormat = processor.createVariant(sourceFile, thumbnailFile, sizeVariant);
+		fileStore.deleteFile(md5, userId, fileFormat);
 		return fileStore.changeFileFormat(md5, userId, tempFormat, fileFormat);
 	}
 
