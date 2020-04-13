@@ -22,10 +22,10 @@ import io.quarkus.test.junit.QuarkusTest;
 public class FileStoreTest extends Assertions {
 
 	@Inject
-	private FileStoreConfiguration config;
+	FileStoreConfiguration config;
 	
 	@Inject
-	private FileStore store;
+	FileStore store;
 	
 	
 	@BeforeEach

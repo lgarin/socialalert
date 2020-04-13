@@ -19,7 +19,7 @@ import io.quarkus.test.junit.QuarkusTest;
 public class MediaMetadataExtractorTest extends Assertions {
 
 	@Inject
-	private MediaMetadataExtractor extractor;
+	MediaMetadataExtractor extractor;
 	
 	
 	@Test

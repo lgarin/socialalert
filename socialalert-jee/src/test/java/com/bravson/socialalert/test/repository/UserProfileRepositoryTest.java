@@ -19,7 +19,7 @@ import io.quarkus.test.junit.QuarkusTest;
 public class UserProfileRepositoryTest extends BaseRepositoryTest {
     
 	@Inject
-    private UserProfileRepository repository;
+    UserProfileRepository repository;
 
     private AuthenticationInfo createTestAuthInfo() {
 		return AuthenticationInfo.builder()

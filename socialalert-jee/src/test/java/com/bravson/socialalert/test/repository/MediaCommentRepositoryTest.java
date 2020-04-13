@@ -21,7 +21,7 @@ import io.quarkus.test.junit.QuarkusTest;
 public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     
 	@Inject
-    private MediaCommentRepository repository;
+    MediaCommentRepository repository;
 	
     @Test
     public void createNewComment() {

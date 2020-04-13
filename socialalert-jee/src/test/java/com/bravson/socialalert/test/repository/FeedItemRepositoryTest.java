@@ -23,7 +23,7 @@ import io.quarkus.test.junit.QuarkusTest;
 public class FeedItemRepositoryTest extends BaseRepositoryTest {
     
 	@Inject
-    private FeedItemRepository repository;
+    FeedItemRepository repository;
 
     @Test
     public void insertFeedItemWithNewMedia() {

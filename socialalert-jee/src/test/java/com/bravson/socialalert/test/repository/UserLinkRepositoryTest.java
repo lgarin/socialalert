@@ -17,7 +17,7 @@ import io.quarkus.test.junit.QuarkusTest;
 public class UserLinkRepositoryTest extends BaseRepositoryTest {
     
 	@Inject
-    private UserLinkRepository repository;
+    UserLinkRepository repository;
 
     @Test
     public void findByNonExistingSource() {
@@ -35,5 +35,4 @@ public class UserLinkRepositoryTest extends BaseRepositoryTest {
     	List<UserLinkEntity> result = repository.findBySource(sourceUser.getId());
     	assertThat(result).containsExactly(entity);
     }
-
 }

@@ -25,10 +25,10 @@ import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 public class BaseRepositoryTest extends Assertions {
 
 	@PersistenceContext
-	private EntityManager entityManager;
+	EntityManager entityManager;
 	
 	@Inject
-	private PersistenceManager persistenceManager;
+	PersistenceManager persistenceManager;
 	
     @BeforeEach
     @Transactional(value = TxType.REQUIRES_NEW)

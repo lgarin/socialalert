@@ -21,7 +21,7 @@ import io.quarkus.test.junit.QuarkusTest;
 public class CommentApprovalRepositoryTest extends BaseRepositoryTest {
     
 	@Inject
-    private CommentApprovalRepository repository;
+    CommentApprovalRepository repository;
 
     @Test
     @Transactional

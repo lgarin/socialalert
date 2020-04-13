@@ -23,7 +23,7 @@ import io.quarkus.test.junit.QuarkusTest;
 public class AuthenticationRepositoryTest {
 
 	@Inject
-	private AuthenticationRepository repository;
+	AuthenticationRepository repository;
 	
 	@Test
 	public void requestLoginTokenWithValidCredentials() {

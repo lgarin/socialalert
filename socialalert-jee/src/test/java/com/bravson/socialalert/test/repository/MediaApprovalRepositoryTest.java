@@ -18,7 +18,7 @@ import io.quarkus.test.junit.QuarkusTest;
 public class MediaApprovalRepositoryTest extends BaseRepositoryTest {
     
 	@Inject
-    private MediaApprovalRepository repository;
+    MediaApprovalRepository repository;
 
     @Test
     @Transactional

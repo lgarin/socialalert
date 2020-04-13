@@ -19,13 +19,13 @@ import io.quarkus.test.junit.QuarkusTest;
 public class VideoFileProcessorTest extends Assertions {
 
 	@Inject
-	private MediaConfiguration config;
+	MediaConfiguration config;
 	
 	@Inject
-	private MediaMetadataExtractor extractor;
+	MediaMetadataExtractor extractor;
 	
 	@Inject
-	private VideoFileProcessor processor;
+	VideoFileProcessor processor;
 	
 	@Test
 	public void testMediaFormat() {

@@ -15,7 +15,7 @@ import io.quarkus.test.junit.QuarkusTest;
 public class MediaTagRepositoryTest extends BaseRepositoryTest {
 	
 	@Inject
-	private MediaTagRepository repository;
+	MediaTagRepository repository;
 
 	private void addTestData() {
 		persistAndIndex(new MediaTagEntity("test"));

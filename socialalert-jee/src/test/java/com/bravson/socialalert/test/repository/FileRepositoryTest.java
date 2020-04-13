@@ -21,7 +21,7 @@ import io.quarkus.test.junit.QuarkusTest;
 public class FileRepositoryTest extends BaseRepositoryTest {
     
 	@Inject
-    private FileRepository repository;
+    FileRepository repository;
     
     @Test
     public void findNonExistingFile() {

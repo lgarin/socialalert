@@ -24,7 +24,7 @@ import io.quarkus.test.junit.QuarkusTest;
 public class MediaRepositoryTest extends BaseRepositoryTest {
     
 	@Inject
-    private MediaRepository repository;
+    MediaRepository repository;
 
     @Test
     public void findMediaWithInvalidUri() {

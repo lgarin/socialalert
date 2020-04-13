@@ -13,7 +13,7 @@ import io.quarkus.test.junit.QuarkusTest;
 public class OnlineUserRepositoryTest extends Assertions {
 
 	@Inject
-	private OnlineUserCache repository;
+	OnlineUserCache repository;
 	
 	@Test
 	public void addNewUser() {

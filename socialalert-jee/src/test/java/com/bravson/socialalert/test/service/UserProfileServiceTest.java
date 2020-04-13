@@ -1,8 +1,12 @@
 package com.bravson.socialalert.test.service;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
+import java.util.Map;
 import java.util.Optional;
+
+import javax.ws.rs.BadRequestException;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -30,13 +34,34 @@ public class UserProfileServiceTest extends BaseServiceTest {
 		UserProfileEntity profileEntity = new UserProfileEntity("test", "test@test.com", userAccess);
 		when(profileRepository.findByUserId(userAccess.getUserId())).thenReturn(Optional.of(profileEntity));
 		
-		UpdateProfileParameter param = UpdateProfileParameter.builder().country("CH").language("FR").gender(Gender.MALE).build();
+		UpdateProfileParameter param = UpdateProfileParameter.builder().country("CH").language("fr").gender(Gender.MALE).build();
 		
 		UserInfo result = profileService.updateProfile(param, userAccess);
 		assertThat(result.getBiography()).isNull();
 		assertThat(result.getBirthdate()).isNull();
 		assertThat(result.getCountry()).isEqualTo("CH");
-		assertThat(result.getLanguage()).isEqualTo("FR");
+		assertThat(result.getLanguage()).isEqualTo("fr");
 		assertThat(result.getGender()).isEqualTo(Gender.MALE);
+	}
+	
+	@Test
+	public void updateProfileWithInvalidLanguage() {
+		UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+		UpdateProfileParameter param = UpdateProfileParameter.builder().country("CH").language("FR").gender(Gender.MALE).build();
+		assertThrows(BadRequestException.class, () -> profileService.updateProfile(param, userAccess));
+	}
+	
+	@Test
+	public void listCountries() {
+		Map<String,String> result = profileService.getValidCountries();
+		assertThat(result).contains(Map.entry("CH", "Switzerland"), Map.entry("FR", "France"), 
+				Map.entry("DE", "Germany"), Map.entry("IT", "Italy"), Map.entry("AT", "Austria"));
+	}
+	
+	@Test
+	public void listLanguages() {
+		Map<String,String> result = profileService.getValidLanguages();
+		assertThat(result).contains(Map.entry("fr", "French"), Map.entry("de", "German"), 
+				Map.entry("it", "Italian"), Map.entry("en", "English"));
 	}
 }

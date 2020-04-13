@@ -1,9 +1,11 @@
 package com.bravson.socialalert.test.integration;
 
 import java.time.Instant;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -24,7 +26,7 @@ import io.quarkus.test.junit.QuarkusTest;
 public class UserFacadeTest extends BaseIntegrationTest {
 
 	@Inject
-	private UserProfileRepository profileRepository;
+	UserProfileRepository profileRepository;
 	
 	@Test
 	public void loginWithExistingUser() throws Exception {
@@ -141,10 +143,10 @@ public class UserFacadeTest extends BaseIntegrationTest {
 	@Test
 	public void updateExistingProfile() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		UpdateProfileParameter param = UpdateProfileParameter.builder().country("CH").language("FR").build();
+		UpdateProfileParameter param = UpdateProfileParameter.builder().country("CH").language("fr").build();
 		UserInfo response = createAuthRequest("/user/profile", MediaTypeConstants.JSON, token).post(Entity.json(param), UserInfo.class);
 		assertThat(response.getCountry()).isEqualTo("CH");
-		assertThat(response.getLanguage()).isEqualTo("FR");
+		assertThat(response.getLanguage()).isEqualTo("fr");
 	}
 	
 	@Test
@@ -156,9 +158,29 @@ public class UserFacadeTest extends BaseIntegrationTest {
 	}
 	
 	@Test
+	public void updateProfileWIthInvalidLanguage() throws Exception {
+		String token = requestLoginToken("test@test.com", "123");
+		UpdateProfileParameter param = UpdateProfileParameter.builder().country("CH").language("FR").build();
+		Response response = createAuthRequest("/user/profile", MediaTypeConstants.JSON, token).post(Entity.json(param));
+		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+	}
+	
+	@Test
 	public void updateProfileWithoutToken() throws Exception {
 		UpdateProfileParameter param = UpdateProfileParameter.builder().country("CH").language("FR").build();
 		Response response = createRequest("/user/profile", MediaTypeConstants.JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
+	}
+	
+	@Test
+	public void listCountries() throws Exception {
+		Map<String,String> response = createRequest("/user/countries", MediaTypeConstants.JSON).get(new GenericType<Map<String,String>>() {});
+		assertThat(response).contains(Map.entry("CH", "Switzerland"));
+	}
+	
+	@Test
+	public void listLanguages() throws Exception {
+		Map<String,String> response = createRequest("/user/languages", MediaTypeConstants.JSON).get(new GenericType<Map<String,String>>() {});
+		assertThat(response).contains(Map.entry("fr", "French"));
 	}
 }

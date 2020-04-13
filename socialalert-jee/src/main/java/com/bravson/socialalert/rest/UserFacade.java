@@ -1,6 +1,7 @@
 package com.bravson.socialalert.rest;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
@@ -200,5 +201,25 @@ public class UserFacade {
 	@APIResponse(responseCode = "200", description = "Profile has been updated.", content=@Content(schema=@Schema(implementation=UserInfo.class)))
 	public UserInfo updateProfile(@Parameter(required = true) @Valid @NotNull UpdateProfileParameter param) {
 		return profileService.updateProfile(param, userAccess.get());
+	}
+	
+	@GET
+	@Path("/countries")
+	@PermitAll
+	@Produces(MediaTypeConstants.JSON)
+	@Operation(summary="List all supported countries with their ISO code and name for the profile.")
+	@SecurityRequirement(name = "JWT")
+	public Map<String,String> getValidCountries() {
+		return profileService.getValidCountries();
+	}
+	
+	@GET
+	@Path("/languages")
+	@PermitAll
+	@Produces(MediaTypeConstants.JSON)
+	@Operation(summary="List all supported languages with their ISO code and name for the profile.")
+	@SecurityRequirement(name = "JWT")
+	public Map<String,String> getValidLanguages() {
+		return profileService.getValidLanguages();
 	}
 }
