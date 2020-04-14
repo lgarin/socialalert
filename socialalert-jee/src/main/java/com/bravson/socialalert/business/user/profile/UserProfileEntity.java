@@ -253,6 +253,7 @@ public class UserProfileEntity extends VersionedEntity {
 				.online(true)
 				.biography(biography)
 				.birthdate(birthdate)
+				.gender(gender)
 				.country(country)
 				.language(language)
 				.imageUri(imageUri)
