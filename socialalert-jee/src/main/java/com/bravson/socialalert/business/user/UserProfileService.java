@@ -1,5 +1,6 @@
 package com.bravson.socialalert.business.user;
 
+import java.time.LocalDate;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +28,8 @@ import lombok.NonNull;
 @AllArgsConstructor
 public class UserProfileService {
 
+	private static final int MAXIMUM_AGE = 200;
+
 	private static final String ENGLISH_LANGUAGE_CODE = Locale.ENGLISH.getLanguage();
 	
 	@Inject
@@ -49,6 +52,13 @@ public class UserProfileService {
 		
 		if (param.getLanguage() != null && !getValidLanguageCodes().contains(param.getLanguage())) {
 			throw new BadRequestException("Unsupported language " + param.getLanguage());
+		}
+		
+		if (param.getBirthdate() != null && param.getBirthdate().isAfter(LocalDate.now())) {
+			throw new BadRequestException("Birthdate cannot be in the future");
+		}
+		if (param.getBirthdate() != null && param.getBirthdate().isBefore(LocalDate.now().plusYears(-MAXIMUM_AGE))) {
+			throw new BadRequestException("Birthdate cannot be so far in the past");
 		}
 		
 		UserProfileEntity entity = profileRepository.findByUserId(userAccess.getUserId()).orElseThrow(NotFoundException::new);
