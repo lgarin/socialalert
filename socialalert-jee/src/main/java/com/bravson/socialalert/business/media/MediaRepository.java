@@ -58,7 +58,7 @@ public class MediaRepository {
 	public QueryResult<MediaEntity> searchMedia(@NonNull SearchMediaParameter parameter, @NonNull PagingParameter paging) {
 		JsonObject sortSource = new JsonObject();
 		sortSource.addProperty("lang", "painless");
-		sortSource.addProperty("source", "_score * doc['statistic.boostFactor'].value");
+		sortSource.addProperty("source", "(_score + 1) * doc['statistic.boostFactor'].value * doc['versionInfo.creation'].value.toEpochSecond()");
 		JsonObject sortScript = new JsonObject();
 		sortScript.addProperty("type", "number");
 		sortScript.add("script", sortSource);
