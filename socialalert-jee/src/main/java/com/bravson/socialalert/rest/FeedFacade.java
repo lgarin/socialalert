@@ -12,10 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.eclipse.microprofile.openapi.annotations.media.Content;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -41,14 +38,11 @@ public class FeedFacade {
 	@TokenAccess
 	Instance<UserAccess> userAccess;
 
-	private static class FeedItemQueryResult extends QueryResult<FeedItemInfo> {}
-	
 	@GET
 	@Path("/current")
 	@Operation(summary="Get the feed for the current user.")
 	@SecurityRequirement(name = "JWT")
 	@Produces(MediaTypeConstants.JSON)
-	@APIResponse(responseCode = "200", description = "The feed has been retrieved successfuly.", content=@Content(schema=@Schema(implementation=FeedItemQueryResult.class)))
 	public QueryResult<FeedItemInfo> getFeed(
 			@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
 			@Parameter(description="Sets the page number to return.", required=false) @DefaultValue("0") @Min(0) @QueryParam("pageNumber") int pageNumber,

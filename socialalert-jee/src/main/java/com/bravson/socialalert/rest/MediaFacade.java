@@ -106,13 +106,10 @@ public class MediaFacade {
 		return mediaUpsertService.updateMedia(mediaUri, parameter, userAccess.get());
 	}
 	
-	private static class MediaInfoQueryResult extends QueryResult<MediaInfo> {}
-	
 	@GET
 	@Path("/search")
 	@Produces(MediaTypeConstants.JSON)
 	@Operation(summary="Search claimed media based on any combination of the provided parameters.")
-	@APIResponse(responseCode = "200", description = "The matching results.", content=@Content(schema=@Schema(implementation=MediaInfoQueryResult.class)))
 	@SecurityRequirement(name = "JWT")
 	public QueryResult<MediaInfo> searchMedia(
 			@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
@@ -157,7 +154,6 @@ public class MediaFacade {
 	@Path("/searchNearest")
 	@Produces(MediaTypeConstants.JSON)
 	@Operation(summary="Search claimed media based on any combination of the provided parameters.")
-	@APIResponse(responseCode = "200", description = "The matching results.", content=@Content(schema=@Schema(implementation=MediaInfoQueryResult.class)))
 	@SecurityRequirement(name = "JWT")
 	public QueryResult<MediaInfo> searchNearestMedia(
 			@Parameter(description="Define the location for the nearest media.", required=true) @QueryParam("latitude") Double latitude,
@@ -291,14 +287,12 @@ public class MediaFacade {
 		return commentService.setApprovalModifier(commentId, null, userAccess.get().getUserId());
 	}
 	
-	private static class MediaCommentQueryResult extends QueryResult<MediaCommentDetail> {}
-	
 	@GET
 	@Path("/comments/{mediaUri : .+}")
 	@Produces(MediaTypeConstants.JSON)
 	@Operation(summary="List the comments for the specified media.")
 	@SecurityRequirement(name = "JWT")
-	@APIResponse(responseCode = "200", description = "The matching comments are available in the response.", content=@Content(schema=@Schema(implementation=MediaCommentQueryResult.class)))
+	@APIResponse(responseCode = "200", description = "The matching comments.")
 	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public QueryResult<MediaCommentDetail> listComments(@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
 			@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,

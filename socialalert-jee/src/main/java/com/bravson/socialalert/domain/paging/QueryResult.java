@@ -6,22 +6,28 @@ import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+import com.bravson.socialalert.domain.feed.FeedItemInfo;
+import com.bravson.socialalert.domain.media.MediaInfo;
+import com.bravson.socialalert.domain.media.comment.MediaCommentDetail;
+import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@Schema(description="Group the items in a page.")
 @Data
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor(access=AccessLevel.PROTECTED)
 public class QueryResult<T> {
 	
 	@NonNull
-	@Schema(description = "the list of results for this page")
+	@Schema(description = "the list of results for this page", oneOf={FeedItemInfo.class, MediaCommentDetail.class, MediaCommentInfo.class, MediaInfo.class}, implementation=Object.class)
 	private List<T> content;
+	@Schema(description = "the current page number")
 	private int pageNumber;
+	@Schema(description = "the number of available pages")
 	private int pageCount;
 	
 	private PagingParameter nextPage;
