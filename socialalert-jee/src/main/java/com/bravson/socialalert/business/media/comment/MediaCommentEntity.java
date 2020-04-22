@@ -25,6 +25,7 @@ import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.media.comment.MediaCommentDetail;
 import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
+import com.bravson.socialalert.domain.media.comment.UserCommentDetail;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 import com.bravson.socialalert.infrastructure.entity.DefaultStringIdentifierBridge;
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
@@ -117,5 +118,11 @@ public class MediaCommentEntity {
 
 	public MediaCommentDetail toMediaCommentDetail() {
 		return fillMediaInfo(new MediaCommentDetail());
+	}
+	
+	public UserCommentDetail toUserCommentDetail() {
+		UserCommentDetail result = fillMediaInfo(new UserCommentDetail());
+		result.setMedia(getMedia().toMediaInfo());
+		return result;
 	}
 }

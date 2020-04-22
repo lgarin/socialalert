@@ -28,6 +28,7 @@ import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.media.comment.MediaCommentDetail;
 import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
+import com.bravson.socialalert.domain.media.comment.UserCommentDetail;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.UserInfo;
@@ -180,7 +181,7 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 		when(userService.findUserInfo(userId)).thenReturn(Optional.of(userInfo));
 		when(commentRepository.searchByUserId(userId, paging)).thenReturn(entityResult);
 		
-		QueryResult<MediaCommentInfo> result = commentService.listUserComments(userId, paging);
+		QueryResult<UserCommentDetail> result = commentService.listUserComments(userId, paging);
 		assertThat(result.getContent()).isEmpty();
 		verifyNoInteractions(mediaRepository, approvalRepository);
 	}

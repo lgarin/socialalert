@@ -46,7 +46,7 @@ import com.bravson.socialalert.business.user.UserLinkService;
 import com.bravson.socialalert.business.user.UserProfileService;
 import com.bravson.socialalert.business.user.UserService;
 import com.bravson.socialalert.business.user.activity.UserActivity;
-import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
+import com.bravson.socialalert.domain.media.comment.UserCommentDetail;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.LoginParameter;
@@ -169,7 +169,7 @@ public class UserFacade {
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "The matching comments are available in the response.")
 	@APIResponse(responseCode = "404", description = "Specified user could not be found.")
-	public QueryResult<MediaCommentInfo> listComments(@Parameter(description="The user id to return", required=true) @NotEmpty @PathParam("userId") String userId,
+	public QueryResult<UserCommentDetail> listComments(@Parameter(description="The user id to return", required=true) @NotEmpty @PathParam("userId") String userId,
 			@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
 			@Parameter(description="Sets the page number to return.", required=false) @DefaultValue("0") @Min(0) @QueryParam("pageNumber") int pageNumber,
 			@Parameter(description="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize) {

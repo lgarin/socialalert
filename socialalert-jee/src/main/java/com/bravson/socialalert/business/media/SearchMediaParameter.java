@@ -16,6 +16,6 @@ public class SearchMediaParameter {
 	private GeoArea location;
 	private String keywords;
 	private Duration maxAge;
-	private String category; // TODO should be a list of String
+	private String category;
 	private String creator;
 }

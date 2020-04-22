@@ -9,7 +9,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import com.bravson.socialalert.domain.feed.FeedItemInfo;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.media.comment.MediaCommentDetail;
-import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
+import com.bravson.socialalert.domain.media.comment.UserCommentDetail;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -23,7 +23,7 @@ import lombok.NonNull;
 public class QueryResult<T> {
 	
 	@NonNull
-	@Schema(description = "the list of results for this page", oneOf={FeedItemInfo.class, MediaCommentDetail.class, MediaCommentInfo.class, MediaInfo.class}, implementation=Object.class)
+	@Schema(description = "the list of results for this page", oneOf={FeedItemInfo.class, MediaCommentDetail.class, UserCommentDetail.class, MediaInfo.class}, implementation=Object.class)
 	private List<T> content;
 	@Schema(description = "the current page number")
 	private int pageNumber;

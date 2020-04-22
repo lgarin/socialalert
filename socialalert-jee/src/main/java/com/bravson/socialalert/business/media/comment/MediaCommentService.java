@@ -16,6 +16,7 @@ import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.media.comment.MediaCommentDetail;
 import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
+import com.bravson.socialalert.domain.media.comment.UserCommentDetail;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
@@ -72,11 +73,9 @@ public class MediaCommentService {
 		return result;
 	}
 	
-	public QueryResult<MediaCommentInfo> listUserComments(@NonNull String userId, @NonNull PagingParameter paging) {
+	public QueryResult<UserCommentDetail> listUserComments(@NonNull String userId, @NonNull PagingParameter paging) {
 		userService.findUserInfo(userId).orElseThrow(NotFoundException::new);
-		QueryResult<MediaCommentInfo> result = commentRepository.searchByUserId(userId, paging).map(MediaCommentEntity::toMediaCommentDetail);
-		userService.fillUserInfo(result.getContent());
-		return result;
+		return commentRepository.searchByUserId(userId, paging).map(MediaCommentEntity::toUserCommentDetail);
 	}
 
 	private Map<String, ApprovalModifier> buildUserCommentApprovalMap(String mediaUri, String userId) {
