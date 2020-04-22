@@ -161,12 +161,15 @@ public class UserFacade {
 		return result;
 	}
 	
+	private static class MediaCommentQueryResult extends QueryResult<MediaCommentInfo> {}
+	
 	@GET
 	@Produces(MediaTypeConstants.JSON)
 	@Path("/comments/{userId : .+}")
 	@UserActivity
 	@Operation(summary="List the comments posted by the specified user.")
 	@SecurityRequirement(name = "JWT")
+	@APIResponse(responseCode = "200", description = "The matching comments are available in the response.", content=@Content(schema=@Schema(implementation=MediaCommentQueryResult.class)))
 	@APIResponse(responseCode = "404", description = "Specified user could not be found.")
 	public QueryResult<MediaCommentInfo> listComments(@Parameter(description="The user id to return", required=true) @NotEmpty @PathParam("userId") String userId,
 			@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,

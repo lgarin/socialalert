@@ -41,12 +41,14 @@ public class FeedFacade {
 	@TokenAccess
 	Instance<UserAccess> userAccess;
 
+	private static class FeedItemQueryResult extends QueryResult<FeedItemInfo> {}
+	
 	@GET
 	@Path("/current")
 	@Operation(summary="Get the feed for the current user.")
 	@SecurityRequirement(name = "JWT")
 	@Produces(MediaTypeConstants.JSON)
-	@APIResponse(responseCode = "200", description = "The feed has been retrieved successfuly.", content=@Content(schema=@Schema(implementation=FeedItemInfo.class)))
+	@APIResponse(responseCode = "200", description = "The feed has been retrieved successfuly.", content=@Content(schema=@Schema(implementation=FeedItemQueryResult.class)))
 	public QueryResult<FeedItemInfo> getFeed(
 			@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
 			@Parameter(description="Sets the page number to return.", required=false) @DefaultValue("0") @Min(0) @QueryParam("pageNumber") int pageNumber,
