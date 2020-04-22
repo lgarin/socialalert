@@ -56,7 +56,7 @@ public class MediaCommentEntity {
 	
 	@Getter
 	@NonNull
-	@ManyToOne(fetch=FetchType.LAZY, optional = false)
+	@ManyToOne(fetch=FetchType.EAGER, optional = false) // TODO should be lazy
 	@JoinColumn(foreignKey = @ForeignKey(name = "FK_Comment_Media"))
 	@IndexedEmbedded(includePaths= {"id"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.NO)
