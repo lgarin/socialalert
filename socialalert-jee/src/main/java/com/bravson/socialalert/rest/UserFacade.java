@@ -10,15 +10,19 @@ import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -35,12 +39,16 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import com.bravson.socialalert.business.media.comment.MediaCommentService;
 import com.bravson.socialalert.business.user.TokenAccess;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserLinkService;
 import com.bravson.socialalert.business.user.UserProfileService;
 import com.bravson.socialalert.business.user.UserService;
 import com.bravson.socialalert.business.user.activity.UserActivity;
+import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
+import com.bravson.socialalert.domain.paging.PagingParameter;
+import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.LoginParameter;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.LoginTokenResponse;
@@ -62,6 +70,9 @@ public class UserFacade {
 	
 	@Inject
 	UserProfileService profileService;
+	
+	@Inject
+	MediaCommentService commentService;
 	
 	@Inject
 	@TokenAccess
@@ -145,7 +156,24 @@ public class UserFacade {
 	@APIResponse(responseCode = "404", description = "Specified user could not be found.")
 	public UserInfo info(
 			@Parameter(description="The user id to return", required=true) @NotEmpty @PathParam("userId") String userId) {
-		return userService.findUserInfo(userId).orElseThrow(NotFoundException::new);
+		UserInfo result = userService.findUserInfo(userId).orElseThrow(NotFoundException::new);
+		result.setFollowed(linkService.isLinked(userAccess.get(), userId));
+		return result;
+	}
+	
+	@GET
+	@Produces(MediaTypeConstants.JSON)
+	@Path("/comments/{userId : .+}")
+	@UserActivity
+	@Operation(summary="List the comments posted by the specified user.")
+	@SecurityRequirement(name = "JWT")
+	@APIResponse(responseCode = "404", description = "Specified user could not be found.")
+	public QueryResult<MediaCommentInfo> listComments(@Parameter(description="The user id to return", required=true) @NotEmpty @PathParam("userId") String userId,
+			@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
+			@Parameter(description="Sets the page number to return.", required=false) @DefaultValue("0") @Min(0) @QueryParam("pageNumber") int pageNumber,
+			@Parameter(description="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize) {
+		
+		return commentService.listUserComments(userId, PagingParameter.of(pagingTimestamp, pageNumber, pageSize));
 	}
 	
 	@POST

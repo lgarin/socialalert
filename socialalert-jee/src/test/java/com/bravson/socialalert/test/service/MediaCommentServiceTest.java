@@ -30,6 +30,7 @@ import com.bravson.socialalert.domain.media.comment.MediaCommentDetail;
 import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
+import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 
 public class MediaCommentServiceTest extends BaseServiceTest {
@@ -100,7 +101,7 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.of(mediaEntity));
 		when(commentRepository.searchByMediaUri(mediaUri, paging)).thenReturn(entityResult);
 		
-		QueryResult<MediaCommentDetail> result = commentService.listComments(mediaUri, userId, paging);
+		QueryResult<MediaCommentDetail> result = commentService.listMediaComments(mediaUri, userId, paging);
 		assertThat(result.getContent()).isEmpty();
 	}
 	
@@ -111,7 +112,7 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 		
 		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.empty());
 		
-		assertThatThrownBy(() -> commentService.listComments(mediaUri, userId, new PagingParameter(Instant.now(), 0, 10))).isInstanceOf(NotFoundException.class);
+		assertThatThrownBy(() -> commentService.listMediaComments(mediaUri, userId, new PagingParameter(Instant.now(), 0, 10))).isInstanceOf(NotFoundException.class);
 		verifyNoInteractions(commentRepository, userService);
 	}
 	
@@ -167,5 +168,30 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 		
 		assertThatThrownBy(() -> commentService.setApprovalModifier(commentId, modifier, userId)).isInstanceOf(NotFoundException.class);
 		verifyNoMoreInteractions(approvalRepository, userService);
+	}
+	
+	@Test
+	public void listCommentsForExitingUser() {
+		String userId = "user1";
+		PagingParameter paging = new PagingParameter(Instant.now(), 0, 10);
+		QueryResult<MediaCommentEntity> entityResult = new QueryResult<>(Collections.emptyList(), 0, paging);
+		UserInfo userInfo = UserInfo.builder().id(userId).username(userId).createdTimestamp(Instant.EPOCH).build();
+		
+		when(userService.findUserInfo(userId)).thenReturn(Optional.of(userInfo));
+		when(commentRepository.searchByUserId(userId, paging)).thenReturn(entityResult);
+		
+		QueryResult<MediaCommentInfo> result = commentService.listUserComments(userId, paging);
+		assertThat(result.getContent()).isEmpty();
+		verifyNoInteractions(mediaRepository, approvalRepository);
+	}
+	
+	@Test
+	public void listCommentsForNonExitingUser() {
+		String userId = "user1";
+		
+		when(userService.findUserInfo(userId)).thenReturn(Optional.empty());
+		
+		assertThatThrownBy(() -> commentService.listUserComments(userId, new PagingParameter(Instant.now(), 0, 10))).isInstanceOf(NotFoundException.class);
+		verifyNoInteractions(commentRepository, mediaRepository, approvalRepository);
 	}
 }

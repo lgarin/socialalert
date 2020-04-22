@@ -38,9 +38,13 @@ public class UserLinkService {
 	@NonNull
 	OnlineUserCache onlineUserCache;
 
+	public boolean isLinked(UserAccess userAccess, String userId) {
+		return linkRepository.find(userAccess.getUserId(), userId).isPresent();
+	}
+	
 	public boolean link(UserAccess userAccess, String userId) {
 		UserProfileEntity targetUser = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
-		if (!linkRepository.find(userAccess.getUserId(), userId).isPresent()) {
+		if (!isLinked(userAccess, userId)) {
 			UserProfileEntity sourceUser = profileRepository.findByUserId(userAccess.getUserId()).orElseThrow(NotFoundException::new);
 			linkRepository.link(sourceUser, targetUser);
 			return true;
@@ -50,7 +54,7 @@ public class UserLinkService {
 
 	public boolean unlink(UserAccess userAccess, String userId) {
 		profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
-		if (linkRepository.find(userAccess.getUserId(), userId).isPresent()) {
+		if (isLinked(userAccess, userId)) {
 			linkRepository.unlink(userAccess.getUserId(), userId);
 			return true;
 		}

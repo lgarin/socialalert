@@ -299,7 +299,7 @@ public class MediaFacade {
 			@Parameter(description="Sets the page number to return.", required=false) @DefaultValue("0") @Min(0) @QueryParam("pageNumber") int pageNumber,
 			@Parameter(description="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize) {
 		
-		return commentService.listComments(mediaUri, userAccess.get().getUserId(), PagingParameter.of(pagingTimestamp, pageNumber, pageSize));
+		return commentService.listMediaComments(mediaUri, userAccess.get().getUserId(), PagingParameter.of(pagingTimestamp, pageNumber, pageSize));
 	}
 	
 	@GET

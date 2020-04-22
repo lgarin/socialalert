@@ -51,4 +51,14 @@ public class MediaCommentRepository {
 				.fetch(paging.getOffset(), paging.getPageSize());
 		return new QueryResult<>(result.getHits(), result.getTotalHitCount(), paging);
 	}
+
+	public QueryResult<MediaCommentEntity> searchByUserId(@NonNull String userId, @NonNull PagingParameter paging) {
+		SearchResult<MediaCommentEntity> result = persistenceManager.search(MediaCommentEntity.class)
+				.where(p -> p.bool()
+						.must(p.range().field("versionInfo.creation").atMost(paging.getTimestamp()))
+						.must(p.match().field("versionInfo.userId").matching(userId)))
+				.sort(s -> s.field("versionInfo.creation").desc())
+				.fetch(paging.getOffset(), paging.getPageSize());
+		return new QueryResult<>(result.getHits(), result.getTotalHitCount(), paging);
+	}
 }

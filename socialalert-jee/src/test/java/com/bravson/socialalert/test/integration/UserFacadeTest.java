@@ -183,4 +183,20 @@ public class UserFacadeTest extends BaseIntegrationTest {
 		Map<String,String> response = createRequest("/user/languages", MediaTypeConstants.JSON).get(new GenericType<Map<String,String>>() {});
 		assertThat(response).contains(Map.entry("fr", "French"));
 	}
+	
+	@Test
+	public void listCommentsForInvalidUser() {
+		String token = requestLoginToken("test@test.com", "123");
+		String userId = "xyz";
+		Response response = createAuthRequest("/user/comments/" + userId, MediaTypeConstants.JSON, token).get();
+		assertThat(response.getStatus()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+	}
+	
+	@Test
+	public void listCommentsForExistingUser() {
+		String token = requestLoginToken("test@test.com", "123");
+		String userId = "8b99179c-2a6b-4e41-92d3-3edfe3df885b";
+		Response response = createAuthRequest("/user/comments/" + userId, MediaTypeConstants.JSON, token).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
 }

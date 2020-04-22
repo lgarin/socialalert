@@ -46,4 +46,6 @@ public class UserInfo {
 	private String biography;
 	
 	private UserStatistic statistic;
+	
+	private Boolean followed;
 }
