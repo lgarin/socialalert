@@ -157,7 +157,7 @@ public class UserFacade {
 	public UserInfo info(
 			@Parameter(description="The user id to return", required=true) @NotEmpty @PathParam("userId") String userId) {
 		UserInfo result = userService.findUserInfo(userId).orElseThrow(NotFoundException::new);
-		result.setFollowed(linkService.isLinked(userAccess.get(), userId));
+		result.setFollowedSince(linkService.findLinkCreationTimetamp(userAccess.get(), userId).orElse(null));
 		return result;
 	}
 	
@@ -178,6 +178,7 @@ public class UserFacade {
 	}
 	
 	@POST
+	@Produces(MediaTypeConstants.JSON)
 	@Path("/follow/{userId : .+}")
 	@UserActivity
 	@Operation(summary="Start following the specified user.")
@@ -187,13 +188,15 @@ public class UserFacade {
 	@APIResponse(responseCode = "404", description = "Specified user could not be found.")
 	public Response follow(
 			@Parameter(description="The user id to follow", required=true) @NotEmpty @PathParam("userId") String userId) {
-		if (linkService.link(userAccess.get(), userId)) {
-			return Response.status(Status.CREATED).build();
+		UserInfo targetUserInfo = linkService.link(userAccess.get(), userId).orElse(null);
+		if (targetUserInfo != null) {
+			return Response.status(Status.CREATED).entity(targetUserInfo).build();
 		}
 		return Response.status(Status.OK).build();
 	}
 	
 	@POST
+	@Produces(MediaTypeConstants.JSON)
 	@Path("/unfollow/{userId : .+}")
 	@UserActivity
 	@Operation(summary="Stop following the specified user.")
@@ -203,8 +206,9 @@ public class UserFacade {
 	@APIResponse(responseCode = "404", description = "Specified user could not be found.")
 	public Response unfollow(
 			@Parameter(description="The user id to unfollow", required=true) @NotEmpty @PathParam("userId") String userId) {
-		if (linkService.unlink(userAccess.get(), userId)) {
-			return Response.status(Status.OK).build();
+		UserInfo targetUserInfo = linkService.unlink(userAccess.get(), userId).orElse(null);
+		if (targetUserInfo != null) {
+			return Response.status(Status.OK).entity(targetUserInfo).build();
 		}
 		return Response.status(Status.GONE).build();
 	}

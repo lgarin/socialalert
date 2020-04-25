@@ -47,5 +47,6 @@ public class UserInfo {
 	
 	private UserStatistic statistic;
 	
-	private Boolean followed;
+	@Schema(description="The link creation timestamp in milliseconds since the epoch.", implementation=Long.class)
+	private Instant followedSince;
 }

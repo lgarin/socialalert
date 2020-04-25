@@ -228,6 +228,11 @@ public class UserProfileEntity extends VersionedEntity {
 		statistic.incFollowerCount();
 		setLastActivity(Instant.now());
 	}
+	
+	public void removeFollower() {
+		statistic.decFollowerCount();
+		setLastActivity(Instant.now());
+	}
 
 	public void login(AuthenticationInfo authInfo) {
 		setEmail(authInfo.getEmail());

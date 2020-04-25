@@ -80,4 +80,8 @@ public class UserStatistic {
 	public void incFollowerCount() {
 		followerCount++;
 	}
+	
+	public void decFollowerCount() {
+		followerCount--;
+	}
 }

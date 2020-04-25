@@ -1,6 +1,8 @@
 package com.bravson.socialalert.business.user;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -38,32 +40,34 @@ public class UserLinkService {
 	@NonNull
 	OnlineUserCache onlineUserCache;
 
-	public boolean isLinked(UserAccess userAccess, String userId) {
-		return linkRepository.find(userAccess.getUserId(), userId).isPresent();
+	public Optional<Instant> findLinkCreationTimetamp(@NonNull UserAccess userAccess, @NonNull String userId) {
+		return linkRepository.find(userAccess.getUserId(), userId).map(UserLinkEntity::getCreation);
 	}
 	
-	public boolean link(UserAccess userAccess, String userId) {
+	public Optional<UserInfo> link(@NonNull UserAccess userAccess, @NonNull String userId) {
 		UserProfileEntity targetUser = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
-		if (!isLinked(userAccess, userId)) {
+		if (linkRepository.find(userAccess.getUserId(), userId).isEmpty()) {
 			UserProfileEntity sourceUser = profileRepository.findByUserId(userAccess.getUserId()).orElseThrow(NotFoundException::new);
-			linkRepository.link(sourceUser, targetUser);
-			return true;
+			UserLinkEntity link = linkRepository.link(sourceUser, targetUser);
+			targetUser.addFollower();
+			return Optional.of(getFollowedTargetUserInfo(link));
 		}
-		return false;
+		return Optional.empty();
 	}
 
-	public boolean unlink(UserAccess userAccess, String userId) {
-		profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
-		if (isLinked(userAccess, userId)) {
-			linkRepository.unlink(userAccess.getUserId(), userId);
-			return true;
+	public Optional<UserInfo> unlink(@NonNull UserAccess userAccess, @NonNull String userId) {
+		UserProfileEntity targetUser = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
+		Optional<UserLinkEntity> link = linkRepository.unlink(userAccess.getUserId(), userId);
+		if (link.isPresent()) {
+			targetUser.removeFollower();
+			return Optional.of(getTargetUserInfo(link.get()));
 		}
-		return false;
+		return Optional.empty();
 	}
 
-	public List<UserInfo> getTargetProfiles(String userId) {
+	public List<UserInfo> getTargetProfiles(@NonNull String userId) {
 		UserProfileEntity profile = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
-		return profile.getFollowedUsers().stream().map(this::getTargetUserInfo).collect(Collectors.toList());
+		return profile.getFollowedUsers().stream().map(this::getFollowedTargetUserInfo).collect(Collectors.toList());
 	}
 	
 	private UserInfo getTargetUserInfo(UserLinkEntity entity) {
@@ -72,5 +76,11 @@ public class UserLinkService {
 		} else {
 			return entity.getTargetUser().toOfflineUserInfo();
 		}
+	}
+	
+	private UserInfo getFollowedTargetUserInfo(UserLinkEntity entity) {
+		UserInfo userInfo = getTargetUserInfo(entity);
+		userInfo.setFollowedSince(entity.getCreation());
+		return userInfo;
 	}
 }
