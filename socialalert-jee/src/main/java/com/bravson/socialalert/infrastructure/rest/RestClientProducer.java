@@ -11,7 +11,8 @@ import javax.ws.rs.client.ClientBuilder;
 
 import org.slf4j.Logger;
 
-import io.quarkus.resteasy.jsonb.runtime.QuarkusJsonbContextResolver;
+import io.quarkus.resteasy.common.runtime.jsonb.QuarkusJsonbContextResolver;
+
 
 @ApplicationScoped
 public class RestClientProducer {
