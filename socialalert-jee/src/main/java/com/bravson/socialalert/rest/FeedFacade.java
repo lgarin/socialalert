@@ -44,10 +44,12 @@ public class FeedFacade {
 	@SecurityRequirement(name = "JWT")
 	@Produces(MediaTypeConstants.JSON)
 	public QueryResult<FeedItemInfo> getFeed(
+			@Parameter(description="Define the keywords for searching the feed.", required=false) @QueryParam("keywords") String keywords,
+			@Parameter(description="Define the category for searching the feed.", required=false) @QueryParam("category") String category,
 			@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
 			@Parameter(description="Sets the page number to return.", required=false) @DefaultValue("0") @Min(0) @QueryParam("pageNumber") int pageNumber,
 			@Parameter(description="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize) {
 		
-		return feedService.getFeed(userAccess.get().getUserId(), PagingParameter.of(pagingTimestamp, pageNumber, pageSize));
+		return feedService.getFeed(userAccess.get().getUserId(), category, keywords, PagingParameter.of(pagingTimestamp, pageNumber, pageSize));
 	}
 }

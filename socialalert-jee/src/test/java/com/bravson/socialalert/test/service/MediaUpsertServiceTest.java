@@ -54,7 +54,6 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 		UserAccess userAccess = UserAccess.of("test", "1.2.3.4");
 		UpsertMediaParameter mediaParameter = new UpsertMediaParameter();
 		mediaParameter.setTitle("Test title");
-		mediaParameter.setDescription("Test desc");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
 		mediaParameter.setCategory("cat1");
 		mediaParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
@@ -72,7 +71,6 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 		UserAccess userAccess = UserAccess.of("test", "1.2.3.4");
 		UpsertMediaParameter mediaParameter = new UpsertMediaParameter();
 		mediaParameter.setTitle("Test title");
-		mediaParameter.setDescription("Test desc");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
 		mediaParameter.setCategory("cat1");
 		mediaParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
@@ -88,7 +86,6 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 		UserAccess userAccess = UserAccess.of("test", "1.2.3.4");
 		UpsertMediaParameter mediaParameter = new UpsertMediaParameter();
 		mediaParameter.setTitle("Test title");
-		mediaParameter.setDescription("Test desc");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
 		mediaParameter.setCategory("cat1");
 		mediaParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
@@ -106,7 +103,6 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 		UserAccess userAccess = UserAccess.of("test", "1.2.3.4");
 		UpsertMediaParameter mediaParameter = new UpsertMediaParameter();
 		mediaParameter.setTitle("Test title");
-		mediaParameter.setDescription("Test desc");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
 		mediaParameter.setCategory("cat1");
 		mediaParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
@@ -130,7 +126,6 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 		UserAccess userAccess = UserAccess.of("test", "1.2.3.4");
 		UpsertMediaParameter mediaParameter = new UpsertMediaParameter();
 		mediaParameter.setTitle("Test title");
-		mediaParameter.setDescription("Test desc");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
 		mediaParameter.setCategory("cat1");
 		mediaParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
@@ -152,7 +147,6 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 		UserAccess userAccess = UserAccess.of("test", "1.2.3.4");
 		UpsertMediaParameter mediaParameter = new UpsertMediaParameter();
 		mediaParameter.setTitle("Test title");
-		mediaParameter.setDescription("Test desc");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
 		mediaParameter.setCategory("cat1");
 		mediaParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
@@ -169,7 +163,6 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 		UserAccess userAccess = UserAccess.of("test", "1.2.3.4");
 		UpsertMediaParameter mediaParameter = new UpsertMediaParameter();
 		mediaParameter.setTitle("Test title");
-		mediaParameter.setDescription("Test desc");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
 		mediaParameter.setCategory("cat1");
 		mediaParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());

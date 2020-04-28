@@ -58,7 +58,7 @@ public class MediaRepository {
 	public QueryResult<MediaEntity> searchMedia(@NonNull SearchMediaParameter parameter, @NonNull PagingParameter paging) {
 		JsonObject sortSource = new JsonObject();
 		sortSource.addProperty("lang", "painless");
-		sortSource.addProperty("source", "(_score + 1) * doc['statistic.boostFactor'].value * doc['versionInfo.creation'].value.toEpochSecond()");
+		sortSource.addProperty("source", "_score * doc['statistic.boostFactor'].value * doc['versionInfo.creation'].value.toEpochSecond()");
 		JsonObject sortScript = new JsonObject();
 		sortScript.addProperty("type", "number");
 		sortScript.add("script", sortSource);
@@ -96,7 +96,7 @@ public class MediaRepository {
 			junction = junction.filter(context.simpleQueryString().field("category").matching(parameter.getCategory()).toPredicate());
 		}
 		if (parameter.getKeywords() != null) {
-			junction = junction.must(context.match().field("tags").boost(4.0f).field("title").boost(2.0f).field("description").matching(parameter.getKeywords()).fuzzy().toPredicate());
+			junction = junction.must(context.match().field("tags").boost(4.0f).field("title").boost(2.0f).matching(parameter.getKeywords()).fuzzy().toPredicate());
 		}
 		if (parameter.getMediaKind() != null) {
 			junction = junction.filter(context.match().field("kind").matching(parameter.getMediaKind()).toPredicate());

@@ -43,10 +43,10 @@ public class FeedServiceTest extends BaseServiceTest {
 		QueryResult<FeedItemEntity> items = new QueryResult<>(Collections.emptyList(), 0, paging);
 		UserProfileEntity profile = new UserProfileEntity("test", "test@test.com", UserAccess.of("test", "1.2.3.4"));
 		when(profileRepository.findByUserId("test")).thenReturn(Optional.of(profile));
-		when(itemRepository.searchActivitiesByUsers(Collections.singletonList("test"), paging)).thenReturn(items);
+		when(itemRepository.searchActivitiesByUsers(Collections.singletonList("test"), null, null, paging)).thenReturn(items);
 		when(userService.fillUserInfo(Collections.emptyList())).thenReturn(Collections.emptyList());
 		
-		QueryResult<FeedItemInfo> result = feedService.getFeed("test", paging);
+		QueryResult<FeedItemInfo> result = feedService.getFeed("test", null, null, paging);
 		assertThat(result.getContent()).isEmpty();
 		assertThat(result.getPageCount()).isEqualTo(0);
 	}
@@ -56,6 +56,6 @@ public class FeedServiceTest extends BaseServiceTest {
 		PagingParameter paging = new PagingParameter(Instant.now(), 0, 10);
 		when(profileRepository.findByUserId("test")).thenReturn(Optional.empty());
 		
-		assertThatThrownBy(() -> feedService.getFeed("test", paging)).isInstanceOf(NotFoundException.class);
+		assertThatThrownBy(() -> feedService.getFeed("test", null, null, paging)).isInstanceOf(NotFoundException.class);
 	}
 }

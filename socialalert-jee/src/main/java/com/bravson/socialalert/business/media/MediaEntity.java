@@ -71,11 +71,6 @@ public class MediaEntity extends VersionedEntity {
 	@Column(name = "title", length = FieldLength.NAME)
 	@FullTextField(analyzer="languageAnalyzer")
     private String title;
-	
-	@Getter
-	@Column(name = "description", length = FieldLength.TEXT)
-	@FullTextField(analyzer="languageAnalyzer")
-	private String description;
 
 	@Getter
 	@Embedded
@@ -183,9 +178,6 @@ public class MediaEntity extends VersionedEntity {
 		if (parameter.getTitle() != null) {
 			this.title = parameter.getTitle();
 		}
-		if (parameter.getDescription() != null) {
-			this.description = parameter.getDescription();
-		}
 		if (parameter.getLocation() != null) {
 			this.location = parameter.getLocation();
 		}
@@ -220,7 +212,6 @@ public class MediaEntity extends VersionedEntity {
 		info.setMediaUri(getFile().getId());
 		info.setKind(getKind());
 		info.setTitle(getTitle());
-		info.setDescription(getDescription());
 		info.setTags(new ArrayList<>(getTags()));
 		info.setCategory(getCategory());
 		if (getLocation() != null) {

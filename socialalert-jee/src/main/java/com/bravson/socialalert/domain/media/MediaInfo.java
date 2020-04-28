@@ -24,8 +24,6 @@ public class MediaInfo implements UserContent {
 
     private String title;
     
-    private String description;
-	
     @Schema(description="The media timestamp in milliseconds since the epoch.", implementation=Long.class)
 	private Instant creation;
 	 

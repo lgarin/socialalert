@@ -1,10 +1,14 @@
 package com.bravson.socialalert.business.feed;
 
+import java.time.Instant;
 import java.util.Collection;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateClausesStep;
+import org.hibernate.search.engine.search.predicate.dsl.PredicateFinalStep;
+import org.hibernate.search.engine.search.predicate.dsl.SearchPredicateFactory;
 import org.hibernate.search.engine.search.query.SearchResult;
 
 import com.bravson.socialalert.business.media.MediaEntity;
@@ -47,11 +51,23 @@ public class FeedItemRepository {
 		return persistenceManager.persist(entity);
 	}
 	
-	public QueryResult<FeedItemEntity> searchActivitiesByUsers(@NonNull Collection<String> userIdList, @NonNull PagingParameter paging) {
+	private PredicateFinalStep createSearchQuery(Collection<String> userIdList, Instant timestamp, String category, String keywords, SearchPredicateFactory context) {
+		BooleanPredicateClausesStep<?> junction = context.bool();
+		junction = junction.mustNot(context.simpleQueryString().field("activity").matching(FeedActivity.WATCH_MEDIA.name()));
+		junction = junction.must(context.range().field("versionInfo.creation").atMost(timestamp));
+		junction = junction.filter(context.simpleQueryString().field("versionInfo.userId").matching(String.join(" ", userIdList)));
+		if (category != null) {
+			junction = junction.filter(context.simpleQueryString().field("category").matching(category).toPredicate());
+		}
+		if (keywords != null) {
+			junction = junction.must(context.match().field("tags").boost(4.0f).field("text").matching(keywords).fuzzy().toPredicate());
+		}
+		return junction;
+	}
+	
+	public QueryResult<FeedItemEntity> searchActivitiesByUsers(@NonNull Collection<String> userIdList, String category, String keywords, @NonNull PagingParameter paging) {
 		SearchResult<FeedItemEntity> result = persistenceManager.search(FeedItemEntity.class)
-				.where(p -> p.bool()
-						.must(p.range().field("versionInfo.creation").atMost(paging.getTimestamp()))
-						.must(p.simpleQueryString().field("versionInfo.userId").matching(String.join(" ", userIdList))))
+				.where(p -> createSearchQuery(userIdList, paging.getTimestamp(), category, keywords, p))
 				.sort(s -> s.field("versionInfo.creation").desc())
 				.fetch(paging.getOffset(), paging.getPageSize());
 		return new QueryResult<>(result.getHits(), result.getTotalHitCount(), paging);

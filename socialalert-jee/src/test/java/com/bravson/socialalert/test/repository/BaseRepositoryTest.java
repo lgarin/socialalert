@@ -54,7 +54,6 @@ public class BaseRepositoryTest extends Assertions {
 	private UpsertMediaParameter buildDefaultClaimParameter() {
 		UpsertMediaParameter claimParameter = new UpsertMediaParameter();
 		claimParameter.setTitle("Test title");
-		claimParameter.setDescription("Test desc");
 		claimParameter.setTags(Arrays.asList("tag1", "tag2"));
 		claimParameter.setCategory("cat1");
 		claimParameter.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());

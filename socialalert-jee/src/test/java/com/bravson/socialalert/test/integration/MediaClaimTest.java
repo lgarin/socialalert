@@ -29,7 +29,6 @@ public class MediaClaimTest extends BaseIntegrationTest {
 	private static Entity<UpsertMediaParameter> getClaimMediaParameter() {
 		UpsertMediaParameter param = new UpsertMediaParameter();
 		param.setTitle("Test title");
-		param.setDescription("Test desc");
 		param.setTags(Arrays.asList("tag1", "tag2"));
 		param.setCategory("cat1");
 		param.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
@@ -65,7 +64,6 @@ public class MediaClaimTest extends BaseIntegrationTest {
 		assertThat(result.getCreator().getUsername()).isEqualTo("test@test.com");
 		assertThat(result.getCreator().isOnline()).isTrue();
 		assertThat(result.getTitle()).isEqualTo("Test title");
-		assertThat(result.getDescription()).isEqualTo("Test desc");
 		assertThat(result.getCountry()).isEqualTo("CH");
 		assertThat(result.getLocality()).isEqualTo("Bern");
 		assertThat(result.getLongitude()).isCloseTo(7.45, Offset.offset(0.001));
@@ -100,7 +98,6 @@ public class MediaClaimTest extends BaseIntegrationTest {
 		assertThat(result.getCreator().getUsername()).isEqualTo("test@test.com");
 		assertThat(result.getCreator().isOnline()).isTrue();
 		assertThat(result.getTitle()).isEqualTo("Test title");
-		assertThat(result.getDescription()).isEqualTo("Test desc");
 		assertThat(result.getCountry()).isEqualTo("CH");
 		assertThat(result.getLocality()).isEqualTo("Bern");
 		assertThat(result.getLongitude()).isCloseTo(7.45, Offset.offset(0.001));

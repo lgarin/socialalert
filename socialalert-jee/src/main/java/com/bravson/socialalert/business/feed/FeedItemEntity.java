@@ -1,5 +1,7 @@
 package com.bravson.socialalert.business.feed;
 
+import java.util.stream.Collectors;
+
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -14,6 +16,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.IdentifierBridgeRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
@@ -77,10 +80,28 @@ public class FeedItemEntity {
 	@IndexedEmbedded
 	private VersionInfo versionInfo;
 	
+	@Getter
+	@Column(name = "text", length = FieldLength.TEXT)
+	@FullTextField(analyzer="languageAnalyzer")
+	private String text;
+	
+	@Getter
+	@Column(name = "category", length = FieldLength.NAME)
+	@GenericField
+	private String category;
+	
+	@Getter
+	@Column(name = "tags", length = FieldLength.TEXT)
+	@FullTextField(analyzer="languageAnalyzer")
+	private String tags;
+	
 	public FeedItemEntity(@NonNull MediaEntity media, MediaCommentEntity comment, @NonNull FeedActivity activity, @NonNull UserAccess userAccess) {
 		this.media = media;
 		this.comment = comment;
 		this.activity = activity;
+		category = media.getCategory();
+		tags = media.getTags().stream().collect(Collectors.joining("\n"));
+		text = comment != null ? comment.getComment() : media.getTitle();
 		versionInfo = VersionInfo.of(userAccess.getUserId(), userAccess.getIpAddress());
 	}
 	

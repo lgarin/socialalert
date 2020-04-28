@@ -32,12 +32,12 @@ public class FeedService {
 	@Inject
 	UserInfoService userService;
 	
-	public QueryResult<FeedItemInfo> getFeed(@NonNull String userId, @NonNull PagingParameter paging) {
+	public QueryResult<FeedItemInfo> getFeed(@NonNull String userId, String category, String keywords, @NonNull PagingParameter paging) {
 		UserProfileEntity profile = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
 		List<String> userIdList = new ArrayList<String>(profile.getFollowedUsers().size() + 1);
 		profile.getFollowedUsers().stream().map(link -> link.getId().getTargetUserId()).forEach(userIdList::add);
 		userIdList.add(userId);
-		QueryResult<FeedItemInfo> result = itemRepository.searchActivitiesByUsers(userIdList, paging).map(FeedItemEntity::toItemInfo);
+		QueryResult<FeedItemInfo> result = itemRepository.searchActivitiesByUsers(userIdList, category, keywords, paging).map(FeedItemEntity::toItemInfo);
 		userService.fillUserInfo(result.getContent());
 		return result;
 	}
