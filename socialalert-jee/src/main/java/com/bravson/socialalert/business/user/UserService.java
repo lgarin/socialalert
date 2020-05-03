@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.NotFoundException;
 
 import com.bravson.socialalert.business.user.activity.OnlineUserCache;
@@ -95,5 +96,9 @@ public class UserService {
 	
 	public boolean createUser(@NonNull NewUserParameter param) {
 		return authenticationRepository.createUser(param);
+	}
+
+	public void changePassword(@NonNull String userId, @NotNull String newPassword) {
+		authenticationRepository.changePassword(userId, newPassword);		
 	}
 }

@@ -199,4 +199,11 @@ public class UserFacadeTest extends BaseIntegrationTest {
 		Response response = createAuthRequest("/user/comments/" + userId, MediaTypeConstants.JSON, token).get();
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 	}
+	
+	@Test
+	public void changePassword() {
+		String token = requestLoginToken("test@test.com", "123");
+		Response response = createAuthRequest("/user/changePassword", MediaTypeConstants.JSON, token).post(Entity.text("123"));
+		assertThat(response.getStatus()).isEqualTo(Status.NO_CONTENT.getStatusCode());
+	}
 }

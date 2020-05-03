@@ -124,4 +124,16 @@ public class AuthenticationRepository {
 		JsonObject payload = response.readEntity(JsonObject.class);
 		return "Bearer " + payload.getString("access_token");
 	}
+	
+	public void changePassword(@NonNull String userId, @NonNull String newPassword) {
+		String authorization = getAdminAuthorization();
+		
+		CredentialRepresentation credential = new CredentialRepresentation(false, "password", newPassword);
+		Response response = httpClient.target(config.getPasswordResetUrl()).resolveTemplate("id", userId)
+				.request().header("Authorization", authorization).put(Entity.json(credential));
+
+		if (response.getStatus() != Status.NO_CONTENT.getStatusCode()) {
+			throw new ClientErrorException(response.getStatus());
+		}
+	}
 }

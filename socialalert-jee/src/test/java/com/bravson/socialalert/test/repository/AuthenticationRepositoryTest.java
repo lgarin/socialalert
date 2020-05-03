@@ -109,4 +109,9 @@ public class AuthenticationRepositoryTest {
 	public void updateExistingUser() {
 		repository.updateUser("8b99179c-2a6b-4e41-92d3-3edfe3df885b", "Firstname", "Lastname");
 	}
+	
+	@Test
+	public void changePassword() {
+		repository.changePassword("8b99179c-2a6b-4e41-92d3-3edfe3df885b", "123");
+	}
 }

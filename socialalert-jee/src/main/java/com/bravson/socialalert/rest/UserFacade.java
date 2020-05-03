@@ -134,6 +134,19 @@ public class UserFacade {
 		return Response.status(Status.FORBIDDEN).build();
 	}
 	
+	@POST
+	@Consumes(MediaTypeConstants.TEXT_PLAIN)
+	@Produces(MediaTypeConstants.JSON)
+	@Path("/changePassword")
+	@UserActivity
+	@Operation(summary="Change the current user password.")
+	@SecurityRequirement(name = "JWT")
+	@APIResponse(responseCode = "204", description = "Password changed")
+	public Response changePassword(@Parameter(required=true) @NotNull String newPassword) throws ServletException {
+		userService.changePassword(userAccess.get().getUserId(), newPassword);
+		return Response.status(Status.NO_CONTENT).build();
+	}
+	
 	@GET
 	@Produces(MediaTypeConstants.JSON)
 	@Path("/current")
