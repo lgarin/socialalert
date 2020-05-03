@@ -111,6 +111,7 @@ public class FeedItemEntity {
 	
 	public FeedItemInfo toItemInfo() {
 		FeedItemInfo info = new FeedItemInfo();
+		info.setId(getId());
 		info.setActivity(getActivity());
 		info.setMedia(getMedia().toMediaInfo());
 		if (getComment() != null) {

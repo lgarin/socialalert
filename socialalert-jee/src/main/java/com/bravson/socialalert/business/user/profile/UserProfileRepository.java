@@ -39,6 +39,8 @@ public class UserProfileRepository {
 
 	public UserProfileEntity createProfile(@NonNull AuthenticationInfo authInfo, @NonNull String ipAddress) {
 		UserProfileEntity entity = new UserProfileEntity(authInfo.getUsername(), authInfo.getEmail(), UserAccess.of(authInfo.getId(), ipAddress));
+		entity.setFirstname(authInfo.getFirstname());
+		entity.setLastname(authInfo.getLastname());
 		return persistenceManager.persist(entity);
 	}
 

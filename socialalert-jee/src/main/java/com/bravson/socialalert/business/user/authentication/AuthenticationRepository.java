@@ -90,13 +90,29 @@ public class AuthenticationRepository {
 				.lastName(param.getLastName())
 				.credential(new CredentialRepresentation(false, "PASSWORD", param.getPassword()))
 				.build();
-		Response response = httpClient.target(config.getUserCreateUrl()).request().header("Authorization", authorization).post(Entity.json(user));
+		Response response = httpClient.target(config.getUserCreateUrl()).request()
+				.header("Authorization", authorization).post(Entity.json(user));
 		if (response.getStatus() == Status.CREATED.getStatusCode()) {
 			return true;
 		} else if (response.getStatus() == Status.CONFLICT.getStatusCode()) {
 			return false;
 		}
 		throw new ClientErrorException(response.getStatus());
+	}
+	
+	public void updateUser(@NonNull String userId, String firstname, String lastname) {
+		String authorization = getAdminAuthorization();
+		
+		UserRepresentation user = UserRepresentation.builder()
+				.firstName(firstname == null ? "" : firstname)
+				.lastName(lastname == null ? "" : lastname)
+				.build();
+		Response response = httpClient.target(config.getUserUpdateUrl()).resolveTemplate("id", userId)
+				.request().header("Authorization", authorization).put(Entity.json(user));
+
+		if (response.getStatus() != Status.NO_CONTENT.getStatusCode()) {
+			throw new ClientErrorException(response.getStatus());
+		}
 	}
 
 	private String getAdminAuthorization() {

@@ -228,6 +228,8 @@ public class MediaEntity extends VersionedEntity {
 		info.setTimestamp(getFile().getFileMetadata().getTimestamp());
 		info.setCameraMaker(getCameraMaker());
 		info.setCameraModel(getCameraModel());
+		info.setWidth(getFile().getMediaMetadata().getWidth());
+		info.setHeight(getFile().getMediaMetadata().getHeight());
 		info.setDuration(getFile().getMediaMetadata().getDuration());
 		info.setCreation(getFile().getMediaMetadata().getTimestamp());
 		info.setFileFormat(getFile().getFileMetadata().getFileFormat());

@@ -65,6 +65,18 @@ public class UserProfileEntity extends VersionedEntity {
 	
 	@Getter
 	@Setter(AccessLevel.PROTECTED)
+	@Column(name = "firstname", length = FieldLength.NAME)
+	@KeywordField
+	private String firstname;
+	
+	@Getter
+	@Setter(AccessLevel.PROTECTED)
+	@Column(name = "lastname", length = FieldLength.NAME)
+	@KeywordField
+	private String lastname;
+	
+	@Getter
+	@Setter(AccessLevel.PROTECTED)
 	@GenericField
 	private LocalDate birthdate;
 	
@@ -158,6 +170,8 @@ public class UserProfileEntity extends VersionedEntity {
 				.email(email)
 				.createdTimestamp(getCreation())
 				.online(online)
+				.firstname(firstname)
+				.lastname(lastname)
 				.biography(biography)
 				.birthdate(birthdate)
 				.gender(gender)
@@ -256,6 +270,8 @@ public class UserProfileEntity extends VersionedEntity {
 				.email(email)
 				.createdTimestamp(getCreation()) // TODO extract from token
 				.online(true)
+				.firstname(firstname)
+				.lastname(lastname)
 				.biography(biography)
 				.birthdate(birthdate)
 				.gender(gender)
@@ -270,6 +286,18 @@ public class UserProfileEntity extends VersionedEntity {
 		setImageUri(imageUri);
 		versionInfo.touch(userAccess.getUserId(), userAccess.getIpAddress());
 		setLastActivity(versionInfo.getLastUpdate());
+	}
+	
+	public boolean hasNameChange(String newFirstname, String newLastname) {
+		return hasFirstnameChange(newFirstname) || hasLastnameChange(newLastname);
+	}
+
+	private boolean hasLastnameChange(String newLastname) {
+		return newLastname != null && !newLastname.equals(lastname);
+	}
+
+	private boolean hasFirstnameChange(String newFirstname) {
+		return newFirstname != null && !newFirstname.equals(firstname);
 	}
 	
 	public void updateProfile(@NonNull UpdateProfileParameter param, @NonNull UserAccess userAccess) {
@@ -287,6 +315,12 @@ public class UserProfileEntity extends VersionedEntity {
 		}
 		if (param.getBiography() != null) {
 			setBiography(param.getBiography());
+		}
+		if (param.getFirstname() != null) {
+			setFirstname(param.getFirstname());
+		}
+		if (param.getLastname() != null) {
+			setLastname(param.getLastname());
 		}
 		versionInfo.touch(userAccess.getUserId(), userAccess.getIpAddress());
 	}

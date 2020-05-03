@@ -14,6 +14,8 @@ import lombok.Data;
 @Schema(description="The information for a feed item.")
 @Data
 public class FeedItemInfo implements UserContent {
+	
+	private String id;
 
 	@Schema(description = "The activity timestamp in milliseconds since the epoch.", implementation = Long.class)
 	private Instant creation;

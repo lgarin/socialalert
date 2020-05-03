@@ -17,6 +17,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateProfileParameter {
+	
+	@Size(max=FieldLength.NAME)
+	private String firstname;
+	
+	@Size(max=FieldLength.NAME)
+	private String lastname;
 
 	private LocalDate birthdate;
 	

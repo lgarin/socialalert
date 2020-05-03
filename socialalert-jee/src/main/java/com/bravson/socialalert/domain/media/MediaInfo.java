@@ -34,6 +34,10 @@ public class MediaInfo implements UserContent {
 	
 	private MediaFileFormat previewFormat;
 	
+	private Integer width;
+	
+	private Integer height;
+	
 	@Schema(description="The duration of the video in milliseconds.", implementation=Long.class)
 	private Duration duration;
 

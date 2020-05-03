@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 
+import com.bravson.socialalert.business.user.authentication.AuthenticationRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.user.UserInfo;
@@ -35,6 +36,10 @@ public class UserProfileService {
 	@Inject
 	@NonNull
 	UserProfileRepository profileRepository;
+	
+	@Inject
+	@NonNull
+	AuthenticationRepository authenticationRepository;
 	
 	private static Set<String> getValidCountryCodes() {
 		return Set.of(Locale.getISOCountries());
@@ -62,7 +67,14 @@ public class UserProfileService {
 		}
 		
 		UserProfileEntity entity = profileRepository.findByUserId(userAccess.getUserId()).orElseThrow(NotFoundException::new);
-		entity.updateProfile(param, userAccess);
+		
+		if (entity.hasNameChange(param.getFirstname(), param.getLastname())) {
+			entity.updateProfile(param, userAccess);
+			authenticationRepository.updateUser(userAccess.getUserId(), entity.getFirstname(), entity.getLastname());
+		} else {
+			entity.updateProfile(param, userAccess);
+		}
+		
 		return entity.toOnlineUserInfo();
 	}
 	

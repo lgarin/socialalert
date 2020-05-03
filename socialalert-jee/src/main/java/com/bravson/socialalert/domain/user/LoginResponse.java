@@ -35,6 +35,10 @@ public class LoginResponse extends LoginTokenResponse {
 	
 	private boolean online;
 	
+	private String firstname;
+	
+	private String lastname;
+	
 	private LocalDate birthdate;
 	
 	private Gender gender;

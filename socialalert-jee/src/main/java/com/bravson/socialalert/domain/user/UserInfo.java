@@ -33,6 +33,10 @@ public class UserInfo {
 	
 	private boolean online;
 	
+	private String firstname;
+	
+	private String lastname;
+	
 	private LocalDate birthdate;
 	
 	private Gender gender;

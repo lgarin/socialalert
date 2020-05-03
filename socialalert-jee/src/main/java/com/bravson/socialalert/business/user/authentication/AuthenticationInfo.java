@@ -29,4 +29,10 @@ public class AuthenticationInfo {
 	
 	@JsonbProperty("email_verified")
 	private boolean emailVerified;
+	
+	@JsonbProperty("firstName")
+	private String firstname;
+	
+	@JsonbProperty("lastName")
+	private String lastname;
 }

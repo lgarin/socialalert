@@ -24,6 +24,8 @@ public interface AuthenticationConfiguration {
 	
 	String getUserCreateUrl();
 	
+	String getUserUpdateUrl();
+	
 	String getLoginClientId();
 	
 	String getClientSecret();

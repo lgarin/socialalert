@@ -2,12 +2,14 @@ package com.bravson.socialalert.test.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Instant;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.ws.rs.ClientErrorException;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -96,5 +98,15 @@ public class AuthenticationRepositoryTest {
 		NewUserParameter param = NewUserParameter.builder().email("test2@test.com").username("test2@test.com").password("123").build();
 		boolean result = repository.createUser(param);
 		assertTrue(result);
+	}
+	
+	@Test
+	public void updateInvalidUser() {
+		assertThrows(ClientErrorException.class, () -> repository.updateUser("xyz", "Firstname", "Lastname"));
+	}
+	
+	@Test
+	public void updateExistingUser() {
+		repository.updateUser("8b99179c-2a6b-4e41-92d3-3edfe3df885b", "Firstname", "Lastname");
 	}
 }

@@ -1,7 +1,7 @@
 package com.bravson.socialalert.test.service;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.Map;
 import java.util.Optional;
@@ -14,6 +14,7 @@ import org.mockito.Mock;
 
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserProfileService;
+import com.bravson.socialalert.business.user.authentication.AuthenticationRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.user.Gender;
@@ -24,6 +25,9 @@ public class UserProfileServiceTest extends BaseServiceTest {
 
 	@Mock
 	UserProfileRepository profileRepository;
+	
+	@Mock
+	AuthenticationRepository authenticationRepository;
 	
 	@InjectMocks
 	UserProfileService profileService;
@@ -42,6 +46,21 @@ public class UserProfileServiceTest extends BaseServiceTest {
 		assertThat(result.getCountry()).isEqualTo("CH");
 		assertThat(result.getLanguage()).isEqualTo("fr");
 		assertThat(result.getGender()).isEqualTo(Gender.MALE);
+	}
+	
+	@Test
+	public void updateProfileName() {
+		UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+		UserProfileEntity profileEntity = new UserProfileEntity("test", "test@test.com", userAccess);
+		when(profileRepository.findByUserId(userAccess.getUserId())).thenReturn(Optional.of(profileEntity));
+		
+		UpdateProfileParameter param = UpdateProfileParameter.builder().firstname("Firstname").lastname("Lastname").country("CH").language("fr").gender(Gender.MALE).build();
+		
+		UserInfo result = profileService.updateProfile(param, userAccess);
+		assertThat(result.getFirstname()).isEqualTo("Firstname");
+		assertThat(result.getLastname()).isEqualTo("Lastname");
+		
+		verify(authenticationRepository).updateUser(userAccess.getUserId(), "Firstname", "Lastname");
 	}
 	
 	@Test
