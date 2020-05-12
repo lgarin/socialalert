@@ -43,7 +43,7 @@ public class AsyncRepository implements Runnable {
 	
 	@Inject
 	TransactionSynchronizationRegistry txRegistry;
-	
+
 	@ConfigProperty(name = "async.threadCount", defaultValue = "1")
 	int threadCount;
 	

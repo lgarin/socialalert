@@ -2,11 +2,12 @@ package com.bravson.socialalert.business.file.video;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.Instant;
 
 import javax.enterprise.event.ObservesAsync;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
+import javax.transaction.UserTransaction;
 
 import org.slf4j.Logger;
 
@@ -24,7 +25,6 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 @Service
-@Transactional
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class AsyncVideoPreviewProcessor {
@@ -44,8 +44,18 @@ public class AsyncVideoPreviewProcessor {
 	@Inject
 	AsyncRepository asyncRepository;
 	
-	public void onAsyncEvent(@ObservesAsync AsyncVideoPreviewEvent event) {
-		fileRepository.findFile(event.getFileUri()).ifPresent(this::createPreview);
+	@Inject
+	UserTransaction transaction;
+	
+	public void onAsyncEvent(@ObservesAsync AsyncVideoPreviewEvent event) throws Exception {
+		try {
+			transaction.begin();
+			fileRepository.findFile(event.getFileUri()).ifPresent(this::createPreview);
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			logger.error("Cannot process video for " + event.getFileUri(), e);
+		}
 	}
 	
 	private void createPreview(FileEntity fileEntity) {
@@ -57,8 +67,7 @@ public class AsyncVideoPreviewProcessor {
 			fileEntity.addVariant(buildFileMetadata(previewFile, videoFileProcessor.getPreviewFormat(), fileMetadata));
 			asyncRepository.fireAsync(AsyncMediaProcessedEvent.of(fileEntity.getId()));
 		} catch (IOException e) {
-			logger.error("Cannot process video " + fileEntity.getId(), e);
-			// TODO add to error queue
+			throw new UncheckedIOException("Cannot create preview video", e);
 		}
 	}
 	
