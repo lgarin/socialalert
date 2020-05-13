@@ -64,9 +64,6 @@ public class FileFacade {
 	@ConfigProperty(name="file.maxUploadSize")
 	long maxUploadSize;
 	
-	@ConfigProperty(name="file.cacheMaxAge")
-	int mediaCacheMaxAge;
-	
 	@Inject
 	@TokenAccess
 	Instance<UserAccess> userAccess;

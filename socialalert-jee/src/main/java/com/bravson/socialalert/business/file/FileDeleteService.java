@@ -27,8 +27,6 @@ public class FileDeleteService {
 
 	//@Schedule(minute="*/5", hour="*")
     public void automaticTimeout() {
-        System.out.println("Cleanup file timer");
         // TODO find old files which have not been claimed
-        // TODO delete files
     }
 }
