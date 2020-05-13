@@ -19,6 +19,7 @@ import com.bravson.socialalert.business.media.UpsertMediaParameter;
 import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.media.format.MediaFileConstants;
+import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -110,5 +111,6 @@ public class MediaClaimTest extends BaseIntegrationTest {
 		assertThat(result.getLikeCount()).isEqualTo(0);
 		assertThat(result.getCategory()).isEqualTo("cat1");
 		assertThat(result.getTags()).containsExactly("tag1", "tag2");
+		assertThat(result.getPreviewFormat()).isEqualTo(MediaFileFormat.PREVIEW_MP4);
 	}
 }

@@ -49,4 +49,8 @@ public class FileRepository {
 			.setParameter("state", state)
 			.getResultList();
 	}
+	
+	public void addVariant(@NonNull String fileUri, FileMetadata variant) {
+		findFile(fileUri).ifPresent(entity -> entity.addVariant(variant));
+	}
 }

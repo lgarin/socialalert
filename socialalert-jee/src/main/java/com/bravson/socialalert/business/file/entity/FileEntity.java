@@ -103,10 +103,6 @@ public class FileEntity extends VersionedEntity {
 		return findFileMetadata(MediaSizeVariant.MEDIA).orElseThrow(IllegalStateException::new);
 	}
 
-	public boolean isTemporary(MediaFileFormat format) {
-		return getFileMetadata().isVideo() && format == MediaFileFormat.PREVIEW_JPG;
-	}
-
 	public boolean isVideo() {
 		return getFileMetadata().isVideo();
 	}

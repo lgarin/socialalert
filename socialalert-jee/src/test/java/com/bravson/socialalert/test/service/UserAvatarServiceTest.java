@@ -115,7 +115,6 @@ public class UserAvatarServiceTest extends BaseServiceTest {
 		FileResponse response = avatarService.getSmallImage("test/abcd");
 		assertThat(response.getFile()).isEqualTo(outputFile);
 		assertThat(response.getFormat()).isEqualTo(MediaFileFormat.THUMBNAIL_JPG);
-		assertThat(response.isTemporary()).isTrue();
 	}
 	
 	@Test
@@ -133,6 +132,5 @@ public class UserAvatarServiceTest extends BaseServiceTest {
 		FileResponse response = avatarService.getLargeImage("test/abcd");
 		assertThat(response.getFile()).isEqualTo(outputFile);
 		assertThat(response.getFormat()).isEqualTo(MediaFileFormat.PREVIEW_JPG);
-		assertThat(response.isTemporary()).isTrue();
 	}
 }

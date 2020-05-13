@@ -86,6 +86,6 @@ public class UserAvatarService {
 		File inputFile = new File(imageUri);
 		MediaFileFormat fileFormat = processor.getFormat(sizeVariant);
 		File outputFile = fileStore.findExistingFile(inputFile.getName(), inputFile.getParent(), fileFormat).orElseThrow(NotFoundException::new);
-		return FileResponse.builder().file(outputFile).format(fileFormat).temporary(true).build();
+		return FileResponse.builder().file(outputFile).format(fileFormat).build();
 	}
 }

@@ -17,6 +17,4 @@ public class FileResponse {
 	
 	@NonNull
 	private MediaFileFormat format;
-	
-	private boolean temporary;
 }

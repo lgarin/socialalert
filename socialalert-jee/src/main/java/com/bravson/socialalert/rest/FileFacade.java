@@ -22,10 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
@@ -78,9 +75,6 @@ public class FileFacade {
 	HttpServletRequest httpRequest;
 
 	@Context
-	Request request;
-	
-	@Context
 	UriInfo uriInfo;
 	
 	@Inject
@@ -100,21 +94,10 @@ public class FileFacade {
 	}
 
 	private Response createStreamResponse(FileResponse fileResponse) {
-		EntityTag entityTag = new EntityTag(fileResponse.getFormat().name());
-		ResponseBuilder response = request.evaluatePreconditions(entityTag);
-		if (response == null) {
-			response = Response.ok(createStreamingOutput(fileResponse.getFile()));
-			response.tag(entityTag);
-			response.header("Content-Disposition", "attachment; filename=\"" + fileResponse.getFile().getName() + "\"");
-	        response.header("Content-Length", fileResponse.getFile().length());
-	        response.type(fileResponse.getFormat().getContentType());
-		}
-        
-        if (fileResponse.isTemporary()) {
-        	CacheControl cacheControl = new CacheControl();
-        	cacheControl.setMaxAge(mediaCacheMaxAge);
-        	response.cacheControl(cacheControl);
-        }
+		ResponseBuilder response = Response.ok(createStreamingOutput(fileResponse.getFile()));
+		response.header("Content-Disposition", "attachment; filename=\"" + fileResponse.getFile().getName() + "\"");
+        response.header("Content-Length", fileResponse.getFile().length());
+        response.type(fileResponse.getFormat().getContentType());
 		return response.build();
 	}
 	
@@ -132,12 +115,23 @@ public class FileFacade {
 	@PermitAll
 	@GET
 	@Path("/preview/{mediaUri : .+}")
-	@Operation(summary="Download a file in the preview format.", description="For video media, the preview is initialy a still picture and the video preview is only created after a delay.")
-	@APIResponse(responseCode = "200", description = "File will be streamed.", content= {@Content(mediaType=MediaFileConstants.JPG_MEDIA_TYPE), @Content(mediaType=MediaFileConstants.MP4_MEDIA_TYPE)})
-	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
+	@Operation(summary="Download a picture in the preview format.")
+	@APIResponse(responseCode = "200", description = "Picture will be streamed.", content= @Content(mediaType=MediaFileConstants.JPG_MEDIA_TYPE))
+	@APIResponse(responseCode = "404", description = "No picture exists with this uri.")
 	public Response preview(
 			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("mediaUri") String fileUri) throws IOException {
 		return createStreamResponse(fileReadService.preview(fileUri).orElseThrow(NotFoundException::new));
+	}
+	
+	@PermitAll
+	@GET
+	@Path("/stream/{mediaUri : .+}")
+	@Operation(summary="Download a video in the preview format.", description="For video media, the preview is initialy a still picture and the video preview is only created after a delay.")
+	@APIResponse(responseCode = "200", description = "Video will be streamed.", content= @Content(mediaType=MediaFileConstants.MP4_MEDIA_TYPE))
+	@APIResponse(responseCode = "404", description = "No video exists with this uri.")
+	public Response stream(
+			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("mediaUri") String fileUri) throws IOException {
+		return createStreamResponse(fileReadService.stream(fileUri).orElseThrow(NotFoundException::new));
 	}
 	
 	@GET

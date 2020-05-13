@@ -7,7 +7,8 @@ import java.time.Instant;
 
 import javax.enterprise.event.ObservesAsync;
 import javax.inject.Inject;
-import javax.transaction.UserTransaction;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.slf4j.Logger;
 
@@ -44,16 +45,11 @@ public class AsyncVideoPreviewProcessor {
 	@Inject
 	AsyncRepository asyncRepository;
 	
-	@Inject
-	UserTransaction transaction;
-	
+	@Transactional(value = TxType.NEVER)
 	public void onAsyncEvent(@ObservesAsync AsyncVideoPreviewEvent event) throws Exception {
 		try {
-			transaction.begin();
 			fileRepository.findFile(event.getFileUri()).ifPresent(this::createPreview);
-			transaction.commit();
 		} catch (Exception e) {
-			transaction.rollback();
 			logger.error("Cannot process video for " + event.getFileUri(), e);
 		}
 	}
@@ -64,7 +60,8 @@ public class AsyncVideoPreviewProcessor {
 			File inputFile = fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), fileMetadata.getFileFormat());
 			File previewFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), videoFileProcessor.getPreviewFormat());
 			videoFileProcessor.createPreview(inputFile, previewFile);
-			fileEntity.addVariant(buildFileMetadata(previewFile, videoFileProcessor.getPreviewFormat(), fileMetadata));
+			// use new transaction from repository
+			fileRepository.addVariant(fileEntity.getId(), buildFileMetadata(previewFile, videoFileProcessor.getPreviewFormat(), fileMetadata));
 			asyncRepository.fireAsync(AsyncMediaProcessedEvent.of(fileEntity.getId()));
 		} catch (IOException e) {
 			throw new UncheckedIOException("Cannot create preview video", e);

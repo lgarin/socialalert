@@ -40,7 +40,20 @@ public class FileReadService {
 		}
 		FileMetadata fileMetadata = fileEntity.getFileMetadata();
 		File file = fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), fileFormat);
-		return Optional.of(new FileResponse(file, fileFormat, fileEntity.isTemporary(fileFormat)));
+		return Optional.of(new FileResponse(file, fileFormat));
+	}
+	
+	private Optional<FileResponse> createFileResponse(String fileUri, MediaFileFormat fileFormat) throws IOException {
+		FileEntity fileEntity = mediaRepository.findFile(fileUri).filter(FileEntity::isNotDeleted).orElse(null);
+		if (fileEntity == null) {
+			return Optional.empty();
+		}
+		FileMetadata fileMetadata = fileEntity.getFileMetadata();
+		File file = fileStore.findExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), fileFormat).orElse(null);
+		if (file == null) {
+			return Optional.empty();
+		}
+		return Optional.of(new FileResponse(file, fileFormat));
 	}
 
 	public Optional<FileResponse> download(@NonNull String fileUri) throws IOException {
@@ -48,10 +61,14 @@ public class FileReadService {
 	}
 	
 	public Optional<FileResponse> preview(@NonNull String fileUri) throws IOException {
-		return createFileResponse(fileUri, MediaSizeVariant.PREVIEW);
+		return createFileResponse(fileUri, MediaFileFormat.PREVIEW_JPG);
 	}
 	
 	public Optional<FileResponse> thumbnail(@NonNull String fileUri) throws IOException {
-		return createFileResponse(fileUri, MediaSizeVariant.THUMBNAIL);
+		return createFileResponse(fileUri, MediaFileFormat.THUMBNAIL_JPG);
+	}
+	
+	public Optional<FileResponse> stream(@NonNull String fileUri) throws IOException {
+		return createFileResponse(fileUri, MediaFileFormat.PREVIEW_MP4);
 	}
 }
