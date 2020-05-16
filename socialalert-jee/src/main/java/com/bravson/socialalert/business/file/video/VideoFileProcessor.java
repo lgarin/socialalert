@@ -41,7 +41,7 @@ public class VideoFileProcessor extends BaseVideoFileProcessor {
 		/*
 		filter += " [video]; [1] format=yuva420p,lutrgb='a=128' [watermark]; [video][watermark] overlay='x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2'";
 		*/
-		filter += "; [0:a] aformat='sample_fmts=s16:sample_rates=44100:channel_layouts=mono'";
+		filter += "; [0:a] aformat='sample_fmts=s16:sample_rates=48000:channel_layouts=mono'";
 		
 		ProcessBuilder builder = new ProcessBuilder(config.getEncodingProgram(), "-i", sourceFile.getAbsolutePath(), "-i", config.getWatermarkFile(), "-c:v", "libx264", "-preset", "fast", "-profile:v", "baseline", "-level", "3.0", "-movflags", "+faststart", "-c:a", "aac", "-b:a", "64k", "-ac", "1", "-filter_complex", filter, "-y", outputFile.getAbsolutePath());
 		builder.redirectErrorStream(true);
