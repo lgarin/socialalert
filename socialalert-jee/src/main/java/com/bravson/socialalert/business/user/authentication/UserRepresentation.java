@@ -18,6 +18,8 @@ public class UserRepresentation {
 	
 	private String lastName;
 	
+	private Boolean enabled;
+	
 	@Singular
 	private List<CredentialRepresentation> credentials;
 }

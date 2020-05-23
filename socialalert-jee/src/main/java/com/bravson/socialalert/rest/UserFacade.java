@@ -2,6 +2,7 @@ package com.bravson.socialalert.rest;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
@@ -101,8 +102,9 @@ public class UserFacade {
 	@Operation(summary="Login an existing user.")
 	@APIResponse(responseCode = "200", description = "Login successfull.", content=@Content(schema=@Schema(implementation=LoginResponse.class)))
 	@APIResponse(responseCode = "401", description = "Login failed.")
-	public LoginResponse login(@Parameter(required=true) @Valid @NotNull LoginParameter param, @Context HttpServletRequest httpRequest) throws ServletException {
-		return userService.login(param, userAccess.get().getIpAddress()).orElseThrow(() -> new WebApplicationException(Status.UNAUTHORIZED));
+	public Response login(@Parameter(required=true) @Valid @NotNull LoginParameter param, @Context HttpServletRequest httpRequest) throws ServletException {
+		Optional<LoginResponse> response = userService.login(param, userAccess.get().getIpAddress());
+		return response.map(Response.status(Status.OK)::entity).orElseGet(() -> Response.status(Status.UNAUTHORIZED)).build();
 	}
 	
 	@POST
@@ -113,8 +115,9 @@ public class UserFacade {
 	@Operation(summary="Renew an existing login using the previous refresh token.")
 	@APIResponse(responseCode = "200", description = "Login successfull.", content=@Content(schema=@Schema(implementation=LoginResponse.class)))
 	@APIResponse(responseCode = "401", description = "Login failed.")
-	public LoginTokenResponse renewLogin(@Parameter(required=true) @Valid @NotNull String refreshToken) throws ServletException {
-		return userService.renewLogin(refreshToken, userAccess.get().getIpAddress()).orElseThrow(() -> new WebApplicationException(Status.UNAUTHORIZED));
+	public Response renewLogin(@Parameter(required=true) @Valid @NotNull String refreshToken) throws ServletException {
+		Optional<LoginTokenResponse> response = userService.renewLogin(refreshToken, userAccess.get().getIpAddress());
+		return response.map(Response.status(Status.OK)::entity).orElseGet(() -> Response.status(Status.UNAUTHORIZED)).build();
 	}
 	
 	@POST
