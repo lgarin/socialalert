@@ -3,6 +3,7 @@ package com.bravson.socialalert.business.feed;
 import java.time.Instant;
 import java.util.Collection;
 
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
@@ -14,9 +15,11 @@ import org.hibernate.search.engine.search.query.SearchResult;
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.domain.feed.FeedActivity;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
+import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 
@@ -71,5 +74,11 @@ public class FeedItemRepository {
 				.sort(s -> s.field("versionInfo.creation").desc())
 				.fetch(paging.getOffset(), paging.getPageSize());
 		return new QueryResult<>(result.getHits(), result.getTotalHitCount(), paging);
+	}
+	
+	void handleDeleteUser(@Observes @DeleteEntity UserProfileEntity user) {
+		 persistenceManager.createQuery("delete from FeedItem where versionInfo.userId = :userId", FeedItemEntity.class)
+			.setParameter("userId", user.getId())
+			.executeUpdate();
 	}
 }

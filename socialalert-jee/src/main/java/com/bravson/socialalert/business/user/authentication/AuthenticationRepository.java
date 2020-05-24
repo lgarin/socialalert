@@ -15,7 +15,7 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.bravson.socialalert.domain.user.NewUserParameter;
+import com.bravson.socialalert.domain.user.CreateUserParameter;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 
 import lombok.AccessLevel;
@@ -81,7 +81,7 @@ public class AuthenticationRepository {
 		return true;
 	}
 	
-	public boolean createUser(@NonNull NewUserParameter param) {
+	public boolean createUser(@NonNull CreateUserParameter param) {
 		String authorization = getAdminAuthorization();
 		
 		UserRepresentation user = UserRepresentation.builder()
@@ -114,6 +114,17 @@ public class AuthenticationRepository {
 				.build();
 		Response response = httpClient.target(config.getUserUpdateUrl()).resolveTemplate("id", userId)
 				.request().header("Authorization", authorization).put(Entity.json(user));
+
+		if (response.getStatus() != Status.NO_CONTENT.getStatusCode()) {
+			throw new ClientErrorException(response.getStatus());
+		}
+	}
+	
+	public void deleteUser(@NonNull String userId) {
+		String authorization = getAdminAuthorization();
+		
+		Response response = httpClient.target(config.getUserUpdateUrl()).resolveTemplate("id", userId)
+				.request().header("Authorization", authorization).delete();
 
 		if (response.getStatus() != Status.NO_CONTENT.getStatusCode()) {
 			throw new ClientErrorException(response.getStatus());

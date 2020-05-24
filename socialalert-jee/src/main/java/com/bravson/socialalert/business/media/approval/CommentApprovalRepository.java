@@ -3,11 +3,14 @@ package com.bravson.socialalert.business.media.approval;
 import java.util.List;
 import java.util.Optional;
 
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
+import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
+import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 
@@ -46,5 +49,11 @@ public class CommentApprovalRepository {
 				.setParameter("userId", userId)
 				.setParameter("mediaUri", mediaUri)
 				.getResultList();
+	}
+	
+	void handleDeleteUser(@Observes @DeleteEntity UserProfileEntity user) {
+		 persistenceManager.createQuery("delete from CommentApproval where id.userId = :userId", CommentApprovalEntity.class)
+			.setParameter("userId", user.getId())
+			.executeUpdate();
 	}
 }

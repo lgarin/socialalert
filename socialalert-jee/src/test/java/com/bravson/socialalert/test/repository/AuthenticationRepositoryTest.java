@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
 import com.bravson.socialalert.business.user.authentication.AuthenticationRepository;
 import com.bravson.socialalert.business.user.authentication.LoginToken;
-import com.bravson.socialalert.domain.user.NewUserParameter;
+import com.bravson.socialalert.domain.user.CreateUserParameter;
 
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -87,7 +87,7 @@ public class AuthenticationRepositoryTest {
 	
 	@Test
 	public void createExistingUser() {
-		NewUserParameter param = NewUserParameter.builder().email("test@test.com").username("test@test.com").password("123").build();
+		CreateUserParameter param = CreateUserParameter.builder().email("test@test.com").username("test@test.com").password("123").build();
 		boolean result = repository.createUser(param);
 		assertFalse(result);
 	}
@@ -95,7 +95,7 @@ public class AuthenticationRepositoryTest {
 	@Test
 	@Disabled
 	public void createNewUser() {
-		NewUserParameter param = NewUserParameter.builder().email("test2@test.com").username("test2@test.com").password("123").build();
+		CreateUserParameter param = CreateUserParameter.builder().email("test2@test.com").username("test2@test.com").password("123").build();
 		boolean result = repository.createUser(param);
 		assertTrue(result);
 	}

@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
-import com.bravson.socialalert.domain.user.LoginParameter;
+import com.bravson.socialalert.domain.user.UserCredential;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
@@ -32,7 +32,7 @@ public class UserFacadeTest extends BaseIntegrationTest {
 	public void loginWithExistingUser() throws Exception {
 		createProfile("test@test.com");
 		
-		LoginParameter param = new LoginParameter("test@test.com", "123");
+		UserCredential param = new UserCredential("test@test.com", "123");
 		Response response = createRequest("/user/login", MediaTypeConstants.JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 		LoginResponse result = response.readEntity(LoginResponse.class); 
@@ -53,28 +53,28 @@ public class UserFacadeTest extends BaseIntegrationTest {
 	
 	@Test
 	public void loginWithEmptyPassword() throws Exception {
-		LoginParameter param = new LoginParameter("test@test.com", "");
+		UserCredential param = new UserCredential("test@test.com", "");
 		Response response = createRequest("/user/login", MediaTypeConstants.JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 	}
 	
 	@Test
 	public void loginWithEmptyUserId() throws Exception {
-		LoginParameter param = new LoginParameter("", "abc");
+		UserCredential param = new UserCredential("", "abc");
 		Response response = createRequest("/user/login", MediaTypeConstants.JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 	}
 	
 	@Test
 	public void loginWithInvalidPassword() throws Exception {
-		LoginParameter param = new LoginParameter("test@test.com", "abc");
+		UserCredential param = new UserCredential("test@test.com", "abc");
 		Response response = createRequest("/user/login", MediaTypeConstants.JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
 	
 	@Test
 	public void loginWithUnknownUser() throws Exception {
-		LoginParameter param = new LoginParameter("xyz@test.com", "abc");
+		UserCredential param = new UserCredential("xyz@test.com", "abc");
 		Response response = createRequest("/user/login", MediaTypeConstants.JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
@@ -87,7 +87,7 @@ public class UserFacadeTest extends BaseIntegrationTest {
 	
 	@Test
 	public void renewLoginWithValidToken() throws Exception {
-		LoginParameter param = new LoginParameter("test@test.com", "123");
+		UserCredential param = new UserCredential("test@test.com", "123");
 		LoginResponse loginResponse = createRequest("/user/login", MediaTypeConstants.JSON).post(Entity.json(param)).readEntity(LoginResponse.class);
 		Response response = createRequest("/user/renewLogin", MediaTypeConstants.JSON).post(Entity.text(loginResponse.getRefreshToken()));
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
@@ -95,7 +95,7 @@ public class UserFacadeTest extends BaseIntegrationTest {
 	
 	@Test
 	public void renewLoginTwiceWithSameToken() throws Exception {
-		LoginParameter param = new LoginParameter("test@test.com", "123");
+		UserCredential param = new UserCredential("test@test.com", "123");
 		LoginResponse loginResponse = createRequest("/user/login", MediaTypeConstants.JSON).post(Entity.json(param)).readEntity(LoginResponse.class);
 		Response response1 = createRequest("/user/renewLogin", MediaTypeConstants.JSON).post(Entity.text(loginResponse.getRefreshToken()));
 		assertThat(response1.getStatus()).isEqualTo(Status.OK.getStatusCode());

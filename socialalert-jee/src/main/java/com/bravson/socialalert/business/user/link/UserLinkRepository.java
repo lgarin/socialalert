@@ -3,10 +3,12 @@ package com.bravson.socialalert.business.user.link;
 import java.util.List;
 import java.util.Optional;
 
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
+import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 
@@ -38,8 +40,25 @@ public class UserLinkRepository {
 	}
 	
 	public List<UserLinkEntity> findBySource(@NonNull String sourceUserId) {
-		return persistenceManager.createQuery("from UserLink ul where ul.sourceUser.id = :sourceUserId", UserLinkEntity.class)
+		return persistenceManager.createQuery("from UserLink where sourceUser.id = :sourceUserId", UserLinkEntity.class)
 				.setParameter("sourceUserId", sourceUserId)
 				.getResultList();
+	}
+	
+	void handleDeleteUser(@Observes @DeleteEntity UserProfileEntity user) {
+		deleteBySource(user.getId());
+		deleteByTarget(user.getId());
+	}
+	
+	private int deleteBySource(@NonNull String sourceUserId) {
+		return persistenceManager.createQuery("delete from UserLink where sourceUser.id = :sourceUserId", UserLinkEntity.class)
+				.setParameter("sourceUserId", sourceUserId)
+				.executeUpdate();
+	}
+	
+	private int deleteByTarget(@NonNull String targetUserId) {
+		return persistenceManager.createQuery("delete from UserLink where targetUser.id = :targetUserId", UserLinkEntity.class)
+				.setParameter("sourceUserId", targetUserId)
+				.executeUpdate();
 	}
 }

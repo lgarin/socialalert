@@ -12,10 +12,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor

@@ -2,20 +2,19 @@ package com.bravson.socialalert.rest;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
@@ -24,7 +23,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -50,10 +48,11 @@ import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.domain.media.comment.UserCommentDetail;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
-import com.bravson.socialalert.domain.user.LoginParameter;
+import com.bravson.socialalert.domain.user.ChangePasswordParameter;
+import com.bravson.socialalert.domain.user.CreateUserParameter;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.LoginTokenResponse;
-import com.bravson.socialalert.domain.user.NewUserParameter;
+import com.bravson.socialalert.domain.user.UserCredential;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
 import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
@@ -87,7 +86,7 @@ public class UserFacade {
 	@Operation(summary="Create a new user.")
 	@APIResponse(responseCode = "409", description = "User already exists.")
 	@APIResponse(responseCode = "201", description = "User created with success.")
-	public Response create(@Parameter(required = true) @Valid @NotNull NewUserParameter param) {
+	public Response create(@Parameter(required = true) @Valid @NotNull CreateUserParameter param) {
 		if (userService.createUser(param)) {
 			return Response.status(Status.CREATED).build();
 		}
@@ -102,9 +101,12 @@ public class UserFacade {
 	@Operation(summary="Login an existing user.")
 	@APIResponse(responseCode = "200", description = "Login successfull.", content=@Content(schema=@Schema(implementation=LoginResponse.class)))
 	@APIResponse(responseCode = "401", description = "Login failed.")
-	public Response login(@Parameter(required=true) @Valid @NotNull LoginParameter param, @Context HttpServletRequest httpRequest) throws ServletException {
-		Optional<LoginResponse> response = userService.login(param, userAccess.get().getIpAddress());
-		return response.map(Response.status(Status.OK)::entity).orElseGet(() -> Response.status(Status.UNAUTHORIZED)).build();
+	public Response login(@Parameter(required=true) @Valid @NotNull UserCredential param) throws ServletException {
+		LoginResponse loginResponse = userService.login(param, userAccess.get().getIpAddress()).orElse(null);
+		if (loginResponse == null) {
+			return Response.status(Status.UNAUTHORIZED).build();
+		}
+		return Response.status(Status.OK).entity(loginResponse).build();
 	}
 	
 	@POST
@@ -116,8 +118,11 @@ public class UserFacade {
 	@APIResponse(responseCode = "200", description = "Login successfull.", content=@Content(schema=@Schema(implementation=LoginResponse.class)))
 	@APIResponse(responseCode = "401", description = "Login failed.")
 	public Response renewLogin(@Parameter(required=true) @Valid @NotNull String refreshToken) throws ServletException {
-		Optional<LoginTokenResponse> response = userService.renewLogin(refreshToken, userAccess.get().getIpAddress());
-		return response.map(Response.status(Status.OK)::entity).orElseGet(() -> Response.status(Status.UNAUTHORIZED)).build();
+		LoginTokenResponse tokenResponse = userService.renewLogin(refreshToken, userAccess.get().getIpAddress()).orElse(null);
+		if (tokenResponse == null) {
+			return Response.status(Status.UNAUTHORIZED).build();
+		}
+		return Response.status(Status.OK).entity(tokenResponse).build();
 	}
 	
 	@POST
@@ -126,7 +131,7 @@ public class UserFacade {
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "204", description = "Logout successfull.")
 	@APIResponse(responseCode = "400", description = "Logout failed.")
-	public Response logout(@Context SecurityContext securityContext, @Context HttpServletRequest httpRequest) throws ServletException {
+	public Response logout(@Context SecurityContext securityContext) throws ServletException {
 		if (securityContext.getUserPrincipal() instanceof JsonWebToken) {
 			JsonWebToken token = (JsonWebToken) securityContext.getUserPrincipal();
 			if (!userService.logout("Bearer" + token.getRawToken())) {
@@ -138,15 +143,19 @@ public class UserFacade {
 	}
 	
 	@POST
-	@Consumes(MediaTypeConstants.TEXT_PLAIN)
-	@Produces(MediaTypeConstants.JSON)
+	@Consumes(MediaTypeConstants.JSON)
 	@Path("/changePassword")
-	@UserActivity
+	@PermitAll
 	@Operation(summary="Change the current user password.")
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "204", description = "Password changed")
-	public Response changePassword(@Parameter(required=true) @NotNull String newPassword) throws ServletException {
-		userService.changePassword(userAccess.get().getUserId(), newPassword);
+	@APIResponse(responseCode = "409", description = "Invalid credentials")
+	public Response changePassword(@Parameter(required=true) @Valid @NotNull ChangePasswordParameter param) throws ServletException {
+		LoginResponse loginResponse = userService.login(param, userAccess.get().getIpAddress()).orElse(null);
+		if (loginResponse == null) {
+			return Response.status(Status.UNAUTHORIZED).build();
+		}
+		userService.changePassword(loginResponse.getId(), param.getNewPassword());
 		return Response.status(Status.NO_CONTENT).build();
 	}
 	
@@ -270,5 +279,21 @@ public class UserFacade {
 	@SecurityRequirement(name = "JWT")
 	public Map<String,String> getValidLanguages() {
 		return profileService.getValidLanguages();
+	}
+	
+	@DELETE
+	@Consumes(MediaTypeConstants.JSON)
+	@Path("/delete")
+	@PermitAll
+	@Operation(summary="Delete an existing user.")
+	@APIResponse(responseCode = "204", description = "Delete successfull.")
+	@APIResponse(responseCode = "409", description = "Invalid credentials")
+	public Response delete(@Parameter(required=true) @Valid @NotNull UserCredential param) throws ServletException {
+		LoginResponse loginResponse = userService.login(param, userAccess.get().getIpAddress()).orElse(null);
+		if (loginResponse == null) {
+			return Response.status(Status.UNAUTHORIZED).build();
+		}
+		userService.deleteUser(loginResponse.getId());
+		return Response.status(Status.NO_CONTENT).build();
 	}
 }

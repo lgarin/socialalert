@@ -43,6 +43,12 @@ public class UserProfileRepository {
 		entity.setLastname(authInfo.getLastname());
 		return persistenceManager.persist(entity);
 	}
+	
+	public Optional<UserProfileEntity> deleteByUserId(@NonNull String userId) {
+		Optional<UserProfileEntity> result = findByUserId(userId);
+		result.ifPresent(profile -> persistenceManager.remove(profile));
+		return result;
+	}
 
 	void handleNewFile(@Observes @NewEntity FileEntity file) {
 		findByUserId(file.getUserId()).ifPresent(profile -> profile.addFile(file));

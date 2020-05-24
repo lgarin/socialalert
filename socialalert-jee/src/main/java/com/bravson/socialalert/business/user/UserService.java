@@ -2,6 +2,7 @@ package com.bravson.socialalert.business.user;
 
 import java.util.Optional;
 
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
@@ -13,11 +14,12 @@ import com.bravson.socialalert.business.user.authentication.AuthenticationReposi
 import com.bravson.socialalert.business.user.authentication.LoginToken;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
-import com.bravson.socialalert.domain.user.LoginParameter;
+import com.bravson.socialalert.domain.user.UserCredential;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.LoginTokenResponse;
-import com.bravson.socialalert.domain.user.NewUserParameter;
+import com.bravson.socialalert.domain.user.CreateUserParameter;
 import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
 import com.bravson.socialalert.infrastructure.layer.Service;
 import com.bravson.socialalert.infrastructure.util.JwtUtil;
 
@@ -43,6 +45,9 @@ public class UserService {
 	@NonNull
 	OnlineUserCache onlineUserCache;
 
+	@Inject
+	@DeleteEntity
+	Event<UserProfileEntity> deleteUserEvent;
 
 	private LoginResponse toLoginResponse(LoginToken loginToken, String ipAddress) {
 		String accessToken = loginToken.getAccessToken();
@@ -54,7 +59,7 @@ public class UserService {
 	}
 	
 	@Transactional
-	public Optional<LoginResponse> login(@NonNull LoginParameter param, @NonNull String ipAddress) {
+	public Optional<LoginResponse> login(@NonNull UserCredential param, @NonNull String ipAddress) {
 		return authenticationRepository.requestLoginToken(param.getUsername(), param.getPassword())
 				.map(token -> toLoginResponse(token, ipAddress));
 	}
@@ -94,11 +99,19 @@ public class UserService {
 		}
 	}
 	
-	public boolean createUser(@NonNull NewUserParameter param) {
+	public boolean createUser(@NonNull CreateUserParameter param) {
 		return authenticationRepository.createUser(param);
 	}
 
 	public void changePassword(@NonNull String userId, @NotNull String newPassword) {
 		authenticationRepository.changePassword(userId, newPassword);		
+	}
+	
+	@Transactional
+	public void deleteUser(@NonNull String userId) {
+		UserProfileEntity userProfile = profileRepository.deleteByUserId(userId).orElseThrow(NotFoundException::new);
+		deleteUserEvent.fire(userProfile);
+		onlineUserCache.removeUser(userId);
+		authenticationRepository.deleteUser(userId);
 	}
 }

@@ -3,12 +3,15 @@ package com.bravson.socialalert.business.file;
 import java.util.List;
 import java.util.Optional;
 
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.file.entity.FileState;
 import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.profile.UserProfileEntity;
+import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 
@@ -52,5 +55,11 @@ public class FileRepository {
 	
 	public void addVariant(@NonNull String fileUri, FileMetadata variant) {
 		findFile(fileUri).ifPresent(entity -> entity.addVariant(variant));
+	}
+	
+	void handleDeleteUser(@Observes @DeleteEntity UserProfileEntity user) {
+		 persistenceManager.createQuery("delete from File where versionInfo.userId = :userId", FileEntity.class)
+			.setParameter("userId", user.getId())
+			.executeUpdate();
 	}
 }

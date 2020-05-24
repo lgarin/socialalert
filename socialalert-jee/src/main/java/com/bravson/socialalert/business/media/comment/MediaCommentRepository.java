@@ -2,6 +2,7 @@ package com.bravson.socialalert.business.media.comment;
 
 import java.util.Optional;
 
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
@@ -10,8 +11,10 @@ import org.hibernate.search.engine.search.query.SearchResult;
 
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
+import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 
@@ -60,5 +63,11 @@ public class MediaCommentRepository {
 				.sort(s -> s.field("versionInfo.creation").desc())
 				.fetch(paging.getOffset(), paging.getPageSize());
 		return new QueryResult<>(result.getHits(), result.getTotalHitCount(), paging);
+	}
+	
+	void handleDeleteUser(@Observes @DeleteEntity UserProfileEntity user) {
+		 persistenceManager.createQuery("delete from MediaComment where versionInfo.userId = :userId", MediaCommentEntity.class)
+			.setParameter("userId", user.getId())
+			.executeUpdate();
 	}
 }

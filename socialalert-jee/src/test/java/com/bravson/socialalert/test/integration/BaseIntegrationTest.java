@@ -21,7 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.business.user.activity.OnlineUserCache;
-import com.bravson.socialalert.domain.user.LoginParameter;
+import com.bravson.socialalert.domain.user.UserCredential;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.infrastructure.async.AsyncEvent;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
@@ -58,7 +58,7 @@ public abstract class BaseIntegrationTest extends Assertions {
 	}
 	
 	protected String requestLoginToken(String userId, String password) {
-		LoginParameter param = new LoginParameter(userId,password);
+		UserCredential param = new UserCredential(userId,password);
 		LoginResponse response = createRequest("/user/login", MediaTypeConstants.JSON).post(Entity.json(param)).readEntity(LoginResponse.class);
 		return response.getAccessToken();
 	}

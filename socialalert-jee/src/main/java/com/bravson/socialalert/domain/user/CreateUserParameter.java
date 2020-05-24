@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class NewUserParameter {
+public class CreateUserParameter {
 
 	@NotBlank
 	@Pattern(regexp = "^[a-zA-Z0-9]+$")

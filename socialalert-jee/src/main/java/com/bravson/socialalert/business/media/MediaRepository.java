@@ -20,10 +20,12 @@ import org.hibernate.search.engine.spatial.DistanceUnit;
 
 import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
+import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
 import com.bravson.socialalert.infrastructure.entity.HitEntity;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
@@ -131,5 +133,11 @@ public class MediaRepository {
 	private static GeoStatistic toGeoStatistic(Map.Entry<String, Long> geoHashCount) {
 		GeoBox box = GeoHashUtil.computeBoundingBox(geoHashCount.getKey());
 		return GeoStatistic.builder().count(geoHashCount.getValue()).minLat(box.getMinLat()).maxLat(box.getMaxLat()).minLon(box.getMinLon()).maxLon(box.getMaxLon()).build();
+	}
+	
+	void handleDeleteUser(@Observes @DeleteEntity UserProfileEntity user) {
+		 persistenceManager.createQuery("delete from Media where versionInfo.userId = :userId", MediaEntity.class)
+			.setParameter("userId", user.getId())
+			.executeUpdate();
 	}
 }
