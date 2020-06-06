@@ -29,7 +29,7 @@ public class FileReadService {
 	FileStore fileStore;
 	
 	private Optional<FileResponse> createFileResponse(String fileUri, MediaSizeVariant sizeVariant) throws IOException {
-		FileEntity fileEntity = mediaRepository.findFile(fileUri).filter(FileEntity::isNotDeleted).orElse(null);
+		FileEntity fileEntity = mediaRepository.findFile(fileUri).orElse(null);
 		if (fileEntity == null) {
 			return Optional.empty();
 		}
@@ -44,7 +44,7 @@ public class FileReadService {
 	}
 	
 	private Optional<FileResponse> createFileResponse(String fileUri, MediaFileFormat fileFormat) throws IOException {
-		FileEntity fileEntity = mediaRepository.findFile(fileUri).filter(FileEntity::isNotDeleted).orElse(null);
+		FileEntity fileEntity = mediaRepository.findFile(fileUri).orElse(null);
 		if (fileEntity == null) {
 			return Optional.empty();
 		}

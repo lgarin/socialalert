@@ -66,8 +66,14 @@ public class MediaCommentRepository {
 	}
 	
 	void handleDeleteUser(@Observes @DeleteEntity UserProfileEntity user) {
-		 persistenceManager.createQuery("delete from MediaComment where versionInfo.userId = :userId", MediaCommentEntity.class)
+		 persistenceManager.createUpdate("delete from MediaComment where versionInfo.userId = :userId")
 			.setParameter("userId", user.getId())
+			.executeUpdate();
+	}
+	
+	void handleDeleteMedia(@Observes @DeleteEntity MediaEntity media) {
+		 persistenceManager.createUpdate("delete from MediaComment where media.id = :mediaId")
+			.setParameter("mediaId", media.getId())
 			.executeUpdate();
 	}
 }

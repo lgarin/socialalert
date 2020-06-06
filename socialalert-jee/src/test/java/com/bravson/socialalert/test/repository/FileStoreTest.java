@@ -80,4 +80,24 @@ public class FileStoreTest extends Assertions {
 		File file = store.getExistingFile("38c4297b9099b466eab20fea521ee2f6", "20161204", MediaFileFormat.PREVIEW_MP4);
 		assertThat(file).exists();
 	}
+	
+	@Test
+	public void deleteNonExistingFile() throws IOException {
+		boolean result = store.deleteFile("xyz", "20200423", MediaFileFormat.MEDIA_JPG);
+		assertThat(result).isFalse();
+	}
+	
+	@Test
+	public void deleteNonExistingFolder() throws IOException {
+		boolean result = store.deleteFolder("xyz");
+		assertThat(result).isFalse();
+	}
+	
+	@Test
+	public void deleteNonEmptyFolder() throws IOException {
+		File file = store.storeFile(new File("src/main/resources/logo.jpg"), "38c4297b9099b466eab20fea521ee2f6", "20170415", MediaFileFormat.MEDIA_JPG);
+		System.out.println(file);
+		boolean result = store.deleteFolder("media/20170415");
+		assertThat(result).isTrue();
+	}
 }

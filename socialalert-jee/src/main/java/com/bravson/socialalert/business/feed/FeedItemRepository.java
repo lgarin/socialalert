@@ -77,8 +77,14 @@ public class FeedItemRepository {
 	}
 	
 	void handleDeleteUser(@Observes @DeleteEntity UserProfileEntity user) {
-		 persistenceManager.createQuery("delete from FeedItem where versionInfo.userId = :userId", FeedItemEntity.class)
+		 persistenceManager.createUpdate("delete from FeedItem where versionInfo.userId = :userId")
 			.setParameter("userId", user.getId())
+			.executeUpdate();
+	}
+	
+	void handleDeleteMedia(@Observes @DeleteEntity MediaEntity media) {
+		 persistenceManager.createUpdate("delete from FeedItem where media.id = :mediaId")
+			.setParameter("mediaId", media.getId())
 			.executeUpdate();
 	}
 }

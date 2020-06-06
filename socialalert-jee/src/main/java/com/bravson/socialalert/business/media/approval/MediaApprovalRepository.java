@@ -44,8 +44,14 @@ public class MediaApprovalRepository {
 	}
 	
 	void handleDeleteUser(@Observes @DeleteEntity UserProfileEntity user) {
-		 persistenceManager.createQuery("delete from MediaApproval where id.userId = :userId", MediaApprovalEntity.class)
+		 persistenceManager.createUpdate("delete from MediaApproval where id.userId = :userId")
 			.setParameter("userId", user.getId())
+			.executeUpdate();
+	}
+	
+	void handleDeleteMedia(@Observes @DeleteEntity MediaEntity media) {
+		 persistenceManager.createUpdate("delete from MediaApproval where id.mediaId = :mediaId")
+			.setParameter("mediaId", media.getId())
 			.executeUpdate();
 	}
 }

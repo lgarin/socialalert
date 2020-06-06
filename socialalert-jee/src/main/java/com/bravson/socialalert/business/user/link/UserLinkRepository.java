@@ -51,14 +51,14 @@ public class UserLinkRepository {
 	}
 	
 	private int deleteBySource(@NonNull String sourceUserId) {
-		return persistenceManager.createQuery("delete from UserLink where sourceUser.id = :sourceUserId", UserLinkEntity.class)
+		return persistenceManager.createUpdate("delete from UserLink where sourceUser.id = :sourceUserId")
 				.setParameter("sourceUserId", sourceUserId)
 				.executeUpdate();
 	}
 	
 	private int deleteByTarget(@NonNull String targetUserId) {
-		return persistenceManager.createQuery("delete from UserLink where targetUser.id = :targetUserId", UserLinkEntity.class)
-				.setParameter("sourceUserId", targetUserId)
+		return persistenceManager.createUpdate("delete from UserLink where targetUser.id = :targetUserId")
+				.setParameter("targetUserId", targetUserId)
 				.executeUpdate();
 	}
 }

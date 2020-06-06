@@ -14,7 +14,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
@@ -281,7 +280,7 @@ public class UserFacade {
 		return profileService.getValidLanguages();
 	}
 	
-	@DELETE
+	@POST
 	@Consumes(MediaTypeConstants.JSON)
 	@Path("/delete")
 	@PermitAll

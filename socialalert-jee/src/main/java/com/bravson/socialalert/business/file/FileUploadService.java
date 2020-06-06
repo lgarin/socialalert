@@ -1,7 +1,6 @@
 package com.bravson.socialalert.business.file;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -57,9 +56,9 @@ public class FileUploadService {
 		
 		FileMetadata fileMetadata = mediaFileStore.buildFileMetadata(parameter.getInputFile(), fileFormat);
 		
-		Optional<FileEntity> existingEntity = mediaRepository.findFile(fileMetadata.buildFileUri());
-		if (existingEntity.isPresent()) {
-			return userService.fillUserInfo(handleExistingFile(existingEntity.get(), userAccess));
+		FileEntity existingEntity = mediaRepository.findFile(fileMetadata.buildFileUri()).orElse(null);
+		if (existingEntity != null) {
+			return userService.fillUserInfo(handleExistingFile(existingEntity, userAccess));
 		}
 		
 		mediaFileStore.storeVariant(parameter.getInputFile(), fileMetadata, MediaSizeVariant.MEDIA);

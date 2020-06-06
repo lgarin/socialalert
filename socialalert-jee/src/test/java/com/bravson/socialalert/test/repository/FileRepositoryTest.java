@@ -73,4 +73,26 @@ public class FileRepositoryTest extends BaseRepositoryTest {
     	List<FileEntity> result = repository.findByUserIdAndState("test", FileState.UPLOADED);
     	assertThat(result).containsOnly(entity);
     }
+    
+    @Test
+    public void findByUserId() {
+    	FileMetadata fileMetadata = FileMetadata.builder().md5("xyz").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
+    	UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+    	FileEntity entity = new FileEntity(fileMetadata, userAccess);
+    	persistAndIndex(entity);
+    	
+    	List<FileEntity> result = repository.findByUserId("test");
+    	assertThat(result).containsOnly(entity);
+    }
+    
+    @Test
+    public void findByInvalidUserId() {
+    	FileMetadata fileMetadata = FileMetadata.builder().md5("xyz").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
+    	UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+    	FileEntity entity = new FileEntity(fileMetadata, userAccess);
+    	persistAndIndex(entity);
+    	
+    	List<FileEntity> result = repository.findByUserId("abc");
+    	assertThat(result).isEmpty();;
+    }
 }

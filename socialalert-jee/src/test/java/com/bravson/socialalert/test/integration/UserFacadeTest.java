@@ -15,6 +15,8 @@ import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.user.UserCredential;
+import com.bravson.socialalert.domain.user.ChangePasswordParameter;
+import com.bravson.socialalert.domain.user.CreateUserParameter;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
@@ -202,8 +204,25 @@ public class UserFacadeTest extends BaseIntegrationTest {
 	
 	@Test
 	public void changePassword() {
-		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/user/changePassword", MediaTypeConstants.JSON, token).post(Entity.text("123"));
+		ChangePasswordParameter param = new ChangePasswordParameter("test@test.com", "123", "123");
+		Response response = createRequest("/user/changePassword", MediaTypeConstants.JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.NO_CONTENT.getStatusCode());
+	}
+	
+	@Test
+	public void deleteUnknownUser() {
+		UserCredential param = new UserCredential("xyz@test.com", "123");
+		Response response = createRequest("/user/delete", MediaTypeConstants.JSON).post(Entity.json(param));
+		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
+	}
+	
+	@Test
+	public void deleteNewUser() {
+		CreateUserParameter newUserParam = CreateUserParameter.builder().email("new@test.com").username("newUser").password("123").build();
+		createRequest("/user/create", MediaTypeConstants.JSON).post(Entity.json(newUserParam));
+		UserCredential param = new UserCredential("newUser", "123");
+		Response response = createRequest("/user/delete", MediaTypeConstants.JSON).post(Entity.json(param));
+		assertThat(response.getStatus()).isEqualTo(Status.NO_CONTENT.getStatusCode());
+				
 	}
 }

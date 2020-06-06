@@ -11,6 +11,7 @@ import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
+import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
 import com.bravson.socialalert.infrastructure.entity.DislikedEntity;
 import com.bravson.socialalert.infrastructure.entity.HitEntity;
 import com.bravson.socialalert.infrastructure.entity.LikedEntity;
@@ -56,6 +57,10 @@ public class UserProfileRepository {
 	
 	void handleNewMedia(@Observes @NewEntity MediaEntity media) {
 		findByUserId(media.getUserId()).ifPresent(profile -> profile.addMedia(media));
+	}
+	
+	void handleDeleteMedia(@Observes @DeleteEntity MediaEntity media) {
+		findByUserId(media.getUserId()).ifPresent(profile -> profile.removeMedia(media));
 	}
 	
 	void handleNewComment(@Observes @NewEntity MediaCommentEntity comment) {

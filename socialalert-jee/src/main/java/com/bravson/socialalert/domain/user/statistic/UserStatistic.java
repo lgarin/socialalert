@@ -61,8 +61,20 @@ public class UserStatistic {
 		videoCount++;
 	}
 	
+	public void decPictureCount() {
+		pictureCount--;
+	}
+	
+	public void decVideoCount() {
+		videoCount--;
+	}
+	
 	public void incCommentCount() {
 		commentCount++;
+	}
+	
+	public void decCommentCount() {
+		commentCount--;
 	}
 	
 	public void incHitCount() {

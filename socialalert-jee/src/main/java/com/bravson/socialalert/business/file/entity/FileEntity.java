@@ -1,6 +1,7 @@
 package com.bravson.socialalert.business.file.entity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -98,6 +99,13 @@ public class FileEntity extends VersionedEntity {
 		}
 		fileVariants.add(metadata);
 	}
+	
+	public List<FileMetadata> getAllVariants() {
+		if (fileVariants == null) {
+			return Collections.emptyList();
+		}
+		return List.copyOf(fileVariants);
+	}
 
 	public FileMetadata getFileMetadata() {
 		return findFileMetadata(MediaSizeVariant.MEDIA).orElseThrow(IllegalStateException::new);
@@ -146,22 +154,10 @@ public class FileEntity extends VersionedEntity {
 		return true;
 	}
 	
-	public boolean markDelete(UserAccess userAccess) {
-		if (state != FileState.PROCESSED && state != FileState.UPLOADED) {
-			return false;
-		} else if (!getUserId().equals(userAccess.getUserId())) {
-			return false;
-		}
-		changeState(FileState.DELETED);
-		return true;
-	}
-	
 	public boolean markUploaded(UserAccess userAccess) {
-		if (state == FileState.UPLOADED && getUserId().equals(userAccess.getUserId())) {
-			return true;
-		} else if (state == FileState.PROCESSED && getUserId().equals(userAccess.getUserId())) {
-			return true;
-		} else if (state != FileState.DELETED) {
+		if (!getUserId().equals(userAccess.getUserId())) {
+			return false;
+		} else if (state == FileState.CLAIMED) {
 			return false;
 		}
 		changeState(FileState.UPLOADED);
@@ -179,9 +175,5 @@ public class FileEntity extends VersionedEntity {
 	
 	public boolean isProcessed() {
 		return state == FileState.PROCESSED;
-	}
-	
-	public boolean isNotDeleted() {
-		return state != FileState.DELETED;
 	}
 }

@@ -227,4 +227,20 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	List<GeoStatistic> result = repository.groupByGeoHash(parameter);
     	assertThat(result).hasSize(1);
     }
+    
+    @Test
+    public void listByUserId() {
+    	MediaEntity media = storeDefaultMedia();
+    	
+    	List<MediaEntity> result = repository.listByUserId(media.getUserId());
+    	assertThat(result).containsOnly(media);
+    }
+    
+    @Test
+    public void listByInvalidUserId() {
+    	MediaEntity media = storeDefaultMedia();
+    	
+    	List<MediaEntity> result = repository.listByUserId(media.getUserId() + "99");
+    	assertThat(result).isEmpty();;
+    }
 }

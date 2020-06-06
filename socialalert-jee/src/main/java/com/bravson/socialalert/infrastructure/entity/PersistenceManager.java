@@ -7,6 +7,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.metamodel.EntityType;
 import javax.transaction.Transactional;
@@ -48,6 +49,10 @@ public class PersistenceManager {
 	
 	public <T> Optional<T> find(Class<T> entityClass, Object key) {
 		return Optional.ofNullable(entityManager.find(entityClass, key));
+	}
+	
+	public Query createUpdate(String qlString) {
+		return entityManager.createQuery(qlString);
 	}
 	
 	public <T> TypedQuery<T> createQuery(String qlString, Class<T> resultClass) {

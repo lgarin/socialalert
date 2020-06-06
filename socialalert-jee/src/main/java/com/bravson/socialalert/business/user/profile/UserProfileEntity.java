@@ -187,23 +187,11 @@ public class UserProfileEntity extends VersionedEntity {
 	}
 	
 	public void addFile(FileEntity file) {
-		/*
-		if (files == null) {
-			files = new HashSet<>();
-		}
-		files.add(file);
-		*/
 		statistic.incFileCount();
 		setLastActivity(Instant.now());
 	}
 	
 	public void addMedia(MediaEntity media) {
-		/*
-		if (medias == null) {
-			medias = new HashSet<>();
-		}
-		medias.add(media);
-		*/
 		if (media.getKind() == MediaKind.VIDEO) {
 			statistic.incVideoCount();
 		} else {
@@ -212,13 +200,16 @@ public class UserProfileEntity extends VersionedEntity {
 		setLastActivity(Instant.now());
 	}
 	
-	public void addComment(MediaCommentEntity comment) {
-		/*
-		if (comments == null) {
-			comments = new HashSet<>();
+	public void removeMedia(MediaEntity media) {
+		if (media.getKind() == MediaKind.VIDEO) {
+			statistic.decVideoCount();
+		} else {
+			statistic.decPictureCount();
 		}
-		comments.add(comment);
-		*/
+		setLastActivity(Instant.now());
+	}
+	
+	public void addComment(MediaCommentEntity comment) {
 		statistic.incCommentCount();
 		setLastActivity(Instant.now());
 	}

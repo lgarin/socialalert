@@ -4,6 +4,5 @@ public enum FileState {
 
 	UPLOADED,
 	PROCESSED,
-	CLAIMED,
-	DELETED;
+	CLAIMED;
 }

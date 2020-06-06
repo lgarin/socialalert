@@ -7,6 +7,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
@@ -52,8 +53,14 @@ public class CommentApprovalRepository {
 	}
 	
 	void handleDeleteUser(@Observes @DeleteEntity UserProfileEntity user) {
-		 persistenceManager.createQuery("delete from CommentApproval where id.userId = :userId", CommentApprovalEntity.class)
+		 persistenceManager.createUpdate("delete from CommentApproval where id.userId = :userId")
 			.setParameter("userId", user.getId())
+			.executeUpdate();
+	}
+	
+	void handleDeleteMedia(@Observes @DeleteEntity MediaEntity media) {
+		 persistenceManager.createUpdate("delete from CommentApproval where comment.media.id = :mediaId")
+			.setParameter("mediaId", media.getId())
 			.executeUpdate();
 	}
 }

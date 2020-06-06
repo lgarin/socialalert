@@ -96,6 +96,20 @@ public class FileStore {
 		return Files.deleteIfExists(path);
 	}
 	
+	public boolean deleteFolder(@NonNull String folder) throws IOException {
+		Path path = baseDirectory.resolve(folder);
+		if (Files.isDirectory(path)) {
+			Files.walk(baseDirectory.resolve(folder))
+			  .filter(Files::isRegularFile)
+		      .map(Path::toFile)
+		      .forEach(File::delete);
+			
+			return baseDirectory.resolve(folder).toFile().delete();
+		}
+		return false;
+	}
+		
+	
 	public void deleteAllFiles() throws IOException {
 		Files.walk(baseDirectory)
 		  .filter(Files::isRegularFile)
