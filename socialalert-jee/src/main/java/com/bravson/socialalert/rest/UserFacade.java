@@ -148,7 +148,7 @@ public class UserFacade {
 	@Operation(summary="Change the current user password.")
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "204", description = "Password changed")
-	@APIResponse(responseCode = "409", description = "Invalid credentials")
+	@APIResponse(responseCode = "401", description = "Invalid credentials")
 	public Response changePassword(@Parameter(required=true) @Valid @NotNull ChangePasswordParameter param) throws ServletException {
 		LoginResponse loginResponse = userService.login(param, userAccess.get().getIpAddress()).orElse(null);
 		if (loginResponse == null) {
@@ -286,7 +286,7 @@ public class UserFacade {
 	@PermitAll
 	@Operation(summary="Delete an existing user.")
 	@APIResponse(responseCode = "204", description = "Delete successfull.")
-	@APIResponse(responseCode = "409", description = "Invalid credentials")
+	@APIResponse(responseCode = "401", description = "Invalid credentials")
 	public Response delete(@Parameter(required=true) @Valid @NotNull UserCredential param) throws ServletException {
 		LoginResponse loginResponse = userService.login(param, userAccess.get().getIpAddress()).orElse(null);
 		if (loginResponse == null) {
