@@ -29,6 +29,7 @@ public class MediaDeleteService {
 	}
 	
 	public void delete(@NonNull String mediaUri) {
+		// TODO add check for owner
 		mediaRepository.findMedia(mediaUri).ifPresent(this::delete);
 	}
 	

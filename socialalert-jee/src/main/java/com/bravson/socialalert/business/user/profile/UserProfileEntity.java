@@ -168,7 +168,7 @@ public class UserProfileEntity extends VersionedEntity {
 				.id(id)
 				.username(username)
 				.email(email)
-				.createdTimestamp(getCreation())
+				.createdTimestamp(versionInfo.getCreation())
 				.online(online)
 				.firstname(firstname)
 				.lastname(lastname)
@@ -180,10 +180,6 @@ public class UserProfileEntity extends VersionedEntity {
 				.imageUri(imageUri)
 				.statistic(statistic)
 				.build();
-	}
-	
-	public Instant getCreation() {
-		return versionInfo.getCreation();
 	}
 	
 	public void addFile(FileEntity file) {
@@ -259,7 +255,7 @@ public class UserProfileEntity extends VersionedEntity {
 				.id(id)
 				.username(username)
 				.email(email)
-				.createdTimestamp(getCreation()) // TODO extract from token
+				.createdTimestamp(versionInfo.getCreation()) // TODO extract from token
 				.online(true)
 				.firstname(firstname)
 				.lastname(lastname)
