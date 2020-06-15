@@ -176,4 +176,8 @@ public class FileEntity extends VersionedEntity {
 	public boolean isProcessed() {
 		return state == FileState.PROCESSED;
 	}
+	
+	public boolean isTemporary() {
+		return state != FileState.CLAIMED;
+	}
 }

@@ -51,7 +51,7 @@ public class FileDeleteService {
 
 	@VisibleForTesting
 	public void handleDeleteUser(@Observes @DeleteEntity UserProfileEntity user) throws IOException {
-		fileRepository.findByUserId(user.getId()).forEach(this::delete);
+		fileRepository.findByUserId(user.getId()).stream().filter(FileEntity::isTemporary).forEach(this::delete);
 		fileStore.deleteFolder(user.getId());
 	}
 	
