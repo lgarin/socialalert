@@ -59,7 +59,7 @@ public class CommentApprovalRepository {
 	}
 	
 	void handleDeleteMedia(@Observes @DeleteEntity MediaEntity media) {
-		 persistenceManager.createUpdate("delete from CommentApproval where comment.media.id = :mediaId")
+		 persistenceManager.createUpdate("delete from CommentApproval where id.commentId in (select id from MediaComment where media.id = :mediaId)")
 			.setParameter("mediaId", media.getId())
 			.executeUpdate();
 	}

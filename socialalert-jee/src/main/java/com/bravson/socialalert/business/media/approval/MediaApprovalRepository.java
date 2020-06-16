@@ -50,7 +50,7 @@ public class MediaApprovalRepository {
 	}
 	
 	void handleDeleteMedia(@Observes @DeleteEntity MediaEntity media) {
-		 persistenceManager.createUpdate("delete from MediaApproval where id.mediaId = :mediaId")
+		 persistenceManager.createUpdate("delete from MediaApproval where id.mediaUri = :mediaId")
 			.setParameter("mediaId", media.getId())
 			.executeUpdate();
 	}
