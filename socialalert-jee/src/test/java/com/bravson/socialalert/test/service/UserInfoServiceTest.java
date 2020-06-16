@@ -67,14 +67,14 @@ public class UserInfoServiceTest extends BaseServiceTest {
 		when(profileRepository.findByUserId(profile.getId())).thenReturn(Optional.of(profile));
 		when(onlineUserRepository.isUserActive(profile.getId())).thenReturn(true);
 		MediaInfo content = new MediaInfo();
-		content.setLongitude(7.0);
-		content.setLatitude(47.0);
+		content.setLongitude(7.0135416);
+		content.setLatitude(46.9975249);
 		content.setCreatorId(profile.getId());
 		MediaInfo result = userService.fillUserInfo(content);
 		assertThat(result).isSameAs(content);
 		assertThat(result.hasLocation()).isTrue();
-		assertThat(result.getLongitude()).isNotCloseTo(7.0, offset(0.001));
-		assertThat(result.getLatitude()).isNotCloseTo(47.0, offset(0.001));
+		assertThat(result.getLongitude()).isCloseTo(7.0092, offset(0.0001));
+		assertThat(result.getLatitude()).isCloseTo(46.9995, offset(0.0001));
 	}
 	
 	@Test

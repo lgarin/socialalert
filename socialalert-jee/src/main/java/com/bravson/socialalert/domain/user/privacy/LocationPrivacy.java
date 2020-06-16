@@ -4,5 +4,5 @@ public enum LocationPrivacy {
 	BLUR,
 	MASK;
 	
-	public static final int BLUR_PRECISION = 6;
+	public static final int BLUR_PRECISION = 5;
 }
