@@ -123,6 +123,7 @@ public class MediaCommentEntity {
 	public UserCommentDetail toUserCommentDetail() {
 		UserCommentDetail result = fillMediaInfo(new UserCommentDetail());
 		result.setMedia(getMedia().toMediaInfo());
+		result.getMedia().applyLocationPrivacy();
 		return result;
 	}
 }

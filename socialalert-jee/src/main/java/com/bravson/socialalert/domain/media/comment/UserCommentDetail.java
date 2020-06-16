@@ -12,4 +12,5 @@ import lombok.ToString;
 public class UserCommentDetail extends MediaCommentInfo {
 
 	private MediaInfo media;
+	
 }

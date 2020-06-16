@@ -17,6 +17,8 @@ import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.media.UserContent;
+import com.bravson.socialalert.domain.user.privacy.LocationPrivacy;
+import com.bravson.socialalert.domain.user.privacy.UserPrivacy;
 
 public class UserInfoServiceTest extends BaseServiceTest {
 
@@ -39,6 +41,40 @@ public class UserInfoServiceTest extends BaseServiceTest {
 		UserContent result = userService.fillUserInfo(content);
 		assertThat(result).isSameAs(content);
 		assertThat(result.getCreator()).isEqualTo(profile.toOnlineUserInfo());
+	}
+	
+	@Test
+	public void fillUserWithLocationMasking() {
+		UserAccess userAccess = UserAccess.of("test", "1.2.3.4");
+		UserProfileEntity profile = new UserProfileEntity("test", "test@test.com", userAccess);
+		profile.updatePrivacySettings(UserPrivacy.builder().location(LocationPrivacy.MASK).build(), userAccess);
+		when(profileRepository.findByUserId(profile.getId())).thenReturn(Optional.of(profile));
+		when(onlineUserRepository.isUserActive(profile.getId())).thenReturn(true);
+		MediaInfo content = new MediaInfo();
+		content.setLongitude(12.0);
+		content.setLatitude(47.0);
+		content.setCreatorId(profile.getId());
+		MediaInfo result = userService.fillUserInfo(content);
+		assertThat(result).isSameAs(content);
+		assertThat(result.hasLocation()).isFalse();
+	}
+	
+	@Test
+	public void fillUserWithLocationBluring() {
+		UserAccess userAccess = UserAccess.of("test", "1.2.3.4");
+		UserProfileEntity profile = new UserProfileEntity("test", "test@test.com", userAccess);
+		profile.updatePrivacySettings(UserPrivacy.builder().location(LocationPrivacy.BLUR).build(), userAccess);
+		when(profileRepository.findByUserId(profile.getId())).thenReturn(Optional.of(profile));
+		when(onlineUserRepository.isUserActive(profile.getId())).thenReturn(true);
+		MediaInfo content = new MediaInfo();
+		content.setLongitude(7.0);
+		content.setLatitude(47.0);
+		content.setCreatorId(profile.getId());
+		MediaInfo result = userService.fillUserInfo(content);
+		assertThat(result).isSameAs(content);
+		assertThat(result.hasLocation()).isTrue();
+		assertThat(result.getLongitude()).isNotCloseTo(7.0, offset(0.001));
+		assertThat(result.getLatitude()).isNotCloseTo(47.0, offset(0.001));
 	}
 	
 	@Test

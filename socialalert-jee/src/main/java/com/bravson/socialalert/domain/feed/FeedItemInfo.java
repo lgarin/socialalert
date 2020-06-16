@@ -29,4 +29,14 @@ public class FeedItemInfo implements UserContent {
 	private MediaInfo media;
 	
 	private MediaCommentInfo comment;
+	
+	@Override
+	public void applyLocationPrivacy() {
+		if (media != null) {
+			media.applyLocationPrivacy();
+		}
+		if (comment != null) {
+			comment.applyLocationPrivacy();
+		}
+	}
 }

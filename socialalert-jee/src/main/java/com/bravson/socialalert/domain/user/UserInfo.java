@@ -5,6 +5,8 @@ import java.time.LocalDate;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+import com.bravson.socialalert.domain.user.privacy.LocationPrivacy;
+import com.bravson.socialalert.domain.user.privacy.UserPrivacy;
 import com.bravson.socialalert.domain.user.statistic.UserStatistic;
 
 import lombok.AllArgsConstructor;
@@ -51,6 +53,12 @@ public class UserInfo {
 	
 	private UserStatistic statistic;
 	
+	private UserPrivacy privacy;
+	
 	@Schema(description="The link creation timestamp in milliseconds since the epoch.", implementation=Long.class)
 	private Instant followedSince;
+
+	public LocationPrivacy getLocationPrivacy() {
+		return privacy != null ? privacy.getLocation() : null;
+	}
 }

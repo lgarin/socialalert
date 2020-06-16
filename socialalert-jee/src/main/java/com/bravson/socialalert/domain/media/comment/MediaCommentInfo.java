@@ -27,4 +27,7 @@ public class MediaCommentInfo implements UserContent {
 	private int dislikeCount;
 	
 	private UserInfo creator;
+	
+	public void applyLocationPrivacy() {
+	}
 }

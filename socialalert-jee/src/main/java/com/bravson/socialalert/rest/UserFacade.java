@@ -53,6 +53,7 @@ import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.LoginTokenResponse;
 import com.bravson.socialalert.domain.user.UserCredential;
 import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.domain.user.privacy.UserPrivacy;
 import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
 import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
@@ -258,6 +259,18 @@ public class UserFacade {
 	@APIResponse(responseCode = "200", description = "Profile has been updated.", content=@Content(schema=@Schema(implementation=UserInfo.class)))
 	public UserInfo updateProfile(@Parameter(required = true) @Valid @NotNull UpdateProfileParameter param) {
 		return profileService.updateProfile(param, userAccess.get());
+	}
+	
+	@POST
+	@Consumes(MediaTypeConstants.JSON)
+	@Produces(MediaTypeConstants.JSON)
+	@Path("/privacy")
+	@UserActivity
+	@Operation(summary="Update own privacy settings.")
+	@SecurityRequirement(name = "JWT")
+	@APIResponse(responseCode = "200", description = "Profile has been updated.", content=@Content(schema=@Schema(implementation=UserInfo.class)))
+	public UserInfo updatePrivacy(@Parameter(required = true) @Valid @NotNull UserPrivacy param) {
+		return profileService.updatePrivacy(param, userAccess.get());
 	}
 	
 	@GET

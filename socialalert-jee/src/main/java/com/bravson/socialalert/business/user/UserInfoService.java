@@ -44,14 +44,12 @@ public class UserInfoService {
 	
 	public <T extends UserContent> T fillUserInfo(@NonNull T content) {
 		findUserInfo(content.getCreatorId()).ifPresent(content::setCreator);
+		content.applyLocationPrivacy();
 		return content;
 	}
 	
 	public <T extends UserContent> Optional<T> fillUserInfo(@NonNull Optional<T> content) {
-		if (content.isPresent()) {
-			fillUserInfo(content.get());
-		}
-		return content;
+		return content.map(this::fillUserInfo);
 	}
 	
 	public <T extends Collection<? extends UserContent>> T fillUserInfo(@NonNull T collection) {

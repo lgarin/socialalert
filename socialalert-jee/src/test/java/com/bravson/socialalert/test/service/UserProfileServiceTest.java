@@ -1,12 +1,13 @@
 package com.bravson.socialalert.test.service;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
 
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.NotFoundException;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -19,7 +20,11 @@ import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.user.Gender;
 import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.domain.user.privacy.UserPrivacy;
 import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class UserProfileServiceTest extends BaseServiceTest {
 
@@ -82,5 +87,29 @@ public class UserProfileServiceTest extends BaseServiceTest {
 		Map<String,String> result = profileService.getValidLanguages();
 		assertThat(result).contains(Map.entry("fr", "French"), Map.entry("de", "German"), 
 				Map.entry("it", "Italian"), Map.entry("en", "English"));
+	}
+	
+	@Test
+	public void updatePrivacy() {
+		UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+		UserProfileEntity profileEntity = new UserProfileEntity("test", "test@test.com", userAccess);
+		UpdateProfileParameter profileParam = UpdateProfileParameter.builder().firstname("first").lastname("last").birthdate(LocalDate.EPOCH).build();
+		profileEntity.updateProfile(profileParam, userAccess);
+		when(profileRepository.findByUserId(userAccess.getUserId())).thenReturn(Optional.of(profileEntity));
+		
+		UserPrivacy privacyParam = UserPrivacy.builder().birthdateMasked(false).nameMasked(true).build();
+		UserInfo result = profileService.updatePrivacy(privacyParam, userAccess);
+		
+		assertThat(result.getFirstname()).isNull();
+		assertThat(result.getLastname()).isNull();
+		assertThat(result.getBirthdate()).isNotNull();
+	}
+	
+	@Test
+	public void updatePrivacyWithInvalidUser() {
+		UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+		when(profileRepository.findByUserId(userAccess.getUserId())).thenReturn(Optional.empty());
+		UserPrivacy param = new UserPrivacy();
+		assertThrows(NotFoundException.class, () -> profileService.updatePrivacy(param, userAccess));
 	}
 }

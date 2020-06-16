@@ -7,12 +7,17 @@ import com.bravson.socialalert.domain.location.GeoBox;
 
 import ch.hsr.geohash.BoundingBox;
 import ch.hsr.geohash.GeoHash;
+import ch.hsr.geohash.WGS84Point;
 import ch.hsr.geohash.util.GeoHashSizeTable;
 
 public interface GeoHashUtil {
 
 	public static String computeGeoHash(double latitude, double longitude, int precision) {
 		return GeoHash.withCharacterPrecision(latitude, longitude, precision).toBase32();
+	}
+	
+	public static WGS84Point blurLocation(double latitude, double longitude, int precision) {
+		return GeoHash.withCharacterPrecision(latitude, longitude, precision).getBoundingBoxCenterPoint();
 	}
 	
 	private static BoundingBox toBoundingBox(GeoBox geoArea) {

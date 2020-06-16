@@ -1,6 +1,7 @@
 package com.bravson.socialalert.test.integration;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -14,11 +15,12 @@ import org.junit.jupiter.api.Test;
 import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
-import com.bravson.socialalert.domain.user.UserCredential;
 import com.bravson.socialalert.domain.user.ChangePasswordParameter;
 import com.bravson.socialalert.domain.user.CreateUserParameter;
 import com.bravson.socialalert.domain.user.LoginResponse;
+import com.bravson.socialalert.domain.user.UserCredential;
 import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.domain.user.privacy.UserPrivacy;
 import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
 import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
@@ -224,5 +226,27 @@ public class UserFacadeTest extends BaseIntegrationTest {
 		Response response = createRequest("/user/delete", MediaTypeConstants.JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.NO_CONTENT.getStatusCode());
 				
+	}
+	
+	@Test
+	public void updatePrivacyWithoutMasking() throws Exception {
+		String token = requestLoginToken("test@test.com", "123");
+		UpdateProfileParameter param = UpdateProfileParameter.builder().lastname("TestLast").birthdate(LocalDate.EPOCH).build();
+		createAuthRequest("/user/profile", MediaTypeConstants.JSON, token).post(Entity.json(param));
+		UserPrivacy privacy = UserPrivacy.builder().birthdateMasked(false).nameMasked(false).build();
+		UserInfo response = createAuthRequest("/user/privacy", MediaTypeConstants.JSON, token).post(Entity.json(privacy), UserInfo.class);
+		assertThat(response.getBirthdate()).isNotNull();
+		assertThat(response.getLastname()).isNotNull();
+	}
+	
+	@Test
+	public void updatePrivacyWithMasking() throws Exception {
+		String token = requestLoginToken("test@test.com", "123");
+		UpdateProfileParameter param = UpdateProfileParameter.builder().lastname("TestLast").birthdate(LocalDate.EPOCH).build();
+		createAuthRequest("/user/profile", MediaTypeConstants.JSON, token).post(Entity.json(param));
+		UserPrivacy privacy = UserPrivacy.builder().birthdateMasked(true).nameMasked(true).build();
+		UserInfo response = createAuthRequest("/user/privacy", MediaTypeConstants.JSON, token).post(Entity.json(privacy), UserInfo.class);
+		assertThat(response.getBirthdate()).isNull();
+		assertThat(response.getLastname()).isNull();
 	}
 }

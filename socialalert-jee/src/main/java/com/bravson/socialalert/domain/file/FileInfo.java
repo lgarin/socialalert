@@ -8,6 +8,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import com.bravson.socialalert.domain.media.UserContent;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.domain.user.privacy.LocationPrivacy;
+import com.bravson.socialalert.infrastructure.util.GeoHashUtil;
 
 import lombok.Data;
 
@@ -62,5 +64,26 @@ public class FileInfo implements UserContent {
 
 	public boolean hasLocation() {
 		return latitude != null && longitude != null;
+	}
+	
+	private void clearLocation() {
+		latitude = null;
+		longitude = null;
+	}
+	
+	public void applyLocationPrivacy() {
+		if (creator == null) {
+			clearLocation();
+		} else if (creator.getLocationPrivacy() == LocationPrivacy.BLUR && hasLocation()) {
+			blurLocation();
+		} else if (creator.getLocationPrivacy() == LocationPrivacy.MASK) {
+			clearLocation();
+		}
+	}
+
+	private void blurLocation() {
+		var newPoint = GeoHashUtil.blurLocation(latitude, longitude, LocationPrivacy.BLUR_PRECISION);
+		latitude = newPoint.getLatitude();
+		longitude = newPoint.getLongitude();
 	}
 }

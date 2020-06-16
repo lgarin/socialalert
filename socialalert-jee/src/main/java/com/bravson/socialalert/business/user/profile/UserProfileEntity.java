@@ -27,6 +27,7 @@ import com.bravson.socialalert.domain.media.MediaKind;
 import com.bravson.socialalert.domain.user.Gender;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.domain.user.privacy.UserPrivacy;
 import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
 import com.bravson.socialalert.domain.user.statistic.UserStatistic;
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
@@ -124,6 +125,12 @@ public class UserProfileEntity extends VersionedEntity {
 	@NonNull
 	@Embedded
 	private UserStatistic statistic;
+	
+	@Getter
+	@NonNull
+	@Embedded
+	private UserPrivacy privacy;
+	
 	/*
 	@OneToMany
 	@CollectionTable(name = "UserFile", joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_User_File")), uniqueConstraints = @UniqueConstraint(name = "UK_UserFile_File", columnNames = "files_id"))
@@ -148,6 +155,7 @@ public class UserProfileEntity extends VersionedEntity {
 		this.email = email;
 		this.versionInfo = VersionInfo.of(userAccess.getUserId(), userAccess.getIpAddress());
 		this.statistic = new UserStatistic();
+		this.privacy = new UserPrivacy();
 		this.followedUsers = new HashSet<>();
 	}
 	
@@ -170,15 +178,16 @@ public class UserProfileEntity extends VersionedEntity {
 				.email(email)
 				.createdTimestamp(versionInfo.getCreation())
 				.online(online)
-				.firstname(firstname)
-				.lastname(lastname)
+				.firstname(privacy.isNameMasked() ? null : firstname)
+				.lastname(privacy.isNameMasked() ? null : lastname)
 				.biography(biography)
-				.birthdate(birthdate)
+				.birthdate(privacy.isBirthdateMasked() ? null : birthdate)
 				.gender(gender)
 				.country(country)
 				.language(language)
 				.imageUri(imageUri)
 				.statistic(statistic)
+				.privacy(privacy)
 				.build();
 	}
 	
@@ -309,6 +318,11 @@ public class UserProfileEntity extends VersionedEntity {
 		if (param.getLastname() != null) {
 			setLastname(param.getLastname());
 		}
+		versionInfo.touch(userAccess.getUserId(), userAccess.getIpAddress());
+	}
+
+	public void updatePrivacySettings(@NonNull UserPrivacy settings, @NonNull UserAccess userAccess) {
+		privacy = settings;
 		versionInfo.touch(userAccess.getUserId(), userAccess.getIpAddress());
 	}
 }

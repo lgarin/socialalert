@@ -15,6 +15,7 @@ import com.bravson.socialalert.business.user.authentication.AuthenticationReposi
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.domain.user.privacy.UserPrivacy;
 import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
@@ -84,5 +85,11 @@ public class UserProfileService {
 	
 	public Map<String,String> getValidLanguages() {
 		return getValidLanguageCodes().stream().collect(Collectors.toMap(k -> k, k -> new Locale(k).getDisplayLanguage(Locale.ENGLISH)));
+	}
+	
+	public UserInfo updatePrivacy(@NonNull UserPrivacy settings, @NonNull UserAccess userAccess) {
+		UserProfileEntity entity = profileRepository.findByUserId(userAccess.getUserId()).orElseThrow(NotFoundException::new);
+		entity.updatePrivacySettings(settings, userAccess);
+		return entity.toOnlineUserInfo();
 	}
 }
