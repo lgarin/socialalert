@@ -5,6 +5,7 @@ import java.time.LocalDate;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+import com.bravson.socialalert.domain.user.privacy.UserPrivacy;
 import com.bravson.socialalert.domain.user.statistic.UserStatistic;
 
 import lombok.AllArgsConstructor;
@@ -54,4 +55,6 @@ public class LoginResponse extends LoginTokenResponse {
 	private String biography;
 	
 	private UserStatistic statistic;
+	
+	private UserPrivacy privacy;
 }

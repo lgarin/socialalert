@@ -55,7 +55,7 @@ public class UserAvatarService {
 		
 		profile.changeAvatar(profile.getId() + "/" + md5, userAccess);
 
-		return profile.toOnlineUserInfo();
+		return profile.toOwnUserInfo();
 	}
 
 	private String storeMedia(File inputFile, String userId) throws IOException {

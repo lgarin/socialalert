@@ -91,6 +91,10 @@ public class UserService {
 		return profileRepository.findByUserId(userId).map(this::getUserInfo);
 	}
 	
+	public Optional<UserInfo> findOwnUserInfo(@NonNull String userId) {
+		return profileRepository.findByUserId(userId).map(UserProfileEntity::toOwnUserInfo);
+	}
+	
 	private UserInfo getUserInfo(UserProfileEntity entity) {
 		if (onlineUserCache.isUserActive(entity.getId())) {
 			return entity.toOnlineUserInfo();

@@ -168,7 +168,7 @@ public class UserFacade {
 	@APIResponse(responseCode = "200", description = "Current user returned with success.", content=@Content(schema=@Schema(implementation=UserInfo.class)))
 	@APIResponse(responseCode = "404", description = "Current user could not be found.")
 	public UserInfo current() {
-		return userService.findUserInfo(userAccess.get().getUserId()).orElseThrow(NotFoundException::new);
+		return userService.findOwnUserInfo(userAccess.get().getUserId()).orElseThrow(NotFoundException::new);
 	}
 	
 	@GET

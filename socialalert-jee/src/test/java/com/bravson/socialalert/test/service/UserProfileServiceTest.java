@@ -100,8 +100,8 @@ public class UserProfileServiceTest extends BaseServiceTest {
 		UserPrivacy privacyParam = UserPrivacy.builder().birthdateMasked(false).nameMasked(true).build();
 		UserInfo result = profileService.updatePrivacy(privacyParam, userAccess);
 		
-		assertThat(result.getFirstname()).isNull();
-		assertThat(result.getLastname()).isNull();
+		assertThat(result.getFirstname()).isNotNull();
+		assertThat(result.getLastname()).isNotNull();
 		assertThat(result.getBirthdate()).isNotNull();
 	}
 	

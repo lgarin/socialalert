@@ -163,12 +163,30 @@ public class UserProfileEntity extends VersionedEntity {
 		this.id = id;
 	}
 	
-	public UserInfo toOnlineUserInfo() {
+	public UserInfo toOwnUserInfo() {
 		return toUserInfo(true);
 	}
 	
+	public UserInfo toOnlineUserInfo() {
+		return applyPrivacy(toUserInfo(true));
+	}
+	
 	public UserInfo toOfflineUserInfo() {
-		return toUserInfo(false);
+		return applyPrivacy(toUserInfo(false));
+	}
+	
+	private UserInfo applyPrivacy(UserInfo info) {
+		if (privacy.isNameMasked()) {
+			info.setFirstname(null);
+			info.setLastname(null);
+		}
+		if (privacy.isGenderMasked()) {
+			info.setGender(null);
+		}
+		if (privacy.isBirthdateMasked()) {
+			info.setBirthdate(null);
+		}
+		return info;
 	}
 	
 	private UserInfo toUserInfo(boolean online) {
@@ -178,10 +196,10 @@ public class UserProfileEntity extends VersionedEntity {
 				.email(email)
 				.createdTimestamp(versionInfo.getCreation())
 				.online(online)
-				.firstname(privacy.isNameMasked() ? null : firstname)
-				.lastname(privacy.isNameMasked() ? null : lastname)
+				.firstname(firstname)
+				.lastname(lastname)
 				.biography(biography)
-				.birthdate(privacy.isBirthdateMasked() ? null : birthdate)
+				.birthdate(birthdate)
 				.gender(gender)
 				.country(country)
 				.language(language)
@@ -275,6 +293,7 @@ public class UserProfileEntity extends VersionedEntity {
 				.language(language)
 				.imageUri(imageUri)
 				.statistic(statistic)
+				.privacy(privacy)
 				.build();
 	}
 

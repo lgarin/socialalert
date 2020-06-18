@@ -76,7 +76,7 @@ public class UserProfileService {
 			entity.updateProfile(param, userAccess);
 		}
 		
-		return entity.toOnlineUserInfo();
+		return entity.toOwnUserInfo();
 	}
 	
 	public Map<String,String> getValidCountries() {
@@ -90,6 +90,6 @@ public class UserProfileService {
 	public UserInfo updatePrivacy(@NonNull UserPrivacy settings, @NonNull UserAccess userAccess) {
 		UserProfileEntity entity = profileRepository.findByUserId(userAccess.getUserId()).orElseThrow(NotFoundException::new);
 		entity.updatePrivacySettings(settings, userAccess);
-		return entity.toOnlineUserInfo();
+		return entity.toOwnUserInfo();
 	}
 }
