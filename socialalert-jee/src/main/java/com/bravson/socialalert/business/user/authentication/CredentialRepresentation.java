@@ -1,7 +1,7 @@
 package com.bravson.socialalert.business.user.authentication;
 
-import io.reactivex.annotations.NonNull;
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.Value;
 
 @Value

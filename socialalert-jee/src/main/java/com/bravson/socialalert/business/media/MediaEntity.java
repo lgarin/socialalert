@@ -37,10 +37,10 @@ import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
 import com.bravson.socialalert.infrastructure.util.GeoHashUtil;
 
-import io.reactivex.annotations.NonNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Entity(name="Media")
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = "file_id", name = "UK_Media_File"))

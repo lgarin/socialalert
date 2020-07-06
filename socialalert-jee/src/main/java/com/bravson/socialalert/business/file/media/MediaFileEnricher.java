@@ -17,7 +17,6 @@ import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 import com.bravson.socialalert.infrastructure.entity.NewEntity;
 import com.bravson.socialalert.infrastructure.layer.Service;
-import com.google.common.annotations.VisibleForTesting;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -44,7 +43,7 @@ public class MediaFileEnricher {
 	@Inject
 	AsyncRepository asyncRepository;
 	
-	@VisibleForTesting
+	//@VisibleForTesting
 	public void handleNewMedia(@Observes @NewEntity FileEntity fileEntity) throws IOException {
 		FileMetadata fileMetadata = fileEntity.getFileMetadata();
 		File inputFile = fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), fileMetadata.getFileFormat());

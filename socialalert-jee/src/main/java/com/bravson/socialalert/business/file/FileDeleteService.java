@@ -15,7 +15,6 @@ import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
 import com.bravson.socialalert.infrastructure.layer.Service;
-import com.google.common.annotations.VisibleForTesting;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -33,7 +32,7 @@ public class FileDeleteService {
 	@Inject
 	FileStore fileStore;
 
-	@VisibleForTesting
+	//@VisibleForTesting
 	public void handleDeleteMedia(@Observes @DeleteEntity MediaEntity media) throws IOException {
 		delete(media.getFile());
 	}
@@ -49,7 +48,7 @@ public class FileDeleteService {
 		fileRepository.delete(file);
 	}
 
-	@VisibleForTesting
+	//@VisibleForTesting
 	public void handleDeleteUser(@Observes @DeleteEntity UserProfileEntity user) throws IOException {
 		fileRepository.findByUserId(user.getId()).stream().filter(FileEntity::isTemporary).forEach(this::delete);
 		fileStore.deleteFolder(user.getId());

@@ -246,7 +246,7 @@ public class UserFacadeTest extends BaseIntegrationTest {
 		createAuthRequest("/user/profile", MediaTypeConstants.JSON, token).post(Entity.json(param));
 		UserPrivacy privacy = UserPrivacy.builder().birthdateMasked(true).nameMasked(true).build();
 		UserInfo response = createAuthRequest("/user/privacy", MediaTypeConstants.JSON, token).post(Entity.json(privacy), UserInfo.class);
-		assertThat(response.getBirthdate()).isNull();
-		assertThat(response.getLastname()).isNull();
+		assertThat(response.getBirthdate()).isNotNull();
+		assertThat(response.getLastname()).isNotNull();
 	}
 }

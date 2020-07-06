@@ -8,7 +8,6 @@ import javax.transaction.Transactional;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
 import com.bravson.socialalert.infrastructure.layer.Service;
-import com.google.common.annotations.VisibleForTesting;
 
 import lombok.NonNull;
 
@@ -23,7 +22,7 @@ public class MediaDeleteService {
 	@DeleteEntity
 	Event<MediaEntity> deleteMediaEvent;
 	
-	@VisibleForTesting
+	//@VisibleForTesting
 	public void handleDeleteUser(@Observes @DeleteEntity UserProfileEntity user) {
 		 mediaRepository.listByUserId(user.getId()).forEach(this::delete);
 	}
