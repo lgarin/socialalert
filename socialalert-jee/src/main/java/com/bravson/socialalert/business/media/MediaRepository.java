@@ -70,7 +70,7 @@ public class MediaRepository {
 				.where(f -> createSearchQuery(parameter, paging.getTimestamp(), f))
 				.sort(f -> f.fromJson(sortCriteria))
 				.fetch(paging.getOffset(), paging.getPageSize());
-		return new QueryResult<>(result.getHits(), result.getTotalHitCount(), paging);
+		return new QueryResult<>(result.hits(), result.totalHitCount(), paging);
 	}
 
 	private PredicateFinalStep createSearchQuery(SearchMediaParameter parameter, Instant timestamp, SearchPredicateFactory context) {
@@ -125,7 +125,7 @@ public class MediaRepository {
 					.orderByCountDescending())
 			.fetch(0);
 		
-		return result.getAggregation(countsByGeoHashKey).entrySet().stream().map(MediaRepository::toGeoStatistic).filter(s -> s.intersect(parameter.getArea())).collect(Collectors.toList());
+		return result.aggregation(countsByGeoHashKey).entrySet().stream().map(MediaRepository::toGeoStatistic).filter(s -> s.intersect(parameter.getArea())).collect(Collectors.toList());
 	}
 	
 	private static GeoStatistic toGeoStatistic(Map.Entry<String, Long> geoHashCount) {

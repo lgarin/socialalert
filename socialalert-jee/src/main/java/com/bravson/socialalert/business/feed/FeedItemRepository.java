@@ -73,7 +73,7 @@ public class FeedItemRepository {
 				.where(p -> createSearchQuery(userIdList, paging.getTimestamp(), category, keywords, p))
 				.sort(s -> s.field("versionInfo.creation").desc())
 				.fetch(paging.getOffset(), paging.getPageSize());
-		return new QueryResult<>(result.getHits(), result.getTotalHitCount(), paging);
+		return new QueryResult<>(result.hits(), result.totalHitCount(), paging);
 	}
 	
 	void handleDeleteUser(@Observes @DeleteEntity UserProfileEntity user) {

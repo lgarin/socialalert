@@ -3,6 +3,7 @@ package com.bravson.socialalert.rest;
 import java.time.Duration;
 import java.util.List;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -106,6 +107,7 @@ public class MediaFacade {
 		return mediaUpsertService.updateMedia(mediaUri, parameter, userAccess.get());
 	}
 	
+	@PermitAll
 	@GET
 	@Path("/search")
 	@Produces(MediaTypeConstants.JSON)

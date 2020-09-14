@@ -123,7 +123,7 @@ public class UserFacadeTest extends BaseIntegrationTest {
 	@Test
 	public void logoutWithInvalidToken() throws Exception {
 		Response response = createAuthRequest("/user/logout", MediaTypeConstants.TEXT_PLAIN, "Bearer 12344334").post(null);
-		assertThat(response.getStatus()).isEqualTo(Status.FORBIDDEN.getStatusCode());
+		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
 	
 	@Test
