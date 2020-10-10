@@ -67,13 +67,13 @@ public class MediaRepository {
 		sortCriteria.add("_script", sortScript);
 		SearchResult<MediaEntity> result = persistenceManager.search(MediaEntity.class)
 				.extension( ElasticsearchExtension.get() )
-				.where(f -> createSearchQuery(parameter, paging.getTimestamp(), f))
+				.where(f -> buildSearchQuery(parameter, paging.getTimestamp(), f))
 				.sort(f -> f.fromJson(sortCriteria))
 				.fetch(paging.getOffset(), paging.getPageSize());
 		return new QueryResult<>(result.hits(), result.totalHitCount(), paging);
 	}
 
-	private PredicateFinalStep createSearchQuery(SearchMediaParameter parameter, Instant timestamp, SearchPredicateFactory context) {
+	private PredicateFinalStep buildSearchQuery(SearchMediaParameter parameter, Instant timestamp, SearchPredicateFactory context) {
 		BooleanPredicateClausesStep<?> junction = context.bool();
 		junction = junction.filter(context.range().field("versionInfo.creation").atMost(timestamp).toPredicate());
 		if (parameter.getMaxAge() != null) {
@@ -119,7 +119,7 @@ public class MediaRepository {
 		AggregationKey<Map<String, Long>> countsByGeoHashKey = AggregationKey.of("geoHash" + precision);
 		
 		SearchResult<MediaEntity> result = persistenceManager.search(MediaEntity.class)
-			.where(f -> createSearchQuery(parameter, Instant.now(), f))
+			.where(f -> buildSearchQuery(parameter, Instant.now(), f))
 			.aggregation(countsByGeoHashKey, f -> f.terms()
 					.field("geoHash" + precision, String.class)
 					.orderByCountDescending())

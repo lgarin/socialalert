@@ -14,11 +14,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.With;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@With
 public class UserInfo {
 
 	@NonNull

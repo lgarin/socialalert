@@ -54,7 +54,7 @@ public class FeedItemRepository {
 		return persistenceManager.persist(entity);
 	}
 	
-	private PredicateFinalStep createSearchQuery(Collection<String> userIdList, Instant timestamp, String category, String keywords, SearchPredicateFactory context) {
+	private PredicateFinalStep buildSearchByUsersQuery(Collection<String> userIdList, Instant timestamp, String category, String keywords, SearchPredicateFactory context) {
 		BooleanPredicateClausesStep<?> junction = context.bool();
 		junction = junction.mustNot(context.simpleQueryString().field("activity").matching(FeedActivity.WATCH_MEDIA.name()));
 		junction = junction.must(context.range().field("versionInfo.creation").atMost(timestamp));
@@ -70,7 +70,7 @@ public class FeedItemRepository {
 	
 	public QueryResult<FeedItemEntity> searchActivitiesByUsers(@NonNull Collection<String> userIdList, String category, String keywords, @NonNull PagingParameter paging) {
 		SearchResult<FeedItemEntity> result = persistenceManager.search(FeedItemEntity.class)
-				.where(p -> createSearchQuery(userIdList, paging.getTimestamp(), category, keywords, p))
+				.where(p -> buildSearchByUsersQuery(userIdList, paging.getTimestamp(), category, keywords, p))
 				.sort(s -> s.field("versionInfo.creation").desc())
 				.fetch(paging.getOffset(), paging.getPageSize());
 		return new QueryResult<>(result.hits(), result.totalHitCount(), paging);

@@ -2,11 +2,13 @@ package com.bravson.socialalert.test.integration;
 
 import java.util.List;
 
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.Test;
 
+import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
@@ -25,8 +27,18 @@ public class UserLinkTest extends BaseIntegrationTest {
 	@Test
 	public void readNoFollowedUsers() {
 		String token = requestLoginToken("test@test.com", "123");
-		@SuppressWarnings("unchecked")
-		List<UserInfo> response = createAuthRequest("/user/followed", MediaTypeConstants.JSON, token).get(List.class);
-		assertThat(response).isEmpty();
+		Response response = createAuthRequest("/user/followed", MediaTypeConstants.JSON, token).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+		List<UserInfo> result = response.readEntity(new GenericType<List<UserInfo>>() {});
+		assertThat(result).isEmpty();
+	}
+	
+	@Test
+	public void readNoFollowers() {
+		String token = requestLoginToken("test@test.com", "123");
+		Response response = createAuthRequest("/user/followers", MediaTypeConstants.JSON, token).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+		QueryResult<UserInfo> result = response.readEntity(new GenericType<QueryResult<UserInfo>>() {});
+		assertThat(result.getContent()).isEmpty();
 	}
 }

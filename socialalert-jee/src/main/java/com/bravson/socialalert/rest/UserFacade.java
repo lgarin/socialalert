@@ -245,8 +245,20 @@ public class UserFacade {
 	@Operation(summary="List the followed users.")
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "List of users returned with success.", content=@Content(schema=@Schema(implementation=UserInfo.class, type = SchemaType.ARRAY)))
-	public List<UserInfo> followedProfiles() {
+	public List<UserInfo> getFollowedProfiles() {
 		return linkService.getTargetProfiles(userAccess.get().getUserId());
+	}
+	
+	@GET
+	@Path("/followers")
+	@Produces(MediaTypeConstants.JSON)
+	@UserActivity
+	@Operation(summary="Page for the followers of the current user.")
+	@SecurityRequirement(name = "JWT")
+	public QueryResult<UserInfo> listFollowers(@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
+			@Parameter(description="Sets the page number to return.", required=false) @DefaultValue("0") @Min(0) @QueryParam("pageNumber") int pageNumber,
+			@Parameter(description="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize) {
+		return linkService.listSourceProfiles(userAccess.get().getUserId(), PagingParameter.of(pagingTimestamp, pageNumber, pageSize));
 	}
 	
 	@POST

@@ -1,5 +1,6 @@
 package com.bravson.socialalert.business.user.link;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,7 +8,14 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateClausesStep;
+import org.hibernate.search.engine.search.predicate.dsl.PredicateFinalStep;
+import org.hibernate.search.engine.search.predicate.dsl.SearchPredicateFactory;
+import org.hibernate.search.engine.search.query.SearchResult;
+
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
+import com.bravson.socialalert.domain.paging.PagingParameter;
+import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
@@ -60,5 +68,20 @@ public class UserLinkRepository {
 		return persistenceManager.createUpdate("delete from UserLink where targetUser.id = :targetUserId")
 				.setParameter("targetUserId", targetUserId)
 				.executeUpdate();
+	}
+	
+	private PredicateFinalStep buildSearchByTargetQuery(String targetUserId, Instant timestamp, SearchPredicateFactory context) {
+		BooleanPredicateClausesStep<?> junction = context.bool();
+		junction = junction.must(context.range().field("creation").atMost(timestamp));
+		junction = junction.filter(context.simpleQueryString().field("targetUser.id").matching(targetUserId));
+		return junction;
+	}
+	
+	public QueryResult<UserLinkEntity> searchByTarget(@NonNull String targetUserId, @NonNull PagingParameter paging) {
+		SearchResult<UserLinkEntity> result = persistenceManager.search(UserLinkEntity.class)
+				.where(p -> buildSearchByTargetQuery(targetUserId, paging.getTimestamp(), p))
+				.sort(s -> s.field("creation").desc())
+				.fetch(paging.getOffset(), paging.getPageSize());
+		return new QueryResult<>(result.hits(), result.totalHitCount(), paging);
 	}
 }

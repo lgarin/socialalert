@@ -14,6 +14,8 @@ import com.bravson.socialalert.business.user.link.UserLinkEntity;
 import com.bravson.socialalert.business.user.link.UserLinkRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
+import com.bravson.socialalert.domain.paging.PagingParameter;
+import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
@@ -80,6 +82,24 @@ public class UserLinkService {
 	
 	private UserInfo getFollowedTargetUserInfo(UserLinkEntity entity) {
 		UserInfo userInfo = getTargetUserInfo(entity);
+		userInfo.setFollowedSince(entity.getCreation());
+		return userInfo;
+	}
+	
+	public QueryResult<UserInfo> listSourceProfiles(@NonNull String userId, @NonNull PagingParameter paging) {
+		return linkRepository.searchByTarget(userId, paging).map(this::getFollowedSourceUserInfo);	
+	}
+	
+	private UserInfo getSourceUserInfo(UserLinkEntity entity) {
+		if (onlineUserCache.isUserActive(entity.getId().getSourceUserId())) {
+			return entity.getSourceUser().toOnlineUserInfo();
+		} else {
+			return entity.getSourceUser().toOfflineUserInfo();
+		}
+	}
+	
+	private UserInfo getFollowedSourceUserInfo(UserLinkEntity entity) {
+		UserInfo userInfo = getSourceUserInfo(entity);
 		userInfo.setFollowedSince(entity.getCreation());
 		return userInfo;
 	}
