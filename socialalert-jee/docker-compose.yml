@@ -7,6 +7,10 @@ services:
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: admin
     restart: on-failure
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
     volumes:
       - "keycloak:/opt/jboss/keycloak/standalone"
     ports:
@@ -23,15 +27,23 @@ services:
       POSTGRES_PASSWORD: password
       PGDATA: /var/lib/postgresql/data/dbdata
     restart: on-failure
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
     ports:
       - "5432:5432"
     volumes:
       - "postgres:/var/lib/postgresql/data/dbdata"
   elastic:
-    image: elasticsearch:7.5.1
+    image: elasticsearch:7.9.2
     environment:
       - discovery.type=single-node
     restart: on-failure
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
     ports:
       - "9201:9200"
     volumes:
