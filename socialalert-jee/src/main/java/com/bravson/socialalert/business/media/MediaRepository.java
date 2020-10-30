@@ -70,7 +70,7 @@ public class MediaRepository {
 				.where(f -> buildSearchQuery(parameter, paging.getTimestamp(), f))
 				.sort(f -> f.fromJson(sortCriteria))
 				.fetch(paging.getOffset(), paging.getPageSize());
-		return new QueryResult<>(result.hits(), result.totalHitCount(), paging);
+		return new QueryResult<>(result.hits(), result.total().hitCount(), paging);
 	}
 
 	private PredicateFinalStep buildSearchQuery(SearchMediaParameter parameter, Instant timestamp, SearchPredicateFactory context) {
@@ -96,7 +96,7 @@ public class MediaRepository {
 			junction = junction.filter(context.simpleQueryString().field("category").matching(parameter.getCategory()).toPredicate());
 		}
 		if (parameter.getKeywords() != null) {
-			junction = junction.must(context.match().field("tags").boost(4.0f).field("title").boost(2.0f).matching(parameter.getKeywords()).fuzzy().toPredicate());
+			junction = junction.must(context.match().field("tags").boost(4.0f).field("title").boost(2.0f).field("location.locality").matching(parameter.getKeywords()).fuzzy().toPredicate());
 		}
 		if (parameter.getMediaKind() != null) {
 			junction = junction.filter(context.match().field("kind").matching(parameter.getMediaKind()).toPredicate());

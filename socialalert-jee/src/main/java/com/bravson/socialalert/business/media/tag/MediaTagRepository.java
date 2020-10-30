@@ -29,7 +29,7 @@ public class MediaTagRepository {
 	void handleNewMedia(@Observes @NewEntity MediaEntity media) {
 		for (String tag : media.getTags()) {
 			if (!persistenceManager.find(MediaTagEntity.class, tag).isPresent()) {
-				persistenceManager.merge(new MediaTagEntity(tag));
+				persistenceManager.persist(new MediaTagEntity(tag));
 			}
 		}
 	}

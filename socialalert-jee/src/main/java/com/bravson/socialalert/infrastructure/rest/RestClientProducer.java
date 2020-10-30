@@ -11,8 +11,6 @@ import javax.ws.rs.client.ClientBuilder;
 
 import org.slf4j.Logger;
 
-import io.quarkus.resteasy.common.runtime.jsonb.QuarkusJsonbContextResolver;
-
 
 @ApplicationScoped
 public class RestClientProducer {
@@ -20,15 +18,11 @@ public class RestClientProducer {
 	@Inject
 	Logger logger;
 	
-	@Inject
-	QuarkusJsonbContextResolver jsonbContextResolver;
-	
 	private ClientBuilder httpClientBuilder;
 	
 	@PostConstruct
 	void init() {
 		httpClientBuilder = ClientBuilder.newBuilder();
-		httpClientBuilder.register(jsonbContextResolver);
 	}
 	
 	@Produces

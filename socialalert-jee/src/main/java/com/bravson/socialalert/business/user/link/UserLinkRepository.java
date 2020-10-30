@@ -82,6 +82,6 @@ public class UserLinkRepository {
 				.where(p -> buildSearchByTargetQuery(targetUserId, paging.getTimestamp(), p))
 				.sort(s -> s.field("creation").desc())
 				.fetch(paging.getOffset(), paging.getPageSize());
-		return new QueryResult<>(result.hits(), result.totalHitCount(), paging);
+		return new QueryResult<>(result.hits(), result.total().hitCount(), paging);
 	}
 }

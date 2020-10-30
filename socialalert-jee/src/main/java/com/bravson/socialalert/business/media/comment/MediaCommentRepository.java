@@ -52,7 +52,7 @@ public class MediaCommentRepository {
 						.must(p.match().field("media.id").matching(mediaUri)))
 				.sort(s -> s.field("versionInfo.creation").desc())
 				.fetch(paging.getOffset(), paging.getPageSize());
-		return new QueryResult<>(result.hits(), result.totalHitCount(), paging);
+		return new QueryResult<>(result.hits(), result.total().hitCount(), paging);
 	}
 
 	public QueryResult<MediaCommentEntity> searchByUserId(@NonNull String userId, @NonNull PagingParameter paging) {
@@ -62,7 +62,7 @@ public class MediaCommentRepository {
 						.must(p.match().field("versionInfo.userId").matching(userId)))
 				.sort(s -> s.field("versionInfo.creation").desc())
 				.fetch(paging.getOffset(), paging.getPageSize());
-		return new QueryResult<>(result.hits(), result.totalHitCount(), paging);
+		return new QueryResult<>(result.hits(), result.total().hitCount(), paging);
 	}
 	
 	void handleDeleteUser(@Observes @DeleteEntity UserProfileEntity user) {
