@@ -99,6 +99,11 @@ public class MediaEntity extends VersionedEntity {
 	private String category;
 	
 	@Getter
+	@Column(name = "feeling")
+	@GenericField
+	private Integer feeling;
+	
+	@Getter
 	@ElementCollection(fetch=FetchType.EAGER)
 	@CollectionTable(name = "MediaTag", joinColumns = @JoinColumn(name = "media_id", foreignKey = @ForeignKey(name = "FK_MediaTag_Media")))
 	@Column(name = "tag", length = FieldLength.NAME, nullable = false)
@@ -184,6 +189,9 @@ public class MediaEntity extends VersionedEntity {
 		if (parameter.getCategory() != null) {
 			this.category = parameter.getCategory();
 		}
+		if (parameter.getFeeling() != null) {
+			this.feeling = parameter.getFeeling();
+		}
 		if (parameter.getTags() != null) {
 			this.tags = new HashSet<>(parameter.getTags());
 		}
@@ -214,6 +222,7 @@ public class MediaEntity extends VersionedEntity {
 		info.setTitle(getTitle());
 		info.setTags(new ArrayList<>(getTags()));
 		info.setCategory(getCategory());
+		info.setFeeling(getFeeling());
 		if (getLocation() != null) {
 			info.setCountry(getLocation().getCountry());
 			info.setLocality(getLocation().getLocality());

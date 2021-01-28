@@ -65,6 +65,8 @@ public class MediaInfo implements UserContent {
 	
 	private String category;
 	
+	private Integer feeling;
+	
 	private List<String> tags;
 	
 	private UserInfo creator;

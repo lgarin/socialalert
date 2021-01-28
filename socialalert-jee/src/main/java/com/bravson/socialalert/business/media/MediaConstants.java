@@ -8,4 +8,5 @@ public interface MediaConstants {
 	int LIKE_WEIGHT = 2;
 	int DISLIKE_WEIGHT = -LIKE_WEIGHT;
 	int MAX_COMMENT_LENGTH = 4000;
+	int MAX_ABS_FEELING = 2;
 }

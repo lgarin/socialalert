@@ -32,6 +32,7 @@ public class MediaClaimTest extends BaseIntegrationTest {
 		param.setTitle("Test title");
 		param.setTags(Arrays.asList("tag1", "tag2"));
 		param.setCategory("cat1");
+		param.setFeeling(1);
 		param.setLocation(GeoAddress.builder().country("CH").locality("Bern").longitude(7.45).latitude(46.95).build());
 		return Entity.entity(param, MediaTypeConstants.JSON);
 	}

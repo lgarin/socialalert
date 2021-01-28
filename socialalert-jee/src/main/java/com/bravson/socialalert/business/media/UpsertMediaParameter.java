@@ -2,6 +2,8 @@ package com.bravson.socialalert.business.media;
 
 import java.util.List;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -26,7 +28,12 @@ public class UpsertMediaParameter {
 	
 	private String category;
 	
-	@NotNull @Size(max=MediaConstants.MAX_TAG_COUNT)
+	@Min(-MediaConstants.MAX_ABS_FEELING)
+	@Max(+MediaConstants.MAX_ABS_FEELING)
+	private Integer feeling;
+	
+	@NotNull
+	@Size(max=MediaConstants.MAX_TAG_COUNT)
 	@NonNull
 	private List<@NotNull @Size(max=MediaConstants.MAX_TAG_LENGTH) String> tags;
 	
