@@ -2,7 +2,6 @@ package com.bravson.socialalert.business.file.picture;
 
 import static com.bravson.socialalert.domain.media.format.MediaFileConstants.JPG_EXTENSION;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -12,7 +11,6 @@ import javax.transaction.Transactional.TxType;
 
 import com.bravson.socialalert.business.file.media.MediaConfiguration;
 import com.bravson.socialalert.business.file.media.MediaFileProcessor;
-import com.bravson.socialalert.business.file.media.MediaUtil;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
@@ -29,12 +27,12 @@ public class PictureFileProcessor implements MediaFileProcessor {
 	
 	private MediaConfiguration config;
 	
-	private BufferedImage watermarkImage;
+	//private BufferedImage watermarkImage;
 	
 	@Inject
 	public PictureFileProcessor(@NonNull MediaConfiguration config) {
 		this.config = config;
-		watermarkImage = MediaUtil.readImage(config.getWatermarkFile());
+		//watermarkImage = MediaUtil.readImage(config.getWatermarkFile());
 	}
 
 	@Override

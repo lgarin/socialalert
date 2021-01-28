@@ -12,8 +12,10 @@ import javax.persistence.TypedQuery;
 import javax.persistence.metamodel.EntityType;
 import javax.transaction.Transactional;
 
+import org.hibernate.search.engine.search.query.dsl.SearchQuerySelectStep;
 import org.hibernate.search.mapper.orm.Search;
-import org.hibernate.search.mapper.orm.search.query.dsl.HibernateOrmSearchQuerySelectStep;
+import org.hibernate.search.mapper.orm.common.EntityReference;
+import org.hibernate.search.mapper.orm.search.loading.dsl.SearchLoadingOptionsStep;
 
 import io.quarkus.runtime.StartupEvent;
 import lombok.AllArgsConstructor;
@@ -28,7 +30,7 @@ public class PersistenceManager {
 	@PersistenceContext
     EntityManager entityManager;
 	
-	public <T> HibernateOrmSearchQuerySelectStep<T> search(Class<T> entityClass) {
+	public <T> SearchQuerySelectStep<?, EntityReference, T, SearchLoadingOptionsStep, ?, ?> search(Class<T> entityClass) {
 		return Search.session(entityManager).search(entityClass);
 	}
 	
