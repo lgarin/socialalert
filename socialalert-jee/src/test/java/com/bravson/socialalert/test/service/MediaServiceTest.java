@@ -21,6 +21,7 @@ import com.bravson.socialalert.business.media.MediaService;
 import com.bravson.socialalert.business.media.MediaStatistic;
 import com.bravson.socialalert.business.media.approval.MediaApprovalEntity;
 import com.bravson.socialalert.business.media.approval.MediaApprovalRepository;
+import com.bravson.socialalert.business.media.feeling.MediaFeelingRepository;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.business.user.activity.OnlineUserCache;
 import com.bravson.socialalert.domain.media.MediaDetail;
@@ -44,6 +45,9 @@ public class MediaServiceTest extends BaseServiceTest {
 	MediaApprovalRepository approvalRepository;
 	
 	@Mock
+	MediaFeelingRepository feelingRepository;
+	
+	@Mock
 	Event<MediaEntity> mediaHitEvent;
 	
 	@Mock
@@ -63,6 +67,7 @@ public class MediaServiceTest extends BaseServiceTest {
 		when(mediaEntity.toMediaDetail()).thenReturn(mediaDetail);
 		when(userService.fillUserInfo(mediaDetail)).thenReturn(mediaDetail);
 		when(approvalRepository.find(mediaUri, userId)).thenReturn(Optional.empty());
+		when(feelingRepository.find(mediaUri, userId)).thenReturn(Optional.empty());
 		
 		MediaDetail result = mediaService.viewMediaDetail(mediaUri, userId);
 		assertThat(result).isEqualTo(mediaDetail);
@@ -83,6 +88,7 @@ public class MediaServiceTest extends BaseServiceTest {
 		when(mediaEntity.toMediaDetail()).thenReturn(mediaDetail);
 		when(userService.fillUserInfo(mediaDetail)).thenReturn(mediaDetail);
 		when(approvalRepository.find(mediaUri, userId)).thenReturn(Optional.of(approvalEntity));
+		when(feelingRepository.find(mediaUri, userId)).thenReturn(Optional.empty());
 		
 		MediaDetail result = mediaService.viewMediaDetail(mediaUri, userId);
 		assertThat(result).isEqualTo(mediaDetail);

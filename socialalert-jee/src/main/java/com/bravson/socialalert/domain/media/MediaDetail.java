@@ -13,6 +13,8 @@ public class MediaDetail extends MediaInfo {
 
 	private ApprovalModifier userApprovalModifier;
 	
+	private Integer userFeeling;
+	
 	public boolean isLikeAllowed() {
 		return userApprovalModifier != ApprovalModifier.LIKE;
 	}

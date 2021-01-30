@@ -228,6 +228,19 @@ public class MediaFacade {
 	}
 	
 	@POST
+	@Path("/feeling/{mediaUri : .+}/{feeling}")
+	@Produces(MediaTypeConstants.JSON)
+	@Operation(summary="Set the use feeling for this media.")
+	@SecurityRequirement(name = "JWT")
+	@APIResponse(responseCode = "200", description = "The new feeling is available in the response.", content=@Content(schema=@Schema(implementation=MediaDetail.class)))
+	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
+	public MediaDetail setFeeling(
+			@Parameter(description="The relative media uri.", required=true) @NotEmpty @PathParam("mediaUri") String mediaUri,
+			@Parameter(description="The relative media uri.", required=true) @Min(-MediaConstants.MAX_ABS_FEELING) @Max(MediaConstants.MAX_ABS_FEELING) @PathParam("feeling") Integer feeling) {
+		return mediaService.setFeeling(mediaUri, feeling, userAccess.get().getUserId());
+	}
+	
+	@POST
 	@Path("/approval/reset/{mediaUri : .+}")
 	@Operation(summary="Set the approval modifier of the media to 'null'.")
 	@SecurityRequirement(name = "JWT")

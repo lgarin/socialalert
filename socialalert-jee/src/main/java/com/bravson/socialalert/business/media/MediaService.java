@@ -7,6 +7,8 @@ import javax.ws.rs.NotFoundException;
 
 import com.bravson.socialalert.business.media.approval.MediaApprovalEntity;
 import com.bravson.socialalert.business.media.approval.MediaApprovalRepository;
+import com.bravson.socialalert.business.media.feeling.MediaFeelingEntity;
+import com.bravson.socialalert.business.media.feeling.MediaFeelingRepository;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.business.user.activity.OnlineUserCache;
 import com.bravson.socialalert.domain.media.MediaDetail;
@@ -35,6 +37,9 @@ public class MediaService {
 	MediaApprovalRepository approvalRepository;
 	
 	@Inject
+	MediaFeelingRepository feelingRepository;
+	
+	@Inject
 	@HitEntity
 	Event<MediaEntity> mediaHitEvent;
 	
@@ -53,9 +58,14 @@ public class MediaService {
 		}
 		
 		MediaDetail detail = media.toMediaDetail();
+		
 		approvalRepository.find(mediaUri, userId)
 			.map(MediaApprovalEntity::getModifier)
 			.ifPresent(detail::setUserApprovalModifier);
+		
+		feelingRepository.find(mediaUri, userId)
+			.map(MediaFeelingEntity::getFeeling)
+			.ifPresent(detail::setUserFeeling);
 		
 		return userService.fillUserInfo(detail);
 	}
@@ -77,6 +87,16 @@ public class MediaService {
 		
 		MediaDetail detail = mediaEntity.toMediaDetail();
 		detail.setUserApprovalModifier(newModifier);
+		return userService.fillUserInfo(detail);
+	}
+	
+	public MediaDetail setFeeling(@NonNull String mediaUri, Integer feeling, @NonNull String userId) {
+		MediaEntity mediaEntity = mediaRepository.findMedia(mediaUri).orElseThrow(NotFoundException::new);
+		
+		feelingRepository.changeFeeling(mediaEntity, userId, feeling);
+		
+		MediaDetail detail = mediaEntity.toMediaDetail();
+		detail.setFeeling(feeling);
 		return userService.fillUserInfo(detail);
 	}
 }
