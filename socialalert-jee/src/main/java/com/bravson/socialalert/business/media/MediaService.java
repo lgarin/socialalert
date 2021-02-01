@@ -96,7 +96,7 @@ public class MediaService {
 		feelingRepository.changeFeeling(mediaEntity, userId, feeling);
 		
 		MediaDetail detail = mediaEntity.toMediaDetail();
-		detail.setFeeling(feeling);
+		detail.setUserFeeling(feeling);
 		return userService.fillUserInfo(detail);
 	}
 }
