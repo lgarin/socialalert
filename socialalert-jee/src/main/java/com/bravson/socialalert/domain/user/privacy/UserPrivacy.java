@@ -34,4 +34,8 @@ public class UserPrivacy {
 	
 	@Column(name = "location_privacy")
 	private LocationPrivacy location;
+	
+	@Column(name = "feeling_masked", nullable = false)
+	@ColumnDefault("false")
+	private boolean feelingMasked;
 }

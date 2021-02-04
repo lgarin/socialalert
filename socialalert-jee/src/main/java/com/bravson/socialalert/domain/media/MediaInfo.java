@@ -103,6 +103,12 @@ public class MediaInfo implements UserContent {
 			clearLocation();
 		}
 	}
+	
+	public void applyFeelingPrivacy() {
+		if (creator == null || creator.hasFeelingPrivacy()) {
+			feeling = null;
+		}
+	}
 
 	private void blurLocation() {
 		var newPoint = GeoHashUtil.blurLocation(latitude, longitude, LocationPrivacy.BLUR_PRECISION);

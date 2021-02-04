@@ -87,6 +87,7 @@ public class MediaService {
 		
 		MediaDetail detail = mediaEntity.toMediaDetail();
 		detail.setUserApprovalModifier(newModifier);
+		feelingRepository.find(mediaUri, userId).map(MediaFeelingEntity::getFeeling).ifPresent(detail::setUserFeeling);
 		return userService.fillUserInfo(detail);
 	}
 	
@@ -97,6 +98,7 @@ public class MediaService {
 		
 		MediaDetail detail = mediaEntity.toMediaDetail();
 		detail.setUserFeeling(feeling);
+		approvalRepository.find(mediaUri, userId).map(MediaApprovalEntity::getModifier).ifPresent(detail::setUserApprovalModifier);
 		return userService.fillUserInfo(detail);
 	}
 }

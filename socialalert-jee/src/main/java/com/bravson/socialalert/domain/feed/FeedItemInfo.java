@@ -34,6 +34,7 @@ public class FeedItemInfo implements UserContent {
 	public void applyLocationPrivacy() {
 		if (media != null) {
 			media.applyLocationPrivacy();
+			media.applyFeelingPrivacy();
 		}
 		if (comment != null) {
 			comment.applyLocationPrivacy();

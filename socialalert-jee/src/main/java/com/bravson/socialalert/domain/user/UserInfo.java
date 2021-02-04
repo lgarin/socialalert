@@ -63,4 +63,8 @@ public class UserInfo {
 	public LocationPrivacy getLocationPrivacy() {
 		return privacy != null ? privacy.getLocation() : null;
 	}
+	
+	public boolean hasFeelingPrivacy() {
+		return privacy == null || privacy.isFeelingMasked();
+	}
 }

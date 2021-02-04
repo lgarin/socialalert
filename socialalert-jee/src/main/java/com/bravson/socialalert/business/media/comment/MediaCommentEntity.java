@@ -124,6 +124,7 @@ public class MediaCommentEntity {
 		UserCommentDetail result = fillMediaInfo(new UserCommentDetail());
 		result.setMedia(getMedia().toMediaInfo());
 		result.getMedia().applyLocationPrivacy();
+		result.getMedia().applyFeelingPrivacy();
 		return result;
 	}
 }
