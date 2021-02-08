@@ -13,4 +13,10 @@ public class UserCommentDetail extends MediaCommentInfo {
 
 	private MediaInfo media;
 	
+	@Override
+	public void applyPrivacy() {
+		if (media != null) {
+			media.applyPrivacy();
+		}
+	}
 }

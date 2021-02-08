@@ -44,7 +44,7 @@ public class UserInfoService {
 	
 	public <T extends UserContent> T fillUserInfo(@NonNull T content) {
 		findUserInfo(content.getCreatorId()).ifPresent(content::setCreator);
-		content.applyLocationPrivacy();
+		content.applyPrivacy();
 		return content;
 	}
 	

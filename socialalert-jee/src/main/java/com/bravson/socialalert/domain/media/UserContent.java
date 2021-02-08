@@ -10,5 +10,5 @@ public interface UserContent {
 
 	public void setCreator(UserInfo userInfo);
 	
-	public void applyLocationPrivacy();
+	public void applyPrivacy();
 }

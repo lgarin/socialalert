@@ -31,13 +31,12 @@ public class FeedItemInfo implements UserContent {
 	private MediaCommentInfo comment;
 	
 	@Override
-	public void applyLocationPrivacy() {
+	public void applyPrivacy() {
 		if (media != null) {
-			media.applyLocationPrivacy();
-			media.applyFeelingPrivacy();
+			media.applyPrivacy();
 		}
 		if (comment != null) {
-			comment.applyLocationPrivacy();
+			comment.applyPrivacy();
 		}
 	}
 }

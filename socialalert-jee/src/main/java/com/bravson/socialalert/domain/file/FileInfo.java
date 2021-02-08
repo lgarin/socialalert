@@ -71,7 +71,7 @@ public class FileInfo implements UserContent {
 		longitude = null;
 	}
 	
-	public void applyLocationPrivacy() {
+	public void applyPrivacy() {
 		if (creator == null) {
 			clearLocation();
 		} else if (creator.getLocationPrivacy() == LocationPrivacy.BLUR && hasLocation()) {

@@ -28,6 +28,6 @@ public class MediaCommentInfo implements UserContent {
 	
 	private UserInfo creator;
 	
-	public void applyLocationPrivacy() {
+	public void applyPrivacy() {
 	}
 }

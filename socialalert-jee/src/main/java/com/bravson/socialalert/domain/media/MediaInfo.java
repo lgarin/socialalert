@@ -94,7 +94,7 @@ public class MediaInfo implements UserContent {
 		longitude = null;
 	}
 	
-	public void applyLocationPrivacy() {
+	public void applyPrivacy() {
 		if (creator == null) {
 			clearLocation();
 		} else if (creator.getLocationPrivacy() == LocationPrivacy.BLUR && hasLocation()) {
@@ -102,9 +102,7 @@ public class MediaInfo implements UserContent {
 		} else if (creator.getLocationPrivacy() == LocationPrivacy.MASK) {
 			clearLocation();
 		}
-	}
-	
-	public void applyFeelingPrivacy() {
+		
 		if (creator == null || creator.hasFeelingPrivacy()) {
 			feeling = null;
 		}
