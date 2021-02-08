@@ -1,7 +1,10 @@
 package com.bravson.socialalert.business.feed;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -11,6 +14,8 @@ import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.feed.FeedItemInfo;
+import com.bravson.socialalert.domain.media.MediaInfo;
+import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.infrastructure.layer.Service;
@@ -39,6 +44,10 @@ public class FeedService {
 		userIdList.add(userId);
 		QueryResult<FeedItemInfo> result = itemRepository.searchActivitiesByUsers(userIdList, category, keywords, paging).map(FeedItemEntity::toItemInfo);
 		userService.fillUserInfo(result.getContent());
+		Collection<MediaInfo> mediaCollection = result.getContent().stream().map(FeedItemInfo::getMedia).filter(Objects::nonNull).collect(Collectors.toSet());
+		userService.fillUserInfo(mediaCollection);
+		Collection<MediaCommentInfo> commentCollection = result.getContent().stream().map(FeedItemInfo::getComment).filter(Objects::nonNull).collect(Collectors.toSet());
+		userService.fillUserInfo(commentCollection);
 		return result;
 	}
 }

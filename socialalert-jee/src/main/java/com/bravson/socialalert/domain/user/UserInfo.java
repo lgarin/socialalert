@@ -8,6 +8,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import com.bravson.socialalert.domain.user.privacy.LocationPrivacy;
 import com.bravson.socialalert.domain.user.privacy.UserPrivacy;
 import com.bravson.socialalert.domain.user.statistic.UserStatistic;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -55,16 +56,17 @@ public class UserInfo {
 	
 	private UserStatistic statistic;
 	
-	private UserPrivacy privacy;
+	@JsonIgnore
+	private UserPrivacy creatorPrivacy;
 	
 	@Schema(description="The link creation timestamp in milliseconds since the epoch.", implementation=Long.class)
 	private Instant followedSince;
 
 	public LocationPrivacy getLocationPrivacy() {
-		return privacy != null ? privacy.getLocation() : null;
+		return creatorPrivacy != null ? creatorPrivacy.getLocation() : null;
 	}
 	
 	public boolean hasFeelingPrivacy() {
-		return privacy == null || privacy.isFeelingMasked();
+		return creatorPrivacy == null || creatorPrivacy.isFeelingMasked();
 	}
 }

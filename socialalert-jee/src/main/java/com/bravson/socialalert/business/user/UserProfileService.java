@@ -14,6 +14,7 @@ import javax.ws.rs.NotFoundException;
 import com.bravson.socialalert.business.user.authentication.AuthenticationRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
+import com.bravson.socialalert.domain.user.UserDetail;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.domain.user.privacy.UserPrivacy;
 import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
@@ -76,7 +77,7 @@ public class UserProfileService {
 			entity.updateProfile(param, userAccess);
 		}
 		
-		return entity.toOwnUserInfo();
+		return entity.toOwnUserDetail();
 	}
 	
 	public Map<String,String> getValidCountries() {
@@ -87,9 +88,9 @@ public class UserProfileService {
 		return getValidLanguageCodes().stream().collect(Collectors.toMap(k -> k, k -> new Locale(k).getDisplayLanguage(Locale.ENGLISH)));
 	}
 	
-	public UserInfo updatePrivacy(@NonNull UserPrivacy settings, @NonNull UserAccess userAccess) {
+	public UserDetail updatePrivacy(@NonNull UserPrivacy settings, @NonNull UserAccess userAccess) {
 		UserProfileEntity entity = profileRepository.findByUserId(userAccess.getUserId()).orElseThrow(NotFoundException::new);
 		entity.updatePrivacySettings(settings, userAccess);
-		return entity.toOwnUserInfo();
+		return entity.toOwnUserDetail();
 	}
 }

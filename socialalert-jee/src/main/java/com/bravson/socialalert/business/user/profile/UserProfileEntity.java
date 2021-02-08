@@ -26,6 +26,7 @@ import com.bravson.socialalert.business.user.link.UserLinkEntity;
 import com.bravson.socialalert.domain.media.MediaKind;
 import com.bravson.socialalert.domain.user.Gender;
 import com.bravson.socialalert.domain.user.LoginResponse;
+import com.bravson.socialalert.domain.user.UserDetail;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.domain.user.privacy.UserPrivacy;
 import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
@@ -163,16 +164,18 @@ public class UserProfileEntity extends VersionedEntity {
 		this.id = id;
 	}
 	
-	public UserInfo toOwnUserInfo() {
-		return toUserInfo(true);
+	public UserDetail toOwnUserDetail() {
+		UserDetail detail = fillUserInfo(new UserDetail(), true);
+		detail.setPrivacy(privacy);
+		return detail;
 	}
 	
 	public UserInfo toOnlineUserInfo() {
-		return applyPrivacy(toUserInfo(true));
+		return applyPrivacy(fillUserInfo(new UserInfo(), true));
 	}
 	
 	public UserInfo toOfflineUserInfo() {
-		return applyPrivacy(toUserInfo(false));
+		return applyPrivacy(fillUserInfo(new UserInfo(), false));
 	}
 	
 	private UserInfo applyPrivacy(UserInfo info) {
@@ -188,25 +191,23 @@ public class UserProfileEntity extends VersionedEntity {
 		}
 		return info;
 	}
-	
-	private UserInfo toUserInfo(boolean online) {
-		return UserInfo.builder()
-				.id(id)
-				.username(username)
-				.email(email)
-				.createdTimestamp(versionInfo.getCreation())
-				.online(online)
-				.firstname(firstname)
-				.lastname(lastname)
-				.biography(biography)
-				.birthdate(birthdate)
-				.gender(gender)
-				.country(country)
-				.language(language)
-				.imageUri(imageUri)
-				.statistic(statistic)
-				.privacy(privacy)
-				.build();
+	private <T extends UserInfo> T fillUserInfo(T info, boolean online) {
+		info.setId(id);
+		info.setUsername(username);
+		info.setEmail(email);
+		info.setCreatedTimestamp(versionInfo.getCreation());
+		info.setOnline(online);
+		info.setFirstname(firstname);
+		info.setLastname(lastname);
+		info.setBiography(biography);
+		info.setBirthdate(birthdate);
+		info.setGender(gender);
+		info.setCountry(country);
+		info.setLanguage(language);
+		info.setImageUri(imageUri);
+		info.setStatistic(statistic);
+		info.setCreatorPrivacy(privacy);
+		return info;
 	}
 	
 	public void addFile(FileEntity file) {

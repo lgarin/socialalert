@@ -17,7 +17,7 @@ import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
-import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.domain.user.UserDetail;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
 import lombok.AccessLevel;
@@ -44,7 +44,7 @@ public class UserAvatarService {
 		}
 	}
 	
-	public UserInfo storeAvatar(@NonNull FileUploadParameter upload, @NonNull UserAccess userAccess) throws IOException {
+	public UserDetail storeAvatar(@NonNull FileUploadParameter upload, @NonNull UserAccess userAccess) throws IOException {
 		checkFileFormat(upload);
 	
 		UserProfileEntity profile = profileRepository.findByUserId(userAccess.getUserId()).orElseThrow(NotFoundException::new);
@@ -55,7 +55,7 @@ public class UserAvatarService {
 		
 		profile.changeAvatar(profile.getId() + "/" + md5, userAccess);
 
-		return profile.toOwnUserInfo();
+		return profile.toOwnUserDetail();
 	}
 
 	private String storeMedia(File inputFile, String userId) throws IOException {

@@ -14,10 +14,11 @@ import com.bravson.socialalert.business.user.authentication.AuthenticationReposi
 import com.bravson.socialalert.business.user.authentication.LoginToken;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
-import com.bravson.socialalert.domain.user.UserCredential;
+import com.bravson.socialalert.domain.user.CreateUserParameter;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.LoginTokenResponse;
-import com.bravson.socialalert.domain.user.CreateUserParameter;
+import com.bravson.socialalert.domain.user.UserCredential;
+import com.bravson.socialalert.domain.user.UserDetail;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
 import com.bravson.socialalert.infrastructure.layer.Service;
@@ -91,8 +92,8 @@ public class UserService {
 		return profileRepository.findByUserId(userId).map(this::getUserInfo);
 	}
 	
-	public Optional<UserInfo> findOwnUserInfo(@NonNull String userId) {
-		return profileRepository.findByUserId(userId).map(UserProfileEntity::toOwnUserInfo);
+	public Optional<UserDetail> findOwnUserInfo(@NonNull String userId) {
+		return profileRepository.findByUserId(userId).map(UserProfileEntity::toOwnUserDetail);
 	}
 	
 	private UserInfo getUserInfo(UserProfileEntity entity) {

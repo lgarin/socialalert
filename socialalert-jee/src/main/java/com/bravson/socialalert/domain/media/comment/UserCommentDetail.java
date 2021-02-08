@@ -18,5 +18,6 @@ public class UserCommentDetail extends MediaCommentInfo {
 		if (media != null) {
 			media.applyPrivacy();
 		}
+		super.applyPrivacy();
 	}
 }

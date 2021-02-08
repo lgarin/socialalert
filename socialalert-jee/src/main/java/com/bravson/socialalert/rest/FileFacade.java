@@ -52,7 +52,7 @@ import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.business.user.avatar.UserAvatarService;
 import com.bravson.socialalert.domain.file.FileInfo;
 import com.bravson.socialalert.domain.media.format.MediaFileConstants;
-import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.domain.user.UserDetail;
 import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
 @Tag(name="file")
@@ -212,7 +212,7 @@ public class FileFacade {
     @APIResponse(responseCode = "200", description = "The profile picture has been set.")
     @APIResponse(responseCode = "413", description = "The file is too large.")
 	@APIResponse(responseCode = "415", description = "The media is not in the expected format.")
-	public UserInfo uploadAvatar(
+	public UserDetail uploadAvatar(
 			@RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile) throws IOException, ServletException {
 		return userAvatarService.storeAvatar(createUploadParameter(inputFile), userAccess.get());
 	}

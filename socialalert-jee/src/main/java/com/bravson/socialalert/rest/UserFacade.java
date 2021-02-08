@@ -52,6 +52,7 @@ import com.bravson.socialalert.domain.user.CreateUserParameter;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.LoginTokenResponse;
 import com.bravson.socialalert.domain.user.UserCredential;
+import com.bravson.socialalert.domain.user.UserDetail;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.domain.user.privacy.UserPrivacy;
 import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
@@ -167,7 +168,7 @@ public class UserFacade {
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "Current user returned with success.", content=@Content(schema=@Schema(implementation=UserInfo.class)))
 	@APIResponse(responseCode = "404", description = "Current user could not be found.")
-	public UserInfo current() {
+	public UserDetail current() {
 		return userService.findOwnUserInfo(userAccess.get().getUserId()).orElseThrow(NotFoundException::new);
 	}
 	
@@ -281,7 +282,7 @@ public class UserFacade {
 	@Operation(summary="Update own privacy settings.")
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "Profile has been updated.", content=@Content(schema=@Schema(implementation=UserInfo.class)))
-	public UserInfo updatePrivacy(@Parameter(required = true) @Valid @NotNull UserPrivacy param) {
+	public UserDetail updatePrivacy(@Parameter(required = true) @Valid @NotNull UserPrivacy param) {
 		return profileService.updatePrivacy(param, userAccess.get());
 	}
 	
