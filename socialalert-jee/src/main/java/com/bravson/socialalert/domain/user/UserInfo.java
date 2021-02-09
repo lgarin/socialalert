@@ -56,12 +56,16 @@ public class UserInfo {
 	
 	private UserStatistic statistic;
 	
-	@JsonIgnore
 	private UserPrivacy creatorPrivacy;
 	
 	@Schema(description="The link creation timestamp in milliseconds since the epoch.", implementation=Long.class)
 	private Instant followedSince;
 
+	@JsonIgnore
+	private UserPrivacy getCreatorPrivacy() {
+		return creatorPrivacy;
+	}
+	
 	public LocationPrivacy getLocationPrivacy() {
 		return creatorPrivacy != null ? creatorPrivacy.getLocation() : null;
 	}

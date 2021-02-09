@@ -5,7 +5,6 @@ import java.time.Instant;
 import java.util.Optional;
 
 import javax.inject.Inject;
-import javax.json.JsonObject;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 import javax.ws.rs.ClientErrorException;
@@ -17,6 +16,7 @@ import javax.ws.rs.core.Response.Status;
 
 import com.bravson.socialalert.domain.user.CreateUserParameter;
 import com.bravson.socialalert.infrastructure.layer.Repository;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -47,10 +47,10 @@ public class AuthenticationRepository {
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return Optional.empty();
 		}
-		JsonObject payload = response.readEntity(JsonObject.class);
-		String accessToken = "Bearer " + payload.getString("access_token");
-		String refreshToken = payload.getString("refresh_token");
-		int expirationPeriod = payload.getInt("expires_in");
+		JsonNode payload = response.readEntity(JsonNode.class);
+		String accessToken = "Bearer " + payload.get("access_token").asText();
+		String refreshToken = payload.get("refresh_token").asText();
+		int expirationPeriod = payload.get("expires_in").asInt();
 		Instant expiration = Instant.now().plusSeconds(expirationPeriod - 1);
 		return Optional.of(LoginToken.of(accessToken, refreshToken, expiration));
 	}
@@ -137,8 +137,8 @@ public class AuthenticationRepository {
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			throw new ClientErrorException(response.getStatus());
 		}
-		JsonObject payload = response.readEntity(JsonObject.class);
-		return "Bearer " + payload.getString("access_token");
+		JsonNode payload = response.readEntity(JsonNode.class);
+		return "Bearer " + payload.get("access_token").asText();
 	}
 	
 	public void changePassword(@NonNull String userId, @NonNull String newPassword) {

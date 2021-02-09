@@ -38,16 +38,23 @@ public class FeedService {
 	UserInfoService userService;
 	
 	public QueryResult<FeedItemInfo> getFeed(@NonNull String userId, String category, String keywords, @NonNull PagingParameter paging) {
+		List<String> userIdList = buildRelatedUserIdList(userId);
+		
+		QueryResult<FeedItemInfo> result = itemRepository.searchActivitiesByUsers(userIdList, category, keywords, paging).map(FeedItemEntity::toItemInfo);
+		Collection<MediaInfo> mediaCollection = result.getContent().stream().map(FeedItemInfo::getMedia).filter(Objects::nonNull).collect(Collectors.toSet());
+		Collection<MediaCommentInfo> commentCollection = result.getContent().stream().map(FeedItemInfo::getComment).filter(Objects::nonNull).collect(Collectors.toSet());
+
+		userService.fillUserInfo(mediaCollection);
+		userService.fillUserInfo(commentCollection);
+		userService.fillUserInfo(result.getContent());
+		return result;
+	}
+
+	private List<String> buildRelatedUserIdList(String userId) {
 		UserProfileEntity profile = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
 		List<String> userIdList = new ArrayList<String>(profile.getFollowedUsers().size() + 1);
 		profile.getFollowedUsers().stream().map(link -> link.getId().getTargetUserId()).forEach(userIdList::add);
 		userIdList.add(userId);
-		QueryResult<FeedItemInfo> result = itemRepository.searchActivitiesByUsers(userIdList, category, keywords, paging).map(FeedItemEntity::toItemInfo);
-		userService.fillUserInfo(result.getContent());
-		Collection<MediaInfo> mediaCollection = result.getContent().stream().map(FeedItemInfo::getMedia).filter(Objects::nonNull).collect(Collectors.toSet());
-		userService.fillUserInfo(mediaCollection);
-		Collection<MediaCommentInfo> commentCollection = result.getContent().stream().map(FeedItemInfo::getComment).filter(Objects::nonNull).collect(Collectors.toSet());
-		userService.fillUserInfo(commentCollection);
-		return result;
+		return userIdList;
 	}
 }

@@ -1,16 +1,18 @@
 package com.bravson.socialalert.infrastructure.rest;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import javax.json.bind.serializer.JsonbSerializer;
-import javax.json.bind.serializer.SerializationContext;
-import javax.json.stream.JsonGenerator;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 
-public class LocalDateSerializer implements JsonbSerializer<LocalDate> {
+
+public class LocalDateSerializer extends JsonSerializer<LocalDate> {
 
 	@Override
-    public void serialize(LocalDate value, JsonGenerator gen, SerializationContext  cxt) {
-        gen.write(value.format(DateTimeFormatter.ISO_LOCAL_DATE));
-    }
+	public void serialize(LocalDate value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+		gen.writeString(value.format(DateTimeFormatter.ISO_LOCAL_DATE));
+	}
 }

@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
+import org.jboss.resteasy.plugins.providers.JaxrsFormProvider;
 import org.slf4j.Logger;
 
 
@@ -23,6 +24,7 @@ public class RestClientProducer {
 	@PostConstruct
 	void init() {
 		httpClientBuilder = ClientBuilder.newBuilder();
+		httpClientBuilder.register(JaxrsFormProvider.class);
 	}
 	
 	@Produces

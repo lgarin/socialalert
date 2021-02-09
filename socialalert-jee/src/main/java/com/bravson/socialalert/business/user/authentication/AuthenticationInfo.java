@@ -2,7 +2,7 @@ package com.bravson.socialalert.business.user.authentication;
 
 import java.time.Instant;
 
-import javax.json.bind.annotation.JsonbProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,12 +27,12 @@ public class AuthenticationInfo {
 	@NonNull
 	private Instant createdTimestamp;
 	
-	@JsonbProperty("email_verified")
+	@JsonProperty("email_verified")
 	private boolean emailVerified;
 	
-	@JsonbProperty("firstName")
+	@JsonProperty("firstName")
 	private String firstname;
 	
-	@JsonbProperty("lastName")
+	@JsonProperty("lastName")
 	private String lastname;
 }

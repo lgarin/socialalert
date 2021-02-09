@@ -1,24 +1,30 @@
 package com.bravson.socialalert.infrastructure.rest;
 
-import javax.inject.Singleton;
-import javax.json.bind.JsonbConfig;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
 
-import io.quarkus.jsonb.JsonbConfigCustomizer;
+import javax.inject.Singleton;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+
+import io.quarkus.jackson.ObjectMapperCustomizer;
+
 
 @Singleton
-public class SerializerRegistrationCustomizer implements JsonbConfigCustomizer {
-	
-	@Override
-	public void customize(JsonbConfig config) {
-		config.withSerializers(
-				new DurationSerializer(),
-				new InstantSerializer(),
-				new LocalDateSerializer());
-		
-		config.withDeserializers(
-				new DurationDeserializer(),
-				new InstantDeserializer(),
-				new LocalDateDeserializer());
-	}
+public class SerializerRegistrationCustomizer implements ObjectMapperCustomizer {
 
+    public void customize(ObjectMapper mapper) {
+    	SimpleModule module = new SimpleModule();
+    	module.addSerializer(Duration.class, new DurationSerializer());
+    	module.addSerializer(Instant.class, new InstantSerializer());
+    	module.addSerializer(LocalDate.class, new LocalDateSerializer());
+    	
+    	module.addDeserializer(Duration.class, new DurationDeserializer());
+    	module.addDeserializer(Instant.class, new InstantDeserializer());
+    	module.addDeserializer(LocalDate.class, new LocalDateDeserializer());
+    	
+    	mapper.registerModule(module);
+    }
 }

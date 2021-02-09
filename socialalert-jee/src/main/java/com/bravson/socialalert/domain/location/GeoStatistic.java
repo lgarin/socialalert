@@ -1,8 +1,8 @@
 package com.bravson.socialalert.domain.location;
 
-import javax.json.bind.annotation.JsonbTransient;
-
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Builder;
 import lombok.Value;
@@ -18,12 +18,12 @@ public class GeoStatistic {
 	private double maxLon;
 	private long count;
 	
-	@JsonbTransient
+	@JsonIgnore
 	public double getCenterLat() {
 		return (maxLat + minLat) / 2.0;
 	}
 	
-	@JsonbTransient
+	@JsonIgnore
 	public double getCenterLon() {
 		return (maxLon + minLon) / 2.0;
 	}

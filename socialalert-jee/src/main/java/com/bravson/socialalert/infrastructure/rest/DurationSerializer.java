@@ -1,18 +1,19 @@
 package com.bravson.socialalert.infrastructure.rest;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-import javax.json.bind.serializer.JsonbSerializer;
-import javax.json.bind.serializer.SerializationContext;
-import javax.json.stream.JsonGenerator;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 
 
-public class DurationSerializer implements JsonbSerializer<Duration> {
+public class DurationSerializer extends JsonSerializer<Duration> {
 
-    @Override
-    public void serialize(Duration value, JsonGenerator gen, SerializationContext  cxt) {
-        gen.write(TimeUnit.SECONDS.toMillis(value.getSeconds()) + TimeUnit.NANOSECONDS.toMillis(value.getNano()));
-    }
+	@Override
+	public void serialize(Duration value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+		gen.writeNumber(TimeUnit.SECONDS.toMillis(value.getSeconds()) + TimeUnit.NANOSECONDS.toMillis(value.getNano()));
+	}
 
 }

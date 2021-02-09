@@ -95,17 +95,19 @@ public class MediaInfo implements UserContent {
 	}
 	
 	public void applyPrivacy() {
-		if (creator == null) {
+		if (creator == null || creator.getLocationPrivacy() == LocationPrivacy.MASK) {
 			clearLocation();
 		} else if (creator.getLocationPrivacy() == LocationPrivacy.BLUR && hasLocation()) {
 			blurLocation();
-		} else if (creator.getLocationPrivacy() == LocationPrivacy.MASK) {
-			clearLocation();
 		}
 		
 		if (creator == null || creator.hasFeelingPrivacy()) {
-			feeling = null;
+			clearFeeling();
 		}
+	}
+
+	private void clearFeeling() {
+		feeling = null;
 	}
 
 	private void blurLocation() {

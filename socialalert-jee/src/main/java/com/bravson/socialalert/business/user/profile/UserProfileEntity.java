@@ -191,6 +191,7 @@ public class UserProfileEntity extends VersionedEntity {
 		}
 		return info;
 	}
+	
 	private <T extends UserInfo> T fillUserInfo(T info, boolean online) {
 		info.setId(id);
 		info.setUsername(username);
