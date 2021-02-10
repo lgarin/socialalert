@@ -8,6 +8,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
 
@@ -35,6 +37,7 @@ public class UpsertMediaParameter {
 	@NotNull
 	@Size(max=MediaConstants.MAX_TAG_COUNT)
 	@NonNull
+	@Schema(maxItems = MediaConstants.MAX_TAG_COUNT, description = "The list of tags")
 	private List<@NotNull @Size(max=MediaConstants.MAX_TAG_LENGTH) String> tags;
 	
 	private GeoAddress location;
