@@ -46,6 +46,7 @@ public class UserInfo {
 	
 	private Gender gender;
 	
+	@Schema(description="The country iso code.")
 	private String country;
 	
 	private String language;
@@ -56,6 +57,7 @@ public class UserInfo {
 	
 	private UserStatistic statistic;
 	
+	@JsonIgnore
 	private UserPrivacy creatorPrivacy;
 	
 	@Schema(description="The link creation timestamp in milliseconds since the epoch.", implementation=Long.class)
@@ -66,6 +68,7 @@ public class UserInfo {
 		return creatorPrivacy;
 	}
 	
+	@JsonIgnore
 	public LocationPrivacy getLocationPrivacy() {
 		return creatorPrivacy != null ? creatorPrivacy.getLocation() : null;
 	}

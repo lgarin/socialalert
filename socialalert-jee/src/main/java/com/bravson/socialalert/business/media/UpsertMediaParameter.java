@@ -27,7 +27,7 @@ public class UpsertMediaParameter {
 	private String title;
 	
 	private String category;
-	
+
 	@Min(-MediaConstants.MAX_ABS_FEELING)
 	@Max(+MediaConstants.MAX_ABS_FEELING)
 	private Integer feeling;

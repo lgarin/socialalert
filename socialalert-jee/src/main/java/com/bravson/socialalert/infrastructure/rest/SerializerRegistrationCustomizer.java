@@ -27,4 +27,9 @@ public class SerializerRegistrationCustomizer implements ObjectMapperCustomizer 
     	
     	mapper.registerModule(module);
     }
+    
+    @Override
+    public int priority() {
+    	return Integer.MIN_VALUE;
+    }
 }
