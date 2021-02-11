@@ -1,5 +1,6 @@
 package com.bravson.socialalert.rest;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +50,7 @@ import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.ChangePasswordParameter;
 import com.bravson.socialalert.domain.user.CreateUserParameter;
+import com.bravson.socialalert.domain.user.LinkedUserInfo;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.LoginTokenResponse;
 import com.bravson.socialalert.domain.user.UserCredential;
@@ -180,11 +182,11 @@ public class UserFacade {
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "Specified user returned with success.", content=@Content(schema=@Schema(implementation=UserInfo.class)))
 	@APIResponse(responseCode = "404", description = "Specified user could not be found.")
-	public UserInfo info(
+	public UserInfo LinkedUserInfo(
 			@Parameter(description="The user id to return", required=true) @NotEmpty @PathParam("userId") String userId) {
-		UserInfo result = userService.findUserInfo(userId).orElseThrow(NotFoundException::new);
-		result.setFollowedSince(linkService.findLinkCreationTimetamp(userAccess.get(), userId).orElse(null));
-		return result;
+		UserInfo userInfo = userService.findUserInfo(userId).orElseThrow(NotFoundException::new);
+		Instant followedSince = linkService.findLinkCreationTimetamp(userAccess.get(), userId).orElse(null);
+		return new LinkedUserInfo(userInfo, followedSince);
 	}
 	
 	@GET
@@ -246,7 +248,7 @@ public class UserFacade {
 	@Operation(summary="List the followed users.")
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "List of users returned with success.", content=@Content(schema=@Schema(implementation=UserInfo.class, type = SchemaType.ARRAY)))
-	public List<UserInfo> getFollowedProfiles() {
+	public List<LinkedUserInfo> getFollowedProfiles() {
 		return linkService.getTargetProfiles(userAccess.get().getUserId());
 	}
 	
@@ -256,7 +258,7 @@ public class UserFacade {
 	@UserActivity
 	@Operation(summary="Page for the followers of the current user.")
 	@SecurityRequirement(name = "JWT")
-	public QueryResult<UserInfo> listFollowers(@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
+	public QueryResult<LinkedUserInfo> listFollowers(@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
 			@Parameter(description="Sets the page number to return.", required=false) @DefaultValue("0") @Min(0) @QueryParam("pageNumber") int pageNumber,
 			@Parameter(description="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize) {
 		return linkService.listSourceProfiles(userAccess.get().getUserId(), PagingParameter.of(pagingTimestamp, pageNumber, pageSize));

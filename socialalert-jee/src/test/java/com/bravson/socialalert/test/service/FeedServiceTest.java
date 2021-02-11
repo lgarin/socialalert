@@ -44,7 +44,6 @@ public class FeedServiceTest extends BaseServiceTest {
 		UserProfileEntity profile = new UserProfileEntity("test", "test@test.com", UserAccess.of("test", "1.2.3.4"));
 		when(profileRepository.findByUserId("test")).thenReturn(Optional.of(profile));
 		when(itemRepository.searchActivitiesByUsers(Collections.singletonList("test"), null, null, paging)).thenReturn(items);
-		when(userService.fillUserInfo(Collections.emptyList())).thenReturn(Collections.emptyList());
 		
 		QueryResult<FeedItemInfo> result = feedService.getFeed("test", null, null, paging);
 		assertThat(result.getContent()).isEmpty();

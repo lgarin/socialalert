@@ -16,6 +16,7 @@ import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
+import com.bravson.socialalert.domain.user.LinkedUserInfo;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
@@ -67,7 +68,7 @@ public class UserLinkService {
 		return Optional.empty();
 	}
 
-	public List<UserInfo> getTargetProfiles(@NonNull String userId) {
+	public List<LinkedUserInfo> getTargetProfiles(@NonNull String userId) {
 		UserProfileEntity profile = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
 		return profile.getFollowedUsers().stream().map(this::getFollowedTargetUserInfo).collect(Collectors.toList());
 	}
@@ -80,13 +81,12 @@ public class UserLinkService {
 		}
 	}
 	
-	private UserInfo getFollowedTargetUserInfo(UserLinkEntity entity) {
+	private LinkedUserInfo getFollowedTargetUserInfo(UserLinkEntity entity) {
 		UserInfo userInfo = getTargetUserInfo(entity);
-		userInfo.setFollowedSince(entity.getCreation());
-		return userInfo;
+		return new LinkedUserInfo(userInfo, entity.getCreation());
 	}
 	
-	public QueryResult<UserInfo> listSourceProfiles(@NonNull String userId, @NonNull PagingParameter paging) {
+	public QueryResult<LinkedUserInfo> listSourceProfiles(@NonNull String userId, @NonNull PagingParameter paging) {
 		return linkRepository.searchByTarget(userId, paging).map(this::getFollowedSourceUserInfo);	
 	}
 	
@@ -98,9 +98,8 @@ public class UserLinkService {
 		}
 	}
 	
-	private UserInfo getFollowedSourceUserInfo(UserLinkEntity entity) {
+	private LinkedUserInfo getFollowedSourceUserInfo(UserLinkEntity entity) {
 		UserInfo userInfo = getSourceUserInfo(entity);
-		userInfo.setFollowedSince(entity.getCreation());
-		return userInfo;
+		return new LinkedUserInfo(userInfo, entity.getCreation());
 	}
 }

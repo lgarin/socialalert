@@ -10,7 +10,7 @@ import com.bravson.socialalert.domain.feed.FeedItemInfo;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.media.comment.MediaCommentDetail;
 import com.bravson.socialalert.domain.media.comment.UserCommentDetail;
-import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.domain.user.LinkedUserInfo;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,7 +24,7 @@ import lombok.NonNull;
 public class QueryResult<T> {
 	
 	@NonNull
-	@Schema(description = "the list of results for this page", oneOf={FeedItemInfo.class, MediaCommentDetail.class, UserCommentDetail.class, MediaInfo.class, UserInfo.class}, implementation=Object.class)
+	@Schema(description = "the list of results for this page", oneOf={FeedItemInfo.class, MediaCommentDetail.class, UserCommentDetail.class, MediaInfo.class, LinkedUserInfo.class}, implementation=Object.class)
 	private List<T> content;
 	@Schema(description = "the current page number")
 	private int pageNumber;
