@@ -41,8 +41,8 @@ public class FeedService {
 		List<String> userIdList = buildRelatedUserIdList(userId);
 		
 		QueryResult<FeedItemInfo> result = itemRepository.searchActivitiesByUsers(userIdList, category, keywords, paging).map(FeedItemEntity::toItemInfo);
-		Collection<MediaInfo> mediaCollection = result.getContent().stream().map(FeedItemInfo::getMedia).filter(Objects::nonNull).collect(Collectors.toSet());
-		Collection<MediaCommentInfo> commentCollection = result.getContent().stream().map(FeedItemInfo::getComment).filter(Objects::nonNull).collect(Collectors.toSet());
+		Collection<MediaInfo> mediaCollection = result.getContent().stream().map(FeedItemInfo::getMedia).filter(Objects::nonNull).collect(Collectors.toList());
+		Collection<MediaCommentInfo> commentCollection = result.getContent().stream().map(FeedItemInfo::getComment).filter(Objects::nonNull).collect(Collectors.toList());
 
 		userService.fillUserInfo(mediaCollection);
 		userService.fillUserInfo(commentCollection);
