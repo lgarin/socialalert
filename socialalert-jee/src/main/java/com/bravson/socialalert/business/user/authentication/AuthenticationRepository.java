@@ -1,6 +1,5 @@
 package com.bravson.socialalert.business.user.authentication;
 
-import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -90,14 +89,11 @@ public class AuthenticationRepository {
 				.firstName(param.getFirstName())
 				.lastName(param.getLastName())
 				.enabled(true)
+				.credential(new CredentialRepresentation(false, "password", param.getPassword()))
 				.build();
 		Response response = httpClient.target(config.getUserCreateUrl()).request()
 				.header("Authorization", authorization).post(Entity.json(user));
 		if (response.getStatus() == Status.CREATED.getStatusCode()) {
-			String userId = Path.of(response.getLocation().getPath()).getFileName().toString();
-			CredentialRepresentation credential = new CredentialRepresentation(false, "password", param.getPassword());
-			httpClient.target(config.getPasswordResetUrl()).resolveTemplate("id", userId)
-					.request().header("Authorization", authorization).put(Entity.json(credential));
 			return true;
 		} else if (response.getStatus() == Status.CONFLICT.getStatusCode()) {
 			return false;

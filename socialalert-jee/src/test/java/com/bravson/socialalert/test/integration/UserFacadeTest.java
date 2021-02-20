@@ -225,7 +225,6 @@ public class UserFacadeTest extends BaseIntegrationTest {
 		UserCredential param = new UserCredential("newUser", "123");
 		Response response = createRequest("/user/delete", MediaTypeConstants.JSON).post(Entity.json(param));
 		assertThat(response.getStatus()).isEqualTo(Status.NO_CONTENT.getStatusCode());
-				
 	}
 	
 	@Test
