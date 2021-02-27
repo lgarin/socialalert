@@ -1,10 +1,9 @@
 package com.bravson.socialalert.business.media;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -28,6 +27,8 @@ import com.bravson.socialalert.infrastructure.entity.HitEntity;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 import com.bravson.socialalert.infrastructure.util.GeoHashUtil;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import lombok.AccessLevel;
@@ -116,21 +117,61 @@ public class MediaRepository {
 			precision = 2;
 		}
 		
-		AggregationKey<Map<String, Long>> countsByGeoHashKey = AggregationKey.of("geoHash" + precision);
+		AggregationKey<JsonObject> feelingByGeoHashKey = AggregationKey.of("feeling");
+		JsonObject aggregation = buildAggregationParameters(precision);
 		
 		SearchResult<MediaEntity> result = persistenceManager.search(MediaEntity.class)
 			.where(f -> buildSearchQuery(parameter, Instant.now(), f))
-			.aggregation(countsByGeoHashKey, f -> f.terms()
-					.field("geoHash" + precision, String.class)
-					.orderByCountDescending())
+			.aggregation(feelingByGeoHashKey, f -> f.extension(ElasticsearchExtension.get()).fromJson(aggregation))
 			.fetch(0);
-		
-		return result.aggregation(countsByGeoHashKey).entrySet().stream().map(MediaRepository::toGeoStatistic).filter(s -> s.intersect(parameter.getArea())).collect(Collectors.toList());
+
+		JsonObject aggResult = result.aggregation(feelingByGeoHashKey);
+		JsonArray buckets = aggResult.get("buckets").getAsJsonArray();
+		List<GeoStatistic> resultList = new ArrayList<GeoStatistic>(buckets.size());
+		for (JsonElement item : buckets) {
+			resultList.add(buildGeoStatistic(item));
+		}
+		return resultList;
 	}
-	
-	private static GeoStatistic toGeoStatistic(Map.Entry<String, Long> geoHashCount) {
-		GeoBox box = GeoHashUtil.computeBoundingBox(geoHashCount.getKey());
-		return GeoStatistic.builder().count(geoHashCount.getValue()).minLat(box.getMinLat()).maxLat(box.getMaxLat()).minLon(box.getMinLon()).maxLon(box.getMaxLon()).build();
+
+	private static JsonObject buildAggregationParameters(int precision) {
+		JsonObject sumField = new JsonObject();
+		sumField.addProperty("field", "feeling");
+		JsonObject sumOperation = new JsonObject();
+		sumOperation.add("sum", sumField);
+		JsonObject termField = new JsonObject();
+		termField.addProperty("field", "geoHash" + precision);
+		
+		JsonObject fieldFilter = new JsonObject();
+		fieldFilter.addProperty("field", "feeling");
+		JsonObject existsFilter = new JsonObject();
+		existsFilter.add("exists", fieldFilter);
+		JsonObject feelingFilter = new JsonObject();
+		feelingFilter.add("filter", existsFilter);
+		JsonObject feelingSum = new JsonObject();
+		feelingSum.add("feelingSum", feelingFilter);
+		feelingSum.add("aggs", sumOperation);
+		
+		JsonObject aggregation = new JsonObject();
+		aggregation.add("terms", termField);
+		aggregation.add("aggs", feelingSum);
+		return aggregation;
+	}
+
+	private static GeoStatistic buildGeoStatistic(JsonElement item) {
+		JsonObject bucket = item.getAsJsonObject();
+		long feelingCount =  bucket.get("feelingSum").getAsJsonObject().get("doc_count").getAsLong();
+		String geoHash = bucket.get("key").getAsString();
+		long totalCount = bucket.get("doc_count").getAsLong();
+		long feelingSum = bucket.get("aggs").getAsJsonObject().get("value").getAsLong();
+		
+		GeoBox box = GeoHashUtil.computeBoundingBox(geoHash);
+		return GeoStatistic.builder().count(totalCount)
+				.feelingCount(feelingCount)
+				.feelingSum(feelingSum)
+				.minLat(box.getMinLat()).maxLat(box.getMaxLat())
+				.minLon(box.getMinLon()).maxLon(box.getMaxLon())
+				.build();
 	}
 	
 	public List<MediaEntity> listByUserId(@NonNull String userId) {

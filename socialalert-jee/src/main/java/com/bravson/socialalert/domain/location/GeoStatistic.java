@@ -12,11 +12,26 @@ import lombok.Value;
 @Builder
 public class GeoStatistic {
 	
+	@Schema(description="Lower latitude of the geo box")
 	private double minLat;
+	
+	@Schema(description="Upper latitude of the geo box")
 	private double maxLat;
+	
+	@Schema(description="Lower longitude of the geo box")
 	private double minLon;
+	
+	@Schema(description="Upper longitude of the geo box")
 	private double maxLon;
+	
+	@Schema(description="Number of media in this geo box")
 	private long count;
+	
+	@Schema(description="Number of media with a feeling rating")
+	private long feelingCount;
+	
+	@Schema(description="Sum of all feeling ratings")
+	private long feelingSum;
 	
 	@JsonIgnore
 	public double getCenterLat() {

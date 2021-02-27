@@ -100,7 +100,7 @@ public class MediaEntity extends VersionedEntity {
 	
 	@Getter
 	@Column(name = "feeling")
-	@GenericField
+	@GenericField(aggregable = Aggregable.YES)
 	private Integer feeling;
 	
 	@Getter
