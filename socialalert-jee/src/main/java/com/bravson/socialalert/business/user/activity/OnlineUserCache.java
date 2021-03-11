@@ -4,18 +4,23 @@ import java.time.Duration;
 import java.time.Instant;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.RemovalCause;
+import com.github.benmanes.caffeine.cache.RemovalListener;
 
 @Repository
 @Transactional(TxType.SUPPORTS)
-public class OnlineUserCache {
+public class OnlineUserCache implements RemovalListener<String, UserSession> {
 
 	// TODO use infinispan
 	private Cache<String, UserSession> localCache;
@@ -23,9 +28,18 @@ public class OnlineUserCache {
 	@ConfigProperty(name = "user.sessionTimeout")
 	Duration sessionTimeout;
 	
+	@Inject
+	@DeleteEntity
+	Event<UserSession> deletedSessionEvent; 
+	
 	@PostConstruct
 	void init() {
-		localCache = Caffeine.newBuilder().expireAfterWrite(sessionTimeout).build();
+		localCache = Caffeine.newBuilder().expireAfterWrite(sessionTimeout).removalListener(this).build();
+	}
+	
+	@Override
+	public void onRemoval(String key, UserSession value, RemovalCause cause) {
+		deletedSessionEvent.fire(value);
 	}
 	
 	public void addActiveUser(String userId) {

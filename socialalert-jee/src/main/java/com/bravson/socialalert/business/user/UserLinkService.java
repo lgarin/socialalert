@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
@@ -18,6 +19,8 @@ import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.LinkedUserInfo;
 import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
+import com.bravson.socialalert.infrastructure.entity.NewEntity;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
 import lombok.AccessLevel;
@@ -42,6 +45,14 @@ public class UserLinkService {
 	@Inject
 	@NonNull
 	OnlineUserCache onlineUserCache;
+	
+	@Inject
+	@NewEntity
+	Event<UserLinkEntity> createdLinkEvent;
+	
+	@Inject
+	@DeleteEntity
+	Event<UserLinkEntity> removedLinkEvent;
 
 	public Optional<Instant> findLinkCreationTimetamp(@NonNull UserAccess userAccess, @NonNull String userId) {
 		return linkRepository.find(userAccess.getUserId(), userId).map(UserLinkEntity::getCreation);
@@ -53,6 +64,7 @@ public class UserLinkService {
 			UserProfileEntity sourceUser = profileRepository.findByUserId(userAccess.getUserId()).orElseThrow(NotFoundException::new);
 			UserLinkEntity link = linkRepository.link(sourceUser, targetUser);
 			targetUser.addFollower();
+			createdLinkEvent.fire(link);
 			return Optional.of(getFollowedTargetUserInfo(link));
 		}
 		return Optional.empty();
@@ -63,6 +75,7 @@ public class UserLinkService {
 		Optional<UserLinkEntity> link = linkRepository.unlink(userAccess.getUserId(), userId);
 		if (link.isPresent()) {
 			targetUser.removeFollower();
+			removedLinkEvent.fire(link.get());
 			return Optional.of(getTargetUserInfo(link.get()));
 		}
 		return Optional.empty();

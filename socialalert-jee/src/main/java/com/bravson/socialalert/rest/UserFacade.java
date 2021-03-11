@@ -24,9 +24,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.sse.Sse;
+import javax.ws.rs.sse.SseEventSink;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -37,6 +40,7 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.jboss.resteasy.annotations.SseElementType;
 
 import com.bravson.socialalert.business.media.comment.MediaCommentService;
 import com.bravson.socialalert.business.user.TokenAccess;
@@ -45,6 +49,7 @@ import com.bravson.socialalert.business.user.UserLinkService;
 import com.bravson.socialalert.business.user.UserProfileService;
 import com.bravson.socialalert.business.user.UserService;
 import com.bravson.socialalert.business.user.activity.UserActivity;
+import com.bravson.socialalert.business.user.event.UserEventService;
 import com.bravson.socialalert.domain.media.comment.UserCommentDetail;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
@@ -56,6 +61,7 @@ import com.bravson.socialalert.domain.user.LoginTokenResponse;
 import com.bravson.socialalert.domain.user.UserCredential;
 import com.bravson.socialalert.domain.user.UserDetail;
 import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.domain.user.event.UserEvent;
 import com.bravson.socialalert.domain.user.privacy.UserPrivacy;
 import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
 import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
@@ -76,6 +82,9 @@ public class UserFacade {
 	
 	@Inject
 	MediaCommentService commentService;
+	
+	@Inject
+	UserEventService eventService;
 	
 	@Inject
 	@TokenAccess
@@ -283,7 +292,7 @@ public class UserFacade {
 	@UserActivity
 	@Operation(summary="Update own privacy settings.")
 	@SecurityRequirement(name = "JWT")
-	@APIResponse(responseCode = "200", description = "Profile has been updated.", content=@Content(schema=@Schema(implementation=UserInfo.class)))
+	@APIResponse(responseCode = "200", description = "Profile has been updated.", content=@Content(schema=@Schema(implementation=UserDetail.class)))
 	public UserDetail updatePrivacy(@Parameter(required = true) @Valid @NotNull UserPrivacy param) {
 		return profileService.updatePrivacy(param, userAccess.get());
 	}
@@ -322,5 +331,16 @@ public class UserFacade {
 		}
 		userService.deleteUser(loginResponse.getId());
 		return Response.status(Status.NO_CONTENT).build();
+	}
+	
+	@GET
+	@Produces(MediaType.SERVER_SENT_EVENTS)
+	@Path("/eventStream")
+	@SseElementType(MediaTypeConstants.JSON)
+	@Operation(summary="Open a stream of user events.")
+	@APIResponse(responseCode = "200", description = "Stream is opened.", content=@Content(schema=@Schema(implementation=UserEvent.class)))
+	public void eventStream(@Context SseEventSink sseEventSink, @Context Sse sse) {
+		eventService.init(sse);
+		eventService.register(userAccess.get().getUserId(), sseEventSink);
 	}
 }
