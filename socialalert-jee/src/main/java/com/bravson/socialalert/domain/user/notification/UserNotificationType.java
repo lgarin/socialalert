@@ -1,7 +1,6 @@
-package com.bravson.socialalert.domain.user.event;
+package com.bravson.socialalert.domain.user.notification;
 
-public enum UserEventType {
-	BEGIN_STREAM,
+public enum UserNotificationType {
 	JOINED_NETWORK,
 	LEFT_NETWORK,
 	NEW_COMMENT,

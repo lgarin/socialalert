@@ -49,7 +49,7 @@ import com.bravson.socialalert.business.user.UserLinkService;
 import com.bravson.socialalert.business.user.UserProfileService;
 import com.bravson.socialalert.business.user.UserService;
 import com.bravson.socialalert.business.user.activity.UserActivity;
-import com.bravson.socialalert.business.user.event.UserEventService;
+import com.bravson.socialalert.business.user.notification.UserNotificationService;
 import com.bravson.socialalert.domain.media.comment.UserCommentDetail;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
@@ -61,7 +61,7 @@ import com.bravson.socialalert.domain.user.LoginTokenResponse;
 import com.bravson.socialalert.domain.user.UserCredential;
 import com.bravson.socialalert.domain.user.UserDetail;
 import com.bravson.socialalert.domain.user.UserInfo;
-import com.bravson.socialalert.domain.user.event.UserEvent;
+import com.bravson.socialalert.domain.user.notification.UserNotification;
 import com.bravson.socialalert.domain.user.privacy.UserPrivacy;
 import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
 import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
@@ -84,7 +84,7 @@ public class UserFacade {
 	MediaCommentService commentService;
 	
 	@Inject
-	UserEventService eventService;
+	UserNotificationService eventService;
 	
 	@Inject
 	@TokenAccess
@@ -335,10 +335,10 @@ public class UserFacade {
 	
 	@GET
 	@Produces(MediaType.SERVER_SENT_EVENTS)
-	@Path("/eventStream")
+	@Path("/notificationStream")
 	@SseElementType(MediaTypeConstants.JSON)
-	@Operation(summary="Open a stream of user events.")
-	@APIResponse(responseCode = "200", description = "Stream is opened.", content=@Content(schema=@Schema(implementation=UserEvent.class)))
+	@Operation(summary="Open a stream of user notifications.")
+	@APIResponse(responseCode = "200", description = "Stream is opened.", content=@Content(schema=@Schema(implementation=UserNotification.class)))
 	public void eventStream(@Context SseEventSink sseEventSink, @Context Sse sse) {
 		eventService.init(sse);
 		eventService.register(userAccess.get().getUserId(), sseEventSink);
