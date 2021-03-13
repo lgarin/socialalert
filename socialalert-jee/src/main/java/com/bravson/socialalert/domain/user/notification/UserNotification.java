@@ -20,6 +20,15 @@ public class UserNotification {
 	
 	private String mediaUri;
 	
+	private String mediaTitle;
+	
+	private String commentId;
+	
+	private String commentText;
+	
+	@NonNull
 	private String sourceUserId;
 	
+	@NonNull
+	private String sourceUsername;
 }

@@ -1,11 +1,5 @@
 package com.bravson.socialalert.test.service;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
 import java.util.Optional;
 
 import javax.enterprise.event.Event;
@@ -26,6 +20,12 @@ import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.business.user.activity.OnlineUserCache;
 import com.bravson.socialalert.domain.media.MediaDetail;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 public class MediaServiceTest extends BaseServiceTest {
 

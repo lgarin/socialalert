@@ -17,7 +17,6 @@ import com.bravson.socialalert.business.media.MediaDeleteService;
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.MediaRepository;
 import com.bravson.socialalert.business.media.UpsertMediaParameter;
-import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 
@@ -37,13 +36,13 @@ public class MediaDeleteServiceTest extends BaseServiceTest {
 		FileEntity file = new FileEntity("123");
 		file.addVariant(FileMetadata.builder().md5("xyz").fileFormat(MediaFileFormat.MEDIA_JPG).timestamp(Instant.EPOCH).contentSize(0L).build());
 		UpsertMediaParameter param = UpsertMediaParameter.builder().title("test").tags(Collections.emptyList()).build();
-		return new MediaEntity(file, param, UserAccess.of("test", "1.2.3.4"));
+		return new MediaEntity(file, param, createUserAccess("test", "1.2.3.4"));
 	}
 	
 	@Test
 	public void deleteMediaFromUser() {
 		MediaEntity media = buildMediaEntity();
-		UserProfileEntity profile = new UserProfileEntity(media.getUserId(), "test@test.com", UserAccess.of("test", "1.2.3.4"));
+		UserProfileEntity profile = new UserProfileEntity(createUserAccess("test", "1.2.3.4"));
 		Mockito.when(mediaRepository.listByUserId(profile.getId())).thenReturn(Collections.singletonList(media));
 		deleteService.handleDeleteUser(profile);
 		Mockito.verify(mediaRepository).delete(media);

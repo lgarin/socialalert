@@ -1,9 +1,6 @@
 package com.bravson.socialalert.test.service;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,10 +20,13 @@ import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.file.media.MediaMetadataExtractor;
 import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.business.file.video.AsyncVideoPreviewEvent;
-import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 public class MediaFileEnricherTest extends BaseServiceTest {
 
@@ -52,7 +52,7 @@ public class MediaFileEnricherTest extends BaseServiceTest {
 	public void buildPictureMetadata() throws Exception {
 		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
 		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
-		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4"));
+		FileEntity fileEntity = new FileEntity(fileMetadata, createUserAccess("test", "1.2.3.4"));
 		MediaMetadata metadata = MediaMetadata.builder().cameraMaker("a").cameraModel("b").width(1200).height(1600).timestamp(Instant.EPOCH).build();
 		
 		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), fileMetadata.getFileFormat())).thenReturn(inputFile);
@@ -74,7 +74,7 @@ public class MediaFileEnricherTest extends BaseServiceTest {
 	public void buildVideoMetadata() throws Exception {
 		File inputFile = new File("src/test/resources/media/VID_0397.MP4");
 		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(MediaFileFormat.MEDIA_MP4).build();
-		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4"));
+		FileEntity fileEntity = new FileEntity(fileMetadata, createUserAccess("test", "1.2.3.4"));
 		MediaMetadata metadata = MediaMetadata.builder().cameraMaker("a").cameraModel("b").width(1200).height(1600).timestamp(Instant.EPOCH).build();
 		
 		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), fileMetadata.getFileFormat())).thenReturn(inputFile);
@@ -97,7 +97,7 @@ public class MediaFileEnricherTest extends BaseServiceTest {
 	public void buildInvalidVideoMetadata() throws Exception {
 		File inputFile = new File("src/test/resources/media/VID_0397.MP4");
 		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(MediaFileFormat.MEDIA_MP4).build();
-		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4"));
+		FileEntity fileEntity = new FileEntity(fileMetadata, createUserAccess("test", "1.2.3.4"));
 		IOException exception = new IOException();
 		
 		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), fileMetadata.getFileFormat())).thenReturn(inputFile);

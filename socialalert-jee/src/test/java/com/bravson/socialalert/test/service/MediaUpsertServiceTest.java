@@ -1,7 +1,5 @@
 package com.bravson.socialalert.test.service;
 
-import static org.mockito.Mockito.when;
-
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -24,6 +22,8 @@ import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.infrastructure.rest.ConflictException;
+
+import static org.mockito.Mockito.when;
 
 public class MediaUpsertServiceTest extends BaseServiceTest {
 
@@ -51,7 +51,7 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 	@Test
 	public void claimUnknownPicture() {
 		String fileUri = "file123.jpg";
-		UserAccess userAccess = UserAccess.of("test", "1.2.3.4");
+		UserAccess userAccess = createUserAccess("test", "1.2.3.4");
 		UpsertMediaParameter mediaParameter = new UpsertMediaParameter();
 		mediaParameter.setTitle("Test title");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
@@ -68,7 +68,7 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 	@Test
 	public void claimAlreadyClaimedPicture() {
 		String fileUri = "file123.jpg";
-		UserAccess userAccess = UserAccess.of("test", "1.2.3.4");
+		UserAccess userAccess = createUserAccess("test", "1.2.3.4");
 		UpsertMediaParameter mediaParameter = new UpsertMediaParameter();
 		mediaParameter.setTitle("Test title");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
@@ -83,7 +83,7 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 	@Test
 	public void claimExistingPictureWithWrongUser() {
 		String fileUri = "file123.jpg";
-		UserAccess userAccess = UserAccess.of("test", "1.2.3.4");
+		UserAccess userAccess = createUserAccess("test", "1.2.3.4");
 		UpsertMediaParameter mediaParameter = new UpsertMediaParameter();
 		mediaParameter.setTitle("Test title");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
@@ -100,7 +100,7 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 	@Test
 	public void claimExistingPicture() {
 		String fileUri = "file123.jpg";
-		UserAccess userAccess = UserAccess.of("test", "1.2.3.4");
+		UserAccess userAccess = createUserAccess("test", "1.2.3.4");
 		UpsertMediaParameter mediaParameter = new UpsertMediaParameter();
 		mediaParameter.setTitle("Test title");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
@@ -123,7 +123,7 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 	@Test
 	public void updateExistingMedia() {
 		String fileUri = "file123.jpg";
-		UserAccess userAccess = UserAccess.of("test", "1.2.3.4");
+		UserAccess userAccess = createUserAccess("test", "1.2.3.4");
 		UpsertMediaParameter mediaParameter = new UpsertMediaParameter();
 		mediaParameter.setTitle("Test title");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
@@ -144,7 +144,7 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 	@Test
 	public void updateNonExistingMedia() {
 		String fileUri = "file123.jpg";
-		UserAccess userAccess = UserAccess.of("test", "1.2.3.4");
+		UserAccess userAccess = createUserAccess("test", "1.2.3.4");
 		UpsertMediaParameter mediaParameter = new UpsertMediaParameter();
 		mediaParameter.setTitle("Test title");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));
@@ -160,7 +160,7 @@ public class MediaUpsertServiceTest extends BaseServiceTest {
 	@Test
 	public void updateMediaWithWrongUser() {
 		String fileUri = "file123.jpg";
-		UserAccess userAccess = UserAccess.of("test", "1.2.3.4");
+		UserAccess userAccess = createUserAccess("test", "1.2.3.4");
 		UpsertMediaParameter mediaParameter = new UpsertMediaParameter();
 		mediaParameter.setTitle("Test title");
 		mediaParameter.setTags(Arrays.asList("tag1", "tag2"));

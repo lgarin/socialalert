@@ -1,7 +1,6 @@
 package com.bravson.socialalert.business.user.activity;
 
 import java.time.Duration;
-import java.time.Instant;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
@@ -10,6 +9,7 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.Logger;
 
 import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
 import com.bravson.socialalert.infrastructure.layer.Repository;
@@ -30,24 +30,27 @@ public class OnlineUserCache implements RemovalListener<String, UserSession> {
 	
 	@Inject
 	@DeleteEntity
-	Event<UserSession> deletedSessionEvent; 
+	Event<UserSession> deletedSessionEvent;
+	
+	@Inject
+	Logger logger;
 	
 	@PostConstruct
 	void init() {
-		localCache = Caffeine.newBuilder().expireAfterWrite(sessionTimeout).removalListener(this).build();
+		localCache = Caffeine.newBuilder().expireAfterAccess(sessionTimeout).removalListener(this).build();
 	}
 	
 	@Override
 	public void onRemoval(String key, UserSession value, RemovalCause cause) {
+		logger.info("Session expired for " + key);
 		deletedSessionEvent.fire(value);
 	}
 	
-	public void addActiveUser(String userId) {
+	public UserSession addActiveUser(String userId) {
 		if (userId == null) {
-			return;
+			return null;
 		}
-		UserSession session = localCache.get(userId, UserSession::new);
-		session.setLastAccess(Instant.now());
+		return localCache.get(userId, UserSession::new);
 	}
 
 	public boolean isUserActive(String userId) {

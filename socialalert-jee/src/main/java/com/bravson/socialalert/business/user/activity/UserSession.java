@@ -1,6 +1,5 @@
 package com.bravson.socialalert.business.user.activity;
 
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,8 +15,6 @@ public class UserSession {
 	@NonNull
 	private final String userId;
 
-	private Instant lastAccess;
-	
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	private Set<String> viewedMedia;

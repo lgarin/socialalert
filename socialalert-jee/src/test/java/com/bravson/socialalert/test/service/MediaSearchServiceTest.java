@@ -1,8 +1,5 @@
 package com.bravson.socialalert.test.service;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,6 +19,9 @@ import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MediaSearchServiceTest extends BaseServiceTest {
 

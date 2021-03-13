@@ -150,10 +150,10 @@ public class UserProfileEntity extends VersionedEntity {
 	@OneToMany(mappedBy="sourceUser")
 	private Set<UserLinkEntity> followedUsers;
 	
-	public UserProfileEntity(@NonNull String username, @NonNull String email, @NonNull UserAccess userAccess) {
+	public UserProfileEntity(@NonNull UserAccess userAccess) {
 		this.id = userAccess.getUserId();
-		this.username = username;
-		this.email = email;
+		this.username = userAccess.getUsername();
+		this.email = userAccess.getEmail();
 		this.versionInfo = VersionInfo.of(userAccess.getUserId(), userAccess.getIpAddress());
 		this.statistic = new UserStatistic();
 		this.privacy = new UserPrivacy();

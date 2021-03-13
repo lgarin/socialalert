@@ -39,8 +39,8 @@ public class UserProfileServiceTest extends BaseServiceTest {
 	
 	@Test
 	public void updateExistingProfile() {
-		UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
-		UserProfileEntity profileEntity = new UserProfileEntity("test", "test@test.com", userAccess);
+		UserAccess userAccess = createUserAccess("test", "1.1.1.1");
+		UserProfileEntity profileEntity = new UserProfileEntity(userAccess);
 		when(profileRepository.findByUserId(userAccess.getUserId())).thenReturn(Optional.of(profileEntity));
 		
 		UpdateProfileParameter param = UpdateProfileParameter.builder().country("CH").language("fr").gender(Gender.MALE).build();
@@ -55,8 +55,8 @@ public class UserProfileServiceTest extends BaseServiceTest {
 	
 	@Test
 	public void updateProfileName() {
-		UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
-		UserProfileEntity profileEntity = new UserProfileEntity("test", "test@test.com", userAccess);
+		UserAccess userAccess = createUserAccess("test", "1.1.1.1");
+		UserProfileEntity profileEntity = new UserProfileEntity(userAccess);
 		when(profileRepository.findByUserId(userAccess.getUserId())).thenReturn(Optional.of(profileEntity));
 		
 		UpdateProfileParameter param = UpdateProfileParameter.builder().firstname("Firstname").lastname("Lastname").country("CH").language("fr").gender(Gender.MALE).build();
@@ -70,7 +70,7 @@ public class UserProfileServiceTest extends BaseServiceTest {
 	
 	@Test
 	public void updateProfileWithInvalidLanguage() {
-		UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+		UserAccess userAccess = createUserAccess("test", "1.1.1.1");
 		UpdateProfileParameter param = UpdateProfileParameter.builder().country("CH").language("FR").gender(Gender.MALE).build();
 		assertThrows(BadRequestException.class, () -> profileService.updateProfile(param, userAccess));
 	}
@@ -91,8 +91,8 @@ public class UserProfileServiceTest extends BaseServiceTest {
 	
 	@Test
 	public void updatePrivacy() {
-		UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
-		UserProfileEntity profileEntity = new UserProfileEntity("test", "test@test.com", userAccess);
+		UserAccess userAccess = createUserAccess("test", "1.1.1.1");
+		UserProfileEntity profileEntity = new UserProfileEntity(userAccess);
 		UpdateProfileParameter profileParam = UpdateProfileParameter.builder().firstname("first").lastname("last").birthdate(LocalDate.EPOCH).build();
 		profileEntity.updateProfile(profileParam, userAccess);
 		when(profileRepository.findByUserId(userAccess.getUserId())).thenReturn(Optional.of(profileEntity));
@@ -107,7 +107,7 @@ public class UserProfileServiceTest extends BaseServiceTest {
 	
 	@Test
 	public void updatePrivacyWithInvalidUser() {
-		UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+		UserAccess userAccess = createUserAccess("test", "1.1.1.1");
 		when(profileRepository.findByUserId(userAccess.getUserId())).thenReturn(Optional.empty());
 		UserPrivacy param = new UserPrivacy();
 		assertThrows(NotFoundException.class, () -> profileService.updatePrivacy(param, userAccess));

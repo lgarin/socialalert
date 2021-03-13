@@ -16,7 +16,6 @@ import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.UpsertMediaParameter;
-import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 
@@ -37,7 +36,7 @@ public class FileDeleteServiceTest extends BaseServiceTest {
 		file.addVariant(FileMetadata.builder().md5("xyz").fileFormat(MediaFileFormat.PREVIEW_JPG).timestamp(Instant.EPOCH).contentSize(0L).build());
 		file.addVariant(FileMetadata.builder().md5("xyz").fileFormat(MediaFileFormat.THUMBNAIL_JPG).timestamp(Instant.EPOCH).contentSize(0L).build());
 		UpsertMediaParameter param = UpsertMediaParameter.builder().title("test").tags(Collections.emptyList()).build();
-		return new MediaEntity(file, param, UserAccess.of("test", "1.2.3.4"));
+		return new MediaEntity(file, param, createUserAccess("test", "1.2.3.4"));
 	}
 	
 	@Test
@@ -55,7 +54,7 @@ public class FileDeleteServiceTest extends BaseServiceTest {
 	@Test
 	public void deleteFilesFromUser() throws IOException {
 		MediaEntity media = buildMediaEntity();
-		UserProfileEntity profile = new UserProfileEntity(media.getUserId(), "test@test.com", UserAccess.of("test", "1.2.3.4"));
+		UserProfileEntity profile = new UserProfileEntity(createUserAccess("test", "1.2.3.4"));
 		Mockito.when(fileRepository.findByUserId(profile.getId())).thenReturn(Collections.singletonList(media.getFile()));
 		deleteService.handleDeleteUser(profile);
 		String md5 = media.getFile().getFileMetadata().getMd5();

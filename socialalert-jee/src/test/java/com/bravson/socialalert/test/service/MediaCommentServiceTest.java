@@ -1,11 +1,5 @@
 package com.bravson.socialalert.test.service;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Optional;
@@ -33,6 +27,12 @@ import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 public class MediaCommentServiceTest extends BaseServiceTest {
 
@@ -64,7 +64,7 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 	public void createCommentForExitingMedia() {
 		String mediaUri = "uri1";
 		String comment = "test";
-		UserAccess userAccess = UserAccess.of("user1", "1.2.3.4");
+		UserAccess userAccess = createUserAccess("user1", "1.2.3.4");
 		MediaEntity mediaEntity = mock(MediaEntity.class);
 		MediaCommentInfo commentInfo = new MediaCommentInfo();
 		
@@ -83,7 +83,7 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 	public void createCommentForNonExitingMedia() {
 		String mediaUri = "uri1";
 		String comment = "test";
-		UserAccess userAccess = UserAccess.of("user1", "1.2.3.4");
+		UserAccess userAccess = createUserAccess("user1", "1.2.3.4");
 		
 		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.empty());
 		

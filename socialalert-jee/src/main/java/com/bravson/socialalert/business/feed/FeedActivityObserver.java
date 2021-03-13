@@ -7,7 +7,6 @@ import javax.transaction.Transactional;
 
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
-import com.bravson.socialalert.business.user.TokenAccess;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.feed.FeedActivity;
 import com.bravson.socialalert.infrastructure.entity.DislikedEntity;
@@ -32,7 +31,6 @@ public class FeedActivityObserver {
 	FeedItemRepository itemRepository;
 	
 	@Inject
-	@TokenAccess
 	@NonNull
 	Instance<UserAccess> userAccess;
 

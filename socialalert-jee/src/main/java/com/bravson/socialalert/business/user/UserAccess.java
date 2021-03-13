@@ -2,17 +2,13 @@ package com.bravson.socialalert.business.user;
 
 import java.io.Serializable;
 
-import lombok.NonNull;
-import lombok.Value;
+public interface UserAccess extends Serializable {
 
-@Value(staticConstructor="of")
-public class UserAccess implements Serializable {
-
-	private static final long serialVersionUID = 1L;
-
-	@NonNull
-	private String userId;
+	public String getUserId();
 	
-	@NonNull
-	private String ipAddress;
+	public String getIpAddress();
+	
+	public String getUsername();
+	
+	public String getEmail();
 }

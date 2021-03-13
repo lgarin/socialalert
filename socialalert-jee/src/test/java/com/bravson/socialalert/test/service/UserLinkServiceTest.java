@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserLinkService;
 import com.bravson.socialalert.business.user.activity.OnlineUserCache;
 import com.bravson.socialalert.business.user.link.UserLinkEntity;
@@ -46,8 +45,8 @@ public class UserLinkServiceTest extends BaseServiceTest {
 	@Test
 	public void listSourceProfilesForOfflineUserWithLink() {
 		PagingParameter paging = PagingParameter.of(0L, 0, 20);
-		UserProfileEntity sourceUser = new UserProfileEntity("xyz", "xyz@test.com", UserAccess.of("xyz", "1.2.3.4"));
-    	UserProfileEntity targetUser = new UserProfileEntity("test", "test@test.com", UserAccess.of("test", "1.2.3.4"));
+		UserProfileEntity sourceUser = new UserProfileEntity(createUserAccess("xyz", "1.2.3.4"));
+    	UserProfileEntity targetUser = new UserProfileEntity(createUserAccess("test", "1.2.3.4"));
 		UserLinkEntity linkEntity = new UserLinkEntity(sourceUser, targetUser);
 		when(linkRepository.searchByTarget(targetUser.getId(), paging)).thenReturn(new QueryResult<>(Collections.singletonList(linkEntity), 0, paging));
 		when(onlineUserCache.isUserActive(sourceUser.getId())).thenReturn(false);
@@ -58,8 +57,8 @@ public class UserLinkServiceTest extends BaseServiceTest {
 	@Test
 	public void listSourceProfilesForOnlineUserWithLink() {
 		PagingParameter paging = PagingParameter.of(0L, 0, 20);
-		UserProfileEntity sourceUser = new UserProfileEntity("xyz", "xyz@test.com", UserAccess.of("xyz", "1.2.3.4"));
-    	UserProfileEntity targetUser = new UserProfileEntity("test", "test@test.com", UserAccess.of("test", "1.2.3.4"));
+		UserProfileEntity sourceUser = new UserProfileEntity(createUserAccess("xyz", "1.2.3.4"));
+    	UserProfileEntity targetUser = new UserProfileEntity(createUserAccess("test", "1.2.3.4"));
 		UserLinkEntity linkEntity = new UserLinkEntity(sourceUser, targetUser);
 		when(linkRepository.searchByTarget(targetUser.getId(), paging)).thenReturn(new QueryResult<>(Collections.singletonList(linkEntity), 0, paging));
 		when(onlineUserCache.isUserActive(sourceUser.getId())).thenReturn(true);

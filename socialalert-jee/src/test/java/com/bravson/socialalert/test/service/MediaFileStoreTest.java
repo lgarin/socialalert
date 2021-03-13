@@ -1,11 +1,5 @@
 package com.bravson.socialalert.test.service;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
@@ -23,6 +17,12 @@ import com.bravson.socialalert.business.file.store.TempFileFormat;
 import com.bravson.socialalert.business.file.video.SnapshotVideoFileProcessor;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 public class MediaFileStoreTest extends BaseServiceTest {
 

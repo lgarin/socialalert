@@ -46,7 +46,6 @@ import com.bravson.socialalert.business.file.FileResponse;
 import com.bravson.socialalert.business.file.FileSearchService;
 import com.bravson.socialalert.business.file.FileUploadParameter;
 import com.bravson.socialalert.business.file.FileUploadService;
-import com.bravson.socialalert.business.user.TokenAccess;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.business.user.avatar.UserAvatarService;
@@ -65,7 +64,6 @@ public class FileFacade {
 	long maxUploadSize;
 	
 	@Inject
-	@TokenAccess
 	Instance<UserAccess> userAccess;
 	
 	@Context

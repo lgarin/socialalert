@@ -43,7 +43,6 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.annotations.SseElementType;
 
 import com.bravson.socialalert.business.media.comment.MediaCommentService;
-import com.bravson.socialalert.business.user.TokenAccess;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserLinkService;
 import com.bravson.socialalert.business.user.UserProfileService;
@@ -87,7 +86,6 @@ public class UserFacade {
 	UserNotificationService eventService;
 	
 	@Inject
-	@TokenAccess
 	Instance<UserAccess> userAccess;
 	
 	@POST

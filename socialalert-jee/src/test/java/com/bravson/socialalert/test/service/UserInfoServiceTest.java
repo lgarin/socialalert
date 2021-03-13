@@ -1,7 +1,5 @@
 package com.bravson.socialalert.test.service;
 
-import static org.mockito.Mockito.when;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +18,8 @@ import com.bravson.socialalert.domain.media.UserContent;
 import com.bravson.socialalert.domain.user.privacy.LocationPrivacy;
 import com.bravson.socialalert.domain.user.privacy.UserPrivacy;
 
+import static org.mockito.Mockito.when;
+
 public class UserInfoServiceTest extends BaseServiceTest {
 
 	@Mock
@@ -33,7 +33,7 @@ public class UserInfoServiceTest extends BaseServiceTest {
 	
 	@Test
 	public void fillOnlineUser() {
-		UserProfileEntity profile = new UserProfileEntity("test", "test@test.com", UserAccess.of("test", "1.2.3.4"));
+		UserProfileEntity profile = new UserProfileEntity(createUserAccess("test", "1.2.3.4"));
 		when(profileRepository.findByUserId(profile.getId())).thenReturn(Optional.of(profile));
 		when(onlineUserRepository.isUserActive(profile.getId())).thenReturn(true);
 		MediaInfo content = new MediaInfo();
@@ -45,8 +45,8 @@ public class UserInfoServiceTest extends BaseServiceTest {
 	
 	@Test
 	public void fillUserWithLocationMasking() {
-		UserAccess userAccess = UserAccess.of("test", "1.2.3.4");
-		UserProfileEntity profile = new UserProfileEntity("test", "test@test.com", userAccess);
+		UserAccess userAccess = createUserAccess("test", "1.2.3.4");
+		UserProfileEntity profile = new UserProfileEntity(userAccess);
 		profile.updatePrivacySettings(UserPrivacy.builder().location(LocationPrivacy.MASK).build(), userAccess);
 		when(profileRepository.findByUserId(profile.getId())).thenReturn(Optional.of(profile));
 		when(onlineUserRepository.isUserActive(profile.getId())).thenReturn(true);
@@ -61,8 +61,8 @@ public class UserInfoServiceTest extends BaseServiceTest {
 	
 	@Test
 	public void fillUserWithLocationBluring() {
-		UserAccess userAccess = UserAccess.of("test", "1.2.3.4");
-		UserProfileEntity profile = new UserProfileEntity("test", "test@test.com", userAccess);
+		UserAccess userAccess = createUserAccess("test", "1.2.3.4");
+		UserProfileEntity profile = new UserProfileEntity(userAccess);
 		profile.updatePrivacySettings(UserPrivacy.builder().location(LocationPrivacy.BLUR).build(), userAccess);
 		when(profileRepository.findByUserId(profile.getId())).thenReturn(Optional.of(profile));
 		when(onlineUserRepository.isUserActive(profile.getId())).thenReturn(true);
@@ -79,7 +79,7 @@ public class UserInfoServiceTest extends BaseServiceTest {
 	
 	@Test
 	public void fillOfflineUser() {
-		UserProfileEntity profile = new UserProfileEntity("test", "test@test.com", UserAccess.of("test", "1.2.3.4"));
+		UserProfileEntity profile = new UserProfileEntity(createUserAccess("test", "1.2.3.4"));
 		when(profileRepository.findByUserId(profile.getId())).thenReturn(Optional.of(profile));
 		when(onlineUserRepository.isUserActive(profile.getId())).thenReturn(false);
 		MediaInfo content = new MediaInfo();
@@ -102,8 +102,8 @@ public class UserInfoServiceTest extends BaseServiceTest {
 	
 	@Test
 	public void fillUserCollection() {
-		UserProfileEntity profile1 = new UserProfileEntity("test1", "test1@test.com", UserAccess.of("test1", "1.2.3.4"));
-		UserProfileEntity profile2 = new UserProfileEntity("test2", "test2@test.com", UserAccess.of("test2", "1.2.3.4"));
+		UserProfileEntity profile1 = new UserProfileEntity(createUserAccess("test1", "1.2.3.4"));
+		UserProfileEntity profile2 = new UserProfileEntity(createUserAccess("test2", "1.2.3.4"));
 		
 		MediaInfo content1 = new MediaInfo();
 		content1.setCreatorId(profile1.getId());

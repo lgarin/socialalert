@@ -7,7 +7,6 @@ import javax.inject.Inject;
 
 import org.junit.jupiter.api.Test;
 
-import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.link.UserLinkEntity;
 import com.bravson.socialalert.business.user.link.UserLinkRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
@@ -30,8 +29,8 @@ public class UserLinkRepositoryTest extends BaseRepositoryTest {
     
     @Test
     public void findByExistingSource() {
-    	UserProfileEntity sourceUser = new UserProfileEntity("xyz", "xyz@test.com", UserAccess.of("xyz", "1.2.3.4"));
-    	UserProfileEntity targetUser = new UserProfileEntity("test", "test@test.com", UserAccess.of("test", "1.2.3.4"));
+    	UserProfileEntity sourceUser = new UserProfileEntity(createUserAccess("xyz", "1.2.3.4"));
+    	UserProfileEntity targetUser = new UserProfileEntity(createUserAccess("test", "1.2.3.4"));
     	UserLinkEntity entity = new UserLinkEntity(sourceUser, targetUser);
     	persistAndIndex(entity);
     	
@@ -47,8 +46,8 @@ public class UserLinkRepositoryTest extends BaseRepositoryTest {
     
     @Test
     public void searchByExistingTarget() {
-    	UserProfileEntity sourceUser = new UserProfileEntity("xyz", "xyz@test.com", UserAccess.of("xyz", "1.2.3.4"));
-    	UserProfileEntity targetUser = new UserProfileEntity("test", "test@test.com", UserAccess.of("test", "1.2.3.4"));
+    	UserProfileEntity sourceUser = new UserProfileEntity(createUserAccess("xyz", "1.2.3.4"));
+    	UserProfileEntity targetUser = new UserProfileEntity(createUserAccess("test", "1.2.3.4"));
     	UserLinkEntity entity = new UserLinkEntity(sourceUser, targetUser);
     	persistAndIndex(entity);
     	

@@ -1,8 +1,5 @@
 package com.bravson.socialalert.test.service;
 
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
@@ -18,8 +15,10 @@ import com.bravson.socialalert.business.file.FileRepository;
 import com.bravson.socialalert.business.file.FileResponse;
 import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.file.store.FileStore;
-import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
+
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 public class FileReadServiceTest extends BaseServiceTest {
 
@@ -49,7 +48,7 @@ public class FileReadServiceTest extends BaseServiceTest {
 		File outputFile = new File("outfile");
 		MediaFileFormat format = MediaFileFormat.MEDIA_JPG;
 		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(1000L).fileFormat(format).build();
-		FileEntity entity = new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4"));
+		FileEntity entity = new FileEntity(fileMetadata, createUserAccess("test", "1.2.3.4"));
 		
 		when(mediaRepository.findFile(fileUri)).thenReturn(Optional.of(entity));
 		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), fileMetadata.getFileFormat())).thenReturn(outputFile);
@@ -62,7 +61,7 @@ public class FileReadServiceTest extends BaseServiceTest {
 	public void downloadMissingPreview() throws IOException {
 		String fileUri = "abc";
 		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(1000L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
-		FileEntity entity = new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4"));
+		FileEntity entity = new FileEntity(fileMetadata, createUserAccess("test", "1.2.3.4"));
 		when(mediaRepository.findFile(fileUri)).thenReturn(Optional.of(entity));
 		when(fileStore.findExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), MediaFileFormat.PREVIEW_JPG)).thenReturn(Optional.empty());
 				
@@ -75,7 +74,7 @@ public class FileReadServiceTest extends BaseServiceTest {
 		String fileUri = "abc";
 		File outputFile = new File("outfile");
 		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(1000L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
-		FileEntity entity = new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4"));
+		FileEntity entity = new FileEntity(fileMetadata, createUserAccess("test", "1.2.3.4"));
 		
 		when(mediaRepository.findFile(fileUri)).thenReturn(Optional.of(entity));
 		when(fileStore.findExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), MediaFileFormat.THUMBNAIL_JPG)).thenReturn(Optional.of(outputFile));
@@ -89,7 +88,7 @@ public class FileReadServiceTest extends BaseServiceTest {
 		String fileUri = "abc";
 		File outputFile = new File("outfile");
 		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(1000L).fileFormat(MediaFileFormat.MEDIA_MP4).build();
-		FileEntity entity = new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4"));
+		FileEntity entity = new FileEntity(fileMetadata, createUserAccess("test", "1.2.3.4"));
 		
 		when(mediaRepository.findFile(fileUri)).thenReturn(Optional.of(entity));
 		when(fileStore.findExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), MediaFileFormat.PREVIEW_MP4)).thenReturn(Optional.of(outputFile));

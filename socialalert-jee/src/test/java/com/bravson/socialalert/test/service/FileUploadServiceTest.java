@@ -1,9 +1,5 @@
 package com.bravson.socialalert.test.service;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
 import java.io.File;
 import java.time.Instant;
 import java.util.Optional;
@@ -23,12 +19,15 @@ import com.bravson.socialalert.business.file.FileUploadService;
 import com.bravson.socialalert.business.file.MediaFileStore;
 import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
-import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.file.FileInfo;
 import com.bravson.socialalert.domain.media.format.MediaFileConstants;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.infrastructure.rest.ConflictException;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 public class FileUploadServiceTest extends BaseServiceTest {
 
@@ -60,13 +59,13 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(fileFormat).build();
 		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat)).thenReturn(fileMetadata);
 		
-		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of(userId, "4.3.2.1"));
+		FileEntity fileEntity = new FileEntity(fileMetadata, createUserAccess(userId, "4.3.2.1"));
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.of(fileEntity));
 		
 		when(userService.fillUserInfo(fileEntity.toFileInfo())).thenReturn(fileEntity.toFileInfo());
 		
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
-		FileInfo result = fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress));
+		FileInfo result = fileUploadService.uploadMedia(param, createUserAccess(userId, ipAddress));
 		
 		assertThat(result).isEqualTo(fileEntity.toFileInfo());
 		verifyNoInteractions(logger, newFileEvent);
@@ -82,11 +81,11 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(fileFormat).build();
 		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat)).thenReturn(fileMetadata);
 		
-		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of("test2", "4.3.2.1"));
+		FileEntity fileEntity = new FileEntity(fileMetadata, createUserAccess("test2", "4.3.2.1"));
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.of(fileEntity));
 		
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
-		assertThatExceptionOfType(ConflictException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress)));
+		assertThatExceptionOfType(ConflictException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, createUserAccess(userId, ipAddress)));
 		
 		verifyNoInteractions(logger, newFileEvent);
 	}
@@ -101,13 +100,13 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		FileMetadata fileMetadata = FileMetadata.builder().md5("123").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(fileFormat).build();
 		when(mediaFileStore.buildFileMetadata(inputFile, fileFormat)).thenReturn(fileMetadata);
 		
-		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of(userId, ipAddress));
+		FileEntity fileEntity = new FileEntity(fileMetadata, createUserAccess(userId, ipAddress));
 		fileEntity.markProcessed(MediaMetadata.builder().width(1600).height(800).build());
-		fileEntity.markClaimed(UserAccess.of(userId, ipAddress));
+		fileEntity.markClaimed(createUserAccess(userId, ipAddress));
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.of(fileEntity));
 		
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
-		assertThatExceptionOfType(ConflictException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress)));
+		assertThatExceptionOfType(ConflictException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, createUserAccess(userId, ipAddress)));
 		
 		verifyNoInteractions(logger, newFileEvent);
 	}
@@ -124,12 +123,12 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.empty());
 		
-		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of(userId, ipAddress));
-		when(mediaRepository.storeMedia(fileMetadata, UserAccess.of(userId, ipAddress))).thenReturn(fileEntity);
+		FileEntity fileEntity = new FileEntity(fileMetadata, createUserAccess(userId, ipAddress));
+		when(mediaRepository.storeMedia(fileMetadata, createUserAccess(userId, ipAddress))).thenReturn(fileEntity);
 		when(userService.fillUserInfo(fileEntity.toFileInfo())).thenReturn(fileEntity.toFileInfo());
 		
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
-		FileInfo result = fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress));
+		FileInfo result = fileUploadService.uploadMedia(param, createUserAccess(userId, ipAddress));
 		
 		assertThat(result.getFileUri()).isEqualTo(fileMetadata.buildFileUri());
 		verifyNoInteractions(logger);
@@ -143,7 +142,7 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
 		
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType("image/bmp").build();
-		assertThatExceptionOfType(NotSupportedException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress)));
+		assertThatExceptionOfType(NotSupportedException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, createUserAccess(userId, ipAddress)));
 		verifyNoInteractions(logger, userService, newFileEvent);
 	}
 	
@@ -159,13 +158,13 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.empty());
 		
-		FileEntity fileEntity = new FileEntity(fileMetadata, UserAccess.of(userId, ipAddress));
-		when(mediaRepository.storeMedia(fileMetadata, UserAccess.of(userId, ipAddress))).thenReturn(fileEntity);
+		FileEntity fileEntity = new FileEntity(fileMetadata, createUserAccess(userId, ipAddress));
+		when(mediaRepository.storeMedia(fileMetadata, createUserAccess(userId, ipAddress))).thenReturn(fileEntity);
 		
 		when(userService.fillUserInfo(fileEntity.toFileInfo())).thenReturn(fileEntity.toFileInfo());
 		
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.MOV_MEDIA_TYPE).build();
-		FileInfo result = fileUploadService.uploadMedia(param, UserAccess.of(userId, ipAddress));
+		FileInfo result = fileUploadService.uploadMedia(param, createUserAccess(userId, ipAddress));
 		
 		assertThat(result.getFileUri()).isEqualTo(fileMetadata.buildFileUri());
 		verifyNoInteractions(logger);

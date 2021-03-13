@@ -38,7 +38,6 @@ import com.bravson.socialalert.business.media.MediaUpsertService;
 import com.bravson.socialalert.business.media.SearchMediaParameter;
 import com.bravson.socialalert.business.media.UpsertMediaParameter;
 import com.bravson.socialalert.business.media.comment.MediaCommentService;
-import com.bravson.socialalert.business.user.TokenAccess;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.domain.location.GeoArea;
@@ -61,7 +60,6 @@ import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 public class MediaFacade {
 
 	@Inject
-	@TokenAccess
 	Instance<UserAccess> userAccess;
 	
 	@Inject

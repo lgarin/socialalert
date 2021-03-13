@@ -1,9 +1,6 @@
 package com.bravson.socialalert.test.service;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,6 +27,10 @@ import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 import com.bravson.socialalert.domain.user.UserInfo;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
 public class UserAvatarServiceTest extends BaseServiceTest {
 
 	@InjectMocks
@@ -47,14 +48,14 @@ public class UserAvatarServiceTest extends BaseServiceTest {
 	@Test
 	public void storeInvalidFile() {
 		FileUploadParameter param = new FileUploadParameter(new File("test.jpg"), "text/plain");
-		UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+		UserAccess userAccess = createUserAccess("test", "1.1.1.1");
 		assertThrows(NotSupportedException.class, () -> avatarService.storeAvatar(param, userAccess));
 	}
 	
 	@Test
 	public void storePictureForNonExistingUser() throws IOException {
 		FileUploadParameter param = new FileUploadParameter(new File("test.jpg"), "image/jpeg");
-		UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+		UserAccess userAccess = createUserAccess("test", "1.1.1.1");
 		when(profileRepository.findByUserId(userAccess.getUserId())).thenReturn(Optional.empty());
 		assertThrows(NotFoundException.class, () -> avatarService.storeAvatar(param, userAccess));
 	}
@@ -62,7 +63,7 @@ public class UserAvatarServiceTest extends BaseServiceTest {
 	@Test
 	public void storeNonExistingFile() throws IOException {
 		FileUploadParameter param = new FileUploadParameter(new File("test.jpg"), "image/jpeg");
-		UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+		UserAccess userAccess = createUserAccess("test", "1.1.1.1");
 		UserProfileEntity profileEntity = new UserProfileEntity(userAccess.getUserId());
 		when(profileRepository.findByUserId(userAccess.getUserId())).thenReturn(Optional.of(profileEntity));
 		when(fileStore.computeMd5Hex(param.getInputFile())).thenThrow(FileNotFoundException.class);
@@ -72,9 +73,9 @@ public class UserAvatarServiceTest extends BaseServiceTest {
 	@Test
 	public void storeValidFile() throws IOException {
 		FileUploadParameter param = new FileUploadParameter(new File("test.jpg"), "image/jpeg");
-		UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+		UserAccess userAccess = createUserAccess("test", "1.1.1.1");
 		String md5 = "abcd";
-		UserProfileEntity profileEntity = new UserProfileEntity("test", "test@test.com", userAccess);
+		UserProfileEntity profileEntity = new UserProfileEntity(userAccess);
 		
 		when(profileRepository.findByUserId(userAccess.getUserId())).thenReturn(Optional.of(profileEntity));
 		when(fileStore.computeMd5Hex(param.getInputFile())).thenReturn(md5);

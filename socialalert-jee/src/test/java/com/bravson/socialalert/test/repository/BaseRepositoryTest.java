@@ -18,6 +18,7 @@ import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.UpsertMediaParameter;
 import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.UserAccessToken;
 import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
@@ -44,11 +45,15 @@ public class BaseRepositoryTest extends Assertions {
     	return entity;
     }
     
+    protected static UserAccess createUserAccess(String userId, String ipAddress) {
+		return UserAccessToken.builder().userId(userId).ipAddress(ipAddress).username(userId).email(userId).build();
+	}
+    
     protected MediaEntity storeDefaultMedia() {
 		UpsertMediaParameter claimParameter = buildDefaultClaimParameter();
 		FileMetadata fileMetadata = FileMetadata.builder().md5("test").timestamp(Instant.now()).contentSize(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
-		FileEntity file = persistAndIndex(new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4")));
-		return persistAndIndex(new MediaEntity(file, claimParameter, UserAccess.of("test", "1.2.3.4")));
+		FileEntity file = persistAndIndex(new FileEntity(fileMetadata, createUserAccess("test", "1.2.3.4")));
+		return persistAndIndex(new MediaEntity(file, claimParameter, createUserAccess("test", "1.2.3.4")));
 	}
 
 	private UpsertMediaParameter buildDefaultClaimParameter() {
@@ -63,7 +68,7 @@ public class BaseRepositoryTest extends Assertions {
     protected MediaEntity createDefaultMedia() {
 		UpsertMediaParameter claimParameter = buildDefaultClaimParameter();
 		FileMetadata fileMetadata = FileMetadata.builder().md5("test").timestamp(Instant.now()).contentSize(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
-		FileEntity file = new FileEntity(fileMetadata, UserAccess.of("test", "1.2.3.4"));
-		return new MediaEntity(file, claimParameter, UserAccess.of("test", "1.2.3.4"));
+		FileEntity file = new FileEntity(fileMetadata, createUserAccess("test", "1.2.3.4"));
+		return new MediaEntity(file, claimParameter, createUserAccess("test", "1.2.3.4"));
 	}
 }

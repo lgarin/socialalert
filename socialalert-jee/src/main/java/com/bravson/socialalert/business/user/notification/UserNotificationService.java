@@ -14,7 +14,6 @@ import javax.ws.rs.sse.SseEventSink;
 
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
-import com.bravson.socialalert.business.user.TokenAccess;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.activity.UserSession;
 import com.bravson.socialalert.business.user.link.UserLinkEntity;
@@ -38,10 +37,9 @@ import lombok.NonNull;
 @AllArgsConstructor
 public class UserNotificationService {
 
-	final Map<String, SseEventSink> sinkMap = new ConcurrentHashMap<>();
+	private final Map<String, SseEventSink> sinkMap = new ConcurrentHashMap<>();
 	
 	@Inject
-	@TokenAccess
 	@NonNull
 	Instance<UserAccess> userAccess;
 	
@@ -53,15 +51,31 @@ public class UserNotificationService {
 		}
 	}
 	
-	private void onEvent(String targetUserId, UserNotificationType activity, String mediaUri) {
+	private void onEvent(String targetUserId, UserNotificationType type, MediaEntity media, MediaCommentEntity comment) {
 		String sourceUserId = userAccess.get().getUserId();
 		if (!targetUserId.equals(sourceUserId)) {
 			SseEventSink sink = sinkMap.get(targetUserId);
 			if (sink != null) {
-				UserNotification event = new UserNotification(targetUserId, activity, mediaUri, sourceUserId);
+				UserNotification event = buildUserNotification(targetUserId, type, media, comment);
 				sendEvent(event, sink);
 			}
 		}
+	}
+
+	private UserNotification buildUserNotification(String targetUserId, UserNotificationType type, MediaEntity media, MediaCommentEntity comment) {
+		if (media == null && comment != null) {
+			media = comment.getMedia();
+		}
+		return UserNotification.builder()
+				.sourceUserId(userAccess.get().getUserId())
+				.sourceUsername(userAccess.get().getUsername())
+				.type(type)
+				.targetUserId(targetUserId)
+				.mediaUri(media != null ? media.getId() : null)
+				.mediaTitle(media != null ? media.getTitle() : null)
+				.commentId(comment != null ? comment.getId() : null)
+				.commentText(comment != null ? comment.getComment() : null)
+				.build();
 	}
 
 	private void sendEvent(UserNotification event, SseEventSink sink) {
@@ -71,48 +85,46 @@ public class UserNotificationService {
 	}
 	
 	void handleNewComment(@Observes @NewEntity MediaCommentEntity comment) {
-		onEvent(comment.getMedia().getUserId(), UserNotificationType.NEW_COMMENT, comment.getMediaUri());
+		onEvent(comment.getMedia().getUserId(), UserNotificationType.NEW_COMMENT, null, comment);
 	}
 	
 	void handleMediaHit(@Observes @HitEntity MediaEntity media) {
-		onEvent(media.getUserId(), UserNotificationType.WATCH_MEDIA, media.getId());
+		onEvent(media.getUserId(), UserNotificationType.WATCH_MEDIA, media, null);
 	}
 	
 	void handleMediaLiked(@Observes @LikedEntity MediaEntity media) {
-		onEvent(media.getUserId(), UserNotificationType.LIKE_MEDIA, media.getId());
+		onEvent(media.getUserId(), UserNotificationType.LIKE_MEDIA, media, null);
 	}
 	
 	void handleMediaDisliked(@Observes @DislikedEntity MediaEntity media) {
-		onEvent(media.getUserId(), UserNotificationType.DISLIKE_MEDIA, media.getId());
+		onEvent(media.getUserId(), UserNotificationType.DISLIKE_MEDIA, media, null);
 	}
 	
 	void handleCommentLiked(@Observes @LikedEntity MediaCommentEntity comment) {
-		onEvent(comment.getUserId(), UserNotificationType.LIKE_COMMENT, comment.getMediaUri());
+		onEvent(comment.getUserId(), UserNotificationType.LIKE_COMMENT, null, comment);
 	}
 	
 	void handleCommentDisliked(@Observes @DislikedEntity MediaCommentEntity comment) {
-		onEvent(comment.getUserId(), UserNotificationType.DISLIKE_COMMENT, comment.getMediaUri());
+		onEvent(comment.getUserId(), UserNotificationType.DISLIKE_COMMENT, null, comment);
 	}
 	
 	void handleNewLink(@Observes @NewEntity UserLinkEntity link) {
-		onEvent(link.getId().getTargetUserId(), UserNotificationType.JOINED_NETWORK, null);
+		onEvent(link.getId().getTargetUserId(), UserNotificationType.JOINED_NETWORK, null, null);
 	}
 	
 	void handleDeletedLink(@Observes @DeleteEntity UserLinkEntity link) {
-		onEvent(link.getId().getTargetUserId(), UserNotificationType.LEFT_NETWORK, null);
+		onEvent(link.getId().getTargetUserId(), UserNotificationType.LEFT_NETWORK, null, null);
 	}
 	
 	public void register(@NonNull String targetUserId, SseEventSink sink) {
-		SseEventSink oldSink = sinkMap.replace(targetUserId, sink);
+		SseEventSink oldSink = sinkMap.put(targetUserId, sink);
 		if (oldSink != null) {
 			oldSink.close();
-		} else {
-			sinkMap.putIfAbsent(targetUserId, sink);
 		}
 	}
 	
 	void handleSessionTimeout(@Observes @DeleteEntity UserSession session) {
-		SseEventSink oldSink = sinkMap.get(session.getUserId());
+		SseEventSink oldSink = sinkMap.remove(session.getUserId());
 		if (oldSink != null) {
 			oldSink.close();
 		}

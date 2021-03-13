@@ -9,7 +9,7 @@ import javax.transaction.Transactional;
 import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.UserAccessToken;
 import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
 import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
 import com.bravson.socialalert.infrastructure.entity.DislikedEntity;
@@ -39,7 +39,14 @@ public class UserProfileRepository {
 	}
 
 	public UserProfileEntity createProfile(@NonNull AuthenticationInfo authInfo, @NonNull String ipAddress) {
-		UserProfileEntity entity = new UserProfileEntity(authInfo.getUsername(), authInfo.getEmail(), UserAccess.of(authInfo.getId(), ipAddress));
+		UserAccessToken userAccess = UserAccessToken.builder()
+				.userId(authInfo.getId())
+				.ipAddress(ipAddress)
+				.username(authInfo.getUsername())
+				.email(authInfo.getEmail())
+				.build();
+		
+		UserProfileEntity entity = new UserProfileEntity(userAccess);
 		entity.setFirstname(authInfo.getFirstname());
 		entity.setLastname(authInfo.getLastname());
 		return persistenceManager.persist(entity);

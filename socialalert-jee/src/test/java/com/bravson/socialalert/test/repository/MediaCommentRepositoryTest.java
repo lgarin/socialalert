@@ -24,7 +24,7 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
 	
     @Test
     public void createNewComment() {
-    	UserAccess userAccess = UserAccess.of("usr1", "1.2.3.4");
+    	UserAccess userAccess = createUserAccess("usr1", "1.2.3.4");
     	String comment = "test comment";
     	MediaEntity media = storeDefaultMedia();
     	MediaCommentEntity result = repository.create(media.getId(), comment, userAccess);
@@ -38,7 +38,7 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void findExistingComment() {
-    	UserAccess userAccess = UserAccess.of("usr1", "1.2.3.4");
+    	UserAccess userAccess = createUserAccess("usr1", "1.2.3.4");
     	String comment = "test comment";
     	MediaEntity media = storeDefaultMedia();
     	MediaCommentEntity entity = persistAndIndex(new MediaCommentEntity(media, comment, userAccess));
@@ -54,7 +54,7 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     
     @Test
     public void searchByMediaUri() throws InterruptedException {
-    	UserAccess userAccess = UserAccess.of("usr1", "1.2.3.4");
+    	UserAccess userAccess = createUserAccess("usr1", "1.2.3.4");
     	MediaEntity media = storeDefaultMedia();
     	persistAndIndex(new MediaCommentEntity(media, "comment 1", userAccess));
     	MediaCommentEntity entity2 = persistAndIndex(new MediaCommentEntity(media, "comment 2", userAccess));
@@ -70,7 +70,7 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     
     @Test
     public void listByInvalidMediaUri() throws InterruptedException {
-    	UserAccess userAccess = UserAccess.of("usr1", "1.2.3.4");
+    	UserAccess userAccess = createUserAccess("usr1", "1.2.3.4");
     	MediaEntity media = storeDefaultMedia();
     	persistAndIndex(new MediaCommentEntity(media, "comment 1", userAccess));
     	persistAndIndex(new MediaCommentEntity(media, "comment 2", userAccess));
@@ -85,7 +85,7 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     
     @Test
     public void searchByUserId() throws InterruptedException {
-    	UserAccess userAccess = UserAccess.of("usr1", "1.2.3.4");
+    	UserAccess userAccess = createUserAccess("usr1", "1.2.3.4");
     	MediaEntity media = storeDefaultMedia();
     	persistAndIndex(new MediaCommentEntity(media, "comment 1", userAccess));
     	MediaCommentEntity entity2 = persistAndIndex(new MediaCommentEntity(media, "comment 2", userAccess));

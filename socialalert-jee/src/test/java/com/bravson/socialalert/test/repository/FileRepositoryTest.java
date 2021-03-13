@@ -32,7 +32,7 @@ public class FileRepositoryTest extends BaseRepositoryTest {
     @Test
     public void persistValidFile() {
     	FileMetadata fileMetadata = FileMetadata.builder().md5("xyz").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
-    	UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+    	UserAccess userAccess = createUserAccess("test", "1.1.1.1");
     	FileEntity result = repository.storeMedia(fileMetadata, userAccess);
     	assertThat(result.getId()).isEqualTo("19700101/xyz");
     }
@@ -40,7 +40,7 @@ public class FileRepositoryTest extends BaseRepositoryTest {
     @Test
     public void findExistingFile() {
     	FileMetadata fileMetadata = FileMetadata.builder().md5("xyz").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
-    	UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+    	UserAccess userAccess = createUserAccess("test", "1.1.1.1");
     	repository.storeMedia(fileMetadata, userAccess);
     	Optional<FileEntity> result = repository.findFile("19700101/xyz");
     	assertThat(result).isNotEmpty();
@@ -55,7 +55,7 @@ public class FileRepositoryTest extends BaseRepositoryTest {
     @Test
     public void queryByIpAddressPattern() {
     	FileMetadata fileMetadata = FileMetadata.builder().md5("xyz").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
-    	UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+    	UserAccess userAccess = createUserAccess("test", "1.1.1.1");
     	FileEntity entity = new FileEntity(fileMetadata, userAccess);
     	persistAndIndex(entity);
     	
@@ -66,7 +66,7 @@ public class FileRepositoryTest extends BaseRepositoryTest {
     @Test
     public void queryByUserIdAndState() {
     	FileMetadata fileMetadata = FileMetadata.builder().md5("xyz").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
-    	UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+    	UserAccess userAccess = createUserAccess("test", "1.1.1.1");
     	FileEntity entity = new FileEntity(fileMetadata, userAccess);
     	persistAndIndex(entity);
     	
@@ -77,7 +77,7 @@ public class FileRepositoryTest extends BaseRepositoryTest {
     @Test
     public void findByUserId() {
     	FileMetadata fileMetadata = FileMetadata.builder().md5("xyz").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
-    	UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+    	UserAccess userAccess = createUserAccess("test", "1.1.1.1");
     	FileEntity entity = new FileEntity(fileMetadata, userAccess);
     	persistAndIndex(entity);
     	
@@ -88,7 +88,7 @@ public class FileRepositoryTest extends BaseRepositoryTest {
     @Test
     public void findByInvalidUserId() {
     	FileMetadata fileMetadata = FileMetadata.builder().md5("xyz").timestamp(Instant.EPOCH).contentSize(0L).fileFormat(MediaFileFormat.MEDIA_JPG).build();
-    	UserAccess userAccess = UserAccess.of("test", "1.1.1.1");
+    	UserAccess userAccess = createUserAccess("test", "1.1.1.1");
     	FileEntity entity = new FileEntity(fileMetadata, userAccess);
     	persistAndIndex(entity);
     	
