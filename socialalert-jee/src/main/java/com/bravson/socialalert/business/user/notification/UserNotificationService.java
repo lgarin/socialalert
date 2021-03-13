@@ -53,47 +53,53 @@ public class UserNotificationService {
 		}
 	}
 	
-	private void sendEvent(String targetUserId, UserNotificationType activity, String mediaUri) {
-		SseEventSink sink = sinkMap.get(targetUserId);
-		if (sink != null) {
-			String sourceUserId = userAccess.get().getUserId();
-			UserNotification event = new UserNotification(targetUserId, activity, mediaUri, sourceUserId);
-			String id = String.valueOf(Instant.now().toEpochMilli());
-			OutboundSseEvent sseEvent = sseEventBuilder.id(id).name(activity.name()).data(event).build();
-			sink.send(sseEvent);
+	private void onEvent(String targetUserId, UserNotificationType activity, String mediaUri) {
+		String sourceUserId = userAccess.get().getUserId();
+		if (!targetUserId.equals(sourceUserId)) {
+			SseEventSink sink = sinkMap.get(targetUserId);
+			if (sink != null) {
+				UserNotification event = new UserNotification(targetUserId, activity, mediaUri, sourceUserId);
+				sendEvent(event, sink);
+			}
 		}
+	}
+
+	private void sendEvent(UserNotification event, SseEventSink sink) {
+		String id = String.valueOf(Instant.now().toEpochMilli());
+		OutboundSseEvent sseEvent = sseEventBuilder.id(id).name(event.getType().name()).data(event).build();
+		sink.send(sseEvent);
 	}
 	
 	void handleNewComment(@Observes @NewEntity MediaCommentEntity comment) {
-		sendEvent(comment.getMedia().getUserId(), UserNotificationType.NEW_COMMENT, comment.getMediaUri());
+		onEvent(comment.getMedia().getUserId(), UserNotificationType.NEW_COMMENT, comment.getMediaUri());
 	}
 	
 	void handleMediaHit(@Observes @HitEntity MediaEntity media) {
-		sendEvent(media.getUserId(), UserNotificationType.WATCH_MEDIA, media.getId());
+		onEvent(media.getUserId(), UserNotificationType.WATCH_MEDIA, media.getId());
 	}
 	
 	void handleMediaLiked(@Observes @LikedEntity MediaEntity media) {
-		sendEvent(media.getUserId(), UserNotificationType.LIKE_MEDIA, media.getId());
+		onEvent(media.getUserId(), UserNotificationType.LIKE_MEDIA, media.getId());
 	}
 	
 	void handleMediaDisliked(@Observes @DislikedEntity MediaEntity media) {
-		sendEvent(media.getUserId(), UserNotificationType.DISLIKE_MEDIA, media.getId());
+		onEvent(media.getUserId(), UserNotificationType.DISLIKE_MEDIA, media.getId());
 	}
 	
 	void handleCommentLiked(@Observes @LikedEntity MediaCommentEntity comment) {
-		sendEvent(comment.getUserId(), UserNotificationType.LIKE_COMMENT, comment.getMediaUri());
+		onEvent(comment.getUserId(), UserNotificationType.LIKE_COMMENT, comment.getMediaUri());
 	}
 	
 	void handleCommentDisliked(@Observes @DislikedEntity MediaCommentEntity comment) {
-		sendEvent(comment.getUserId(), UserNotificationType.DISLIKE_COMMENT, comment.getMediaUri());
+		onEvent(comment.getUserId(), UserNotificationType.DISLIKE_COMMENT, comment.getMediaUri());
 	}
 	
 	void handleNewLink(@Observes @NewEntity UserLinkEntity link) {
-		sendEvent(link.getId().getTargetUserId(), UserNotificationType.JOINED_NETWORK, null);
+		onEvent(link.getId().getTargetUserId(), UserNotificationType.JOINED_NETWORK, null);
 	}
 	
 	void handleDeletedLink(@Observes @DeleteEntity UserLinkEntity link) {
-		sendEvent(link.getId().getTargetUserId(), UserNotificationType.LEFT_NETWORK, null);
+		onEvent(link.getId().getTargetUserId(), UserNotificationType.LEFT_NETWORK, null);
 	}
 	
 	public void register(@NonNull String targetUserId, SseEventSink sink) {

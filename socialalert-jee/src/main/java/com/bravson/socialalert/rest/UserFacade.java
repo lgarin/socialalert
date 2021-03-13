@@ -61,7 +61,7 @@ import com.bravson.socialalert.domain.user.LoginTokenResponse;
 import com.bravson.socialalert.domain.user.UserCredential;
 import com.bravson.socialalert.domain.user.UserDetail;
 import com.bravson.socialalert.domain.user.UserInfo;
-import com.bravson.socialalert.domain.user.notification.UserNotification;
+import com.bravson.socialalert.domain.user.notification.SseUserNotification;
 import com.bravson.socialalert.domain.user.privacy.UserPrivacy;
 import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
 import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
@@ -337,8 +337,8 @@ public class UserFacade {
 	@Produces(MediaType.SERVER_SENT_EVENTS)
 	@Path("/notificationStream")
 	@SseElementType(MediaTypeConstants.JSON)
-	@Operation(summary="Open a stream of user notifications.")
-	@APIResponse(responseCode = "200", description = "Stream is opened.", content=@Content(schema=@Schema(implementation=UserNotification.class)))
+	@Operation(summary="Open a SSE stream of user notifications.")
+	@APIResponse(responseCode = "200", description = "SSE Stream is opened.", content=@Content(schema=@Schema(implementation=SseUserNotification.class)))
 	public void eventStream(@Context SseEventSink sseEventSink, @Context Sse sse) {
 		eventService.init(sse);
 		eventService.register(userAccess.get().getUserId(), sseEventSink);
