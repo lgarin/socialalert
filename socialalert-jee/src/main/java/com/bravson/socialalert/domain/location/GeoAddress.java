@@ -3,6 +3,7 @@ package com.bravson.socialalert.domain.location;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+import org.hibernate.search.engine.backend.types.Projectable;
 import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.GeoPointBinding;
 import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.Latitude;
 import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.Longitude;
@@ -24,7 +25,7 @@ import lombok.Setter;
 @Embeddable
 @NoArgsConstructor(access=AccessLevel.PUBLIC)
 @Setter(AccessLevel.PUBLIC)
-@GeoPointBinding(fieldName = "position")
+@GeoPointBinding(fieldName = "position", projectable = Projectable.YES)
 public class GeoAddress {
 
 	@Latitude

@@ -115,7 +115,6 @@ public class MediaRepository {
 		
 		AggregationKey<JsonObject> feelingByGeoHashKey = AggregationKey.of("feeling");
 		JsonObject aggregation = buildAggregationParameters(precision);
-		
 		SearchResult<MediaEntity> result = persistenceManager.search(MediaEntity.class)
 			.where(f -> buildSearchQuery(parameter, Instant.now(), f))
 			.aggregation(feelingByGeoHashKey, f -> f.extension(ElasticsearchExtension.get()).fromJson(aggregation))
@@ -135,8 +134,6 @@ public class MediaRepository {
 		sumField.addProperty("field", "feeling");
 		JsonObject sumOperation = new JsonObject();
 		sumOperation.add("sum", sumField);
-		JsonObject termField = new JsonObject();
-		termField.addProperty("field", "geoHash" + precision);
 		
 		JsonObject fieldFilter = new JsonObject();
 		fieldFilter.addProperty("field", "feeling");
@@ -148,8 +145,12 @@ public class MediaRepository {
 		feelingSum.add("feelingSum", feelingFilter);
 		feelingSum.add("aggs", sumOperation);
 		
+		JsonObject geohashGrid = new JsonObject();
+		geohashGrid.addProperty("field", "location.position");
+		geohashGrid.addProperty("precision", precision);
+		
 		JsonObject aggregation = new JsonObject();
-		aggregation.add("terms", termField);
+		aggregation.add("geohash_grid", geohashGrid);
 		aggregation.add("aggs", feelingSum);
 		return aggregation;
 	}

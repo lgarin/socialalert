@@ -13,8 +13,6 @@ import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -35,7 +33,6 @@ import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
-import com.bravson.socialalert.infrastructure.util.GeoHashUtil;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -109,55 +106,6 @@ public class MediaEntity extends VersionedEntity {
 	@Column(name = "tag", length = FieldLength.NAME, nullable = false)
 	@FullTextField(analyzer="languageAnalyzer")
 	private Set<String> tags;
-	
-	@Column(name = "geo_hash1", length = 1) // TODO should be transient
-	@GenericField(aggregable = Aggregable.YES)
-	private String geoHash1;
-	@Column(name = "geo_hash2", length = 2) // TODO should be transient
-	@GenericField(aggregable = Aggregable.YES)
-	private String geoHash2;
-	@Column(name = "geo_hash3", length = 3) // TODO should be transient
-	@GenericField(aggregable = Aggregable.YES)
-	private String geoHash3;
-	@Column(name = "geo_hash4", length = 4) // TODO should be transient
-	@GenericField(aggregable = Aggregable.YES)
-	private String geoHash4;
-	@Column(name = "geo_hash5", length = 5) // TODO should be transient
-	@GenericField(aggregable = Aggregable.YES)
-	private String geoHash5;
-	@Column(name = "geo_hash6", length = 6) // TODO should be transient
-	@GenericField(aggregable = Aggregable.YES)
-	private String geoHash6;
-	@Column(name = "geo_hash7", length = 7) // TODO should be transient
-	@GenericField(aggregable = Aggregable.YES)
-	private String geoHash7;
-	@Column(name = "geo_hash8", length = 8) // TODO should be transient
-	@GenericField(aggregable = Aggregable.YES)
-	private String geoHash8;
-	
-	@PrePersist
-	@PreUpdate
-	private void updateGeoHashes() {
-		if (location != null && location.getLatitude() != null && location.getLongitude() != null) {
-			geoHash1 = GeoHashUtil.computeGeoHash(location.getLatitude(), location.getLongitude(), 1);
-			geoHash2 = GeoHashUtil.computeGeoHash(location.getLatitude(), location.getLongitude(), 2);
-			geoHash3 = GeoHashUtil.computeGeoHash(location.getLatitude(), location.getLongitude(), 3);
-			geoHash4 = GeoHashUtil.computeGeoHash(location.getLatitude(), location.getLongitude(), 4);
-			geoHash5 = GeoHashUtil.computeGeoHash(location.getLatitude(), location.getLongitude(), 5);
-			geoHash6 = GeoHashUtil.computeGeoHash(location.getLatitude(), location.getLongitude(), 6);
-			geoHash7 = GeoHashUtil.computeGeoHash(location.getLatitude(), location.getLongitude(), 7);
-			geoHash8 = GeoHashUtil.computeGeoHash(location.getLatitude(), location.getLongitude(), 8);
-		} else {
-			geoHash1 = null;
-			geoHash2 = null;
-			geoHash3 = null;
-			geoHash4 = null;
-			geoHash5 = null;
-			geoHash6 = null;
-			geoHash7 = null;
-			geoHash8 = null;
-		}
-	}
 	
 	public MediaEntity(FileEntity file, UpsertMediaParameter parameter, UserAccess userAccess) {
 		this.versionInfo = VersionInfo.of(userAccess.getUserId(), userAccess.getIpAddress());
