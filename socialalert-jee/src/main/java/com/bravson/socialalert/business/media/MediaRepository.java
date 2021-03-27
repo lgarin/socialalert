@@ -84,7 +84,7 @@ public class MediaRepository {
 			junction = junction.filter(context.match().field("versionInfo.userId").matching(parameter.getCreator()).toPredicate());
 		}
 		if (parameter.getArea() != null) {
-			List<String> geoHashList = GeoHashUtil.computeGeoHashList(parameter.getArea());
+			List<String> geoHashList = GeoHashUtil.computeGeoHashList(parameter.getArea(), 8);
 			int precision = geoHashList.stream().mapToInt(String::length).max().getAsInt();
 			if (precision >= MediaEntity.MIN_GEOHASH_PRECISION && precision <= MediaEntity.MAX_GEOHASH_PRECISION) {
 				junction.filter(context.simpleQueryString().field("geoHash" + precision).matching(String.join(" ", geoHashList)).toPredicate());

@@ -29,27 +29,31 @@ public interface GeoHashUtil {
 		int precision = GeoHashSizeTable.numberOfBitsForOverlappingGeoHash(boundingBox) + Integer.highestOneBit(division) / 8;
 		return (precision + 4) / 5;
 	}
-	
+
 	public static GeoBox computeBoundingBox(String geoHash) {
 		BoundingBox box = GeoHash.fromGeohashString(geoHash).getBoundingBox();
 		return GeoBox.builder().minLon(box.getMinLon()).maxLon(box.getMaxLon()).minLat(box.getMinLat()).maxLat(box.getMaxLat()).build();
 	}
 	
-	public static List<String> computeGeoHashList(GeoBox geoArea) {
-		List<String> searchHashes = new ArrayList<>();
-		BoundingBox boundingBox = toBoundingBox(geoArea);
-		int precision = (GeoHashSizeTable.numberOfBitsForOverlappingGeoHash(boundingBox) + 4) / 5;
-		GeoHash centerHash = GeoHash.withCharacterPrecision(geoArea.getCenterLat(), geoArea.getCenterLon(), precision);
-		searchHashes.add(centerHash.toBase32());
+	private static void collectAdjacentGeoHashes(GeoHash centerHash, BoundingBox boundingBox, List<String> searchHashes) {
 		if (!centerHash.contains(boundingBox.getUpperLeft()) || !centerHash.contains(boundingBox.getLowerRight())) {
 			for (GeoHash adjacent : centerHash.getAdjacent()) {
 				BoundingBox adjacentBox = adjacent.getBoundingBox();
 				if (adjacentBox.intersects(boundingBox) && !searchHashes.contains(adjacent.toBase32())) {
-					boundingBox.expandToInclude(centerHash.getBoundingBox());
 					searchHashes.add(adjacent.toBase32());
+					collectAdjacentGeoHashes(adjacent, boundingBox, searchHashes);
 				}
 			}
 		}
+	}
+	
+	public static List<String> computeGeoHashList(GeoBox geoArea, int division) {
+		List<String> searchHashes = new ArrayList<>();
+		final BoundingBox boundingBox = toBoundingBox(geoArea);
+		int precision = computeGeoHashPrecision(geoArea, division);
+		GeoHash centerHash = GeoHash.withCharacterPrecision(geoArea.getCenterLat(), geoArea.getCenterLon(), precision);
+		searchHashes.add(centerHash.toBase32());
+		collectAdjacentGeoHashes(centerHash, boundingBox, searchHashes);
 		return searchHashes;
 	}
 }
