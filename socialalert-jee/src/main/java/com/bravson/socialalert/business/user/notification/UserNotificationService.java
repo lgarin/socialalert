@@ -123,10 +123,14 @@ public class UserNotificationService {
 		}
 	}
 	
-	void handleSessionTimeout(@Observes @DeleteEntity UserSession session) {
-		SseEventSink oldSink = sinkMap.remove(session.getUserId());
+	public void unregister(@NonNull String userId) {
+		SseEventSink oldSink = sinkMap.remove(userId);
 		if (oldSink != null) {
 			oldSink.close();
 		}
+	}
+	
+	void handleSessionTimeout(@Observes @DeleteEntity UserSession session) {
+		unregister(session.getUserId());
 	}
 }

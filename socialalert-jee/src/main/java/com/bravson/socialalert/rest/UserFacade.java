@@ -83,7 +83,7 @@ public class UserFacade {
 	MediaCommentService commentService;
 	
 	@Inject
-	UserNotificationService eventService;
+	UserNotificationService notificationService;
 	
 	@Inject
 	Instance<UserAccess> userAccess;
@@ -147,6 +147,7 @@ public class UserFacade {
 			if (!userService.logout("Bearer" + token.getRawToken())) {
 				return Response.status(Status.BAD_REQUEST).build();
 			}
+			notificationService.unregister(token.getSubject());
 			return Response.status(Status.NO_CONTENT).build();
 		}
 		return Response.status(Status.FORBIDDEN).build();
@@ -338,7 +339,7 @@ public class UserFacade {
 	@Operation(summary="Open a SSE stream of user notifications.")
 	@APIResponse(responseCode = "200", description = "SSE Stream is opened.", content=@Content(schema=@Schema(implementation=SseUserNotification.class)))
 	public void eventStream(@Context SseEventSink sseEventSink, @Context Sse sse) {
-		eventService.init(sse);
-		eventService.register(userAccess.get().getUserId(), sseEventSink);
+		notificationService.init(sse);
+		notificationService.register(userAccess.get().getUserId(), sseEventSink);
 	}
 }
