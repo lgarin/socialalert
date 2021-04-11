@@ -14,7 +14,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 public class UserActivityInterceptor {
 
 	@Inject
-	OnlineUserCache onlineUserCache;
+	UserSessionCache userSessionCache;
 	
 	@Inject
 	JsonWebToken principal;
@@ -22,7 +22,7 @@ public class UserActivityInterceptor {
 	@AroundInvoke
     public Object updateUserActivity(InvocationContext invocationContext) throws Exception {
 		if (principal != null) {
-			onlineUserCache.addActiveUser(principal.getSubject());
+			userSessionCache.addActiveUser(principal.getSubject());
 		}
 		return invocationContext.proceed();
 	}

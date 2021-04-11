@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
-import com.bravson.socialalert.business.user.activity.OnlineUserCache;
+import com.bravson.socialalert.business.user.activity.UserSessionCache;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.media.UserContent;
@@ -25,13 +25,13 @@ import lombok.NonNull;
 public class UserInfoService {
 
 	@Inject
-	OnlineUserCache onlineUserRepository;
+	UserSessionCache userSessionCache;
 	
 	@Inject
 	UserProfileRepository profileRepository;
 	
 	private Function<UserProfileEntity, UserInfo> getUserInfoMapper(String userId) {
-		if (onlineUserRepository.isUserActive(userId)) {
+		if (userSessionCache.isUserActive(userId)) {
 			return UserProfileEntity::toOnlineUserInfo;
 		} else {
 			return UserProfileEntity::toOfflineUserInfo;

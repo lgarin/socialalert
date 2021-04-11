@@ -10,7 +10,7 @@ import org.mockito.Mock;
 
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserInfoService;
-import com.bravson.socialalert.business.user.activity.OnlineUserCache;
+import com.bravson.socialalert.business.user.activity.UserSessionCache;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.media.MediaInfo;
@@ -26,7 +26,7 @@ public class UserInfoServiceTest extends BaseServiceTest {
 	UserProfileRepository profileRepository;
 	
 	@Mock
-	OnlineUserCache onlineUserRepository;
+	UserSessionCache userSessionCache;
 	
 	@InjectMocks
 	UserInfoService userService;
@@ -35,7 +35,7 @@ public class UserInfoServiceTest extends BaseServiceTest {
 	public void fillOnlineUser() {
 		UserProfileEntity profile = new UserProfileEntity(createUserAccess("test", "1.2.3.4"));
 		when(profileRepository.findByUserId(profile.getId())).thenReturn(Optional.of(profile));
-		when(onlineUserRepository.isUserActive(profile.getId())).thenReturn(true);
+		when(userSessionCache.isUserActive(profile.getId())).thenReturn(true);
 		MediaInfo content = new MediaInfo();
 		content.setCreatorId(profile.getId());
 		UserContent result = userService.fillUserInfo(content);
@@ -49,7 +49,7 @@ public class UserInfoServiceTest extends BaseServiceTest {
 		UserProfileEntity profile = new UserProfileEntity(userAccess);
 		profile.updatePrivacySettings(UserPrivacy.builder().location(LocationPrivacy.MASK).build(), userAccess);
 		when(profileRepository.findByUserId(profile.getId())).thenReturn(Optional.of(profile));
-		when(onlineUserRepository.isUserActive(profile.getId())).thenReturn(true);
+		when(userSessionCache.isUserActive(profile.getId())).thenReturn(true);
 		MediaInfo content = new MediaInfo();
 		content.setLongitude(12.0);
 		content.setLatitude(47.0);
@@ -65,7 +65,7 @@ public class UserInfoServiceTest extends BaseServiceTest {
 		UserProfileEntity profile = new UserProfileEntity(userAccess);
 		profile.updatePrivacySettings(UserPrivacy.builder().location(LocationPrivacy.BLUR).build(), userAccess);
 		when(profileRepository.findByUserId(profile.getId())).thenReturn(Optional.of(profile));
-		when(onlineUserRepository.isUserActive(profile.getId())).thenReturn(true);
+		when(userSessionCache.isUserActive(profile.getId())).thenReturn(true);
 		MediaInfo content = new MediaInfo();
 		content.setLongitude(7.0135416);
 		content.setLatitude(46.9975249);
@@ -81,7 +81,7 @@ public class UserInfoServiceTest extends BaseServiceTest {
 	public void fillOfflineUser() {
 		UserProfileEntity profile = new UserProfileEntity(createUserAccess("test", "1.2.3.4"));
 		when(profileRepository.findByUserId(profile.getId())).thenReturn(Optional.of(profile));
-		when(onlineUserRepository.isUserActive(profile.getId())).thenReturn(false);
+		when(userSessionCache.isUserActive(profile.getId())).thenReturn(false);
 		MediaInfo content = new MediaInfo();
 		content.setCreatorId(profile.getId());
 		UserContent result = userService.fillUserInfo(content);
@@ -114,9 +114,9 @@ public class UserInfoServiceTest extends BaseServiceTest {
 		List<MediaInfo> contentList = Arrays.asList(content1, content2, content3);
 		
 		when(profileRepository.findByUserId(profile1.getId())).thenReturn(Optional.of(profile1));
-		when(onlineUserRepository.isUserActive(profile1.getId())).thenReturn(false);
+		when(userSessionCache.isUserActive(profile1.getId())).thenReturn(false);
 		when(profileRepository.findByUserId(profile2.getId())).thenReturn(Optional.of(profile2));
-		when(onlineUserRepository.isUserActive(profile2.getId())).thenReturn(true);
+		when(userSessionCache.isUserActive(profile2.getId())).thenReturn(true);
 		when(profileRepository.findByUserId(content3.getCreatorId())).thenReturn(Optional.empty());
 		
 		List<MediaInfo> result = userService.fillUserInfo(contentList);

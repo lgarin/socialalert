@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 
-import com.bravson.socialalert.business.user.activity.OnlineUserCache;
+import com.bravson.socialalert.business.user.activity.UserSessionCache;
 import com.bravson.socialalert.business.user.link.UserLinkEntity;
 import com.bravson.socialalert.business.user.link.UserLinkRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
@@ -44,7 +44,7 @@ public class UserLinkService {
 	
 	@Inject
 	@NonNull
-	OnlineUserCache onlineUserCache;
+	UserSessionCache userSessionCache;
 	
 	@Inject
 	@NewEntity
@@ -87,7 +87,7 @@ public class UserLinkService {
 	}
 	
 	private UserInfo getTargetUserInfo(UserLinkEntity entity) {
-		if (onlineUserCache.isUserActive(entity.getId().getTargetUserId())) {
+		if (userSessionCache.isUserActive(entity.getId().getTargetUserId())) {
 			return entity.getTargetUser().toOnlineUserInfo();
 		} else {
 			return entity.getTargetUser().toOfflineUserInfo();
@@ -104,7 +104,7 @@ public class UserLinkService {
 	}
 	
 	private UserInfo getSourceUserInfo(UserLinkEntity entity) {
-		if (onlineUserCache.isUserActive(entity.getId().getSourceUserId())) {
+		if (userSessionCache.isUserActive(entity.getId().getSourceUserId())) {
 			return entity.getSourceUser().toOnlineUserInfo();
 		} else {
 			return entity.getSourceUser().toOfflineUserInfo();

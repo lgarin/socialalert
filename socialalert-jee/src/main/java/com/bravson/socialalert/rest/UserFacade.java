@@ -48,7 +48,7 @@ import com.bravson.socialalert.business.user.UserLinkService;
 import com.bravson.socialalert.business.user.UserProfileService;
 import com.bravson.socialalert.business.user.UserService;
 import com.bravson.socialalert.business.user.activity.UserActivity;
-import com.bravson.socialalert.business.user.notification.UserNotificationService;
+import com.bravson.socialalert.business.user.eventsink.UserEventSink;
 import com.bravson.socialalert.domain.media.comment.UserCommentDetail;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
@@ -83,7 +83,7 @@ public class UserFacade {
 	MediaCommentService commentService;
 	
 	@Inject
-	UserNotificationService notificationService;
+	UserEventSink eventSink;
 	
 	@Inject
 	Instance<UserAccess> userAccess;
@@ -147,7 +147,6 @@ public class UserFacade {
 			if (!userService.logout("Bearer" + token.getRawToken())) {
 				return Response.status(Status.BAD_REQUEST).build();
 			}
-			notificationService.unregister(token.getSubject());
 			return Response.status(Status.NO_CONTENT).build();
 		}
 		return Response.status(Status.FORBIDDEN).build();
@@ -339,7 +338,7 @@ public class UserFacade {
 	@Operation(summary="Open a SSE stream of user notifications.")
 	@APIResponse(responseCode = "200", description = "SSE Stream is opened.", content=@Content(schema=@Schema(implementation=SseUserNotification.class)))
 	public void eventStream(@Context SseEventSink sseEventSink, @Context Sse sse) {
-		notificationService.init(sse);
-		notificationService.register(userAccess.get().getUserId(), sseEventSink);
+		eventSink.init(sse);
+		eventSink.register(userAccess.get().getUserId(), sseEventSink);
 	}
 }

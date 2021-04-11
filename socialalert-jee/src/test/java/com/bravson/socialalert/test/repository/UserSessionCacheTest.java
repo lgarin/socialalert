@@ -5,15 +5,15 @@ import javax.inject.Inject;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.bravson.socialalert.business.user.activity.OnlineUserCache;
+import com.bravson.socialalert.business.user.activity.UserSessionCache;
 
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-public class OnlineUserRepositoryTest extends Assertions {
+public class UserSessionCacheTest extends Assertions {
 
 	@Inject
-	OnlineUserCache repository;
+	UserSessionCache repository;
 	
 	@Test
 	public void addNewUser() {

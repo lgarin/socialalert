@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import com.bravson.socialalert.business.user.UserLinkService;
-import com.bravson.socialalert.business.user.activity.OnlineUserCache;
+import com.bravson.socialalert.business.user.activity.UserSessionCache;
 import com.bravson.socialalert.business.user.link.UserLinkEntity;
 import com.bravson.socialalert.business.user.link.UserLinkRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
@@ -27,7 +27,7 @@ public class UserLinkServiceTest extends BaseServiceTest {
 	UserProfileRepository profileRepository;
 	
 	@Mock
-	OnlineUserCache onlineUserCache;
+	UserSessionCache userSessionCache;
 	
 	@InjectMocks
 	UserLinkService linkService;
@@ -49,7 +49,7 @@ public class UserLinkServiceTest extends BaseServiceTest {
     	UserProfileEntity targetUser = new UserProfileEntity(createUserAccess("test", "1.2.3.4"));
 		UserLinkEntity linkEntity = new UserLinkEntity(sourceUser, targetUser);
 		when(linkRepository.searchByTarget(targetUser.getId(), paging)).thenReturn(new QueryResult<>(Collections.singletonList(linkEntity), 0, paging));
-		when(onlineUserCache.isUserActive(sourceUser.getId())).thenReturn(false);
+		when(userSessionCache.isUserActive(sourceUser.getId())).thenReturn(false);
 		QueryResult<LinkedUserInfo> result = linkService.listSourceProfiles(targetUser.getId(), paging);
 		assertThat(result.getContent()).containsExactly(new LinkedUserInfo(sourceUser.toOfflineUserInfo(), linkEntity.getCreation()));
 	}
@@ -61,7 +61,7 @@ public class UserLinkServiceTest extends BaseServiceTest {
     	UserProfileEntity targetUser = new UserProfileEntity(createUserAccess("test", "1.2.3.4"));
 		UserLinkEntity linkEntity = new UserLinkEntity(sourceUser, targetUser);
 		when(linkRepository.searchByTarget(targetUser.getId(), paging)).thenReturn(new QueryResult<>(Collections.singletonList(linkEntity), 0, paging));
-		when(onlineUserCache.isUserActive(sourceUser.getId())).thenReturn(true);
+		when(userSessionCache.isUserActive(sourceUser.getId())).thenReturn(true);
 		QueryResult<LinkedUserInfo> result = linkService.listSourceProfiles(targetUser.getId(), paging);
 		assertThat(result.getContent()).containsExactly(new LinkedUserInfo(sourceUser.toOnlineUserInfo(), linkEntity.getCreation()));
 	}

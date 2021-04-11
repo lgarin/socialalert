@@ -8,7 +8,7 @@ import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.NotFoundException;
 
-import com.bravson.socialalert.business.user.activity.OnlineUserCache;
+import com.bravson.socialalert.business.user.activity.UserSessionCache;
 import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
 import com.bravson.socialalert.business.user.authentication.AuthenticationRepository;
 import com.bravson.socialalert.business.user.authentication.LoginToken;
@@ -44,7 +44,7 @@ public class UserService {
 	
 	@Inject
 	@NonNull
-	OnlineUserCache onlineUserCache;
+	UserSessionCache userSessionCache;
 
 	@Inject
 	@DeleteEntity
@@ -84,7 +84,7 @@ public class UserService {
 	}
 
 	public boolean logout(@NonNull String authorization) {
-		JwtUtil.extractUserId(authorization).ifPresent(onlineUserCache::removeUser); 
+		JwtUtil.extractUserId(authorization).ifPresent(userSessionCache::removeUser); 
 		return authenticationRepository.invalidateAccessToken(authorization);
 	}
 
@@ -97,7 +97,7 @@ public class UserService {
 	}
 	
 	private UserInfo getUserInfo(UserProfileEntity entity) {
-		if (onlineUserCache.isUserActive(entity.getId())) {
+		if (userSessionCache.isUserActive(entity.getId())) {
 			return entity.toOnlineUserInfo();
 		} else {
 			return entity.toOfflineUserInfo();
@@ -116,7 +116,7 @@ public class UserService {
 	public void deleteUser(@NonNull String userId) {
 		UserProfileEntity userProfile = profileRepository.deleteByUserId(userId).orElseThrow(NotFoundException::new);
 		deleteUserEvent.fire(userProfile);
-		onlineUserCache.removeUser(userId);
+		userSessionCache.removeUser(userId);
 		authenticationRepository.deleteUser(userId);
 	}
 }

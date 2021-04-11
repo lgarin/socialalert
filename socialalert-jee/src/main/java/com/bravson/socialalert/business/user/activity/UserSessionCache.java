@@ -1,6 +1,7 @@
 package com.bravson.socialalert.business.user.activity;
 
 import java.time.Duration;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
@@ -12,15 +13,17 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
 import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
+import com.bravson.socialalert.infrastructure.entity.NewEntity;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.github.benmanes.caffeine.cache.RemovalListener;
+import com.github.benmanes.caffeine.cache.Scheduler;
 
 @Repository
 @Transactional(TxType.SUPPORTS)
-public class OnlineUserCache implements RemovalListener<String, UserSession> {
+public class UserSessionCache implements RemovalListener<String, UserSession> {
 
 	// TODO use infinispan
 	private Cache<String, UserSession> localCache;
@@ -33,11 +36,19 @@ public class OnlineUserCache implements RemovalListener<String, UserSession> {
 	Event<UserSession> deletedSessionEvent;
 	
 	@Inject
+	@NewEntity
+	Event<UserSession> createdSessionEvent;
+	
+	@Inject
 	Logger logger;
 	
 	@PostConstruct
 	void init() {
-		localCache = Caffeine.newBuilder().expireAfterAccess(sessionTimeout).removalListener(this).build();
+		localCache = Caffeine.newBuilder()
+				.expireAfterAccess(sessionTimeout)
+				.removalListener(this)
+				.scheduler(Scheduler.systemScheduler())
+				.build();
 	}
 	
 	@Override
@@ -46,11 +57,21 @@ public class OnlineUserCache implements RemovalListener<String, UserSession> {
 		deletedSessionEvent.fire(value);
 	}
 	
+	public Optional<UserSession> findActiveUser(String userId) {
+		return Optional.ofNullable(localCache.getIfPresent(userId));
+	}
+	
 	public UserSession addActiveUser(String userId) {
 		if (userId == null) {
 			return null;
 		}
-		return localCache.get(userId, UserSession::new);
+		return localCache.get(userId, this::createNewSession);
+	}
+	
+	private UserSession createNewSession(String userId) {
+		UserSession session = new UserSession(userId);
+		createdSessionEvent.fire(session);
+		return session;
 	}
 
 	public boolean isUserActive(String userId) {
