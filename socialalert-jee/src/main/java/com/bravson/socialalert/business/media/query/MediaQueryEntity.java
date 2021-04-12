@@ -5,9 +5,7 @@ import java.time.Instant;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -16,26 +14,18 @@ import com.bravson.socialalert.business.media.SearchMediaParameter;
 import com.bravson.socialalert.domain.location.GeoArea;
 import com.bravson.socialalert.domain.media.MediaQueryInfo;
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
+import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
 
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Entity(name="MediaQuery")
-@EqualsAndHashCode(of="id")
-@ToString(of="id")
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class MediaQueryEntity {
+public class MediaQueryEntity extends VersionedEntity {
 
-	@Getter
-	@Id
-	@Column(name = "id", length = FieldLength.ID)
-	private String id;
-	
 	@Getter
 	@Column(name = "label", length = FieldLength.NAME, nullable = false)
 	private String label;
@@ -44,9 +34,11 @@ public class MediaQueryEntity {
 	@Column(name = "user_id", length = FieldLength.ID, nullable = false)
 	private String userId;
 	
-	@Getter
-	@Embedded
-	private GeoArea location;
+	private double latitude;
+	
+	private double longitude;
+	
+	private double radius;
 	
 	@Getter
 	@Column(name = "keywords", length = FieldLength.TEXT)
@@ -57,7 +49,7 @@ public class MediaQueryEntity {
 	private String category;
 	
 	@Getter
-	@Column(name = "hit_threshold", nullable = false)
+	@Column(name = "hit_threshold")
 	private int hitThreshold;
 	
 	@Getter
@@ -73,11 +65,17 @@ public class MediaQueryEntity {
 		this.id = userId; // TODO temporary
 		this.userId = userId;
 		this.label = label;
-		this.location = location;
+		this.latitude = location.getLatitude();
+		this.longitude = location.getLongitude();
+		this.radius = location.getRadius();
 		this.keywords = keywords;
 		this.category = category;
 		this.hitThreshold = hitThreshold;
 		this.lastExecution = Instant.now();
+	}
+	
+	public GeoArea getLocation() {
+		return GeoArea.builder().longitude(longitude).latitude(latitude).radius(radius).build();
 	}
 	
 	public MediaQueryInfo toQueryInfo() {
@@ -86,7 +84,7 @@ public class MediaQueryEntity {
 		info.setLabel(label);
 		info.setCategory(category);
 		info.setKeywords(keywords);
-		info.setLocation(location);
+		info.setLocation(getLocation());
 		info.setUserId(userId);
 		info.setHitThreshold(hitThreshold);
 		info.setLastHitCount(lastHitCount);
@@ -100,7 +98,7 @@ public class MediaQueryEntity {
 		SearchMediaParameter parameter = new SearchMediaParameter();
 		parameter.setCategory(category);
 		parameter.setKeywords(keywords);
-		parameter.setLocation(location);
+		parameter.setLocation(getLocation());
 		parameter.setMaxAge(maxAge);
 		return parameter;
 	}

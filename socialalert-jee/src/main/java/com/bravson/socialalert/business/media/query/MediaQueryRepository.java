@@ -25,12 +25,13 @@ public class MediaQueryRepository {
 	@NonNull
 	PersistenceManager persistenceManager;
 	
-	public MediaQueryEntity create(String label, GeoArea location, String keywords, String category, int hitThreshold, UserAccess userAccess) {
+	public MediaQueryEntity create(@NonNull String label, @NonNull GeoArea location, String keywords, String category, int hitThreshold, @NonNull UserAccess userAccess) {
 		MediaQueryEntity entity = new MediaQueryEntity(userAccess.getUserId(), label, location, keywords, category, hitThreshold);
 		return persistenceManager.persist(entity);
 	}
 	
-	public Optional<MediaQueryEntity> findQueryByUserId(String userId) {
+	public Optional<MediaQueryEntity> findQueryByUserId(@NonNull String userId) {
+		// TODO temporary
 		return persistenceManager.find(MediaQueryEntity.class, userId);
 	}
 }

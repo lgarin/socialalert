@@ -26,7 +26,7 @@ public class MediaQueryInfo {
 	
 	private int hitThreshold;
 	
-	private int lastHitCount;
+	private Integer lastHitCount;
 	
 	private Instant lastExecution;
 }
