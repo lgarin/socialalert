@@ -10,9 +10,10 @@ import javax.persistence.Entity;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import com.bravson.socialalert.business.media.SearchMediaParameter;
 import com.bravson.socialalert.domain.location.GeoArea;
-import com.bravson.socialalert.domain.media.MediaQueryInfo;
+import com.bravson.socialalert.domain.media.SearchMediaParameter;
+import com.bravson.socialalert.domain.media.query.MediaQueryInfo;
+import com.bravson.socialalert.domain.media.query.MediaQueryParameter;
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
 
@@ -45,11 +46,11 @@ public class MediaQueryEntity extends VersionedEntity {
 	private String keywords;
 	
 	@Getter
-	@Column(name = "category", length = FieldLength.NAME)
+	@Column(name = "category", length = FieldLength.ID)
 	private String category;
 	
 	@Getter
-	@Column(name = "hit_threshold")
+	@Column(name = "hit_threshold", nullable = false)
 	private int hitThreshold;
 	
 	@Getter
@@ -57,20 +58,19 @@ public class MediaQueryEntity extends VersionedEntity {
 	private Integer lastHitCount;
 	
 	@Getter
-	@Column(name = "last_execution")
+	@Column(name = "last_execution", nullable = false)
 	private Instant lastExecution;
 	
-	public MediaQueryEntity(String userId, String label, GeoArea location, String keywords, String category,
-			int hitThreshold) {
+	public MediaQueryEntity(MediaQueryParameter param, String userId) {
 		this.id = userId; // TODO temporary
 		this.userId = userId;
-		this.label = label;
-		this.latitude = location.getLatitude();
-		this.longitude = location.getLongitude();
-		this.radius = location.getRadius();
-		this.keywords = keywords;
-		this.category = category;
-		this.hitThreshold = hitThreshold;
+		this.label = param.getLabel();
+		this.latitude = param.getLatitude();
+		this.longitude = param.getLongitude();
+		this.radius = param.getRadius();
+		this.keywords = param.getKeywords();
+		this.category = param.getCategory();
+		this.hitThreshold = param.getHitThreshold();
 		this.lastExecution = Instant.now();
 	}
 	

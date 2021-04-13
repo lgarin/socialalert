@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.media.query.MediaQueryEntity;
 import com.bravson.socialalert.business.media.query.MediaQueryRepository;
-import com.bravson.socialalert.domain.location.GeoArea;
+import com.bravson.socialalert.domain.media.query.MediaQueryParameter;
 
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -20,13 +20,16 @@ public class MediaQueryRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	void insertQuery() {
-		GeoArea location = GeoArea.builder().latitude(7.6).longitude(46.2).radius(20.0).build();
-		MediaQueryEntity result = repository.create("Label", location, "keyword", "CATEGORY", 10, createUserAccess("test", "1.2.3.4"));
+		MediaQueryParameter param = MediaQueryParameter.builder()
+				.label("Label").category("CATEGORY").keywords("keyword").hitThreshold(10)
+				.latitude(7.6).longitude(46.2).radius(20.0)
+				.build();
+		MediaQueryEntity result = repository.create(param, createUserAccess("test", "1.2.3.4"));
 		assertThat(result.getId()).isEqualTo("test");
-		assertThat(result.getLabel()).isEqualTo("Label");
-		assertThat(result.getLocation()).isEqualTo(location);
-		assertThat(result.getKeywords()).isEqualTo("keyword");
-		assertThat(result.getCategory()).isEqualTo("CATEGORY");
+		assertThat(result.getLabel()).isEqualTo(param.getLabel());
+		assertThat(result.getLocation()).isEqualTo(param.getLocation());
+		assertThat(result.getKeywords()).isEqualTo(param.getKeywords());
+		assertThat(result.getCategory()).isEqualTo(param.getCategory());
 	}
 	
 	@Test
@@ -37,8 +40,11 @@ public class MediaQueryRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	void findByUserIdWithQuery() {
-		GeoArea location = GeoArea.builder().latitude(7.6).longitude(46.2).radius(20.0).build();
-		MediaQueryEntity entity = repository.create("Label", location, null, null, 10, createUserAccess("test", "1.2.3.4"));
+		MediaQueryParameter param = MediaQueryParameter.builder()
+				.label("Label").hitThreshold(10)
+				.latitude(7.6).longitude(46.2).radius(20.0)
+				.build();
+		MediaQueryEntity entity = repository.create(param, createUserAccess("test", "1.2.3.4"));
 		Optional<MediaQueryEntity> result = repository.findQueryByUserId("test");
 		assertThat(result).contains(entity);
 	}

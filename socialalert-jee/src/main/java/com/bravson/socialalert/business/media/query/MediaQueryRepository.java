@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import com.bravson.socialalert.business.user.UserAccess;
-import com.bravson.socialalert.domain.location.GeoArea;
+import com.bravson.socialalert.domain.media.query.MediaQueryParameter;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 
@@ -25,8 +25,8 @@ public class MediaQueryRepository {
 	@NonNull
 	PersistenceManager persistenceManager;
 	
-	public MediaQueryEntity create(@NonNull String label, @NonNull GeoArea location, String keywords, String category, int hitThreshold, @NonNull UserAccess userAccess) {
-		MediaQueryEntity entity = new MediaQueryEntity(userAccess.getUserId(), label, location, keywords, category, hitThreshold);
+	public MediaQueryEntity create(@NonNull MediaQueryParameter parameter, @NonNull UserAccess userAccess) {
+		MediaQueryEntity entity = new MediaQueryEntity(parameter, userAccess.getUserId());
 		return persistenceManager.persist(entity);
 	}
 	

@@ -12,8 +12,8 @@ import javax.transaction.Transactional;
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.MediaRepository;
 import com.bravson.socialalert.business.user.UserAccess;
-import com.bravson.socialalert.domain.location.GeoArea;
-import com.bravson.socialalert.domain.media.MediaQueryInfo;
+import com.bravson.socialalert.domain.media.query.MediaQueryInfo;
+import com.bravson.socialalert.domain.media.query.MediaQueryParameter;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
@@ -42,8 +42,8 @@ public class MediaQueryService {
 	@NonNull
 	MediaRepository mediaRepository;
 	
-	public MediaQueryInfo create(@NonNull String label, GeoArea location, String keywords, String category, int hitThreshold, @NonNull UserAccess userAccess) {
-		return queryRepository.create(label, location, keywords, category, hitThreshold, userAccess).toQueryInfo();
+	public MediaQueryInfo create(@NonNull MediaQueryParameter parameter, @NonNull UserAccess userAccess) {
+		return queryRepository.create(parameter, userAccess).toQueryInfo();
 	}
 	
 	public Optional<MediaQueryInfo> findLastQueryByUserId(@NonNull String userId) {

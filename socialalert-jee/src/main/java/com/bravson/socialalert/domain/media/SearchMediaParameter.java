@@ -1,10 +1,9 @@
-package com.bravson.socialalert.business.media;
+package com.bravson.socialalert.domain.media;
 
 import java.time.Duration;
 
 import com.bravson.socialalert.domain.location.GeoArea;
 import com.bravson.socialalert.domain.location.GeoBox;
-import com.bravson.socialalert.domain.media.MediaKind;
 
 import lombok.Data;
 

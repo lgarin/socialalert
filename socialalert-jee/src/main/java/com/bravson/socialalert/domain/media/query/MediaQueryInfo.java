@@ -1,4 +1,4 @@
-package com.bravson.socialalert.domain.media;
+package com.bravson.socialalert.domain.media.query;
 
 import java.time.Instant;
 

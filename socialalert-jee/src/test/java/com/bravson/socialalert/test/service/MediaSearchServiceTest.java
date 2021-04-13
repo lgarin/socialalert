@@ -12,11 +12,11 @@ import org.mockito.Mock;
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.MediaRepository;
 import com.bravson.socialalert.business.media.MediaSearchService;
-import com.bravson.socialalert.business.media.SearchMediaParameter;
 import com.bravson.socialalert.business.media.tag.MediaTagRepository;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.MediaInfo;
+import com.bravson.socialalert.domain.media.SearchMediaParameter;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 

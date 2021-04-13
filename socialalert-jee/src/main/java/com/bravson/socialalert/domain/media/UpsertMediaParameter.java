@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.media;
+package com.bravson.socialalert.domain.media;
 
 import java.util.List;
 
@@ -10,6 +10,7 @@ import javax.validation.constraints.Size;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+import com.bravson.socialalert.business.media.MediaConstants;
 import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
 
@@ -28,6 +29,7 @@ public class UpsertMediaParameter {
 	@NonNull
 	private String title;
 	
+	@Size(max=MediaConstants.MAX_TAG_LENGTH)
 	private String category;
 
 	@Min(-MediaConstants.MAX_ABS_FEELING)

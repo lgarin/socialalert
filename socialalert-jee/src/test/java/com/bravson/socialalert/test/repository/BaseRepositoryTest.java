@@ -16,10 +16,10 @@ import org.junit.jupiter.api.BeforeEach;
 import com.bravson.socialalert.business.file.FileMetadata;
 import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.media.MediaEntity;
-import com.bravson.socialalert.business.media.UpsertMediaParameter;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserAccessToken;
 import com.bravson.socialalert.domain.location.GeoAddress;
+import com.bravson.socialalert.domain.media.UpsertMediaParameter;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 

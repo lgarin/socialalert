@@ -42,7 +42,7 @@ public class MediaNotificationService implements Runnable {
 	void onStart(@Observes StartupEvent ev) {
 		scheduler = Executors.newScheduledThreadPool(threadCount);
 		scheduler.submit(this);
-		scheduler.scheduleAtFixedRate(this, notificationRate.toMillis(), notificationRate.toMillis(), TimeUnit.MILLISECONDS);
+		scheduler.scheduleWithFixedDelay(this, notificationRate.toMillis(), notificationRate.toMillis(), TimeUnit.MILLISECONDS);
 	}
 
 	void onStop(@Observes ShutdownEvent ev) {
@@ -51,7 +51,7 @@ public class MediaNotificationService implements Runnable {
 	
 	@Override
 	public void run() {
-		for (String userId : eventSink.getRegistedUserIdSet()) {
+		for (String userId : eventSink.getRegisteredUserIdSet()) {
 			queryService.queueQueryExecution(userId);
 		}
 	}

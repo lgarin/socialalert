@@ -14,11 +14,12 @@ import com.bravson.socialalert.business.media.query.MediaQueryEntity;
 import com.bravson.socialalert.business.media.query.MediaQueryRepository;
 import com.bravson.socialalert.business.media.query.MediaQueryService;
 import com.bravson.socialalert.business.user.UserAccess;
-import com.bravson.socialalert.domain.location.GeoArea;
-import com.bravson.socialalert.domain.media.MediaQueryInfo;
+import com.bravson.socialalert.domain.media.query.MediaQueryInfo;
+import com.bravson.socialalert.domain.media.query.MediaQueryParameter;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class MediaQueryServiceTest extends BaseServiceTest {
 
@@ -40,18 +41,24 @@ public class MediaQueryServiceTest extends BaseServiceTest {
 	@Test
 	public void createQuery() {
 		UserAccess userAccess = createUserAccess("test", "1.2.3.4");
-		GeoArea location = GeoArea.builder().latitude(7.6).longitude(46.2).radius(20.0).build();
-		MediaQueryEntity entity = new MediaQueryEntity(userAccess.getUserId(), "Label", location, "keyword", "CATEGORY", 10);
-		when(queryRepository.create(entity.getLabel(), location, entity.getKeywords(), entity.getCategory(), entity.getHitThreshold(), userAccess)).thenReturn(entity);
-		MediaQueryInfo result = queryService.create(entity.getLabel(), location, entity.getKeywords(), entity.getCategory(), entity.getHitThreshold(), userAccess);
+		MediaQueryParameter param = MediaQueryParameter.builder()
+				.label("Label").hitThreshold(10)
+				.latitude(7.6).longitude(46.2).radius(20.0)
+				.build();
+		MediaQueryEntity entity = new MediaQueryEntity(param, userAccess.getUserId());
+		when(queryRepository.create(param, userAccess)).thenReturn(entity);
+		MediaQueryInfo result = queryService.create(param, userAccess);
 		assertThat(result).isEqualTo(entity.toQueryInfo());
 	}
 	
 	@Test
 	public void findQueryByUserId() {
 		UserAccess userAccess = createUserAccess("test", "1.2.3.4");
-		GeoArea location = GeoArea.builder().latitude(7.6).longitude(46.2).radius(20.0).build();
-		MediaQueryEntity entity = new MediaQueryEntity(userAccess.getUserId(), "Label", location, "keyword", "CATEGORY", 10);
+		MediaQueryParameter param = MediaQueryParameter.builder()
+			.label("Label").hitThreshold(10)
+			.latitude(7.6).longitude(46.2).radius(20.0)
+			.build();
+		MediaQueryEntity entity = new MediaQueryEntity(param, userAccess.getUserId());
 		when(queryRepository.findQueryByUserId(userAccess.getUserId())).thenReturn(Optional.of(entity));
 		Optional<MediaQueryInfo> result = queryService.findLastQueryByUserId(userAccess.getUserId());
 		assertThat(result).contains(entity.toQueryInfo());

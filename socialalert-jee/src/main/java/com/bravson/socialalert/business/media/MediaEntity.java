@@ -29,6 +29,7 @@ import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.media.MediaDetail;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.media.MediaKind;
+import com.bravson.socialalert.domain.media.UpsertMediaParameter;
 import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
 import com.bravson.socialalert.infrastructure.entity.VersionInfo;
@@ -91,7 +92,7 @@ public class MediaEntity extends VersionedEntity {
 	private MediaStatistic statistic;
 	
 	@Getter
-	@Column(name = "category", length = FieldLength.NAME)
+	@Column(name = "category", length = FieldLength.ID)
 	@GenericField
 	private String category;
 	

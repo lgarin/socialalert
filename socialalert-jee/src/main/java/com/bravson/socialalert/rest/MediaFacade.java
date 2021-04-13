@@ -17,6 +17,7 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -35,9 +36,8 @@ import com.bravson.socialalert.business.media.MediaConstants;
 import com.bravson.socialalert.business.media.MediaSearchService;
 import com.bravson.socialalert.business.media.MediaService;
 import com.bravson.socialalert.business.media.MediaUpsertService;
-import com.bravson.socialalert.business.media.SearchMediaParameter;
-import com.bravson.socialalert.business.media.UpsertMediaParameter;
 import com.bravson.socialalert.business.media.comment.MediaCommentService;
+import com.bravson.socialalert.business.media.query.MediaQueryService;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.domain.location.GeoArea;
@@ -46,8 +46,12 @@ import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.MediaDetail;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.media.MediaKind;
+import com.bravson.socialalert.domain.media.SearchMediaParameter;
+import com.bravson.socialalert.domain.media.UpsertMediaParameter;
 import com.bravson.socialalert.domain.media.comment.MediaCommentDetail;
 import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
+import com.bravson.socialalert.domain.media.query.MediaQueryInfo;
+import com.bravson.socialalert.domain.media.query.MediaQueryParameter;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
@@ -73,6 +77,9 @@ public class MediaFacade {
 	
 	@Inject
 	MediaCommentService commentService;
+	
+	@Inject
+	MediaQueryService queryService;
 	
 	@POST
 	@Path("/claim/{mediaUri : .+}")
@@ -362,5 +369,28 @@ public class MediaFacade {
 	public List<String> suggestTags(@Parameter(description="Define the term for searching the tags.", required=true) @QueryParam("term") String term,
 			@Parameter(description="Define the maximum number of matching tags to be returned.", required=true) @QueryParam("maxHitCount") int maxHitCount) {
 		return mediaSearchService.suggestTags(term, maxHitCount);
+	}
+	
+	@POST
+	@Path("/liveQuery")
+	@Produces(MediaTypeConstants.JSON)
+	@Consumes(MediaTypeConstants.JSON)
+	@Operation(summary="Define a live query for the current user.")
+	@APIResponse(responseCode = "200", description = "The live query has been defined.")
+	@SecurityRequirement(name = "JWT")
+	public MediaQueryInfo defineLiveQuery(@Valid @NotNull MediaQueryParameter parameter) {
+		return queryService.create(parameter, userAccess.get());
+	}
+	
+	@GET
+	@Path("/liveQuery")
+	@Produces(MediaTypeConstants.JSON)
+	@Operation(summary="Find the current live query of the current user.")
+	@APIResponse(responseCode = "200", description = "The live query has been found.")
+	@APIResponse(responseCode = "404", description = "No current live query.")
+	@SecurityRequirement(name = "JWT")
+	public MediaQueryInfo findLiveQuery() {
+		return queryService.findLastQueryByUserId(userAccess.get().getUserId())
+				.orElseThrow(NotFoundException::new);
 	}
 }

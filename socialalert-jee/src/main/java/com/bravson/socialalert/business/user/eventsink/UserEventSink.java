@@ -67,7 +67,7 @@ public class UserEventSink {
 		}
 	}
 	
-	public Set<String> getRegistedUserIdSet() {
+	public Set<String> getRegisteredUserIdSet() {
 		return Collections.unmodifiableSet(sinkMap.keySet());
 	}
 }

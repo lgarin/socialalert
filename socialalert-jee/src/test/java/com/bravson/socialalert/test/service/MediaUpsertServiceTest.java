@@ -16,11 +16,11 @@ import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.MediaRepository;
 import com.bravson.socialalert.business.media.MediaUpsertService;
-import com.bravson.socialalert.business.media.UpsertMediaParameter;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.media.MediaInfo;
+import com.bravson.socialalert.domain.media.UpsertMediaParameter;
 import com.bravson.socialalert.infrastructure.rest.ConflictException;
 
 import static org.mockito.Mockito.when;
