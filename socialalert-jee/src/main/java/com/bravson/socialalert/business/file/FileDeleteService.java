@@ -33,7 +33,7 @@ public class FileDeleteService {
 	FileStore fileStore;
 
 	//@VisibleForTesting
-	public void handleDeleteMedia(@Observes @DeleteEntity MediaEntity media) throws IOException {
+	public void handleDeleteMedia(@Observes @DeleteEntity MediaEntity media) {
 		delete(media.getFile());
 	}
 

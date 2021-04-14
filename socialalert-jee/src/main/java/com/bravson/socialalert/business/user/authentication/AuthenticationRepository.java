@@ -28,6 +28,8 @@ import lombok.NonNull;
 @AllArgsConstructor
 public class AuthenticationRepository {
 	
+	private static final String AUTHORIZATION_HEADER = "Authorization";
+
 	@Inject
 	@NonNull
 	AuthenticationConfiguration config;
@@ -50,7 +52,7 @@ public class AuthenticationRepository {
 		String accessToken = "Bearer " + payload.get("access_token").asText();
 		String refreshToken = payload.get("refresh_token").asText();
 		int expirationPeriod = payload.get("expires_in").asInt();
-		Instant expiration = Instant.now().plusSeconds(expirationPeriod - 1);
+		Instant expiration = Instant.now().plusSeconds(expirationPeriod - 1L);
 		return Optional.of(LoginToken.of(accessToken, refreshToken, expiration));
 	}
 	
@@ -60,12 +62,12 @@ public class AuthenticationRepository {
 	}
 	
 	public boolean invalidateAccessToken(@NonNull String authorization) {
-		Response response = httpClient.target(config.getLogoutUrl()).request().header("Authorization", authorization).get();
+		Response response = httpClient.target(config.getLogoutUrl()).request().header(AUTHORIZATION_HEADER, authorization).get();
 		return response.getStatus() == Status.OK.getStatusCode();
 	}
 	
 	public Optional<AuthenticationInfo> findAuthenticationInfo(@NonNull String authorization) {
-		Response response = httpClient.target(config.getUserInfoUrl()).request().header("Authorization", authorization).get();
+		Response response = httpClient.target(config.getUserInfoUrl()).request().header(AUTHORIZATION_HEADER, authorization).get();
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return Optional.empty();
 		}
@@ -74,10 +76,7 @@ public class AuthenticationRepository {
 	
 	public boolean isAvailable() {
 		Response response = httpClient.target(config.getConfigUrl()).request().get();
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			return false;
-		}
-		return true;
+		return response.getStatus() == Status.OK.getStatusCode();
 	}
 	
 	public boolean createUser(@NonNull CreateUserParameter param) {
@@ -92,7 +91,7 @@ public class AuthenticationRepository {
 				.credential(new CredentialRepresentation(false, "password", param.getPassword()))
 				.build();
 		Response response = httpClient.target(config.getUserCreateUrl()).request()
-				.header("Authorization", authorization).post(Entity.json(user));
+				.header(AUTHORIZATION_HEADER, authorization).post(Entity.json(user));
 		if (response.getStatus() == Status.CREATED.getStatusCode()) {
 			return true;
 		} else if (response.getStatus() == Status.CONFLICT.getStatusCode()) {
@@ -109,7 +108,7 @@ public class AuthenticationRepository {
 				.lastName(lastname == null ? "" : lastname)
 				.build();
 		Response response = httpClient.target(config.getUserUpdateUrl()).resolveTemplate("id", userId)
-				.request().header("Authorization", authorization).put(Entity.json(user));
+				.request().header(AUTHORIZATION_HEADER, authorization).put(Entity.json(user));
 
 		if (response.getStatus() != Status.NO_CONTENT.getStatusCode()) {
 			throw new ClientErrorException(response.getStatus());
@@ -120,7 +119,7 @@ public class AuthenticationRepository {
 		String authorization = getAdminAuthorization();
 		
 		Response response = httpClient.target(config.getUserUpdateUrl()).resolveTemplate("id", userId)
-				.request().header("Authorization", authorization).delete();
+				.request().header(AUTHORIZATION_HEADER, authorization).delete();
 
 		if (response.getStatus() != Status.NO_CONTENT.getStatusCode()) {
 			throw new ClientErrorException(response.getStatus());
@@ -142,7 +141,7 @@ public class AuthenticationRepository {
 		
 		CredentialRepresentation credential = new CredentialRepresentation(false, "password", newPassword);
 		Response response = httpClient.target(config.getPasswordResetUrl()).resolveTemplate("id", userId)
-				.request().header("Authorization", authorization).put(Entity.json(credential));
+				.request().header(AUTHORIZATION_HEADER, authorization).put(Entity.json(credential));
 
 		if (response.getStatus() != Status.NO_CONTENT.getStatusCode()) {
 			throw new ClientErrorException(response.getStatus());

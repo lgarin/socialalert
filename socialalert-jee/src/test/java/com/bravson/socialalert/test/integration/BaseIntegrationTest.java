@@ -20,7 +20,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import com.bravson.socialalert.business.file.store.FileStore;
-import com.bravson.socialalert.business.user.activity.UserSessionCache;
+import com.bravson.socialalert.business.user.session.UserSessionCache;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.UserCredential;
 import com.bravson.socialalert.infrastructure.async.AsyncEvent;

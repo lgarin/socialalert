@@ -61,7 +61,7 @@ public class MediaViewTest extends BaseIntegrationTest {
 		assertThat(result.getCameraMaker()).isEqualTo("Apple");
 		assertThat(result.getCameraModel()).isEqualTo("iPhone 5");
 		assertThat(result.getHitCount()).isEqualTo(1);
-		assertThat(result.getLikeCount()).isEqualTo(0);
+		assertThat(result.getLikeCount()).isZero();
 		assertThat(result.getCategory()).isEqualTo("cat1");
 		assertThat(result.getTags()).containsExactly("tag1", "tag2");
 	}

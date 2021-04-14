@@ -47,7 +47,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	QueryResult<MediaEntity> result = repository.searchMedia(parameter, paging);
     	assertThat(result).isNotNull();
     	assertThat(result.getPageCount()).isEqualTo(1);
-    	assertThat(result.getPageNumber()).isEqualTo(0);
+    	assertThat(result.getPageNumber()).isZero();
     	assertThat(result.getContent()).isEmpty();
     }
     
@@ -60,7 +60,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	QueryResult<MediaEntity> result = repository.searchMedia(parameter, paging);
     	assertThat(result).isNotNull();
     	assertThat(result.getPageCount()).isEqualTo(1);
-    	assertThat(result.getPageNumber()).isEqualTo(0);
+    	assertThat(result.getPageNumber()).isZero();
     	assertThat(result.getNextPage()).isNull();
     	assertThat(result.getContent()).containsExactly(media);
     }
@@ -75,7 +75,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	QueryResult<MediaEntity> result = repository.searchMedia(parameter, paging);
     	assertThat(result).isNotNull();
     	assertThat(result.getPageCount()).isEqualTo(1);
-    	assertThat(result.getPageNumber()).isEqualTo(0);
+    	assertThat(result.getPageNumber()).isZero();
     	assertThat(result.getNextPage()).isNull();
     	assertThat(result.getContent()).containsExactly(media);
     }
@@ -90,7 +90,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	QueryResult<MediaEntity> result = repository.searchMedia(parameter, paging);
     	assertThat(result).isNotNull();
     	assertThat(result.getPageCount()).isEqualTo(1);
-    	assertThat(result.getPageNumber()).isEqualTo(0);
+    	assertThat(result.getPageNumber()).isZero();
     	assertThat(result.getNextPage()).isNull();
     	assertThat(result.getContent()).containsExactly(media);
     }
@@ -105,7 +105,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	QueryResult<MediaEntity> result = repository.searchMedia(parameter, paging);
     	assertThat(result).isNotNull();
     	assertThat(result.getPageCount()).isEqualTo(1);
-    	assertThat(result.getPageNumber()).isEqualTo(0);
+    	assertThat(result.getPageNumber()).isZero();
     	assertThat(result.getNextPage()).isNull();
     	assertThat(result.getContent()).containsExactly(media);
     }
@@ -119,8 +119,8 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	PagingParameter paging = new PagingParameter(Instant.now(), 0, 10);
     	QueryResult<MediaEntity> result = repository.searchMedia(parameter, paging);
     	assertThat(result).isNotNull();
-    	assertThat(result.getPageCount()).isEqualTo(0);
-    	assertThat(result.getPageNumber()).isEqualTo(0);
+    	assertThat(result.getPageCount()).isZero();
+    	assertThat(result.getPageNumber()).isZero();
     	assertThat(result.getNextPage()).isNull();
     	assertThat(result.getContent()).isEmpty();
     }
@@ -135,7 +135,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	QueryResult<MediaEntity> result = repository.searchMedia(parameter, paging);
     	assertThat(result).isNotNull();
     	assertThat(result.getPageCount()).isEqualTo(1);
-    	assertThat(result.getPageNumber()).isEqualTo(0);
+    	assertThat(result.getPageNumber()).isZero();
     	assertThat(result.getNextPage()).isNull();
     	assertThat(result.getContent()).containsExactly(media);
     }
@@ -149,8 +149,8 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	PagingParameter paging = new PagingParameter(Instant.now(), 0, 10);
     	QueryResult<MediaEntity> result = repository.searchMedia(parameter, paging);
     	assertThat(result).isNotNull();
-    	assertThat(result.getPageCount()).isEqualTo(0);
-    	assertThat(result.getPageNumber()).isEqualTo(0);
+    	assertThat(result.getPageCount()).isZero();
+    	assertThat(result.getPageNumber()).isZero();
     	assertThat(result.getNextPage()).isNull();
     	assertThat(result.getContent()).isEmpty();
     }
@@ -165,7 +165,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	QueryResult<MediaEntity> result = repository.searchMedia(parameter, paging);
     	assertThat(result).isNotNull();
     	assertThat(result.getPageCount()).isEqualTo(1);
-    	assertThat(result.getPageNumber()).isEqualTo(0);
+    	assertThat(result.getPageNumber()).isZero();
     	assertThat(result.getNextPage()).isNull();
     	assertThat(result.getContent()).containsExactly(media);
     }
@@ -180,7 +180,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	QueryResult<MediaEntity> result = repository.searchMedia(parameter, paging);
     	assertThat(result).isNotNull();
     	assertThat(result.getPageCount()).isEqualTo(1);
-    	assertThat(result.getPageNumber()).isEqualTo(0);
+    	assertThat(result.getPageNumber()).isZero();
     	assertThat(result.getNextPage()).isNull();
     	assertThat(result.getContent()).containsExactly(media);
     }
@@ -194,8 +194,8 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	PagingParameter paging = new PagingParameter(Instant.now(), 0, 10);
     	QueryResult<MediaEntity> result = repository.searchMedia(parameter, paging);
     	assertThat(result).isNotNull();
-    	assertThat(result.getPageCount()).isEqualTo(0);
-    	assertThat(result.getPageNumber()).isEqualTo(0);
+    	assertThat(result.getPageCount()).isZero();
+    	assertThat(result.getPageNumber()).isZero();
     	assertThat(result.getNextPage()).isNull();
     	assertThat(result.getContent()).isEmpty();
     }
@@ -211,7 +211,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	QueryResult<MediaEntity> result = repository.searchMedia(parameter, paging);
     	assertThat(result).isNotNull();
     	assertThat(result.getPageCount()).isEqualTo(1);
-    	assertThat(result.getPageNumber()).isEqualTo(0);
+    	assertThat(result.getPageNumber()).isZero();
     	assertThat(result.getNextPage()).isNull();
     	assertThat(result.getContent()).containsExactly(media);
     }

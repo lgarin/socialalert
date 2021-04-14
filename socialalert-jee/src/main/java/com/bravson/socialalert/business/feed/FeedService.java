@@ -52,7 +52,7 @@ public class FeedService {
 
 	private List<String> buildRelatedUserIdList(String userId) {
 		UserProfileEntity profile = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
-		List<String> userIdList = new ArrayList<String>(profile.getFollowedUsers().size() + 1);
+		List<String> userIdList = new ArrayList<>(profile.getFollowedUsers().size() + 1);
 		profile.getFollowedUsers().stream().map(link -> link.getId().getTargetUserId()).forEach(userIdList::add);
 		userIdList.add(userId);
 		return userIdList;

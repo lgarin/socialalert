@@ -7,11 +7,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import com.bravson.socialalert.business.user.UserLinkService;
-import com.bravson.socialalert.business.user.activity.UserSessionCache;
 import com.bravson.socialalert.business.user.link.UserLinkEntity;
 import com.bravson.socialalert.business.user.link.UserLinkRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
+import com.bravson.socialalert.business.user.session.UserSessionCache;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.LinkedUserInfo;

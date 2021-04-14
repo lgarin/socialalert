@@ -113,7 +113,8 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 		
 		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.empty());
 		
-		assertThatThrownBy(() -> commentService.listMediaComments(mediaUri, userId, new PagingParameter(Instant.now(), 0, 10))).isInstanceOf(NotFoundException.class);
+		PagingParameter pagingParam = new PagingParameter(Instant.now(), 0, 10);
+		assertThatThrownBy(() -> commentService.listMediaComments(mediaUri, userId, pagingParam)).isInstanceOf(NotFoundException.class);
 		verifyNoInteractions(commentRepository, userService);
 	}
 	
@@ -192,7 +193,8 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 		
 		when(userService.findUserInfo(userId)).thenReturn(Optional.empty());
 		
-		assertThatThrownBy(() -> commentService.listUserComments(userId, new PagingParameter(Instant.now(), 0, 10))).isInstanceOf(NotFoundException.class);
+		PagingParameter pagingParam = new PagingParameter(Instant.now(), 0, 10);
+		assertThatThrownBy(() -> commentService.listUserComments(userId, pagingParam)).isInstanceOf(NotFoundException.class);
 		verifyNoInteractions(commentRepository, mediaRepository, approvalRepository);
 	}
 }

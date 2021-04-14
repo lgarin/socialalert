@@ -72,8 +72,8 @@ public class MediaClaimTest extends BaseIntegrationTest {
 		assertThat(result.getLatitude()).isCloseTo(46.95, Offset.offset(0.001));
 		assertThat(result.getCameraMaker()).isEqualTo("Apple");
 		assertThat(result.getCameraModel()).isEqualTo("iPhone 5");
-		assertThat(result.getHitCount()).isEqualTo(0);
-		assertThat(result.getLikeCount()).isEqualTo(0);
+		assertThat(result.getHitCount()).isZero();
+		assertThat(result.getLikeCount()).isZero();
 		assertThat(result.getCategory()).isEqualTo("cat1");
 		assertThat(result.getTags()).containsExactly("tag1", "tag2");
 	}
@@ -108,8 +108,8 @@ public class MediaClaimTest extends BaseIntegrationTest {
 		assertThat(result.getCameraModel()).isEqualTo("iPhone 6");
 		assertThat(result.getDuration()).isEqualTo(Duration.ofSeconds(23, 428000000));
 		assertThat(result.getCreation()).isEqualTo(LocalDateTime.of(2014, 12, 28, 14, 21, 49).atOffset(ZoneOffset.UTC).toInstant());
-		assertThat(result.getHitCount()).isEqualTo(0);
-		assertThat(result.getLikeCount()).isEqualTo(0);
+		assertThat(result.getHitCount()).isZero();
+		assertThat(result.getLikeCount()).isZero();
 		assertThat(result.getCategory()).isEqualTo("cat1");
 		assertThat(result.getTags()).containsExactly("tag1", "tag2");
 		assertThat(result.getPreviewFormat()).isEqualTo(MediaFileFormat.PREVIEW_MP4);

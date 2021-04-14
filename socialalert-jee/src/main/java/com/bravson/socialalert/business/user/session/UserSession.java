@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.user.activity;
+package com.bravson.socialalert.business.user.session;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -8,12 +8,12 @@ import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.NotFoundException;
 
-import com.bravson.socialalert.business.user.activity.UserSessionCache;
 import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
 import com.bravson.socialalert.business.user.authentication.AuthenticationRepository;
 import com.bravson.socialalert.business.user.authentication.LoginToken;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
+import com.bravson.socialalert.business.user.session.UserSessionCache;
 import com.bravson.socialalert.domain.user.CreateUserParameter;
 import com.bravson.socialalert.domain.user.LoginResponse;
 import com.bravson.socialalert.domain.user.LoginTokenResponse;
@@ -68,7 +68,7 @@ public class UserService {
 	@Transactional
 	public Optional<LoginTokenResponse> renewLogin(@NonNull String refreshToken, @NonNull String ipAddress) {
 		return authenticationRepository.refreshLoginToken(refreshToken)
-				.map(token -> toLoginTokenResponse(token));
+				.map(this::toLoginTokenResponse);
 	}
 	
 	private LoginTokenResponse toLoginTokenResponse(LoginToken loginToken) {

@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.user.activity;
+package com.bravson.socialalert.business.user.session;
 
 import java.time.Duration;
 import java.util.Optional;
@@ -53,7 +53,7 @@ public class UserSessionCache implements RemovalListener<String, UserSession> {
 	
 	@Override
 	public void onRemoval(String key, UserSession value, RemovalCause cause) {
-		logger.info("Session expired for " + key);
+		logger.info("Session expired for {}", key);
 		deletedSessionEvent.fire(value);
 	}
 	

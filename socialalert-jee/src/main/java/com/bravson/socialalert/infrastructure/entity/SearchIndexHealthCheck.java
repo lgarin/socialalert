@@ -37,10 +37,7 @@ public class SearchIndexHealthCheck implements HealthCheck {
 	
 	private boolean isAvailable() {
 		Response response = httpClient.target(healthUrl).request().get();
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			return false;
-		}
-		return true;
+		return response.getStatus() == Status.OK.getStatusCode();
 	}
 	
 }

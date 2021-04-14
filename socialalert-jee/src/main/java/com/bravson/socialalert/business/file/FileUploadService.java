@@ -69,7 +69,7 @@ public class FileUploadService {
 	}
 
 
-	private MediaFileFormat determineFileFormat(FileUploadParameter parameter) throws IOException {
+	private MediaFileFormat determineFileFormat(FileUploadParameter parameter) {
 		/*
 		String detectedContentType = Files.probeContentType(parameter.getInputFile().toPath());
 		MediaFileFormat detectedFileFormat = MediaFileFormat.fromMediaContentType(detectedContentType).orElseThrow(NotSupportedException::new);

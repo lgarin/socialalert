@@ -59,7 +59,7 @@ public class UserProfileRepository {
 	}
 
 	void handleNewFile(@Observes @NewEntity FileEntity file) {
-		findByUserId(file.getUserId()).ifPresent(profile -> profile.addFile(file));
+		findByUserId(file.getUserId()).ifPresent(UserProfileEntity::addFile);
 	}
 	
 	void handleNewMedia(@Observes @NewEntity MediaEntity media) {
@@ -71,18 +71,18 @@ public class UserProfileRepository {
 	}
 	
 	void handleNewComment(@Observes @NewEntity MediaCommentEntity comment) {
-		findByUserId(comment.getUserId()).ifPresent(profile -> profile.addComment(comment));
+		findByUserId(comment.getUserId()).ifPresent(UserProfileEntity::addComment);
 	}
 	
 	void handleMediaHit(@Observes @HitEntity MediaEntity media) {
-		findByUserId(media.getUserId()).ifPresent(profile -> profile.addMediaHit());
+		findByUserId(media.getUserId()).ifPresent(UserProfileEntity::addMediaHit);
 	}
 	
 	void handleMediaLiked(@Observes @LikedEntity MediaEntity media) {
-		findByUserId(media.getUserId()).ifPresent(profile -> profile.addMediaLike());
+		findByUserId(media.getUserId()).ifPresent(UserProfileEntity::addMediaLike);
 	}
 	
 	void handleMediaDisliked(@Observes @DislikedEntity MediaEntity media) {
-		findByUserId(media.getUserId()).ifPresent(profile -> profile.addMediaDislike());
+		findByUserId(media.getUserId()).ifPresent(UserProfileEntity::addMediaDislike);
 	}
 }

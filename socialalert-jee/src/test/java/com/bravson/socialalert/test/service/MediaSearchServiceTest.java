@@ -44,7 +44,7 @@ public class MediaSearchServiceTest extends BaseServiceTest {
 		when(mediaRepository.searchMedia(parameter, paging)).thenReturn(new QueryResult<>(Collections.emptyList(), 0, paging));
 		
 		QueryResult<MediaInfo> result = searchService.searchMedia(parameter, paging);
-		assertThat(result.getPageCount()).isEqualTo(0);
+		assertThat(result.getPageCount()).isZero();
 		assertThat(result.getContent()).isEmpty();
 	}
 	

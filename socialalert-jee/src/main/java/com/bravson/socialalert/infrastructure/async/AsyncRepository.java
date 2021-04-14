@@ -86,6 +86,7 @@ public class AsyncRepository implements Runnable {
 			
 			@Override
 			public void beforeCompletion() {
+				// nothing to do
 			}
 			
 			@Override

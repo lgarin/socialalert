@@ -17,7 +17,7 @@ import com.bravson.socialalert.business.media.approval.MediaApprovalEntity;
 import com.bravson.socialalert.business.media.approval.MediaApprovalRepository;
 import com.bravson.socialalert.business.media.feeling.MediaFeelingRepository;
 import com.bravson.socialalert.business.user.UserInfoService;
-import com.bravson.socialalert.business.user.activity.UserSessionCache;
+import com.bravson.socialalert.business.user.session.UserSessionCache;
 import com.bravson.socialalert.domain.media.MediaDetail;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 

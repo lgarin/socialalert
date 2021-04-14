@@ -16,9 +16,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
-import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.media.MediaEntity;
-import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
 import com.bravson.socialalert.business.user.authentication.LoginToken;
@@ -211,7 +209,7 @@ public class UserProfileEntity extends VersionedEntity {
 		return info;
 	}
 	
-	public void addFile(FileEntity file) {
+	public void addFile() {
 		statistic.incFileCount();
 		setLastActivity(Instant.now());
 	}
@@ -234,7 +232,7 @@ public class UserProfileEntity extends VersionedEntity {
 		setLastActivity(Instant.now());
 	}
 	
-	public void addComment(MediaCommentEntity comment) {
+	public void addComment() {
 		statistic.incCommentCount();
 		setLastActivity(Instant.now());
 	}

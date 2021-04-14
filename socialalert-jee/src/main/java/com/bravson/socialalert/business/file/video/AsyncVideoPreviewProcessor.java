@@ -46,7 +46,7 @@ public class AsyncVideoPreviewProcessor {
 	AsyncRepository asyncRepository;
 	
 	@Transactional(value = TxType.NEVER)
-	public void onAsyncEvent(@ObservesAsync AsyncVideoPreviewEvent event) throws Exception {
+	public void onAsyncEvent(@ObservesAsync AsyncVideoPreviewEvent event) {
 		try {
 			fileRepository.findFile(event.getFileUri()).ifPresent(this::createPreview);
 		} catch (Exception e) {
@@ -61,14 +61,14 @@ public class AsyncVideoPreviewProcessor {
 			File previewFile = fileStore.createEmptyFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), videoFileProcessor.getPreviewFormat());
 			videoFileProcessor.createPreview(inputFile, previewFile);
 			// use new transaction from repository
-			fileRepository.addVariant(fileEntity.getId(), buildFileMetadata(previewFile, videoFileProcessor.getPreviewFormat(), fileMetadata));
+			fileRepository.addVariant(fileEntity.getId(), buildFileMetadata(previewFile, videoFileProcessor.getPreviewFormat()));
 			asyncRepository.fireAsync(AsyncMediaProcessedEvent.of(fileEntity.getId()));
 		} catch (IOException e) {
 			throw new UncheckedIOException("Cannot create preview video", e);
 		}
 	}
 	
-	private FileMetadata buildFileMetadata(File file, MediaFileFormat fileFormat, FileMetadata inputFileMetadata) throws IOException {
+	private FileMetadata buildFileMetadata(File file, MediaFileFormat fileFormat) throws IOException {
 		return FileMetadata.builder()
 			.md5(fileStore.computeMd5Hex(file))
 			.timestamp(Instant.now())

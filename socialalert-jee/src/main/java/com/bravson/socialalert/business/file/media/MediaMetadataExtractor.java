@@ -82,14 +82,19 @@ public class MediaMetadataExtractor {
 			throw new IOException("Cannot process file " + inputFile);
 		}
 		
-		JsonReader reader = Json.createReader(new StringReader(output.toString()));
-		JsonArray array = reader.readArray();
-		if (array == null) {
-			logger.error(output.toString());
-			throw new IOException("Cannot process file " + inputFile);
+		try (JsonReader reader = Json.createReader(new StringReader(output.toString()))) {
+			JsonArray array = reader.readArray();
+			if (array == null) {
+				logger.error(output.toString());
+				throw new IOException("Cannot process file " + inputFile);
+			}
+	
+			JsonObject item = array.get(0).asJsonObject();
+			return parseMediaMetadata(item);
 		}
+	}
 
-		JsonObject item = array.get(0).asJsonObject();
+	private MediaMetadata parseMediaMetadata(JsonObject item) {
 		return MediaMetadata.builder()
 			.width(readInteger(item, "ImageWidth"))
 			.height(readInteger(item, "ImageHeight"))
@@ -133,7 +138,7 @@ public class MediaMetadataExtractor {
 		if (seconds != null) {
 			int intSeconds = seconds.intValue();
 			int intMilliseconds = (int) ((seconds.doubleValue() - intSeconds) * 1000.0);
-			return Duration.ofSeconds(intSeconds, intMilliseconds * 1_000_000);
+			return Duration.ofSeconds(intSeconds, intMilliseconds * 1_000_000L);
 		}
 		return null;
 	}

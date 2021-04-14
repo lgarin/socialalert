@@ -10,7 +10,6 @@ import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -137,7 +136,7 @@ public class FileFacade {
 	@APIResponse(responseCode = "200", description = "File metadata are available in the response.", content=@Content(schema=@Schema(implementation=FileInfo.class)))
 	@APIResponse(responseCode = "404", description = "No media exists with this uri.")
 	public FileInfo getMetadata(
-			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("mediaUri") String fileUri) throws IOException {
+			@Parameter(description="The relative file uri.", required=true) @NotEmpty @PathParam("mediaUri") String fileUri) {
 		return fileSearchService.findFileByUri(fileUri).orElseThrow(NotFoundException::new);
 	}
 	
@@ -147,7 +146,7 @@ public class FileFacade {
 	@SecurityRequirement(name = "JWT")
 	@Path("/list/new")
 	@APIResponse(responseCode = "200", description = "List of file metadata is available in the response.", content=@Content(schema=@Schema(implementation=FileInfo.class, type=SchemaType.ARRAY)))
-	public List<FileInfo> listNewFiles() throws IOException {
+	public List<FileInfo> listNewFiles() {
 		return fileSearchService.findNewFilesByUserId(userAccess.get().getUserId());
 	}
 	
@@ -177,7 +176,7 @@ public class FileFacade {
     @APIResponse(responseCode = "413", description = "The file is too large.")
 	@APIResponse(responseCode = "415", description = "The media is not in the expected format.")
 	public Response uploadPicture(
-			@RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile) throws IOException, ServletException {
+			@RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile) throws IOException {
 		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), userAccess.get()));
 	}
 	
@@ -190,7 +189,7 @@ public class FileFacade {
     @APIResponse(responseCode = "413", description = "The file is too large.")
     @APIResponse(responseCode = "415", description = "The media is not in the expected format.")
 	public Response uploadVideo(
-		    @RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile) throws IOException, ServletException {
+		    @RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile) throws IOException {
 		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), userAccess.get()));
 	}
 
@@ -211,7 +210,7 @@ public class FileFacade {
     @APIResponse(responseCode = "413", description = "The file is too large.")
 	@APIResponse(responseCode = "415", description = "The media is not in the expected format.")
 	public UserDetail uploadAvatar(
-			@RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile) throws IOException, ServletException {
+			@RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile) throws IOException {
 		return userAvatarService.storeAvatar(createUploadParameter(inputFile), userAccess.get());
 	}
 
@@ -223,7 +222,7 @@ public class FileFacade {
 	@APIResponse(responseCode = "200", description = "File will be streamed.")
 	@APIResponse(responseCode = "404", description = "Specified image could not be found.")
 	public Response smallAvatar(
-			@Parameter(description="The user id to return", required=true) @NotEmpty @PathParam("imageUri") String imageUri) throws NotFoundException, IOException {
+			@Parameter(description="The user id to return", required=true) @NotEmpty @PathParam("imageUri") String imageUri) throws IOException {
 		return createStreamResponse(userAvatarService.getSmallImage(imageUri));
 	}
 	
@@ -235,7 +234,7 @@ public class FileFacade {
 	@APIResponse(responseCode = "200", description = "File will be streamed.")
 	@APIResponse(responseCode = "404", description = "Specified image could not be found.")
 	public Response largeAvatar(
-			@Parameter(description="The user id to return", required=true) @NotEmpty @PathParam("imageUri") String imageUri) throws NotFoundException, IOException {
+			@Parameter(description="The user id to return", required=true) @NotEmpty @PathParam("imageUri") String imageUri) throws IOException {
 		return createStreamResponse(userAvatarService.getLargeImage(imageUri));
 	}
 }

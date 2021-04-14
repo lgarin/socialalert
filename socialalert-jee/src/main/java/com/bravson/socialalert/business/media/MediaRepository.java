@@ -124,7 +124,7 @@ public class MediaRepository {
 
 		JsonObject aggResult = result.aggregation(feelingByGeoHashKey);
 		JsonArray buckets = aggResult.get("buckets").getAsJsonArray();
-		List<GeoStatistic> resultList = new ArrayList<GeoStatistic>(buckets.size());
+		List<GeoStatistic> resultList = new ArrayList<>(buckets.size());
 		for (JsonElement item : buckets) {
 			resultList.add(buildGeoStatistic(item));
 		}

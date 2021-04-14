@@ -12,7 +12,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.bravson.socialalert.business.media.query.MediaQueryEntity;
 import com.bravson.socialalert.business.media.query.MediaQueryService;
-import com.bravson.socialalert.business.user.eventsink.UserEventSink;
 import com.bravson.socialalert.infrastructure.entity.HitEntity;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
@@ -24,9 +23,6 @@ import lombok.NonNull;
 public class MediaNotificationService implements Runnable {
 
 	ScheduledExecutorService scheduler;
-	
-	@ConfigProperty(name = "async.threadCount", defaultValue = "1")
-	int threadCount;
 	
 	@ConfigProperty(name = "media.notificationRate", defaultValue = "PT1m")
 	Duration notificationRate;
@@ -40,8 +36,7 @@ public class MediaNotificationService implements Runnable {
 	MediaQueryService queryService;
 	
 	void onStart(@Observes StartupEvent ev) {
-		scheduler = Executors.newScheduledThreadPool(threadCount);
-		scheduler.submit(this);
+		scheduler = Executors.newScheduledThreadPool(1);
 		scheduler.scheduleWithFixedDelay(this, notificationRate.toMillis(), notificationRate.toMillis(), TimeUnit.MILLISECONDS);
 	}
 

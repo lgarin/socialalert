@@ -23,7 +23,7 @@ import com.bravson.socialalert.domain.media.UpsertMediaParameter;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 
-public class BaseRepositoryTest extends Assertions {
+public abstract class BaseRepositoryTest extends Assertions {
 
 	@PersistenceContext
 	EntityManager entityManager;

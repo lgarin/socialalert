@@ -8,7 +8,6 @@ import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -48,7 +47,7 @@ import com.bravson.socialalert.business.user.UserLinkService;
 import com.bravson.socialalert.business.user.UserProfileService;
 import com.bravson.socialalert.business.user.UserService;
 import com.bravson.socialalert.business.user.activity.UserActivity;
-import com.bravson.socialalert.business.user.eventsink.UserEventSink;
+import com.bravson.socialalert.business.user.notification.UserEventSink;
 import com.bravson.socialalert.domain.media.comment.UserCommentDetail;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
@@ -111,7 +110,7 @@ public class UserFacade {
 	@Operation(summary="Login an existing user.")
 	@APIResponse(responseCode = "200", description = "Login successfull.", content=@Content(schema=@Schema(implementation=LoginResponse.class)))
 	@APIResponse(responseCode = "401", description = "Login failed.")
-	public Response login(@Parameter(required=true) @Valid @NotNull UserCredential param) throws ServletException {
+	public Response login(@Parameter(required=true) @Valid @NotNull UserCredential param) {
 		LoginResponse loginResponse = userService.login(param, userAccess.get().getIpAddress()).orElse(null);
 		if (loginResponse == null) {
 			return Response.status(Status.UNAUTHORIZED).build();
@@ -127,7 +126,7 @@ public class UserFacade {
 	@Operation(summary="Renew an existing login using the previous refresh token.")
 	@APIResponse(responseCode = "200", description = "Login successfull.", content=@Content(schema=@Schema(implementation=LoginResponse.class)))
 	@APIResponse(responseCode = "401", description = "Login failed.")
-	public Response renewLogin(@Parameter(required=true) @Valid @NotNull String refreshToken) throws ServletException {
+	public Response renewLogin(@Parameter(required=true) @Valid @NotNull String refreshToken) {
 		LoginTokenResponse tokenResponse = userService.renewLogin(refreshToken, userAccess.get().getIpAddress()).orElse(null);
 		if (tokenResponse == null) {
 			return Response.status(Status.UNAUTHORIZED).build();
@@ -141,7 +140,7 @@ public class UserFacade {
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "204", description = "Logout successfull.")
 	@APIResponse(responseCode = "400", description = "Logout failed.")
-	public Response logout(@Context SecurityContext securityContext) throws ServletException {
+	public Response logout(@Context SecurityContext securityContext) {
 		if (securityContext.getUserPrincipal() instanceof JsonWebToken) {
 			JsonWebToken token = (JsonWebToken) securityContext.getUserPrincipal();
 			if (!userService.logout("Bearer" + token.getRawToken())) {
@@ -160,7 +159,7 @@ public class UserFacade {
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "204", description = "Password changed")
 	@APIResponse(responseCode = "401", description = "Invalid credentials")
-	public Response changePassword(@Parameter(required=true) @Valid @NotNull ChangePasswordParameter param) throws ServletException {
+	public Response changePassword(@Parameter(required=true) @Valid @NotNull ChangePasswordParameter param) {
 		LoginResponse loginResponse = userService.login(param, userAccess.get().getIpAddress()).orElse(null);
 		if (loginResponse == null) {
 			return Response.status(Status.UNAUTHORIZED).build();
@@ -189,7 +188,7 @@ public class UserFacade {
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "Specified user returned with success.", content=@Content(schema=@Schema(implementation=UserInfo.class)))
 	@APIResponse(responseCode = "404", description = "Specified user could not be found.")
-	public UserInfo LinkedUserInfo(
+	public UserInfo linkedUserInfo(
 			@Parameter(description="The user id to return", required=true) @NotEmpty @PathParam("userId") String userId) {
 		UserInfo userInfo = userService.findUserInfo(userId).orElseThrow(NotFoundException::new);
 		Instant followedSince = linkService.findLinkCreationTimetamp(userAccess.get(), userId).orElse(null);
@@ -322,7 +321,7 @@ public class UserFacade {
 	@Operation(summary="Delete an existing user.")
 	@APIResponse(responseCode = "204", description = "Delete successfull.")
 	@APIResponse(responseCode = "401", description = "Invalid credentials")
-	public Response delete(@Parameter(required=true) @Valid @NotNull UserCredential param) throws ServletException {
+	public Response delete(@Parameter(required=true) @Valid @NotNull UserCredential param) {
 		LoginResponse loginResponse = userService.login(param, userAccess.get().getIpAddress()).orElse(null);
 		if (loginResponse == null) {
 			return Response.status(Status.UNAUTHORIZED).build();

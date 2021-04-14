@@ -32,8 +32,8 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     	assertThat(result.getMediaUri()).isEqualTo(media.getId());
     	assertThat(result.getUserId()).isEqualTo(userAccess.getUserId());
     	assertThat(result.getComment()).isEqualTo(comment);
-    	assertThat(result.getLikeCount()).isEqualTo(0);
-    	assertThat(result.getDislikeCount()).isEqualTo(0);
+    	assertThat(result.getLikeCount()).isZero();
+    	assertThat(result.getDislikeCount()).isZero();
     }
 
     @Test
@@ -63,7 +63,7 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     	persistAndIndex(new MediaCommentEntity(media, "comment 3", userAccess));
     	QueryResult<MediaCommentEntity> result = repository.searchByMediaUri(media.getId(), new PagingParameter(instant, 0, 1));
     	assertThat(result.getPageCount()).isEqualTo(2);
-    	assertThat(result.getPageNumber()).isEqualTo(0);
+    	assertThat(result.getPageNumber()).isZero();
     	assertThat(result.getContent()).containsExactly(entity2);
     	assertThat(result.getNextPage()).isEqualTo(new PagingParameter(instant, 1, 1));
     }
@@ -77,8 +77,8 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     	persistAndIndex(new MediaCommentEntity(media, "comment 3", userAccess));
     	
     	QueryResult<MediaCommentEntity> result = repository.searchByMediaUri("xyz", new PagingParameter(Instant.now(), 0, 10));
-    	assertThat(result.getPageCount()).isEqualTo(0);
-    	assertThat(result.getPageNumber()).isEqualTo(0);
+    	assertThat(result.getPageCount()).isZero();
+    	assertThat(result.getPageNumber()).isZero();
     	assertThat(result.getNextPage()).isNull();
     	assertThat(result.getContent()).isEmpty();
     }
@@ -94,7 +94,7 @@ public class MediaCommentRepositoryTest extends BaseRepositoryTest {
     	persistAndIndex(new MediaCommentEntity(media, "comment 3", userAccess));
     	QueryResult<MediaCommentEntity> result = repository.searchByUserId(userAccess.getUserId(), new PagingParameter(instant, 0, 1));
     	assertThat(result.getPageCount()).isEqualTo(2);
-    	assertThat(result.getPageNumber()).isEqualTo(0);
+    	assertThat(result.getPageNumber()).isZero();
     	assertThat(result.getContent()).containsExactly(entity2);
     	assertThat(result.getNextPage()).isEqualTo(new PagingParameter(instant, 1, 1));
     }

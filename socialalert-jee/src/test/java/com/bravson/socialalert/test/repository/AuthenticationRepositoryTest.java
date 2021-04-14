@@ -93,7 +93,7 @@ public class AuthenticationRepositoryTest {
 	}
 	
 	@Test
-	@Disabled
+	@Disabled("Keycloak user would be permanent")
 	public void createNewUser() {
 		CreateUserParameter param = CreateUserParameter.builder().email("test2@test.com").username("test2@test.com").password("123").build();
 		boolean result = repository.createUser(param);

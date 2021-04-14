@@ -19,6 +19,7 @@ import com.bravson.socialalert.business.file.FileUploadService;
 import com.bravson.socialalert.business.file.MediaFileStore;
 import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
+import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.file.FileInfo;
 import com.bravson.socialalert.domain.media.format.MediaFileConstants;
@@ -85,7 +86,8 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.of(fileEntity));
 		
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
-		assertThatExceptionOfType(ConflictException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, createUserAccess(userId, ipAddress)));
+		UserAccess userAccess = createUserAccess(userId, ipAddress);
+		assertThatExceptionOfType(ConflictException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, userAccess));
 		
 		verifyNoInteractions(logger, newFileEvent);
 	}
@@ -137,12 +139,11 @@ public class FileUploadServiceTest extends BaseServiceTest {
 	
 	@Test
 	public void uploadInvalidPicture() throws Exception {
-		String userId = "test";
-		String ipAddress = "1.2.3.4";
 		File inputFile = new File("src/test/resources/media/IMG_0397.JPG");
 		
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType("image/bmp").build();
-		assertThatExceptionOfType(NotSupportedException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, createUserAccess(userId, ipAddress)));
+		UserAccess userAccess = createUserAccess("test", "1.2.3.4");
+		assertThatExceptionOfType(NotSupportedException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, userAccess));
 		verifyNoInteractions(logger, userService, newFileEvent);
 	}
 	

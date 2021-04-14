@@ -46,7 +46,7 @@ public class FeedServiceTest extends BaseServiceTest {
 		
 		QueryResult<FeedItemInfo> result = feedService.getFeed("test", null, null, paging);
 		assertThat(result.getContent()).isEmpty();
-		assertThat(result.getPageCount()).isEqualTo(0);
+		assertThat(result.getPageCount()).isZero();
 	}
 	
 	@Test

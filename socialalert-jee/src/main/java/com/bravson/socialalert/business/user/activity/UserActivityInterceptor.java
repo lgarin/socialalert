@@ -8,6 +8,8 @@ import javax.interceptor.InvocationContext;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import com.bravson.socialalert.business.user.session.UserSessionCache;
+
 @UserActivity
 @Interceptor
 @Priority(2)

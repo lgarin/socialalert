@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.user.eventsink;
+package com.bravson.socialalert.business.user.notification;
 
 import java.time.Instant;
 import java.util.Collections;
@@ -14,7 +14,7 @@ import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
 
-import com.bravson.socialalert.business.user.activity.UserSession;
+import com.bravson.socialalert.business.user.session.UserSession;
 import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;

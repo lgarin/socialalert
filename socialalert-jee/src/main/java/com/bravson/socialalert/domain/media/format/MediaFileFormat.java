@@ -7,8 +7,8 @@ import static com.bravson.socialalert.domain.media.format.MediaFileConstants.MOV
 import static com.bravson.socialalert.domain.media.format.MediaFileConstants.MP4_EXTENSION;
 import static com.bravson.socialalert.domain.media.format.MediaFileConstants.MP4_MEDIA_TYPE;
 
-import java.util.EnumSet;
 import java.util.Optional;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,11 +26,11 @@ public enum MediaFileFormat implements FileFormat, Comparable<MediaFileFormat> {
 	MEDIA_MOV(MOV_MEDIA_TYPE, "." + MOV_EXTENSION, MediaSizeVariant.MEDIA),
 	MEDIA_MP4(MP4_MEDIA_TYPE, "." + MP4_EXTENSION, MediaSizeVariant.MEDIA);
 	
-	private static EnumSet<MediaFileFormat> MEDIA_SET = EnumSet.of(MEDIA_MOV, MEDIA_MP4, MEDIA_JPG);
+	private static final Set<MediaFileFormat> MEDIA_SET = Set.of(MEDIA_MOV, MEDIA_MP4, MEDIA_JPG);
 	
-	public static EnumSet<MediaFileFormat> VIDEO_SET = EnumSet.of(MEDIA_MOV, MEDIA_MP4, PREVIEW_MP4);
+	public static final Set<MediaFileFormat> VIDEO_SET = Set.of(MEDIA_MOV, MEDIA_MP4, PREVIEW_MP4);
 	
-	public static EnumSet<MediaFileFormat> PICTURE_SET = EnumSet.of(MEDIA_JPG, PREVIEW_JPG, THUMBNAIL_JPG);
+	public static final Set<MediaFileFormat> PICTURE_SET = Set.of(MEDIA_JPG, PREVIEW_JPG, THUMBNAIL_JPG);
 	
 	public static Optional<MediaFileFormat> fromMediaContentType(@NonNull String contentType) {
 		return MEDIA_SET.stream().filter(f -> f.getContentType().equals(contentType)).findAny();

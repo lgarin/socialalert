@@ -29,5 +29,6 @@ public class MediaCommentInfo implements UserContent {
 	private UserInfo creator;
 	
 	public void applyPrivacy() {
+		// nothing to do
 	}
 }

@@ -5,7 +5,7 @@ import javax.inject.Inject;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.bravson.socialalert.business.user.activity.UserSessionCache;
+import com.bravson.socialalert.business.user.session.UserSessionCache;
 
 import io.quarkus.test.junit.QuarkusTest;
 
