@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import com.bravson.socialalert.business.file.FileRepository;
 import com.bravson.socialalert.business.file.FileSearchService;
 import com.bravson.socialalert.business.file.entity.FileEntity;
+import com.bravson.socialalert.business.file.entity.FileRepository;
 import com.bravson.socialalert.business.file.entity.FileState;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.file.FileInfo;

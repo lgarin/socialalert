@@ -8,6 +8,9 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import com.bravson.socialalert.business.file.entity.FileEntity;
+import com.bravson.socialalert.business.file.entity.FileMetadata;
+import com.bravson.socialalert.business.file.entity.FileRepository;
+import com.bravson.socialalert.business.file.exchange.FileDownloadResponse;
 import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
@@ -28,7 +31,7 @@ public class FileReadService {
 	@Inject
 	FileStore fileStore;
 	
-	private Optional<FileResponse> createFileResponse(String fileUri, MediaSizeVariant sizeVariant) throws IOException {
+	private Optional<FileDownloadResponse> createFileResponse(String fileUri, MediaSizeVariant sizeVariant) throws IOException {
 		FileEntity fileEntity = mediaRepository.findFile(fileUri).orElse(null);
 		if (fileEntity == null) {
 			return Optional.empty();
@@ -40,10 +43,10 @@ public class FileReadService {
 		}
 		FileMetadata fileMetadata = fileEntity.getFileMetadata();
 		File file = fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), fileFormat);
-		return Optional.of(new FileResponse(file, fileFormat));
+		return Optional.of(new FileDownloadResponse(file, fileFormat));
 	}
 	
-	private Optional<FileResponse> createFileResponse(String fileUri, MediaFileFormat fileFormat) throws IOException {
+	private Optional<FileDownloadResponse> createFileResponse(String fileUri, MediaFileFormat fileFormat) throws IOException {
 		FileEntity fileEntity = mediaRepository.findFile(fileUri).orElse(null);
 		if (fileEntity == null) {
 			return Optional.empty();
@@ -53,22 +56,22 @@ public class FileReadService {
 		if (file == null) {
 			return Optional.empty();
 		}
-		return Optional.of(new FileResponse(file, fileFormat));
+		return Optional.of(new FileDownloadResponse(file, fileFormat));
 	}
 
-	public Optional<FileResponse> download(@NonNull String fileUri) throws IOException {
+	public Optional<FileDownloadResponse> download(@NonNull String fileUri) throws IOException {
 		return createFileResponse(fileUri, MediaSizeVariant.MEDIA);
 	}
 	
-	public Optional<FileResponse> preview(@NonNull String fileUri) throws IOException {
+	public Optional<FileDownloadResponse> preview(@NonNull String fileUri) throws IOException {
 		return createFileResponse(fileUri, MediaFileFormat.PREVIEW_JPG);
 	}
 	
-	public Optional<FileResponse> thumbnail(@NonNull String fileUri) throws IOException {
+	public Optional<FileDownloadResponse> thumbnail(@NonNull String fileUri) throws IOException {
 		return createFileResponse(fileUri, MediaFileFormat.THUMBNAIL_JPG);
 	}
 	
-	public Optional<FileResponse> stream(@NonNull String fileUri) throws IOException {
+	public Optional<FileDownloadResponse> stream(@NonNull String fileUri) throws IOException {
 		return createFileResponse(fileUri, MediaFileFormat.PREVIEW_MP4);
 	}
 }

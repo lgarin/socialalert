@@ -15,7 +15,7 @@ import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.IdentifierBrid
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
-import com.bravson.socialalert.business.media.MediaEntity;
+import com.bravson.socialalert.business.media.entity.MediaEntity;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;

@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.file;
+package com.bravson.socialalert.business.file.exchange;
 
 import java.io.File;
 

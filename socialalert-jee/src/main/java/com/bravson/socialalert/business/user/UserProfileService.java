@@ -14,6 +14,7 @@ import javax.ws.rs.NotFoundException;
 import com.bravson.socialalert.business.user.authentication.AuthenticationRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.user.UserDetail;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.domain.user.privacy.UserPrivacy;

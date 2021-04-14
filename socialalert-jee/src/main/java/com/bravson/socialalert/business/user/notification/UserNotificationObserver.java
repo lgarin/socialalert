@@ -4,10 +4,10 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.media.entity.MediaEntity;
 import com.bravson.socialalert.business.user.link.UserLinkEntity;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.user.notification.UserNotification;
 import com.bravson.socialalert.domain.user.notification.UserNotificationType;
 import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
@@ -25,7 +25,7 @@ import lombok.NonNull;
 @Service
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class UserNotificationService {
+public class UserNotificationObserver {
 
 	@Inject
 	@NonNull

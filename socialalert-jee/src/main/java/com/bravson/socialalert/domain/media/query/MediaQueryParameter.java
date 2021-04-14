@@ -5,8 +5,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 
-import com.bravson.socialalert.business.media.MediaConstants;
 import com.bravson.socialalert.domain.location.GeoArea;
+import com.bravson.socialalert.domain.media.MediaConstants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.media;
+package com.bravson.socialalert.business.media.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

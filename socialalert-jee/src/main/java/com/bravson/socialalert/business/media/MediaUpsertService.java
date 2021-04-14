@@ -6,10 +6,12 @@ import javax.transaction.Transactional;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
 
-import com.bravson.socialalert.business.file.FileRepository;
 import com.bravson.socialalert.business.file.entity.FileEntity;
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.file.entity.FileRepository;
+import com.bravson.socialalert.business.media.entity.MediaEntity;
+import com.bravson.socialalert.business.media.entity.MediaRepository;
 import com.bravson.socialalert.business.user.UserInfoService;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.media.UpsertMediaParameter;
 import com.bravson.socialalert.infrastructure.entity.NewEntity;

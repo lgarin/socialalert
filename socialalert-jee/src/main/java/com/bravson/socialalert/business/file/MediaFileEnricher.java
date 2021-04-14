@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.file.media;
+package com.bravson.socialalert.business.file;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,10 +7,12 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import com.bravson.socialalert.business.file.FileMetadata;
-import com.bravson.socialalert.business.file.FileRepository;
-import com.bravson.socialalert.business.file.MediaFileStore;
 import com.bravson.socialalert.business.file.entity.FileEntity;
+import com.bravson.socialalert.business.file.entity.FileMetadata;
+import com.bravson.socialalert.business.file.entity.FileRepository;
+import com.bravson.socialalert.business.file.media.AsyncMediaProcessedEvent;
+import com.bravson.socialalert.business.file.media.MediaMetadata;
+import com.bravson.socialalert.business.file.media.MediaMetadataExtractor;
 import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.business.file.video.AsyncVideoPreviewEvent;
 import com.bravson.socialalert.domain.media.format.MediaSizeVariant;

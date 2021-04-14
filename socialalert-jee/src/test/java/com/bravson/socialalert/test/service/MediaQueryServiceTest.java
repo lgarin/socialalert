@@ -8,12 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import com.bravson.socialalert.business.media.MediaRepository;
+import com.bravson.socialalert.business.media.MediaQueryService;
+import com.bravson.socialalert.business.media.entity.MediaRepository;
 import com.bravson.socialalert.business.media.query.ExecuteQueryEvent;
 import com.bravson.socialalert.business.media.query.MediaQueryEntity;
 import com.bravson.socialalert.business.media.query.MediaQueryRepository;
-import com.bravson.socialalert.business.media.query.MediaQueryService;
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.media.query.MediaQueryInfo;
 import com.bravson.socialalert.domain.media.query.MediaQueryParameter;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;

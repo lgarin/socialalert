@@ -41,13 +41,13 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.annotations.SseElementType;
 
-import com.bravson.socialalert.business.media.comment.MediaCommentService;
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.media.MediaCommentService;
 import com.bravson.socialalert.business.user.UserLinkService;
 import com.bravson.socialalert.business.user.UserProfileService;
 import com.bravson.socialalert.business.user.UserService;
 import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.business.user.notification.UserEventSink;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.media.comment.UserCommentDetail;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;

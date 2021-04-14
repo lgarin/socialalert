@@ -5,9 +5,10 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import com.bravson.socialalert.business.media.MediaEntity;
+import com.bravson.socialalert.business.feed.item.FeedItemRepository;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.media.entity.MediaEntity;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.feed.FeedActivity;
 import com.bravson.socialalert.infrastructure.entity.DislikedEntity;
 import com.bravson.socialalert.infrastructure.entity.HitEntity;

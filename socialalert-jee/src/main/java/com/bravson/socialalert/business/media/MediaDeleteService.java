@@ -5,6 +5,8 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import com.bravson.socialalert.business.media.entity.MediaEntity;
+import com.bravson.socialalert.business.media.entity.MediaRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
 import com.bravson.socialalert.infrastructure.layer.Service;

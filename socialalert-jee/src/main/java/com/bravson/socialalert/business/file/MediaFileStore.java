@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
+import com.bravson.socialalert.business.file.entity.FileMetadata;
 import com.bravson.socialalert.business.file.media.MediaFileProcessor;
 import com.bravson.socialalert.business.file.picture.PictureFileProcessor;
 import com.bravson.socialalert.business.file.store.FileStore;

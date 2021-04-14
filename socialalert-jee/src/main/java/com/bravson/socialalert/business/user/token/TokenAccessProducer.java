@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.user;
+package com.bravson.socialalert.business.user.token;
 
 import java.util.Optional;
 

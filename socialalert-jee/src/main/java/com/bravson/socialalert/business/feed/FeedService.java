@@ -10,6 +10,8 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 
+import com.bravson.socialalert.business.feed.item.FeedItemEntity;
+import com.bravson.socialalert.business.feed.item.FeedItemRepository;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;

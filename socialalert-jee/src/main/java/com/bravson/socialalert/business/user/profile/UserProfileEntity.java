@@ -16,11 +16,11 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
-import com.bravson.socialalert.business.media.MediaEntity;
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.media.entity.MediaEntity;
 import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
 import com.bravson.socialalert.business.user.authentication.LoginToken;
 import com.bravson.socialalert.business.user.link.UserLinkEntity;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.media.MediaKind;
 import com.bravson.socialalert.domain.user.Gender;
 import com.bravson.socialalert.domain.user.LoginResponse;

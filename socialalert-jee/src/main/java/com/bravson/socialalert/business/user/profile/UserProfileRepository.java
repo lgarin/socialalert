@@ -2,20 +2,11 @@ package com.bravson.socialalert.business.user.profile;
 
 import java.util.Optional;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import com.bravson.socialalert.business.file.entity.FileEntity;
-import com.bravson.socialalert.business.media.MediaEntity;
-import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
-import com.bravson.socialalert.business.user.UserAccessToken;
 import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
-import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
-import com.bravson.socialalert.infrastructure.entity.DislikedEntity;
-import com.bravson.socialalert.infrastructure.entity.HitEntity;
-import com.bravson.socialalert.infrastructure.entity.LikedEntity;
-import com.bravson.socialalert.infrastructure.entity.NewEntity;
+import com.bravson.socialalert.business.user.token.UserAccessToken;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 
@@ -58,31 +49,4 @@ public class UserProfileRepository {
 		return result;
 	}
 
-	void handleNewFile(@Observes @NewEntity FileEntity file) {
-		findByUserId(file.getUserId()).ifPresent(UserProfileEntity::addFile);
-	}
-	
-	void handleNewMedia(@Observes @NewEntity MediaEntity media) {
-		findByUserId(media.getUserId()).ifPresent(profile -> profile.addMedia(media));
-	}
-	
-	void handleDeleteMedia(@Observes @DeleteEntity MediaEntity media) {
-		findByUserId(media.getUserId()).ifPresent(profile -> profile.removeMedia(media));
-	}
-	
-	void handleNewComment(@Observes @NewEntity MediaCommentEntity comment) {
-		findByUserId(comment.getUserId()).ifPresent(UserProfileEntity::addComment);
-	}
-	
-	void handleMediaHit(@Observes @HitEntity MediaEntity media) {
-		findByUserId(media.getUserId()).ifPresent(UserProfileEntity::addMediaHit);
-	}
-	
-	void handleMediaLiked(@Observes @LikedEntity MediaEntity media) {
-		findByUserId(media.getUserId()).ifPresent(UserProfileEntity::addMediaLike);
-	}
-	
-	void handleMediaDisliked(@Observes @DislikedEntity MediaEntity media) {
-		findByUserId(media.getUserId()).ifPresent(UserProfileEntity::addMediaDislike);
-	}
 }

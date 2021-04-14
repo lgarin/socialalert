@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.file;
+package com.bravson.socialalert.business.file.entity;
 
 import java.io.Serializable;
 import java.time.Instant;

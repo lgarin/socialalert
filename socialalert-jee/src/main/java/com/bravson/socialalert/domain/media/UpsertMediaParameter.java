@@ -10,7 +10,6 @@ import javax.validation.constraints.Size;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-import com.bravson.socialalert.business.media.MediaConstants;
 import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
 

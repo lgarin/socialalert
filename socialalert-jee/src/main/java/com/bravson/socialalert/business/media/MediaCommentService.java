@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.media.comment;
+package com.bravson.socialalert.business.media;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,11 +9,13 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 
-import com.bravson.socialalert.business.media.MediaRepository;
 import com.bravson.socialalert.business.media.approval.CommentApprovalEntity;
 import com.bravson.socialalert.business.media.approval.CommentApprovalRepository;
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
+import com.bravson.socialalert.business.media.comment.MediaCommentRepository;
+import com.bravson.socialalert.business.media.entity.MediaRepository;
 import com.bravson.socialalert.business.user.UserInfoService;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.media.comment.MediaCommentDetail;
 import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
 import com.bravson.socialalert.domain.media.comment.UserCommentDetail;

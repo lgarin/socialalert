@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.user.avatar;
+package com.bravson.socialalert.business.user;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,13 +8,14 @@ import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.NotSupportedException;
 
-import com.bravson.socialalert.business.file.FileResponse;
-import com.bravson.socialalert.business.file.FileUploadParameter;
+import com.bravson.socialalert.business.file.exchange.FileDownloadResponse;
+import com.bravson.socialalert.business.file.exchange.FileUploadParameter;
 import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.business.file.store.TempFileFormat;
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.avatar.AvatarFileProcessor;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 import com.bravson.socialalert.domain.user.UserDetail;
@@ -74,18 +75,18 @@ public class UserAvatarService {
 		return fileStore.changeFileFormat(md5, userId, tempFormat, fileFormat);
 	}
 
-	public FileResponse getSmallImage(@NonNull String imageUri) throws IOException {
+	public FileDownloadResponse getSmallImage(@NonNull String imageUri) throws IOException {
 		return getImage(imageUri, MediaSizeVariant.THUMBNAIL);
 	}
 	
-	public FileResponse getLargeImage(@NonNull String imageUri) throws IOException {
+	public FileDownloadResponse getLargeImage(@NonNull String imageUri) throws IOException {
 		return getImage(imageUri, MediaSizeVariant.PREVIEW);
 	}
 
-	private FileResponse getImage(String imageUri, MediaSizeVariant sizeVariant) throws IOException {
+	private FileDownloadResponse getImage(String imageUri, MediaSizeVariant sizeVariant) throws IOException {
 		File inputFile = new File(imageUri);
 		MediaFileFormat fileFormat = processor.getFormat(sizeVariant);
 		File outputFile = fileStore.findExistingFile(inputFile.getName(), inputFile.getParent(), fileFormat).orElseThrow(NotFoundException::new);
-		return FileResponse.builder().file(outputFile).format(fileFormat).build();
+		return FileDownloadResponse.builder().file(outputFile).format(fileFormat).build();
 	}
 }

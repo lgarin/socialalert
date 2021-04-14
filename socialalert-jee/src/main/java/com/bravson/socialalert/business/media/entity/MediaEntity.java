@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.media;
+package com.bravson.socialalert.business.media.entity;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -24,7 +24,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.bravson.socialalert.business.file.entity.FileEntity;
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.media.MediaDetail;
 import com.bravson.socialalert.domain.media.MediaInfo;

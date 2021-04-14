@@ -8,11 +8,11 @@ import javax.inject.Inject;
 
 import org.junit.jupiter.api.Test;
 
-import com.bravson.socialalert.business.file.FileMetadata;
-import com.bravson.socialalert.business.file.FileRepository;
 import com.bravson.socialalert.business.file.entity.FileEntity;
+import com.bravson.socialalert.business.file.entity.FileMetadata;
+import com.bravson.socialalert.business.file.entity.FileRepository;
 import com.bravson.socialalert.business.file.entity.FileState;
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 
 import io.quarkus.test.junit.QuarkusTest;

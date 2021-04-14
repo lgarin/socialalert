@@ -9,11 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import com.bravson.socialalert.business.file.FileMetadata;
 import com.bravson.socialalert.business.file.FileReadService;
-import com.bravson.socialalert.business.file.FileRepository;
-import com.bravson.socialalert.business.file.FileResponse;
 import com.bravson.socialalert.business.file.entity.FileEntity;
+import com.bravson.socialalert.business.file.entity.FileMetadata;
+import com.bravson.socialalert.business.file.entity.FileRepository;
+import com.bravson.socialalert.business.file.exchange.FileDownloadResponse;
 import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 
@@ -36,7 +36,7 @@ public class FileReadServiceTest extends BaseServiceTest {
 		String fileUri = "abc";
 		when(mediaRepository.findFile(fileUri)).thenReturn(Optional.empty());
 		
-		Optional<FileResponse> result = fileService.download(fileUri);
+		Optional<FileDownloadResponse> result = fileService.download(fileUri);
 		assertThat(result).isEmpty();
 		
 		verifyNoInteractions(fileStore);
@@ -53,8 +53,8 @@ public class FileReadServiceTest extends BaseServiceTest {
 		when(mediaRepository.findFile(fileUri)).thenReturn(Optional.of(entity));
 		when(fileStore.getExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), fileMetadata.getFileFormat())).thenReturn(outputFile);
 		
-		Optional<FileResponse> result = fileService.download(fileUri);
-		assertThat(result).hasValue(FileResponse.builder().file(outputFile).format(format).build());
+		Optional<FileDownloadResponse> result = fileService.download(fileUri);
+		assertThat(result).hasValue(FileDownloadResponse.builder().file(outputFile).format(format).build());
 	}
 	
 	@Test
@@ -65,7 +65,7 @@ public class FileReadServiceTest extends BaseServiceTest {
 		when(mediaRepository.findFile(fileUri)).thenReturn(Optional.of(entity));
 		when(fileStore.findExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), MediaFileFormat.PREVIEW_JPG)).thenReturn(Optional.empty());
 				
-		Optional<FileResponse> result = fileService.preview(fileUri);
+		Optional<FileDownloadResponse> result = fileService.preview(fileUri);
 		assertThat(result).isEmpty();
 	}
 	
@@ -79,8 +79,8 @@ public class FileReadServiceTest extends BaseServiceTest {
 		when(mediaRepository.findFile(fileUri)).thenReturn(Optional.of(entity));
 		when(fileStore.findExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), MediaFileFormat.THUMBNAIL_JPG)).thenReturn(Optional.of(outputFile));
 		
-		Optional<FileResponse> result = fileService.thumbnail(fileUri);
-		assertThat(result).hasValue(FileResponse.builder().file(outputFile).format(MediaFileFormat.THUMBNAIL_JPG).build());
+		Optional<FileDownloadResponse> result = fileService.thumbnail(fileUri);
+		assertThat(result).hasValue(FileDownloadResponse.builder().file(outputFile).format(MediaFileFormat.THUMBNAIL_JPG).build());
 	}
 	
 	@Test
@@ -93,7 +93,7 @@ public class FileReadServiceTest extends BaseServiceTest {
 		when(mediaRepository.findFile(fileUri)).thenReturn(Optional.of(entity));
 		when(fileStore.findExistingFile(fileMetadata.getMd5(), fileMetadata.getFormattedDate(), MediaFileFormat.PREVIEW_MP4)).thenReturn(Optional.of(outputFile));
 		
-		Optional<FileResponse> result = fileService.stream(fileUri);
-		assertThat(result).hasValue(FileResponse.builder().file(outputFile).format(MediaFileFormat.PREVIEW_MP4).build());
+		Optional<FileDownloadResponse> result = fileService.stream(fileUri);
+		assertThat(result).hasValue(FileDownloadResponse.builder().file(outputFile).format(MediaFileFormat.PREVIEW_MP4).build());
 	}
 }

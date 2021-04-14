@@ -5,7 +5,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.media.query.MediaQueryParameter;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;

@@ -8,10 +8,10 @@ import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
 
-import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.approval.CommentApprovalEntity;
 import com.bravson.socialalert.business.media.approval.CommentApprovalRepository;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
+import com.bravson.socialalert.business.media.entity.MediaEntity;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 
 import io.quarkus.test.junit.QuarkusTest;

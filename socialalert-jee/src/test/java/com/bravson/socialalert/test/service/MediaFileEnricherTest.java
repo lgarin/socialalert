@@ -10,12 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import com.bravson.socialalert.business.file.FileMetadata;
-import com.bravson.socialalert.business.file.FileRepository;
+import com.bravson.socialalert.business.file.MediaFileEnricher;
 import com.bravson.socialalert.business.file.MediaFileStore;
 import com.bravson.socialalert.business.file.entity.FileEntity;
+import com.bravson.socialalert.business.file.entity.FileMetadata;
+import com.bravson.socialalert.business.file.entity.FileRepository;
 import com.bravson.socialalert.business.file.media.AsyncMediaProcessedEvent;
-import com.bravson.socialalert.business.file.media.MediaFileEnricher;
 import com.bravson.socialalert.business.file.media.MediaMetadata;
 import com.bravson.socialalert.business.file.media.MediaMetadataExtractor;
 import com.bravson.socialalert.business.file.store.FileStore;

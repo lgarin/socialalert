@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.media;
+package com.bravson.socialalert.domain.media;
 
 public interface MediaConstants {
 	int MAX_TITLE_LENGTH = 80;

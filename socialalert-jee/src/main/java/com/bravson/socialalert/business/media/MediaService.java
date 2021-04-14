@@ -7,6 +7,8 @@ import javax.ws.rs.NotFoundException;
 
 import com.bravson.socialalert.business.media.approval.MediaApprovalEntity;
 import com.bravson.socialalert.business.media.approval.MediaApprovalRepository;
+import com.bravson.socialalert.business.media.entity.MediaEntity;
+import com.bravson.socialalert.business.media.entity.MediaRepository;
 import com.bravson.socialalert.business.media.feeling.MediaFeelingEntity;
 import com.bravson.socialalert.business.media.feeling.MediaFeelingRepository;
 import com.bravson.socialalert.business.user.UserInfoService;

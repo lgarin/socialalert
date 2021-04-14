@@ -15,6 +15,7 @@ import com.bravson.socialalert.business.user.link.UserLinkRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.business.user.session.UserSessionCache;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.LinkedUserInfo;

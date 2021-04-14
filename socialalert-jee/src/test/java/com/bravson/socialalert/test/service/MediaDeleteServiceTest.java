@@ -11,11 +11,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import com.bravson.socialalert.business.file.FileMetadata;
 import com.bravson.socialalert.business.file.entity.FileEntity;
+import com.bravson.socialalert.business.file.entity.FileMetadata;
 import com.bravson.socialalert.business.media.MediaDeleteService;
-import com.bravson.socialalert.business.media.MediaEntity;
-import com.bravson.socialalert.business.media.MediaRepository;
+import com.bravson.socialalert.business.media.entity.MediaEntity;
+import com.bravson.socialalert.business.media.entity.MediaRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.domain.media.UpsertMediaParameter;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;

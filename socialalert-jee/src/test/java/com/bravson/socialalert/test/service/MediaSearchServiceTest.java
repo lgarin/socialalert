@@ -9,9 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import com.bravson.socialalert.business.media.MediaEntity;
-import com.bravson.socialalert.business.media.MediaRepository;
 import com.bravson.socialalert.business.media.MediaSearchService;
+import com.bravson.socialalert.business.media.entity.MediaEntity;
+import com.bravson.socialalert.business.media.entity.MediaRepository;
 import com.bravson.socialalert.business.media.tag.MediaTagRepository;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.location.GeoStatistic;

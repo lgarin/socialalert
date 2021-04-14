@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.file;
+package com.bravson.socialalert.business.file.entity;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,9 +6,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import com.bravson.socialalert.business.file.entity.FileEntity;
-import com.bravson.socialalert.business.file.entity.FileState;
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 

@@ -10,8 +10,11 @@ import javax.ws.rs.NotSupportedException;
 import org.slf4j.Logger;
 
 import com.bravson.socialalert.business.file.entity.FileEntity;
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.file.entity.FileMetadata;
+import com.bravson.socialalert.business.file.entity.FileRepository;
+import com.bravson.socialalert.business.file.exchange.FileUploadParameter;
 import com.bravson.socialalert.business.user.UserInfoService;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.file.FileInfo;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.domain.media.format.MediaSizeVariant;

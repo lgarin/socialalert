@@ -13,11 +13,11 @@ import org.assertj.core.api.Assertions;
 import org.hibernate.search.mapper.orm.Search;
 import org.junit.jupiter.api.BeforeEach;
 
-import com.bravson.socialalert.business.file.FileMetadata;
 import com.bravson.socialalert.business.file.entity.FileEntity;
-import com.bravson.socialalert.business.media.MediaEntity;
-import com.bravson.socialalert.business.user.UserAccess;
-import com.bravson.socialalert.business.user.UserAccessToken;
+import com.bravson.socialalert.business.file.entity.FileMetadata;
+import com.bravson.socialalert.business.media.entity.MediaEntity;
+import com.bravson.socialalert.business.user.token.UserAccess;
+import com.bravson.socialalert.business.user.token.UserAccessToken;
 import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.media.UpsertMediaParameter;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;

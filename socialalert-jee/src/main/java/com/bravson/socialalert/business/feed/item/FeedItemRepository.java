@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.feed;
+package com.bravson.socialalert.business.feed.item;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -12,10 +12,10 @@ import org.hibernate.search.engine.search.predicate.dsl.PredicateFinalStep;
 import org.hibernate.search.engine.search.predicate.dsl.SearchPredicateFactory;
 import org.hibernate.search.engine.search.query.SearchResult;
 
-import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.media.entity.MediaEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.feed.FeedActivity;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;

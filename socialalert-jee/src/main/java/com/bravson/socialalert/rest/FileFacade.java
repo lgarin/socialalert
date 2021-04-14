@@ -41,13 +41,13 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.bravson.socialalert.business.file.FileReadService;
-import com.bravson.socialalert.business.file.FileResponse;
 import com.bravson.socialalert.business.file.FileSearchService;
-import com.bravson.socialalert.business.file.FileUploadParameter;
 import com.bravson.socialalert.business.file.FileUploadService;
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.file.exchange.FileDownloadResponse;
+import com.bravson.socialalert.business.file.exchange.FileUploadParameter;
+import com.bravson.socialalert.business.user.UserAvatarService;
 import com.bravson.socialalert.business.user.activity.UserActivity;
-import com.bravson.socialalert.business.user.avatar.UserAvatarService;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.file.FileInfo;
 import com.bravson.socialalert.domain.media.format.MediaFileConstants;
 import com.bravson.socialalert.domain.user.UserDetail;
@@ -87,7 +87,7 @@ public class FileFacade {
 		return os -> Files.copy(file.toPath(), os);
 	}
 
-	private Response createStreamResponse(FileResponse fileResponse) {
+	private Response createStreamResponse(FileDownloadResponse fileResponse) {
 		ResponseBuilder response = Response.ok(createStreamingOutput(fileResponse.getFile()));
 		response.header("Content-Disposition", "attachment; filename=\"" + fileResponse.getFile().getName() + "\"");
         response.header("Content-Length", fileResponse.getFile().length());

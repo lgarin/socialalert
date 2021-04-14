@@ -13,11 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.UserProfileService;
 import com.bravson.socialalert.business.user.authentication.AuthenticationRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.user.Gender;
 import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.domain.user.privacy.UserPrivacy;

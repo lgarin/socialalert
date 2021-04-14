@@ -9,12 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import com.bravson.socialalert.business.media.MediaEntity;
-import com.bravson.socialalert.business.media.MediaRepository;
 import com.bravson.socialalert.business.media.MediaService;
-import com.bravson.socialalert.business.media.MediaStatistic;
 import com.bravson.socialalert.business.media.approval.MediaApprovalEntity;
 import com.bravson.socialalert.business.media.approval.MediaApprovalRepository;
+import com.bravson.socialalert.business.media.entity.MediaEntity;
+import com.bravson.socialalert.business.media.entity.MediaRepository;
+import com.bravson.socialalert.business.media.entity.MediaStatistic;
 import com.bravson.socialalert.business.media.feeling.MediaFeelingRepository;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.business.user.session.UserSessionCache;

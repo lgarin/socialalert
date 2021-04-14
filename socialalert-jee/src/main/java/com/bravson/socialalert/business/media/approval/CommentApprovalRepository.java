@@ -7,8 +7,8 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
+import com.bravson.socialalert.business.media.entity.MediaEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 import com.bravson.socialalert.infrastructure.entity.DeleteEntity;

@@ -10,8 +10,8 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import com.bravson.socialalert.business.media.MediaQueryService;
 import com.bravson.socialalert.business.media.query.MediaQueryEntity;
-import com.bravson.socialalert.business.media.query.MediaQueryService;
 import com.bravson.socialalert.infrastructure.entity.HitEntity;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
@@ -20,7 +20,7 @@ import io.quarkus.runtime.StartupEvent;
 import lombok.NonNull;
 
 @Service
-public class MediaNotificationService implements Runnable {
+public class MediaNotificationTask implements Runnable {
 
 	ScheduledExecutorService scheduler;
 	

@@ -17,8 +17,8 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.bravson.socialalert.business.feed.FeedService;
-import com.bravson.socialalert.business.user.UserAccess;
 import com.bravson.socialalert.business.user.activity.UserActivity;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.feed.FeedItemInfo;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;

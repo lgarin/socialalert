@@ -9,8 +9,8 @@ import javax.inject.Inject;
 
 import org.junit.jupiter.api.Test;
 
-import com.bravson.socialalert.business.media.MediaEntity;
-import com.bravson.socialalert.business.media.MediaRepository;
+import com.bravson.socialalert.business.media.entity.MediaEntity;
+import com.bravson.socialalert.business.media.entity.MediaRepository;
 import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.MediaKind;

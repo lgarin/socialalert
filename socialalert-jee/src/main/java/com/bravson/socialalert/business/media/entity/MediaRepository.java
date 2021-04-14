@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.media;
+package com.bravson.socialalert.business.media.entity;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import org.hibernate.search.engine.search.query.SearchResult;
 import org.hibernate.search.engine.spatial.DistanceUnit;
 
 import com.bravson.socialalert.business.file.entity.FileEntity;
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.SearchMediaParameter;

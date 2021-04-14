@@ -14,15 +14,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import com.bravson.socialalert.business.file.FileResponse;
-import com.bravson.socialalert.business.file.FileUploadParameter;
+import com.bravson.socialalert.business.file.exchange.FileDownloadResponse;
+import com.bravson.socialalert.business.file.exchange.FileUploadParameter;
 import com.bravson.socialalert.business.file.store.FileStore;
 import com.bravson.socialalert.business.file.store.TempFileFormat;
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.user.UserAvatarService;
 import com.bravson.socialalert.business.user.avatar.AvatarFileProcessor;
-import com.bravson.socialalert.business.user.avatar.UserAvatarService;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 import com.bravson.socialalert.domain.user.UserInfo;
@@ -113,7 +113,7 @@ public class UserAvatarServiceTest extends BaseServiceTest {
 		File outputFile = new File("thumbnail.jpg");
 		when(processor.getFormat(MediaSizeVariant.THUMBNAIL)).thenReturn(MediaFileFormat.THUMBNAIL_JPG);
 		when(fileStore.findExistingFile("abcd", "test", MediaFileFormat.THUMBNAIL_JPG)).thenReturn(Optional.of(outputFile));
-		FileResponse response = avatarService.getSmallImage("test/abcd");
+		FileDownloadResponse response = avatarService.getSmallImage("test/abcd");
 		assertThat(response.getFile()).isEqualTo(outputFile);
 		assertThat(response.getFormat()).isEqualTo(MediaFileFormat.THUMBNAIL_JPG);
 	}
@@ -130,7 +130,7 @@ public class UserAvatarServiceTest extends BaseServiceTest {
 		File outputFile = new File("preview.jpg");
 		when(processor.getFormat(MediaSizeVariant.PREVIEW)).thenReturn(MediaFileFormat.PREVIEW_JPG);
 		when(fileStore.findExistingFile("abcd", "test", MediaFileFormat.PREVIEW_JPG)).thenReturn(Optional.of(outputFile));
-		FileResponse response = avatarService.getLargeImage("test/abcd");
+		FileDownloadResponse response = avatarService.getLargeImage("test/abcd");
 		assertThat(response.getFile()).isEqualTo(outputFile);
 		assertThat(response.getFormat()).isEqualTo(MediaFileFormat.PREVIEW_JPG);
 	}

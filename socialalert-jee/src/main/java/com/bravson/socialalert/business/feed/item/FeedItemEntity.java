@@ -1,4 +1,4 @@
-package com.bravson.socialalert.business.feed;
+package com.bravson.socialalert.business.feed.item;
 
 import java.util.stream.Collectors;
 
@@ -23,9 +23,9 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
-import com.bravson.socialalert.business.media.MediaEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.media.entity.MediaEntity;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.feed.FeedActivity;
 import com.bravson.socialalert.domain.feed.FeedItemInfo;
 import com.bravson.socialalert.infrastructure.entity.DefaultStringIdentifierBridge;

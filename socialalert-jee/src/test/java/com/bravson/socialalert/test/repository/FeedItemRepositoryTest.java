@@ -8,11 +8,11 @@ import javax.inject.Inject;
 
 import org.junit.jupiter.api.Test;
 
-import com.bravson.socialalert.business.feed.FeedItemEntity;
-import com.bravson.socialalert.business.feed.FeedItemRepository;
-import com.bravson.socialalert.business.media.MediaEntity;
+import com.bravson.socialalert.business.feed.item.FeedItemEntity;
+import com.bravson.socialalert.business.feed.item.FeedItemRepository;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
-import com.bravson.socialalert.business.user.UserAccess;
+import com.bravson.socialalert.business.media.entity.MediaEntity;
+import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.feed.FeedActivity;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;

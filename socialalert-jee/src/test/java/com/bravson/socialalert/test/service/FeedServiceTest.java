@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import com.bravson.socialalert.business.feed.FeedItemEntity;
-import com.bravson.socialalert.business.feed.FeedItemRepository;
 import com.bravson.socialalert.business.feed.FeedService;
+import com.bravson.socialalert.business.feed.item.FeedItemEntity;
+import com.bravson.socialalert.business.feed.item.FeedItemRepository;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
