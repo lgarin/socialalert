@@ -44,7 +44,7 @@ public class MediaStatistic {
 	private float boostFactor;
 
 	private float computeBoost() {
-		return (float) (Math.log(Math.max(2.0, hitCount)) * Math.sqrt(Math.max(2.0, likeCount - dislikeCount)));
+		return (float) (Math.log(Math.max(2, hitCount)) * Math.sqrt(Math.max(2, likeCount - dislikeCount)));
 	}
 
 	public void increaseHitCount() {
