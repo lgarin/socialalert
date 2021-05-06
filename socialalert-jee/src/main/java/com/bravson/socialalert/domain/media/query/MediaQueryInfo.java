@@ -28,5 +28,6 @@ public class MediaQueryInfo {
 	
 	private Integer lastHitCount;
 	
+	@Schema(description="The last execution timestamp in milliseconds since the epoch.", implementation=Long.class)
 	private Instant lastExecution;
 }

@@ -379,7 +379,7 @@ public class MediaFacade {
 	@APIResponse(responseCode = "200", description = "The live query has been defined.")
 	@SecurityRequirement(name = "JWT")
 	public MediaQueryInfo defineLiveQuery(@Valid @NotNull MediaQueryParameter parameter) {
-		return queryService.create(parameter, userAccess.get());
+		return queryService.upsert(parameter, userAccess.get());
 	}
 	
 	@GET

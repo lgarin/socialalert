@@ -39,7 +39,7 @@ public class MediaQueryServiceTest extends BaseServiceTest {
 	MediaRepository mediaRepository;
 	
 	@Test
-	public void createQuery() {
+	public void upsertQuery() {
 		UserAccess userAccess = createUserAccess("test", "1.2.3.4");
 		MediaQueryParameter param = MediaQueryParameter.builder()
 				.label("Label").hitThreshold(10)
@@ -47,7 +47,7 @@ public class MediaQueryServiceTest extends BaseServiceTest {
 				.build();
 		MediaQueryEntity entity = new MediaQueryEntity(param, userAccess.getUserId());
 		when(queryRepository.create(param, userAccess)).thenReturn(entity);
-		MediaQueryInfo result = queryService.create(param, userAccess);
+		MediaQueryInfo result = queryService.upsert(param, userAccess);
 		assertThat(result).isEqualTo(entity.toQueryInfo());
 	}
 	

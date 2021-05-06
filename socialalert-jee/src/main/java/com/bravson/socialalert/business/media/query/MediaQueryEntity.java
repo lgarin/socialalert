@@ -107,5 +107,17 @@ public class MediaQueryEntity extends VersionedEntity {
 		lastHitCount = hitCount;
 		lastExecution = Instant.now();
 	}
+
+	public void updateParameter(MediaQueryParameter parameter) {
+		label = parameter.getLabel();
+		category = parameter.getCategory();
+		keywords = parameter.getKeywords();
+		latitude = parameter.getLatitude();
+		longitude = parameter.getLongitude();
+		radius = parameter.getRadius();
+		hitThreshold = parameter.getHitThreshold();
+		lastExecution = Instant.now();
+		lastHitCount = null;
+	}
 	
 }

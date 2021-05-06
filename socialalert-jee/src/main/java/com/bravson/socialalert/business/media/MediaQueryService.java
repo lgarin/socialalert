@@ -45,7 +45,18 @@ public class MediaQueryService {
 	@NonNull
 	MediaRepository mediaRepository;
 	
-	public MediaQueryInfo create(@NonNull MediaQueryParameter parameter, @NonNull UserAccess userAccess) {
+	public MediaQueryInfo upsert(@NonNull MediaQueryParameter parameter, @NonNull UserAccess userAccess) {
+		Optional<MediaQueryEntity> query = queryRepository.findQueryByUserId(userAccess.getUserId());
+		return query.map(existingQuery -> update(existingQuery, parameter))
+				.orElseGet(() -> create(parameter, userAccess));
+	}
+	
+	private MediaQueryInfo update(MediaQueryEntity existingQuery, MediaQueryParameter parameter) {
+		existingQuery.updateParameter(parameter);
+		return existingQuery.toQueryInfo();
+	}
+
+	private MediaQueryInfo create(MediaQueryParameter parameter, UserAccess userAccess) {
 		return queryRepository.create(parameter, userAccess).toQueryInfo();
 	}
 	
