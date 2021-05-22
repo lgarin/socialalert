@@ -2,13 +2,18 @@ package com.bravson.socialalert.domain.location;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Transient;
 
+import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Projectable;
 import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.GeoPointBinding;
 import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.Latitude;
 import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.Longitude;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.ObjectPath;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.PropertyValue;
 
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
 
@@ -41,4 +46,14 @@ public class GeoAddress {
 	@Column(name = "country", length = FieldLength.ISO_CODE)
 	@KeywordField
 	private String country;
+	
+	@KeywordField(aggregable = Aggregable.YES)
+	@Transient
+	@IndexingDependency(derivedFrom = {
+			@ObjectPath(@PropertyValue(propertyName = "locality")),
+			@ObjectPath(@PropertyValue(propertyName = "country"))
+	})
+	public String getFullLocality() {
+		return locality + " [" + country + "]";
+	}
 }

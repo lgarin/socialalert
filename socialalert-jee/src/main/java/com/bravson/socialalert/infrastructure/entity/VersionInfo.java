@@ -5,6 +5,7 @@ import java.time.Instant;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
@@ -21,7 +22,7 @@ import lombok.Setter;
 public class VersionInfo {
 
 	@Column(name = "user_id", length = FieldLength.ID, nullable = false)
-	@KeywordField
+	@KeywordField(aggregable = Aggregable.YES)
 	private String userId;
 	
 	@Column(name = "ip_address", length = FieldLength.IP_ADDRESS, nullable = false)
@@ -29,7 +30,7 @@ public class VersionInfo {
 	private String ipAddress;
 	
 	@Column(name = "creation", nullable = false)
-	@GenericField(sortable = Sortable.YES)
+	@GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES)
 	private Instant creation;
 	
 	@Column(name = "last_update", nullable = false)

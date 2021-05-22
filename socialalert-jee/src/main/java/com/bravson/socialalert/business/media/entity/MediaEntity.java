@@ -1,5 +1,6 @@
 package com.bravson.socialalert.business.media.entity;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -197,6 +198,10 @@ public class MediaEntity extends VersionedEntity {
 	
 	public String getUserId() {
 		return versionInfo.getUserId();
+	}
+	
+	public Instant getCreation() {
+		return versionInfo.getCreation();
 	}
 
 	public void increaseHitCount() {

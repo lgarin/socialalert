@@ -2,6 +2,7 @@ package com.bravson.socialalert.test.repository;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +16,9 @@ import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.MediaKind;
 import com.bravson.socialalert.domain.media.SearchMediaParameter;
+import com.bravson.socialalert.domain.media.statistic.HistogramInterval;
+import com.bravson.socialalert.domain.media.statistic.MediaCount;
+import com.bravson.socialalert.domain.media.statistic.PeriodCount;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 
@@ -241,6 +245,39 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	MediaEntity media = storeDefaultMedia();
     	
     	List<MediaEntity> result = repository.listByUserId(media.getUserId() + "99");
-    	assertThat(result).isEmpty();;
+    	assertThat(result).isEmpty();
+    }
+    
+    @Test
+    public void groupMediaForCategoryByCreator() {
+    	MediaEntity media = storeDefaultMedia();
+
+    	SearchMediaParameter parameter = new SearchMediaParameter();
+    	parameter.setCategory(media.getCategory());
+    	
+    	List<MediaCount> result = repository.groupByCreator(parameter, 10);
+    	assertThat(result).containsExactly(MediaCount.builder().key(media.getUserId()).count(1).build());
+    }
+    
+    @Test
+    public void groupMediaForCategoryByLocation() {
+    	MediaEntity media = storeDefaultMedia();
+
+    	SearchMediaParameter parameter = new SearchMediaParameter();
+    	parameter.setCategory(media.getCategory());
+    	
+    	List<MediaCount> result = repository.groupByLocation(parameter, 10);
+    	assertThat(result).containsExactly(MediaCount.builder().key(media.getLocation().getFullLocality()).count(1).build());
+    }
+    
+    @Test
+    public void buildHistogramForCategory() {
+    	MediaEntity media = storeDefaultMedia();
+
+    	SearchMediaParameter parameter = new SearchMediaParameter();
+    	parameter.setCategory(media.getCategory());
+    	
+    	List<PeriodCount> result = repository.buildHistogram(parameter, HistogramInterval.DAY);
+    	assertThat(result).containsExactly(PeriodCount.builder().period(media.getCreation().truncatedTo(ChronoUnit.DAYS)).count(1).build());
     }
 }

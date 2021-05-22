@@ -3,7 +3,9 @@ package com.bravson.socialalert.business.media.entity;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -23,6 +25,9 @@ import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.SearchMediaParameter;
 import com.bravson.socialalert.domain.media.UpsertMediaParameter;
+import com.bravson.socialalert.domain.media.statistic.HistogramInterval;
+import com.bravson.socialalert.domain.media.statistic.MediaCount;
+import com.bravson.socialalert.domain.media.statistic.PeriodCount;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.infrastructure.entity.HitEntity;
@@ -115,15 +120,8 @@ public class MediaRepository {
 			precision = 2;
 		}
 		
-		AggregationKey<JsonObject> feelingByGeoHashKey = AggregationKey.of("feeling");
-		JsonObject aggregation = buildAggregationParameters(precision);
-		SearchResult<MediaEntity> result = persistenceManager.search(MediaEntity.class)
-			.where(f -> buildSearchQuery(parameter, Instant.now(), f))
-			.aggregation(feelingByGeoHashKey, f -> f.extension(ElasticsearchExtension.get()).fromJson(aggregation))
-			.fetch(0);
-
-		JsonObject aggResult = result.aggregation(feelingByGeoHashKey);
-		JsonArray buckets = aggResult.get("buckets").getAsJsonArray();
+		JsonObject aggregation = buildGeoHashAggParam(precision);
+		JsonArray buckets = aggregateMedia(parameter, aggregation);
 		List<GeoStatistic> resultList = new ArrayList<>(buckets.size());
 		for (JsonElement item : buckets) {
 			resultList.add(buildGeoStatistic(item));
@@ -131,7 +129,18 @@ public class MediaRepository {
 		return resultList;
 	}
 
-	private static JsonObject buildAggregationParameters(int precision) {
+	private JsonArray aggregateMedia(SearchMediaParameter parameter, JsonObject aggregation) {
+		AggregationKey<JsonObject> aggKey = AggregationKey.of("aggKey");
+		SearchResult<MediaEntity> result = persistenceManager.search(MediaEntity.class)
+			.where(f -> buildSearchQuery(parameter, Instant.now(), f))
+			.aggregation(aggKey, f -> f.extension(ElasticsearchExtension.get()).fromJson(aggregation))
+			.fetch(0);
+
+		JsonObject aggResult = result.aggregation(aggKey);
+		return aggResult.get("buckets").getAsJsonArray();
+	}
+
+	private static JsonObject buildGeoHashAggParam(int precision) {
 		JsonObject sumField = new JsonObject();
 		sumField.addProperty("field", "feeling");
 		JsonObject sumOperation = new JsonObject();
@@ -181,5 +190,52 @@ public class MediaRepository {
 	
 	public void delete(MediaEntity entity) {
 		persistenceManager.remove(entity);
+	}
+	
+	private List<MediaCount> groupByField(@NonNull SearchMediaParameter parameter, int maxCount, String field) {
+		AggregationKey<Map<String, Long>> countsKey = AggregationKey.of("counts");
+		SearchResult<MediaEntity> result = persistenceManager.search(MediaEntity.class)
+			.where(f -> buildSearchQuery(parameter, Instant.now(), f))
+			.aggregation(countsKey, f -> f.terms().field(field, String.class).maxTermCount(maxCount).orderByCountDescending())
+			.fetch(0);
+		Map<String, Long> countsByCreator = result.aggregation(countsKey);
+		return countsByCreator.entrySet().stream()
+				.map(e -> MediaCount.builder().key(e.getKey()).count(e.getValue()).build())
+				.collect(Collectors.toList());
+	}
+	
+	public List<MediaCount> groupByCreator(@NonNull SearchMediaParameter parameter, int maxCount) {
+		return groupByField(parameter, maxCount, "versionInfo.userId");
+	}
+	
+	public List<MediaCount> groupByLocation(@NonNull SearchMediaParameter parameter, int maxCount) {
+		return groupByField(parameter, maxCount, "location.fullLocality");
+	}
+	
+	public List<PeriodCount> buildHistogram(@NonNull SearchMediaParameter parameter, @NonNull HistogramInterval interval) {
+		JsonArray buckets = aggregateMedia(parameter, buildHistogramAggParam(interval));
+		List<PeriodCount> resultList = new ArrayList<>(buckets.size());
+		for (JsonElement item : buckets) {
+			resultList.add(buildPeriodCount(item));
+		}
+		return resultList;
+	}
+	
+	private PeriodCount buildPeriodCount(JsonElement item) {
+		JsonObject bucket = item.getAsJsonObject();
+		long key = bucket.get("key").getAsLong();
+		long count = bucket.get("doc_count").getAsLong();
+		return PeriodCount.builder().period(Instant.ofEpochMilli(key)).count(count).build();
+	}
+
+	private static JsonObject buildHistogramAggParam(HistogramInterval interval) {
+		JsonObject histogram = new JsonObject();
+		histogram.addProperty("field", "versionInfo.creation");
+		histogram.addProperty("calendar_interval", interval.name().toLowerCase());
+		histogram.addProperty("min_doc_count", 1);
+		
+		JsonObject aggs = new JsonObject();
+		aggs.add("date_histogram", histogram);
+		return aggs;
 	}
 }
