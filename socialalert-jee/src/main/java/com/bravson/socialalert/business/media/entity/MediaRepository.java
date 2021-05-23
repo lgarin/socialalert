@@ -27,7 +27,7 @@ import com.bravson.socialalert.domain.media.SearchMediaParameter;
 import com.bravson.socialalert.domain.media.UpsertMediaParameter;
 import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
 import com.bravson.socialalert.domain.media.statistic.MediaCount;
-import com.bravson.socialalert.domain.media.statistic.PeriodCount;
+import com.bravson.socialalert.domain.media.statistic.PeriodicMediaCount;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.infrastructure.entity.HitEntity;
@@ -200,7 +200,7 @@ public class MediaRepository {
 			.fetch(0);
 		Map<String, Long> countsByCreator = result.aggregation(countsKey);
 		return countsByCreator.entrySet().stream()
-				.map(e -> MediaCount.builder().key(e.getKey()).count(e.getValue()).build())
+				.map(e -> new MediaCount(e.getKey(), e.getValue()))
 				.collect(Collectors.toList());
 	}
 	
@@ -212,20 +212,20 @@ public class MediaRepository {
 		return groupByField(parameter, maxCount, "location.fullLocality");
 	}
 	
-	public List<PeriodCount> groupByPeriod(@NonNull SearchMediaParameter parameter, @NonNull PeriodInterval interval) {
+	public List<PeriodicMediaCount> groupByPeriod(@NonNull SearchMediaParameter parameter, @NonNull PeriodInterval interval) {
 		JsonArray buckets = aggregateMedia(parameter, buildHistogramAggParam(interval));
-		List<PeriodCount> resultList = new ArrayList<>(buckets.size());
+		List<PeriodicMediaCount> resultList = new ArrayList<>(buckets.size());
 		for (JsonElement item : buckets) {
 			resultList.add(buildPeriodCount(item));
 		}
 		return resultList;
 	}
 	
-	private static PeriodCount buildPeriodCount(JsonElement item) {
+	private static PeriodicMediaCount buildPeriodCount(JsonElement item) {
 		JsonObject bucket = item.getAsJsonObject();
 		long key = bucket.get("key").getAsLong();
 		long count = bucket.get("doc_count").getAsLong();
-		return PeriodCount.builder().period(Instant.ofEpochMilli(key)).count(count).build();
+		return new PeriodicMediaCount(Instant.ofEpochMilli(key), count);
 	}
 
 	private static JsonObject buildHistogramAggParam(PeriodInterval interval) {

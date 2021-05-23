@@ -71,6 +71,7 @@ public class MediaMetadataExtractor {
 			throw new IOException("Cannot read file " + inputFile);
 		}
 		
+		// TODO ffprobe -show_format -print_format json -show_streams VID_20180712_160915.mp4 -v quiet
 		List<String> arguments = Arrays.asList("-j", "-n", inputFile.getAbsolutePath());
 		// -d "%Y-%m-%dT%H:%M:%S%z" -c "%.6f"
 		

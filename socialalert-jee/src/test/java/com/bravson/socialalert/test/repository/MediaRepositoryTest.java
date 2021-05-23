@@ -18,7 +18,7 @@ import com.bravson.socialalert.domain.media.MediaKind;
 import com.bravson.socialalert.domain.media.SearchMediaParameter;
 import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
 import com.bravson.socialalert.domain.media.statistic.MediaCount;
-import com.bravson.socialalert.domain.media.statistic.PeriodCount;
+import com.bravson.socialalert.domain.media.statistic.PeriodicMediaCount;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 
@@ -256,7 +256,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	parameter.setCategory(media.getCategory());
     	
     	List<MediaCount> result = repository.groupByCreator(parameter, 10);
-    	assertThat(result).containsExactly(MediaCount.builder().key(media.getUserId()).count(1).build());
+    	assertThat(result).containsExactly(new MediaCount(media.getUserId(), 1));
     }
     
     @Test
@@ -267,7 +267,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	parameter.setCategory(media.getCategory());
     	
     	List<MediaCount> result = repository.groupByLocation(parameter, 10);
-    	assertThat(result).containsExactly(MediaCount.builder().key(media.getLocation().getFullLocality()).count(1).build());
+    	assertThat(result).containsExactly(new MediaCount(media.getLocation().getFullLocality(), 1));
     }
     
     @Test
@@ -277,7 +277,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	SearchMediaParameter parameter = new SearchMediaParameter();
     	parameter.setCategory(media.getCategory());
     	
-    	List<PeriodCount> result = repository.groupByPeriod(parameter, PeriodInterval.DAY);
-    	assertThat(result).containsExactly(PeriodCount.builder().period(media.getCreation().truncatedTo(ChronoUnit.DAYS)).count(1).build());
+    	List<PeriodicMediaCount> result = repository.groupByPeriod(parameter, PeriodInterval.DAY);
+    	assertThat(result).containsExactly(new PeriodicMediaCount(media.getCreation().truncatedTo(ChronoUnit.DAYS), 1));
     }
 }

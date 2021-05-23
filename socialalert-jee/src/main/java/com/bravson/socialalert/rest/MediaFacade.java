@@ -52,6 +52,9 @@ import com.bravson.socialalert.domain.media.comment.MediaCommentDetail;
 import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
 import com.bravson.socialalert.domain.media.query.MediaQueryInfo;
 import com.bravson.socialalert.domain.media.query.MediaQueryParameter;
+import com.bravson.socialalert.domain.media.statistic.MediaCount;
+import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
+import com.bravson.socialalert.domain.media.statistic.PeriodicMediaCount;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
@@ -325,7 +328,7 @@ public class MediaFacade {
 	@GET
 	@Path("/mapCount")
 	@Produces(MediaTypeConstants.JSON)
-	@Operation(summary="Group count claimed media in the given area based on their geo hash.")
+	@Operation(summary="Group claimed media in the given area based on their geo hash.")
 	@APIResponse(responseCode = "200", description = "The statistic for each geo hash in the given area.")
 	@SecurityRequirement(name = "JWT")
 	public List<GeoStatistic> mapMediaMatchCount(@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
@@ -358,6 +361,128 @@ public class MediaFacade {
 			parameter.setCreator(creator);
 		}
 		return mediaSearchService.groupByGeoHash(parameter);
+	}
+	
+	@GET
+	@Path("/topCreators")
+	@Produces(MediaTypeConstants.JSON)
+	@Operation(summary="Group the media by creator and return the list of creators having the highest count.")
+	@APIResponse(responseCode = "200", description = "The count of media matching the criteria for each creator.")
+	@SecurityRequirement(name = "JWT")
+	public List<MediaCount> countMediaMatchByCreator(@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
+			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("minLatitude") Double minLatitude,
+			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("maxLatitude") Double maxLatitude,
+			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("minLongitude") Double minLongitude,
+			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("maxLongitude") Double maxLongitude,
+			@Parameter(description="Define the keywords for searching the media.", required=false) @QueryParam("keywords") String keywords,
+			@Parameter(description="Define the maximum age in milliseconds of the returned media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
+			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
+			@Parameter(description="Define the maximum size of the returned list.", required=false) @DefaultValue("10") @Min(1) @Max(100) @QueryParam("maxSize") int maxSize) {
+		
+		SearchMediaParameter parameter = new SearchMediaParameter();
+		if (mediaKind != null) {
+			parameter.setMediaKind(mediaKind);
+		}
+		if (minLatitude != null || maxLatitude != null || minLongitude != null || maxLongitude != null) {
+			if (minLatitude == null || maxLatitude == null || minLongitude == null || maxLongitude == null) {
+				throw new BadRequestException("minLatitude, maxLatitude, minLongitude and maxLongitude must be set together");
+			}
+			parameter.setArea(GeoBox.builder().minLat(minLatitude).maxLat(maxLatitude).minLon(minLongitude).maxLon(maxLongitude).build());
+		}
+		if (keywords != null) {
+			parameter.setKeywords(keywords);
+		}
+		if (maxAge != null) {
+			parameter.setMaxAge(Duration.ofMillis(maxAge));
+		}
+		if (category != null) {
+			parameter.setCategory(category);
+		}
+		return mediaSearchService.groupByCreator(parameter, maxSize);
+	}
+	
+	@GET
+	@Path("/topLocations")
+	@Produces(MediaTypeConstants.JSON)
+	@Operation(summary="Group the media by location and return the list of locations having the highest count.")
+	@APIResponse(responseCode = "200", description = "The count of media matching the criteria for each location.")
+	@SecurityRequirement(name = "JWT")
+	public List<MediaCount> countMediaMatchByLocality(@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
+			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("minLatitude") Double minLatitude,
+			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("maxLatitude") Double maxLatitude,
+			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("minLongitude") Double minLongitude,
+			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("maxLongitude") Double maxLongitude,
+			@Parameter(description="Define the keywords for searching the media.", required=false) @QueryParam("keywords") String keywords,
+			@Parameter(description="Define the maximum age in milliseconds of the returned media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
+			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
+			@Parameter(description="Define the user id of the creator for searching the media.", required=false) @QueryParam("creator") String creator,
+			@Parameter(description="Define the maximum size of the returned list.", required=false) @DefaultValue("10") @Min(1) @Max(100) @QueryParam("maxSize") int maxSize) {
+		
+		SearchMediaParameter parameter = new SearchMediaParameter();
+		if (mediaKind != null) {
+			parameter.setMediaKind(mediaKind);
+		}
+		if (minLatitude != null || maxLatitude != null || minLongitude != null || maxLongitude != null) {
+			if (minLatitude == null || maxLatitude == null || minLongitude == null || maxLongitude == null) {
+				throw new BadRequestException("minLatitude, maxLatitude, minLongitude and maxLongitude must be set together");
+			}
+			parameter.setArea(GeoBox.builder().minLat(minLatitude).maxLat(maxLatitude).minLon(minLongitude).maxLon(maxLongitude).build());
+		}
+		if (keywords != null) {
+			parameter.setKeywords(keywords);
+		}
+		if (maxAge != null) {
+			parameter.setMaxAge(Duration.ofMillis(maxAge));
+		}
+		if (category != null) {
+			parameter.setCategory(category);
+		}
+		if (creator != null) {
+			parameter.setCreator(creator);
+		}
+		return mediaSearchService.groupByLocation(parameter, maxSize);
+	}
+	
+	@GET
+	@Path("/histogram")
+	@Produces(MediaTypeConstants.JSON)
+	@Operation(summary="Group the media by the creation date using the specified interval.")
+	@APIResponse(responseCode = "200", description = "The count of media matching the criteria for each period interval.")
+	@SecurityRequirement(name = "JWT")
+	public List<PeriodicMediaCount> countMediaMatchByPeriod(@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
+			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("minLatitude") Double minLatitude,
+			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("maxLatitude") Double maxLatitude,
+			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("minLongitude") Double minLongitude,
+			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("maxLongitude") Double maxLongitude,
+			@Parameter(description="Define the keywords for searching the media.", required=false) @QueryParam("keywords") String keywords,
+			@Parameter(description="Define the maximum age in milliseconds of the returned media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
+			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
+			@Parameter(description="Define the user id of the creator for searching the media.", required=false) @QueryParam("creator") String creator,
+			@Parameter(description="Define the period interval.", required=false) @DefaultValue("HOUR") @QueryParam("interval") PeriodInterval interval) {
+		
+		SearchMediaParameter parameter = new SearchMediaParameter();
+		if (mediaKind != null) {
+			parameter.setMediaKind(mediaKind);
+		}
+		if (minLatitude != null || maxLatitude != null || minLongitude != null || maxLongitude != null) {
+			if (minLatitude == null || maxLatitude == null || minLongitude == null || maxLongitude == null) {
+				throw new BadRequestException("minLatitude, maxLatitude, minLongitude and maxLongitude must be set together");
+			}
+			parameter.setArea(GeoBox.builder().minLat(minLatitude).maxLat(maxLatitude).minLon(minLongitude).maxLon(maxLongitude).build());
+		}
+		if (keywords != null) {
+			parameter.setKeywords(keywords);
+		}
+		if (maxAge != null) {
+			parameter.setMaxAge(Duration.ofMillis(maxAge));
+		}
+		if (category != null) {
+			parameter.setCategory(category);
+		}
+		if (creator != null) {
+			parameter.setCreator(creator);
+		}
+		return mediaSearchService.groupByPeriod(parameter, interval);
 	}
 	
 	@GET

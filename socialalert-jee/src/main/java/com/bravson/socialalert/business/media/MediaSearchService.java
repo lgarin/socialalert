@@ -13,6 +13,9 @@ import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.media.SearchMediaParameter;
+import com.bravson.socialalert.domain.media.statistic.MediaCount;
+import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
+import com.bravson.socialalert.domain.media.statistic.PeriodicMediaCount;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.infrastructure.layer.Service;
@@ -40,6 +43,18 @@ public class MediaSearchService {
 	
 	public List<GeoStatistic> groupByGeoHash(@NonNull SearchMediaParameter parameter) {
 		return mediaRepository.groupByGeoHash(parameter);
+	}
+	
+	public List<MediaCount> groupByCreator(@NonNull SearchMediaParameter parameter, int maxCreatorCount) {
+		return mediaRepository.groupByCreator(parameter, maxCreatorCount);
+	}
+	
+	public List<MediaCount> groupByLocation(@NonNull SearchMediaParameter parameter, int maxLocationCount) {
+		return mediaRepository.groupByLocation(parameter, maxLocationCount);
+	}
+	
+	public List<PeriodicMediaCount> groupByPeriod(@NonNull SearchMediaParameter parameter, @NonNull PeriodInterval interval) {
+		return mediaRepository.groupByPeriod(parameter, interval);
 	}
 
 	public List<String> suggestTags(@NonNull String searchTerm, int maxHitCount) {

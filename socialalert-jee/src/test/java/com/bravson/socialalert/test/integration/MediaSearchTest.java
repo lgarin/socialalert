@@ -72,4 +72,25 @@ public class MediaSearchTest extends BaseIntegrationTest {
 		Response response = createAuthRequest("/media/mapCount?minLatitude=45.5&minLongitude=7.5&maxLongitude=7.6", MediaTypeConstants.JSON, token).get();
 		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 	}
+	
+	@Test
+	public void buildHistorgram() {
+		String token = requestLoginToken("test@test.com", "123");
+		Response response = createAuthRequest("/media/histogram?kind=PICTURE&userId=test", MediaTypeConstants.JSON, token).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+	
+	@Test
+	public void getTopCreators() {
+		String token = requestLoginToken("test@test.com", "123");
+		Response response = createAuthRequest("/media/topCreators?kind=PICTURE", MediaTypeConstants.JSON, token).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+	
+	@Test
+	public void getTopLocations() {
+		String token = requestLoginToken("test@test.com", "123");
+		Response response = createAuthRequest("/media/topLocations?kind=PICTURE", MediaTypeConstants.JSON, token).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
 }
