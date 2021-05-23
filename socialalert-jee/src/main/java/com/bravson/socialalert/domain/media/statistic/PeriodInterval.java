@@ -1,6 +1,6 @@
 package com.bravson.socialalert.domain.media.statistic;
 
-public enum HistogramInterval {
+public enum PeriodInterval {
 	MINUTE,
 	HOUR,
 	DAY,

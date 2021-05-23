@@ -25,7 +25,7 @@ import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.SearchMediaParameter;
 import com.bravson.socialalert.domain.media.UpsertMediaParameter;
-import com.bravson.socialalert.domain.media.statistic.HistogramInterval;
+import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
 import com.bravson.socialalert.domain.media.statistic.MediaCount;
 import com.bravson.socialalert.domain.media.statistic.PeriodCount;
 import com.bravson.socialalert.domain.paging.PagingParameter;
@@ -212,7 +212,7 @@ public class MediaRepository {
 		return groupByField(parameter, maxCount, "location.fullLocality");
 	}
 	
-	public List<PeriodCount> buildHistogram(@NonNull SearchMediaParameter parameter, @NonNull HistogramInterval interval) {
+	public List<PeriodCount> groupByPeriod(@NonNull SearchMediaParameter parameter, @NonNull PeriodInterval interval) {
 		JsonArray buckets = aggregateMedia(parameter, buildHistogramAggParam(interval));
 		List<PeriodCount> resultList = new ArrayList<>(buckets.size());
 		for (JsonElement item : buckets) {
@@ -221,14 +221,14 @@ public class MediaRepository {
 		return resultList;
 	}
 	
-	private PeriodCount buildPeriodCount(JsonElement item) {
+	private static PeriodCount buildPeriodCount(JsonElement item) {
 		JsonObject bucket = item.getAsJsonObject();
 		long key = bucket.get("key").getAsLong();
 		long count = bucket.get("doc_count").getAsLong();
 		return PeriodCount.builder().period(Instant.ofEpochMilli(key)).count(count).build();
 	}
 
-	private static JsonObject buildHistogramAggParam(HistogramInterval interval) {
+	private static JsonObject buildHistogramAggParam(PeriodInterval interval) {
 		JsonObject histogram = new JsonObject();
 		histogram.addProperty("field", "versionInfo.creation");
 		histogram.addProperty("calendar_interval", interval.name().toLowerCase());

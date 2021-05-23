@@ -16,7 +16,7 @@ import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.MediaKind;
 import com.bravson.socialalert.domain.media.SearchMediaParameter;
-import com.bravson.socialalert.domain.media.statistic.HistogramInterval;
+import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
 import com.bravson.socialalert.domain.media.statistic.MediaCount;
 import com.bravson.socialalert.domain.media.statistic.PeriodCount;
 import com.bravson.socialalert.domain.paging.PagingParameter;
@@ -271,13 +271,13 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     }
     
     @Test
-    public void buildHistogramForCategory() {
+    public void groupMediaForCategoryByPeriod() {
     	MediaEntity media = storeDefaultMedia();
 
     	SearchMediaParameter parameter = new SearchMediaParameter();
     	parameter.setCategory(media.getCategory());
     	
-    	List<PeriodCount> result = repository.buildHistogram(parameter, HistogramInterval.DAY);
+    	List<PeriodCount> result = repository.groupByPeriod(parameter, PeriodInterval.DAY);
     	assertThat(result).containsExactly(PeriodCount.builder().period(media.getCreation().truncatedTo(ChronoUnit.DAYS)).count(1).build());
     }
 }

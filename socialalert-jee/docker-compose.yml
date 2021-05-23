@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   keycloak:
-    image: "quay.io/keycloak/keycloak-x:12.0.3"
+    image: "quay.io/keycloak/keycloak-x:13.0.0"
     entrypoint: /opt/jboss/tools/docker-entrypoint.sh --auto-config --db=postgres -Dkc.db.url.host=postgres --db-username=keycloak --db-password=password --http-enabled=true
     environment:
       KEYCLOAK_ADMIN: admin
@@ -35,7 +35,7 @@ services:
     volumes:
       - "postgres:/var/lib/postgresql/data/dbdata"
   elastic:
-    image: elasticsearch:7.9.2
+    image: elasticsearch:7.12.1
     environment:
       - discovery.type=single-node
     restart: on-failure
