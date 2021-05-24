@@ -54,6 +54,9 @@ public class GeoAddress {
 			@ObjectPath(@PropertyValue(propertyName = "country"))
 	})
 	public String getFullLocality() {
+		if (locality == null || country == null) {
+			return null;
+		}
 		return locality + " [" + country + "]";
 	}
 }

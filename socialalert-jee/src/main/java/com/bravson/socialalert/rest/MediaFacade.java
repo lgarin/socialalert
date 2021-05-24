@@ -52,6 +52,7 @@ import com.bravson.socialalert.domain.media.comment.MediaCommentDetail;
 import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
 import com.bravson.socialalert.domain.media.query.MediaQueryInfo;
 import com.bravson.socialalert.domain.media.query.MediaQueryParameter;
+import com.bravson.socialalert.domain.media.statistic.CreatorMediaCount;
 import com.bravson.socialalert.domain.media.statistic.MediaCount;
 import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
 import com.bravson.socialalert.domain.media.statistic.PeriodicMediaCount;
@@ -369,7 +370,7 @@ public class MediaFacade {
 	@Operation(summary="Group the media by creator and return the list of creators having the highest count.")
 	@APIResponse(responseCode = "200", description = "The count of media matching the criteria for each creator.")
 	@SecurityRequirement(name = "JWT")
-	public List<MediaCount> countMediaMatchByCreator(@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
+	public List<CreatorMediaCount> countMediaMatchByCreator(@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
 			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("minLatitude") Double minLatitude,
 			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("maxLatitude") Double maxLatitude,
 			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("minLongitude") Double minLongitude,

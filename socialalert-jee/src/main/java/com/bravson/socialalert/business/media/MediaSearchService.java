@@ -1,6 +1,7 @@
 package com.bravson.socialalert.business.media;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -13,6 +14,7 @@ import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.media.SearchMediaParameter;
+import com.bravson.socialalert.domain.media.statistic.CreatorMediaCount;
 import com.bravson.socialalert.domain.media.statistic.MediaCount;
 import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
 import com.bravson.socialalert.domain.media.statistic.PeriodicMediaCount;
@@ -45,8 +47,9 @@ public class MediaSearchService {
 		return mediaRepository.groupByGeoHash(parameter);
 	}
 	
-	public List<MediaCount> groupByCreator(@NonNull SearchMediaParameter parameter, int maxCreatorCount) {
-		return mediaRepository.groupByCreator(parameter, maxCreatorCount);
+	public List<CreatorMediaCount> groupByCreator(@NonNull SearchMediaParameter parameter, int maxCreatorCount) {
+		List<MediaCount> result = mediaRepository.groupByCreator(parameter, maxCreatorCount);
+		return userService.fillUserInfo(result.stream().map(CreatorMediaCount::new).collect(Collectors.toList()));
 	}
 	
 	public List<MediaCount> groupByLocation(@NonNull SearchMediaParameter parameter, int maxLocationCount) {
