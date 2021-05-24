@@ -71,7 +71,6 @@ public class MediaMetadataExtractor {
 			throw new IOException("Cannot read file " + inputFile);
 		}
 		
-		// TODO ffprobe -show_format -print_format json -show_streams VID_20180712_160915.mp4 -v quiet
 		List<String> arguments = Arrays.asList("-j", "-n", inputFile.getAbsolutePath());
 		// -d "%Y-%m-%dT%H:%M:%S%z" -c "%.6f"
 		
@@ -97,8 +96,8 @@ public class MediaMetadataExtractor {
 
 	private MediaMetadata parseMediaMetadata(JsonObject item) {
 		return MediaMetadata.builder()
-			.width(readInteger(item, "ImageWidth"))
-			.height(readInteger(item, "ImageHeight"))
+			.width(readInt(item, "ImageWidth"))
+			.height(readInt(item, "ImageHeight"))
 			.latitude(readDouble(item, "GPSLatitude"))
 			.longitude(readDouble(item, "GPSLongitude"))
 			.duration(readDuration(item, "MediaDuration"))
@@ -126,12 +125,12 @@ public class MediaMetadataExtractor {
 		return null;
 	}
 	
-	private static Integer readInteger(JsonObject item, String... names) {
+	private static int readInt(JsonObject item, String... names) {
 		JsonValue value = findFirstDefinedValue(item, names);
 		if (value instanceof JsonNumber) {
 			return ((JsonNumber) value).intValue();
 		}
-		return null;
+		return 0;
 	}
 	
 	private static Duration readDuration(JsonObject item, String... names) {
