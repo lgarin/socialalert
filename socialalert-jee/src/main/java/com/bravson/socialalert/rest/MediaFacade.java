@@ -371,9 +371,9 @@ public class MediaFacade {
 	@APIResponse(responseCode = "200", description = "The count of media matching the criteria for each creator.")
 	@SecurityRequirement(name = "JWT")
 	public List<CreatorMediaCount> countMediaMatchByCreator(@Parameter(description="Restrict the type of counted media.", required=false) @QueryParam("kind") MediaKind mediaKind,
-			@Parameter(description="Define the location for the search area.", required=true) @QueryParam("latitude") Double latitude,
-			@Parameter(description="Define the location for the search area.", required=true) @QueryParam("longitude") Double longitude,
-			@Parameter(description="Define the maximum distance in kilometer for the search area.", required=true) @QueryParam("maxDistance") Double maxDistance,
+			@Parameter(description="Define the location for the search area.", required=false) @QueryParam("latitude") Double latitude,
+			@Parameter(description="Define the location for the search area.", required=false) @QueryParam("longitude") Double longitude,
+			@Parameter(description="Define the maximum distance in kilometer for the search area.", required=false) @QueryParam("maxDistance") Double maxDistance,
 			@Parameter(description="Define the keywords for searching the media.", required=false) @QueryParam("keywords") String keywords,
 			@Parameter(description="Define the maximum age in milliseconds of the counted media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
@@ -408,9 +408,9 @@ public class MediaFacade {
 	@APIResponse(responseCode = "200", description = "The count of media matching the criteria for each location.")
 	@SecurityRequirement(name = "JWT")
 	public List<LocationMediaCount> countMediaMatchByLocality(@Parameter(description="Restrict the type of counted media.", required=false) @QueryParam("kind") MediaKind mediaKind,
-			@Parameter(description="Define the location for the search area.", required=true) @QueryParam("latitude") Double latitude,
-			@Parameter(description="Define the location for the search area.", required=true) @QueryParam("longitude") Double longitude,
-			@Parameter(description="Define the maximum distance in kilometer for the search area.", required=true) @QueryParam("maxDistance") Double maxDistance,
+			@Parameter(description="Define the location for the search area.", required=false) @QueryParam("latitude") Double latitude,
+			@Parameter(description="Define the location for the search area.", required=false) @QueryParam("longitude") Double longitude,
+			@Parameter(description="Define the maximum distance in kilometer for the search area.", required=false) @QueryParam("maxDistance") Double maxDistance,
 			@Parameter(description="Define the keywords for counting the media.", required=false) @QueryParam("keywords") String keywords,
 			@Parameter(description="Define the maximum age in milliseconds of the counted media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
@@ -449,9 +449,9 @@ public class MediaFacade {
 	@APIResponse(responseCode = "200", description = "The count of media matching the criteria for each period interval.")
 	@SecurityRequirement(name = "JWT")
 	public List<PeriodicMediaCount> countMediaMatchByPeriod(@Parameter(description="Restrict the type of counted media.", required=false) @QueryParam("kind") MediaKind mediaKind,
-			@Parameter(description="Define the location for the search area.", required=true) @QueryParam("latitude") Double latitude,
-			@Parameter(description="Define the location for the search area.", required=true) @QueryParam("longitude") Double longitude,
-			@Parameter(description="Define the maximum distance in kilometer for the search area.", required=true) @QueryParam("maxDistance") Double maxDistance,
+			@Parameter(description="Define the location for the search area.", required=false) @QueryParam("latitude") Double latitude,
+			@Parameter(description="Define the location for the search area.", required=false) @QueryParam("longitude") Double longitude,
+			@Parameter(description="Define the maximum distance in kilometer for the search area.", required=false) @QueryParam("maxDistance") Double maxDistance,
 			@Parameter(description="Define the keywords for searching the media.", required=false) @QueryParam("keywords") String keywords,
 			@Parameter(description="Define the maximum age in milliseconds of the counted media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
