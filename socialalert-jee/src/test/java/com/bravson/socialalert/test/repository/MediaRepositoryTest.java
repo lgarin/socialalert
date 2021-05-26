@@ -16,8 +16,9 @@ import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.MediaKind;
 import com.bravson.socialalert.domain.media.SearchMediaParameter;
-import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
+import com.bravson.socialalert.domain.media.statistic.LocationMediaCount;
 import com.bravson.socialalert.domain.media.statistic.MediaCount;
+import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
 import com.bravson.socialalert.domain.media.statistic.PeriodicMediaCount;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
@@ -266,8 +267,13 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	SearchMediaParameter parameter = new SearchMediaParameter();
     	parameter.setCategory(media.getCategory());
     	
-    	List<MediaCount> result = repository.groupByLocation(parameter, 10);
-    	assertThat(result).containsExactly(new MediaCount(media.getLocation().getFullLocality(), 1));
+    	List<LocationMediaCount> result = repository.groupByLocation(parameter, 10);
+    	assertThat(result).satisfiesExactly(agg -> {
+    		assertThat(agg.getKey()).isEqualTo(media.getLocation().getFullLocality());
+    		assertThat(agg.getCount()).isEqualTo(1);
+    		assertThat(agg.getLatitude()).isCloseTo(46.95, offset(0.001));
+    		assertThat(agg.getLongitude()).isCloseTo(7.45, offset(0.001));
+    	});
     }
     
     @Test

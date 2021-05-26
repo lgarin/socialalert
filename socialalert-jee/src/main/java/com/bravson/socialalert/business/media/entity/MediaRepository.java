@@ -25,8 +25,9 @@ import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.SearchMediaParameter;
 import com.bravson.socialalert.domain.media.UpsertMediaParameter;
-import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
+import com.bravson.socialalert.domain.media.statistic.LocationMediaCount;
 import com.bravson.socialalert.domain.media.statistic.MediaCount;
+import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
 import com.bravson.socialalert.domain.media.statistic.PeriodicMediaCount;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
@@ -37,6 +38,7 @@ import com.bravson.socialalert.infrastructure.util.GeoHashUtil;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -168,10 +170,10 @@ public class MediaRepository {
 
 	private static GeoStatistic buildGeoStatistic(JsonElement item) {
 		JsonObject bucket = item.getAsJsonObject();
-		long feelingCount =  bucket.get("feelingSum").getAsJsonObject().get("doc_count").getAsLong();
-		String geoHash = bucket.get("key").getAsString();
-		long totalCount = bucket.get("doc_count").getAsLong();
-		long feelingSum = bucket.get("aggs").getAsJsonObject().get("value").getAsLong();
+		long feelingCount =  bucket.getAsJsonObject("feelingSum").getAsJsonPrimitive("doc_count").getAsLong();
+		String geoHash = bucket.getAsJsonPrimitive("key").getAsString();
+		long totalCount = bucket.getAsJsonPrimitive("doc_count").getAsLong();
+		long feelingSum = bucket.getAsJsonObject("aggs").getAsJsonPrimitive("value").getAsLong();
 		
 		GeoBox box = GeoHashUtil.computeBoundingBox(geoHash);
 		return GeoStatistic.builder().count(totalCount)
@@ -208,8 +210,44 @@ public class MediaRepository {
 		return groupByField(parameter, maxCount, "versionInfo.userId");
 	}
 	
-	public List<MediaCount> groupByLocation(@NonNull SearchMediaParameter parameter, int maxCount) {
-		return groupByField(parameter, maxCount, "location.fullLocality");
+	public List<LocationMediaCount> groupByLocation(@NonNull SearchMediaParameter parameter, int maxCount) {
+		JsonArray buckets = aggregateMedia(parameter, buildCentroidAggParam(maxCount));
+		List<LocationMediaCount> resultList = new ArrayList<>(buckets.size());
+		for (JsonElement item : buckets) {
+			resultList.add(buildLocationCount(item));
+		}
+		return resultList;
+	}
+	
+	private static JsonObject buildCentroidAggParam(int maxCount) {
+		JsonObject terms = new JsonObject();
+		terms.addProperty("field", "location.fullLocality");
+		terms.addProperty("size", maxCount);
+		
+		JsonObject geoCentroid = new JsonObject();
+		geoCentroid.addProperty("field", "location.position");
+		
+		JsonObject centroid = new JsonObject();
+		centroid.add("geo_centroid", geoCentroid);
+		
+		JsonObject aggs = new JsonObject();
+		aggs.add("centroid", centroid);
+		
+		JsonObject aggregation = new JsonObject();
+		aggregation.add("terms", terms);
+		aggregation.add("aggs", aggs);
+		return aggregation;
+	}
+	
+	private static LocationMediaCount buildLocationCount(JsonElement item) {
+		JsonObject bucket = item.getAsJsonObject();
+		String key = bucket.getAsJsonPrimitive("key").getAsString();
+		long count = bucket.getAsJsonPrimitive("doc_count").getAsLong();
+		JsonObject location = bucket.getAsJsonObject("centroid").getAsJsonObject("location");
+		JsonPrimitive latitude = location.getAsJsonPrimitive("lat");
+		JsonPrimitive longitude = location.getAsJsonPrimitive("lon");
+		
+		return new LocationMediaCount(key, latitude.getAsDouble(), longitude.getAsDouble(), count);
 	}
 	
 	public List<PeriodicMediaCount> groupByPeriod(@NonNull SearchMediaParameter parameter, @NonNull PeriodInterval interval) {
@@ -223,8 +261,8 @@ public class MediaRepository {
 	
 	private static PeriodicMediaCount buildPeriodCount(JsonElement item) {
 		JsonObject bucket = item.getAsJsonObject();
-		long key = bucket.get("key").getAsLong();
-		long count = bucket.get("doc_count").getAsLong();
+		long key = bucket.getAsJsonPrimitive("key").getAsLong();
+		long count = bucket.getAsJsonPrimitive("doc_count").getAsLong();
 		return new PeriodicMediaCount(Instant.ofEpochMilli(key), count);
 	}
 

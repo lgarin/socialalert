@@ -15,6 +15,7 @@ import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.media.SearchMediaParameter;
 import com.bravson.socialalert.domain.media.statistic.CreatorMediaCount;
+import com.bravson.socialalert.domain.media.statistic.LocationMediaCount;
 import com.bravson.socialalert.domain.media.statistic.MediaCount;
 import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
 import com.bravson.socialalert.domain.media.statistic.PeriodicMediaCount;
@@ -52,7 +53,7 @@ public class MediaSearchService {
 		return userService.fillUserInfo(result.stream().map(CreatorMediaCount::new).collect(Collectors.toList()));
 	}
 	
-	public List<MediaCount> groupByLocation(@NonNull SearchMediaParameter parameter, int maxLocationCount) {
+	public List<LocationMediaCount> groupByLocation(@NonNull SearchMediaParameter parameter, int maxLocationCount) {
 		return mediaRepository.groupByLocation(parameter, maxLocationCount);
 	}
 	
