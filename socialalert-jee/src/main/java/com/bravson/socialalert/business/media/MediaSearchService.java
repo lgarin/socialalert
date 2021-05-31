@@ -1,5 +1,8 @@
 package com.bravson.socialalert.business.media;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.TemporalAmount;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,17 +51,44 @@ public class MediaSearchService {
 		return mediaRepository.groupByGeoHash(parameter);
 	}
 	
-	public List<CreatorMediaCount> groupByCreator(@NonNull SearchMediaParameter parameter, int maxCreatorCount) {
+	public List<CreatorMediaCount> groupByCreator(@NonNull SearchMediaParameter parameter, int maxCreatorCount, int maxMediaCount) {
 		List<MediaCount> result = mediaRepository.groupByCreator(parameter, maxCreatorCount);
+		if (maxMediaCount > 0) {
+			PagingParameter paging = new PagingParameter(Instant.now(), 0, maxMediaCount);
+			for (MediaCount group : result) {
+				parameter.setCreator(group.getKey());
+				group.setTopMedia(searchMedia(parameter, paging).getContent());
+			}
+		}
 		return userService.fillUserInfo(result.stream().map(CreatorMediaCount::new).collect(Collectors.toList()));
+		
 	}
 	
-	public List<LocationMediaCount> groupByLocation(@NonNull SearchMediaParameter parameter, int maxLocationCount) {
-		return mediaRepository.groupByLocation(parameter, maxLocationCount);
+	public List<LocationMediaCount> groupByLocation(@NonNull SearchMediaParameter parameter, int maxLocationCount, int maxMediaCount) {
+		List<LocationMediaCount> result = mediaRepository.groupByLocation(parameter, maxLocationCount);
+		if (maxMediaCount > 0) {
+			PagingParameter paging = new PagingParameter(Instant.now(), 0, maxMediaCount);
+			for (LocationMediaCount group : result) {
+				parameter.setCountry(group.getCountry());
+				parameter.setLocality(group.getLocality());
+				group.setTopMedia(searchMedia(parameter, paging).getContent());
+			}
+		}
+		return result;
 	}
 	
-	public List<PeriodicMediaCount> groupByPeriod(@NonNull SearchMediaParameter parameter, @NonNull PeriodInterval interval) {
-		return mediaRepository.groupByPeriod(parameter, interval);
+	public List<PeriodicMediaCount> groupByPeriod(@NonNull SearchMediaParameter parameter, @NonNull PeriodInterval interval, int maxMediaCount) {
+		List<PeriodicMediaCount> result = mediaRepository.groupByPeriod(parameter, interval);
+		if (maxMediaCount > 0) {
+			TemporalAmount delta = interval.toTemporalAmount();
+			Instant now = Instant.now();
+			for (PeriodicMediaCount group : result) {
+				PagingParameter paging = new PagingParameter(group.getPeriod().plus(delta), 0, maxMediaCount);
+				parameter.setMaxAge(Duration.between(group.getPeriod(), now));
+				group.setTopMedia(searchMedia(parameter, paging).getContent());
+			}
+		}
+		return result;
 	}
 
 	public List<String> suggestTags(@NonNull String searchTerm, int maxHitCount) {

@@ -85,6 +85,20 @@ public class MediaFacade {
 	@Inject
 	MediaQueryService queryService;
 	
+	private static GeoBox buildGeoBox(Double minLatitude, Double maxLatitude, Double minLongitude, Double maxLongitude) {
+		if (minLatitude == null || maxLatitude == null || minLongitude == null || maxLongitude == null) {
+			throw new BadRequestException("minLatitude, maxLatitude, minLongitude and maxLongitude must be set together");
+		}
+		return GeoBox.builder().minLat(minLatitude).maxLat(maxLatitude).minLon(minLongitude).maxLon(maxLongitude).build();
+	}
+	
+	private static GeoArea buildGeoArea(Double latitude, Double longitude, Double maxDistance) {
+		if (latitude == null || longitude == null || maxDistance == null) {
+			throw new BadRequestException("latitude, longitude, and maxDistance must be set together");
+		}
+		return GeoArea.builder().latitude(latitude).longitude(longitude).radius(maxDistance).build();
+	}
+	
 	@POST
 	@Path("/claim/{mediaUri : .+}")
 	@Consumes(MediaTypeConstants.JSON)
@@ -141,10 +155,7 @@ public class MediaFacade {
 			parameter.setMediaKind(mediaKind);
 		}
 		if (minLatitude != null || maxLatitude != null || minLongitude != null || maxLongitude != null) {
-			if (minLatitude == null || maxLatitude == null || minLongitude == null || maxLongitude == null) {
-				throw new BadRequestException("minLatitude, maxLatitude, minLongitude and maxLongitude must be set together");
-			}
-			parameter.setArea(GeoBox.builder().minLat(minLatitude).maxLat(maxLatitude).minLon(minLongitude).maxLon(maxLongitude).build());
+			parameter.setArea(buildGeoBox(minLatitude, maxLatitude, minLongitude, maxLongitude));
 		}
 		if (keywords != null) {
 			parameter.setKeywords(keywords);
@@ -195,7 +206,7 @@ public class MediaFacade {
 		if (creator != null) {
 			parameter.setCreator(creator);
 		}
-		parameter.setLocation(GeoArea.builder().latitude(latitude).longitude(longitude).radius(maxDistance).build());
+		parameter.setLocation(buildGeoArea(latitude, longitude, maxDistance));
 		return mediaSearchService.searchMedia(parameter, PagingParameter.of(pagingTimestamp, pageNumber, pageSize));
 	}
 	
@@ -347,7 +358,7 @@ public class MediaFacade {
 			parameter.setMediaKind(mediaKind);
 		}
 		
-		parameter.setArea(GeoBox.builder().minLat(minLatitude).maxLat(maxLatitude).minLon(minLongitude).maxLon(maxLongitude).build());
+		parameter.setArea(buildGeoBox(minLatitude, maxLatitude, minLongitude, maxLongitude));
 		
 		if (keywords != null) {
 			parameter.setKeywords(keywords);
@@ -377,6 +388,7 @@ public class MediaFacade {
 			@Parameter(description="Define the keywords for searching the media.", required=false) @QueryParam("keywords") String keywords,
 			@Parameter(description="Define the maximum age in milliseconds of the counted media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
+			@Parameter(description="Define the maximum list size of the top media for each key.", required=false) @DefaultValue("5") @Min(1) @Max(10) @QueryParam("topMediaCount") int topMediaCount,
 			@Parameter(description="Define the maximum size of the returned list.", required=false) @DefaultValue("10") @Min(1) @Max(100) @QueryParam("maxSize") int maxSize) {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
@@ -384,10 +396,7 @@ public class MediaFacade {
 			parameter.setMediaKind(mediaKind);
 		}
 		if (latitude != null || longitude != null || maxDistance != null) {
-			if (latitude == null || longitude == null || maxDistance == null) {
-				throw new BadRequestException("latitude, longitude, and maxDistance must be set together");
-			}
-			parameter.setLocation(GeoArea.builder().latitude(latitude).longitude(longitude).radius(maxDistance).build());
+			parameter.setLocation(buildGeoArea(latitude, longitude, maxDistance));
 		}
 		if (keywords != null) {
 			parameter.setKeywords(keywords);
@@ -398,7 +407,7 @@ public class MediaFacade {
 		if (category != null) {
 			parameter.setCategory(category);
 		}
-		return mediaSearchService.groupByCreator(parameter, maxSize);
+		return mediaSearchService.groupByCreator(parameter, maxSize, topMediaCount);
 	}
 	
 	@GET
@@ -415,6 +424,7 @@ public class MediaFacade {
 			@Parameter(description="Define the maximum age in milliseconds of the counted media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
 			@Parameter(description="Define the user id of the creator for searching the media.", required=false) @QueryParam("creator") String creator,
+			@Parameter(description="Define the maximum list size of the top media for each key.", required=false) @DefaultValue("5") @Min(1) @Max(10) @QueryParam("topMediaCount") int topMediaCount,
 			@Parameter(description="Define the maximum size of the returned list.", required=false) @DefaultValue("10") @Min(1) @Max(100) @QueryParam("maxSize") int maxSize) {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
@@ -422,10 +432,7 @@ public class MediaFacade {
 			parameter.setMediaKind(mediaKind);
 		}
 		if (latitude != null || longitude != null || maxDistance != null) {
-			if (latitude == null || longitude == null || maxDistance == null) {
-				throw new BadRequestException("latitude, longitude, and maxDistance must be set together");
-			}
-			parameter.setLocation(GeoArea.builder().latitude(latitude).longitude(longitude).radius(maxDistance).build());
+			parameter.setLocation(buildGeoArea(latitude, longitude, maxDistance));
 		}
 		if (keywords != null) {
 			parameter.setKeywords(keywords);
@@ -439,7 +446,7 @@ public class MediaFacade {
 		if (creator != null) {
 			parameter.setCreator(creator);
 		}
-		return mediaSearchService.groupByLocation(parameter, maxSize);
+		return mediaSearchService.groupByLocation(parameter, maxSize, topMediaCount);
 	}
 	
 	@GET
@@ -456,6 +463,7 @@ public class MediaFacade {
 			@Parameter(description="Define the maximum age in milliseconds of the counted media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
 			@Parameter(description="Define the user id of the creator for searching the media.", required=false) @QueryParam("creator") String creator,
+			@Parameter(description="Define the maximum list size of the top media for each key.", required=false) @DefaultValue("5") @Min(1) @Max(10) @QueryParam("topMediaCount") int topMediaCount,
 			@Parameter(description="Define the period interval.", required=false) @DefaultValue("HOUR") @QueryParam("interval") PeriodInterval interval) {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
@@ -463,10 +471,7 @@ public class MediaFacade {
 			parameter.setMediaKind(mediaKind);
 		}
 		if (latitude != null || longitude != null || maxDistance != null) {
-			if (latitude == null || longitude == null || maxDistance == null) {
-				throw new BadRequestException("latitude, longitude, and maxDistance must be set together");
-			}
-			parameter.setLocation(GeoArea.builder().latitude(latitude).longitude(longitude).radius(maxDistance).build());
+			parameter.setLocation(buildGeoArea(latitude, longitude, maxDistance));
 		}
 		if (keywords != null) {
 			parameter.setKeywords(keywords);
@@ -480,7 +485,7 @@ public class MediaFacade {
 		if (creator != null) {
 			parameter.setCreator(creator);
 		}
-		return mediaSearchService.groupByPeriod(parameter, interval);
+		return mediaSearchService.groupByPeriod(parameter, interval, topMediaCount);
 	}
 	
 	@GET

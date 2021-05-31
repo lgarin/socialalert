@@ -19,7 +19,7 @@ public class CreatorMediaCount extends MediaCount implements UserContent {
 	private UserInfo creator;
 	
 	public CreatorMediaCount(@NonNull MediaCount mediaCount) {
-		super(mediaCount.getKey(), mediaCount.getCount());
+		super(mediaCount.getKey(), mediaCount.getCount(), mediaCount.getTopMedia());
 	}
 
 	@Override

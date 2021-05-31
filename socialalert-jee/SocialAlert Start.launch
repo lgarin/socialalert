@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.jboss.tools.quarkus.core.launchConfigurationType">
+    <listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+        <listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
+    </listAttribute>
+    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="socialalert-jee"/>
+    <stringAttribute key="org.eclipse.ui.externaltools.ATTR_LAUNCH_CONFIGURATION_BUILD_SCOPE" value="${projects:socialalert-jee}"/>
+    <stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="C:\Dev\socialalert-web\socialalert-jee\mvnw.cmd"/>
+    <stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="compile quarkus:dev -Dquarkus.profile=dev"/>
+    <stringAttribute key="org.eclipse.ui.externaltools.ATTR_WORKING_DIRECTORY" value="C:\Dev\socialalert-web\socialalert-jee"/>
+    <stringAttribute key="org.jboss.tools.quarkus.core.profileName" value="dev"/>
+    <stringAttribute key="process_factory_id" value="org.jboss.tools.quarkus.core.processFactory"/>
+</launchConfiguration>

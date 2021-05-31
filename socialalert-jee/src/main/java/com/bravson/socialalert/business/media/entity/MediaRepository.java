@@ -107,6 +107,12 @@ public class MediaRepository {
 		if (parameter.getMediaKind() != null) {
 			junction = junction.filter(context.match().field("kind").matching(parameter.getMediaKind()).toPredicate());
 		}
+		if (parameter.getLocality() != null) {
+			junction = junction.filter(context.match().field("location.locality").matching(parameter.getLocality()).toPredicate());
+		}
+		if (parameter.getCountry() != null) {
+			junction = junction.filter(context.simpleQueryString().field("location.country").matching(parameter.getCountry()).toPredicate());
+		}
 		return junction;
 	}
 

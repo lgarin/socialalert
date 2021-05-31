@@ -17,4 +17,6 @@ public class SearchMediaParameter {
 	private Duration maxAge;
 	private String category;
 	private String creator;
+	private String locality;
+	private String country;
 }
