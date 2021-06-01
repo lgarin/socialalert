@@ -52,7 +52,7 @@ public class UserService {
 
 	private LoginResponse toLoginResponse(LoginToken loginToken, String ipAddress) {
 		String accessToken = loginToken.getAccessToken();
-		String userId = JwtUtil.extractUserId(accessToken).get();
+		String userId = JwtUtil.extractUserId(accessToken).orElseThrow();
 		AuthenticationInfo authInfo = authenticationRepository.findAuthenticationInfo(accessToken).orElseThrow(NotFoundException::new);
 		UserProfileEntity userProfile = profileRepository.findByUserId(userId).orElseGet(() -> profileRepository.createProfile(authInfo, ipAddress));
 		userProfile.login(authInfo);
@@ -73,7 +73,7 @@ public class UserService {
 	
 	private LoginTokenResponse toLoginTokenResponse(LoginToken loginToken) {
 		String accessToken = loginToken.getAccessToken();
-		String userId = JwtUtil.extractUserId(accessToken).get();
+		String userId = JwtUtil.extractUserId(accessToken).orElseThrow();
 		UserProfileEntity userProfile = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
 		userProfile.markActive();
 		return LoginTokenResponse.builder()
