@@ -388,7 +388,7 @@ public class MediaFacade {
 			@Parameter(description="Define the keywords for searching the media.", required=false) @QueryParam("keywords") String keywords,
 			@Parameter(description="Define the maximum age in milliseconds of the counted media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
-			@Parameter(description="Define the maximum list size of the top media for each key.", required=false) @DefaultValue("5") @Min(1) @Max(10) @QueryParam("topMediaCount") int topMediaCount,
+			@Parameter(description="Define the maximum list size of the top media for each key.", required=false) @DefaultValue("5") @Min(0) @Max(10) @QueryParam("topMediaCount") int topMediaCount,
 			@Parameter(description="Define the maximum size of the returned list.", required=false) @DefaultValue("10") @Min(1) @Max(100) @QueryParam("maxSize") int maxSize) {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
@@ -424,7 +424,7 @@ public class MediaFacade {
 			@Parameter(description="Define the maximum age in milliseconds of the counted media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
 			@Parameter(description="Define the user id of the creator for searching the media.", required=false) @QueryParam("creator") String creator,
-			@Parameter(description="Define the maximum list size of the top media for each key.", required=false) @DefaultValue("5") @Min(1) @Max(10) @QueryParam("topMediaCount") int topMediaCount,
+			@Parameter(description="Define the maximum list size of the top media for each key.", required=false) @DefaultValue("5") @Min(0) @Max(10) @QueryParam("topMediaCount") int topMediaCount,
 			@Parameter(description="Define the maximum size of the returned list.", required=false) @DefaultValue("10") @Min(1) @Max(100) @QueryParam("maxSize") int maxSize) {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
@@ -463,7 +463,7 @@ public class MediaFacade {
 			@Parameter(description="Define the maximum age in milliseconds of the counted media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
 			@Parameter(description="Define the user id of the creator for searching the media.", required=false) @QueryParam("creator") String creator,
-			@Parameter(description="Define the maximum list size of the top media for each key.", required=false) @DefaultValue("5") @Min(1) @Max(10) @QueryParam("topMediaCount") int topMediaCount,
+			@Parameter(description="Define the maximum list size of the top media for each key.", required=false) @DefaultValue("5") @Min(0) @Max(10) @QueryParam("topMediaCount") int topMediaCount,
 			@Parameter(description="Define the period interval.", required=false) @DefaultValue("HOUR") @QueryParam("interval") PeriodInterval interval) {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
