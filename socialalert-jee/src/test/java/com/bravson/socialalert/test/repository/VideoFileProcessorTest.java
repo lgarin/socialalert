@@ -38,8 +38,8 @@ public class VideoFileProcessorTest extends Assertions {
 		File file = File.createTempFile("mov", "thumbnail.jpg");
 		processor.createThumbnail(new File("src/test/resources/media/IMG_0236.MOV"), file);
 		MediaMetadata metadata = extractor.parseMetadata(file);
-		assertThat(metadata.getHeight()).isEqualTo(config.getThumbnailHeight());
-		assertThat(metadata.getWidth()).isEqualTo(config.getThumbnailWidth());
+		assertThat(metadata.getHeight()).isEqualTo(config.thumbnailHeight());
+		assertThat(metadata.getWidth()).isEqualTo(config.thumbnailWidth());
 	}
 	
 	@Test
@@ -47,7 +47,7 @@ public class VideoFileProcessorTest extends Assertions {
 		File file = File.createTempFile("mov", "preview.mp4");
 		processor.createPreview(new File("src/test/resources/media/IMG_0236.MOV"), file);
 		MediaMetadata metadata = extractor.parseMetadata(file);
-		assertThat(metadata.getHeight()).isEqualTo(config.getPreviewHeight());
-		assertThat(metadata.getWidth()).isEqualTo(config.getPreviewWidth());
+		assertThat(metadata.getHeight()).isEqualTo(config.previewHeight());
+		assertThat(metadata.getWidth()).isEqualTo(config.previewWidth());
 	}
 }

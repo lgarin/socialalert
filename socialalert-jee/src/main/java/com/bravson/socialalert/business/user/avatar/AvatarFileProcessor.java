@@ -30,7 +30,7 @@ public class AvatarFileProcessor implements MediaFileProcessor {
 	public void createPreview(File inputFile, File outputFile) throws IOException {
 		Thumbnails
 			.of(inputFile)
-			.size(config.getLargeSize(), config.getLargeSize())
+			.size(config.largeSize(), config.largeSize())
 			.crop(Positions.CENTER)
 			.outputFormat(JPG_EXTENSION)
 			.toFile(outputFile);
@@ -45,7 +45,7 @@ public class AvatarFileProcessor implements MediaFileProcessor {
 	public void createThumbnail(File inputFile, File outputFile) throws IOException {
 		Thumbnails
 			.of(inputFile)
-			.size(config.getSmallSize(), config.getSmallSize())
+			.size(config.smallSize(), config.smallSize())
 			.crop(Positions.CENTER)
 			.outputFormat(JPG_EXTENSION)
 			.toFile(outputFile);

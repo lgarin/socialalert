@@ -1,24 +1,24 @@
 package com.bravson.socialalert.business.file.media;
 
-import io.quarkus.arc.config.ConfigProperties;
-import io.quarkus.arc.config.ConfigProperties.NamingStrategy;
+import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.ConfigMapping.NamingStrategy;
 
-@ConfigProperties(prefix = "media", namingStrategy = NamingStrategy.VERBATIM)
+@ConfigMapping(prefix = "media", namingStrategy = NamingStrategy.VERBATIM)
 public interface MediaConfiguration {
 
-	long getSnapshotDelay();
+	long snapshotDelay();
 	
-	int getThumbnailHeight();
+	int thumbnailHeight();
 	
-	int getThumbnailWidth();
+	int thumbnailWidth();
 	
-	int getPreviewHeight();
+	int previewHeight();
 	
-	int getPreviewWidth();
+	int previewWidth();
 	
-	String getWatermarkFile();
+	String watermarkFile();
 	
-	String getEncodingProgram();
+	String encodingProgram();
 	
-	String getMetadataProgram();
+	String metadataProgram();
 }

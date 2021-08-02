@@ -27,7 +27,7 @@ public class SnapshotVideoFileProcessor extends BaseVideoFileProcessor {
 	
 	@Override
 	public void createPreview(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
-		takeSnapshot(sourceFile, outputFile, config.getPreviewWidth(), config.getPreviewHeight(), false);
+		takeSnapshot(sourceFile, outputFile, config.previewWidth(), config.previewHeight(), false);
 	}
 	
 	@Override

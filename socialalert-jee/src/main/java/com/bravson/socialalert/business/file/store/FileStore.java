@@ -32,7 +32,7 @@ public class FileStore {
 
 	@Inject
 	public FileStore(@NonNull FileStoreConfiguration config) {
-		baseDirectory = config.getBaseDirectory().toPath();
+		baseDirectory = config.baseDirectory().toPath();
 	}
 	
 	@PostConstruct

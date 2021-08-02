@@ -2,11 +2,11 @@ package com.bravson.socialalert.business.file.store;
 
 import java.io.File;
 
-import io.quarkus.arc.config.ConfigProperties;
-import io.quarkus.arc.config.ConfigProperties.NamingStrategy;
+import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.ConfigMapping.NamingStrategy;
 
-@ConfigProperties(prefix = "file", namingStrategy = NamingStrategy.VERBATIM)
+@ConfigMapping(prefix = "store", namingStrategy = NamingStrategy.VERBATIM)
 public interface FileStoreConfiguration {
 
-	public File getBaseDirectory();
+	public File baseDirectory();
 }

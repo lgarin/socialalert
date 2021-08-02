@@ -41,13 +41,13 @@ public abstract class BaseVideoFileProcessor implements MediaFileProcessor {
 		
 		List<String> arguments = Arrays.asList(
 				"-i", sourceFile.getAbsolutePath(), 
-				"-i", config.getWatermarkFile(), 
+				"-i", config.watermarkFile(), 
 				"-f", "image2", "-frames:v", "1", 
 				"-filter_complex", filter,
 				"-y", targetFile.getAbsolutePath());
 		
 		StringBuilder output = new StringBuilder(16000);
-		int exitCode = ProcessUtil.execute(config.getEncodingProgram(), arguments, output);
+		int exitCode = ProcessUtil.execute(config.encodingProgram(), arguments, output);
 		if (exitCode != 0) {
 			logger.error(output.toString());
 			throw new IOException("Cannot process file " + targetFile);
@@ -59,6 +59,6 @@ public abstract class BaseVideoFileProcessor implements MediaFileProcessor {
 	
 	@Override
 	public void createThumbnail(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
-		takeSnapshot(sourceFile, outputFile, config.getThumbnailWidth(), config.getThumbnailHeight(), false);
+		takeSnapshot(sourceFile, outputFile, config.thumbnailWidth(), config.thumbnailHeight(), false);
 	}
 }

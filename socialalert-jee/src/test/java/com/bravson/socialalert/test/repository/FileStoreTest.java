@@ -43,7 +43,7 @@ public class FileStoreTest extends Assertions {
 	@Test
 	public void storeExistingFile() throws IOException {
 		store.storeFile(new File("src/main/resources/logo.jpg"), "38c4297b9099b466eab20fea521ee2f6", "20170415", MediaFileFormat.MEDIA_JPG);
-		assertThat(new File(config.getBaseDirectory(), "media/20170415/38c4297b9099b466eab20fea521ee2f6.jpg")).exists();
+		assertThat(new File(config.baseDirectory(), "media/20170415/38c4297b9099b466eab20fea521ee2f6.jpg")).exists();
 	}
 	
 	@Test
@@ -60,7 +60,7 @@ public class FileStoreTest extends Assertions {
 	@Test
 	public void storeNewMp4File() throws IOException {
 		store.createEmptyFile("38c4297b9099b466eab20fea521ee2f6", "20161204", MediaFileFormat.PREVIEW_MP4);
-		assertThat(new File(config.getBaseDirectory(), "preview/20161204/38c4297b9099b466eab20fea521ee2f6.mp4")).exists();
+		assertThat(new File(config.baseDirectory(), "preview/20161204/38c4297b9099b466eab20fea521ee2f6.mp4")).exists();
 	}
 	
 	@Test

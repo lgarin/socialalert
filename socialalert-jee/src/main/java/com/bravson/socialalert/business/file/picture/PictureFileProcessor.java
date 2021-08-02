@@ -39,7 +39,7 @@ public class PictureFileProcessor implements MediaFileProcessor {
 	public void createThumbnail(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
 		Thumbnails
 			.of(sourceFile)
-			.size(config.getThumbnailWidth(), config.getThumbnailHeight())
+			.size(config.thumbnailWidth(), config.thumbnailHeight())
 			.crop(Positions.CENTER)
 			.outputFormat(JPG_EXTENSION)
 			.toFile(outputFile);
@@ -49,7 +49,7 @@ public class PictureFileProcessor implements MediaFileProcessor {
 	public void createPreview(@NonNull File sourceFile, @NonNull File outputFile) throws IOException {
 		Thumbnails
 			.of(sourceFile)
-			.size(config.getPreviewWidth(), config.getPreviewHeight())
+			.size(config.previewWidth(), config.previewHeight())
 			//.watermark(Positions.BOTTOM_RIGHT, watermarkImage, 0.25f)
 			.outputFormat(JPG_EXTENSION)
 			.toFile(outputFile);

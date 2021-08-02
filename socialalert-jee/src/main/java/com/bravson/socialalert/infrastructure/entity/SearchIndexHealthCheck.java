@@ -31,7 +31,7 @@ public class SearchIndexHealthCheck implements HealthCheck {
 	public HealthCheckResponse call() {
 		return HealthCheckResponse.builder()
 				.name("Elasticsearch connection health check")
-				.state(isAvailable())
+				.status(isAvailable())
 				.build();
 	}
 	

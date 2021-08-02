@@ -1,34 +1,34 @@
 package com.bravson.socialalert.business.user.authentication;
 
-import io.quarkus.arc.config.ConfigProperties;
-import io.quarkus.arc.config.ConfigProperties.NamingStrategy;
+import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.ConfigMapping.NamingStrategy;
 
-@ConfigProperties(prefix = "auth", namingStrategy = NamingStrategy.VERBATIM)
+@ConfigMapping(prefix = "auth", namingStrategy = NamingStrategy.VERBATIM)
 public interface AuthenticationConfiguration {
 
-	String getLoginUrl();
+	String loginUrl();
 	
-	String getLogoutUrl();
+	String logoutUrl();
 	
-	String getUserInfoUrl();
+	String userInfoUrl();
 	
-	String getConfigUrl();
+	String configUrl();
 	
-	String getAdminLoginUrl();
+	String adminLoginUrl();
 	
-	String getAdminClientId();
+	String adminClientId();
 	
-	String getAdminUsername();
+	String adminUsername();
 	
-	String getAdminPassword();
+	String adminPassword();
 	
-	String getUserCreateUrl();
+	String userCreateUrl();
 	
-	String getUserUpdateUrl();
+	String userUpdateUrl();
 	
-	String getPasswordResetUrl();
+	String passwordResetUrl();
 	
-	String getLoginClientId();
+	String loginClientId();
 	
-	String getClientSecret();
+	String clientSecret();
 }

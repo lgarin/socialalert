@@ -39,8 +39,8 @@ public class PictureFileProcessorTest extends Assertions {
 		File file = File.createTempFile("jpg", "thumbnail.jpg");
 		processor.createThumbnail(new File("src/test/resources/media/IMG_0397.JPG"), file);
 		MediaMetadata metadata = extractor.parseMetadata(file);
-		assertThat(metadata.getHeight()).isEqualTo(config.getThumbnailHeight());
-		assertThat(metadata.getWidth()).isEqualTo(config.getThumbnailWidth());
+		assertThat(metadata.getHeight()).isEqualTo(config.thumbnailHeight());
+		assertThat(metadata.getWidth()).isEqualTo(config.thumbnailWidth());
 	}
 	
 	@Test
@@ -48,7 +48,7 @@ public class PictureFileProcessorTest extends Assertions {
 		File file = File.createTempFile("jpg", "preview.jpg");
 		processor.createPreview(new File("src/test/resources/media/IMG_0397.JPG"), file);
 		MediaMetadata metadata = extractor.parseMetadata(file);
-		assertThat(metadata.getHeight()).isEqualTo(config.getPreviewHeight());
+		assertThat(metadata.getHeight()).isEqualTo(config.previewHeight());
 		//assertThat(metadata.getWidth()).isEqualTo(config.getPreviewWidth());
 	}
 }

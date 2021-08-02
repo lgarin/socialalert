@@ -24,7 +24,7 @@ public class AuthenticationHealthCheck implements HealthCheck {
 	public HealthCheckResponse call() {
 		return HealthCheckResponse.builder()
 				.name("Keycloak connection health check")
-				.state(repository.isAvailable())
+				.status(repository.isAvailable())
 				.build();
 	}
 
