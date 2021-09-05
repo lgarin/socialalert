@@ -1,8 +1,10 @@
 package com.bravson.socialalert.test.repository;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -14,6 +16,8 @@ import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.business.media.entity.MediaEntity;
 import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.feed.FeedActivity;
+import com.bravson.socialalert.domain.feed.PeriodicFeedActivityCount;
+import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 
@@ -72,5 +76,27 @@ public class FeedItemRepositoryTest extends BaseRepositoryTest {
     	persistAndIndex(entity2);
     	QueryResult<FeedItemEntity> result = repository.searchActivitiesByUsers(Arrays.asList("test", "test2"), null, null, new PagingParameter(Instant.now(), 0, 10));
     	assertThat(result.getContent()).containsExactly(entity2, entity1);
+    }
+    
+    @Test
+    public void groupActivitiesByUser() {
+    	MediaEntity media = storeDefaultMedia();
+    	FeedItemEntity entity = new FeedItemEntity(media, null, FeedActivity.NEW_MEDIA, createUserAccess("test", "1.2.3.4"));
+    	persistAndIndex(entity);
+    	
+    	List<PeriodicFeedActivityCount> result = repository.groupUserActivitiesByPeriod(entity.getUserId(), entity.getActivity(), PeriodInterval.DAY);
+    	Instant today = Instant.now().truncatedTo(ChronoUnit.DAYS);
+    	assertThat(result).containsExactly(new PeriodicFeedActivityCount(today, 1));
+    }
+    
+    @Test
+    public void groupActivitiesByMedia() {
+    	MediaEntity media = storeDefaultMedia();
+    	FeedItemEntity entity = new FeedItemEntity(media, null, FeedActivity.NEW_MEDIA, createUserAccess("test", "1.2.3.4"));
+    	persistAndIndex(entity);
+    	
+    	List<PeriodicFeedActivityCount> result = repository.groupMediaActivitiesByPeriod(media.getId(), entity.getActivity(), PeriodInterval.DAY);
+    	Instant today = Instant.now().truncatedTo(ChronoUnit.DAYS);
+    	assertThat(result).containsExactly(new PeriodicFeedActivityCount(today, 1));
     }
 }

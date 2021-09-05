@@ -18,4 +18,18 @@ public class FeedFacadeTest extends BaseIntegrationTest {
 		Response response = createAuthRequest("/feed/current", MediaTypeConstants.JSON, token).get();
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 	}
+	
+	@Test
+	public void countActivitiesForUnknownUser() {
+		String token = requestLoginToken("test@test.com", "123");
+		Response response = createAuthRequest("/feed/mediaHistogram/xyz?activity=NEW_MEDIA&interval=DAY", MediaTypeConstants.JSON, token).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+	
+	@Test
+	public void countActivitiesForUnknownMedia() {
+		String token = requestLoginToken("test@test.com", "123");
+		Response response = createAuthRequest("/feed/userHistogram/xyz?activity=NEW_MEDIA&interval=DAY", MediaTypeConstants.JSON, token).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
 }
