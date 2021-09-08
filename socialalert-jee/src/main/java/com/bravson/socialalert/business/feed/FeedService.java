@@ -13,7 +13,8 @@ import javax.ws.rs.NotFoundException;
 import com.bravson.socialalert.business.feed.item.FeedItemEntity;
 import com.bravson.socialalert.business.feed.item.FeedItemRepository;
 import com.bravson.socialalert.business.user.UserInfoService;
-import com.bravson.socialalert.business.user.profile.UserProfileEntity;
+import com.bravson.socialalert.business.user.link.UserLinkEntity;
+import com.bravson.socialalert.business.user.link.UserLinkRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.feed.FeedActivity;
 import com.bravson.socialalert.domain.feed.FeedItemInfo;
@@ -40,7 +41,12 @@ public class FeedService {
 	UserProfileRepository profileRepository;
 	
 	@Inject
+	@NonNull
 	UserInfoService userService;
+	
+	@Inject
+	@NonNull
+	UserLinkRepository linkRepository;
 	
 	public QueryResult<FeedItemInfo> getFeed(@NonNull String userId, String category, String keywords, @NonNull PagingParameter paging) {
 		List<String> userIdList = buildRelatedUserIdList(userId);
@@ -56,9 +62,10 @@ public class FeedService {
 	}
 
 	private List<String> buildRelatedUserIdList(String userId) {
-		UserProfileEntity profile = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
-		List<String> userIdList = new ArrayList<>(profile.getFollowedUsers().size() + 1);
-		profile.getFollowedUsers().stream().map(link -> link.getId().getTargetUserId()).forEach(userIdList::add);
+		profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
+		List<UserLinkEntity> followedUserLinks = linkRepository.findBySource(userId);
+		List<String> userIdList = new ArrayList<>(followedUserLinks.size() + 1);
+		followedUserLinks.stream().map(link -> link.getId().getTargetUserId()).forEach(userIdList::add);
 		userIdList.add(userId);
 		return userIdList;
 	}

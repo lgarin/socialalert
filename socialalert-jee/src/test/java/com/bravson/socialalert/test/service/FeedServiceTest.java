@@ -14,6 +14,7 @@ import com.bravson.socialalert.business.feed.FeedService;
 import com.bravson.socialalert.business.feed.item.FeedItemEntity;
 import com.bravson.socialalert.business.feed.item.FeedItemRepository;
 import com.bravson.socialalert.business.user.UserInfoService;
+import com.bravson.socialalert.business.user.link.UserLinkRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.feed.FeedItemInfo;
@@ -36,6 +37,9 @@ public class FeedServiceTest extends BaseServiceTest {
 	@Mock
 	UserInfoService userService;
 	
+	@Mock
+	UserLinkRepository linkRepository;
+	
 	@Test
 	public void getFeedWithNoLinks() {
 		PagingParameter paging = new PagingParameter(Instant.now(), 0, 10);
@@ -43,6 +47,7 @@ public class FeedServiceTest extends BaseServiceTest {
 		UserProfileEntity profile = new UserProfileEntity(createUserAccess("test", "1.2.3.4"));
 		when(profileRepository.findByUserId("test")).thenReturn(Optional.of(profile));
 		when(itemRepository.searchActivitiesByUsers(Collections.singletonList("test"), null, null, paging)).thenReturn(items);
+		when(linkRepository.findBySource(profile.getId())).thenReturn(Collections.emptyList());
 		
 		QueryResult<FeedItemInfo> result = feedService.getFeed("test", null, null, paging);
 		assertThat(result.getContent()).isEmpty();

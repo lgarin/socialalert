@@ -123,7 +123,7 @@ public class MediaRepository {
 	public List<GeoStatistic> groupByGeoHash(@NonNull SearchMediaParameter parameter) {
 		int precision;
 		if (parameter.getArea() != null) {
-			precision = Math.min(GeoHashUtil.computeGeoHashPrecision(parameter.getArea(), 64), MediaEntity.MAX_GEOHASH_PRECISION);
+			precision = Math.min(GeoHashUtil.computeGeoHashPrecision(parameter.getArea().toBoundingBox(), 64), MediaEntity.MAX_GEOHASH_PRECISION);
 		} else {
 			precision = 2;
 		}
@@ -181,7 +181,7 @@ public class MediaRepository {
 		long totalCount = bucket.getAsJsonPrimitive("doc_count").getAsLong();
 		long feelingSum = bucket.getAsJsonObject("aggs").getAsJsonPrimitive("value").getAsLong();
 		
-		GeoBox box = GeoHashUtil.computeBoundingBox(geoHash);
+		GeoBox box = GeoBox.fromBoundingBox(GeoHashUtil.computeBoundingBox(geoHash));
 		return GeoStatistic.builder().count(totalCount)
 				.feelingCount(feelingCount)
 				.feelingSum(feelingSum)

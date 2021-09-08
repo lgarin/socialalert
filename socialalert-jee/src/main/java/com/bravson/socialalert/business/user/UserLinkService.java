@@ -83,8 +83,9 @@ public class UserLinkService {
 	}
 
 	public List<LinkedUserInfo> getTargetProfiles(@NonNull String userId) {
-		UserProfileEntity profile = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
-		return profile.getFollowedUsers().stream().map(this::getFollowedTargetUserInfo).collect(Collectors.toList());
+		profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
+		List<UserLinkEntity> followedUserLinks = linkRepository.findBySource(userId);
+		return followedUserLinks.stream().map(this::getFollowedTargetUserInfo).collect(Collectors.toList());
 	}
 	
 	private UserInfo getTargetUserInfo(UserLinkEntity entity) {

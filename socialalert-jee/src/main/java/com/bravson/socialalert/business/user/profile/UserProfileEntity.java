@@ -2,13 +2,10 @@ package com.bravson.socialalert.business.user.profile;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
 
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
@@ -19,7 +16,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 import com.bravson.socialalert.business.media.entity.MediaEntity;
 import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
 import com.bravson.socialalert.business.user.authentication.LoginToken;
-import com.bravson.socialalert.business.user.link.UserLinkEntity;
 import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.media.MediaKind;
 import com.bravson.socialalert.domain.user.Gender;
@@ -144,9 +140,6 @@ public class UserProfileEntity extends VersionedEntity {
 	@CollectionTable(name = "UserComment", joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_User_Comment")), uniqueConstraints = @UniqueConstraint(name = "UK_UserComment_Comment", columnNames = "comments_id"))
 	private Set<MediaCommentEntity> comments;
 	*/
-	@Getter
-	@OneToMany(mappedBy="sourceUser")
-	private Set<UserLinkEntity> followedUsers;
 	
 	public UserProfileEntity(@NonNull UserAccess userAccess) {
 		this.id = userAccess.getUserId();
@@ -155,7 +148,6 @@ public class UserProfileEntity extends VersionedEntity {
 		this.versionInfo = VersionInfo.of(userAccess.getUserId(), userAccess.getIpAddress());
 		this.statistic = new UserStatistic();
 		this.privacy = new UserPrivacy();
-		this.followedUsers = new HashSet<>();
 	}
 	
 	public UserProfileEntity(@NonNull String id) {
