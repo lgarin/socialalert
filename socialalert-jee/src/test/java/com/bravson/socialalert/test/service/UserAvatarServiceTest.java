@@ -88,12 +88,12 @@ public class UserAvatarServiceTest extends BaseServiceTest {
 		
 		when(processor.getFormat(MediaSizeVariant.THUMBNAIL)).thenReturn(MediaFileFormat.THUMBNAIL_JPG);
 		File thumbnailFile = new File("thumbnail.jpg");
-		when(processor.createVariant(eq(outputFile), eq(tempFile), eq(MediaSizeVariant.THUMBNAIL))).thenReturn(MediaFileFormat.THUMBNAIL_JPG);
+		when(processor.createVariant(outputFile, tempFile, MediaSizeVariant.THUMBNAIL)).thenReturn(MediaFileFormat.THUMBNAIL_JPG);
 		when(fileStore.changeFileFormat(eq(md5), eq(userAccess.getUserId()), any(TempFileFormat.class), eq(MediaFileFormat.THUMBNAIL_JPG))).thenReturn(thumbnailFile);
 		
 		when(processor.getFormat(MediaSizeVariant.PREVIEW)).thenReturn(MediaFileFormat.PREVIEW_JPG);
 		File previewFile = new File("preview.jpg");
-		when(processor.createVariant(eq(outputFile), eq(tempFile), eq(MediaSizeVariant.PREVIEW))).thenReturn(MediaFileFormat.PREVIEW_JPG);
+		when(processor.createVariant(outputFile, tempFile, MediaSizeVariant.PREVIEW)).thenReturn(MediaFileFormat.PREVIEW_JPG);
 		when(fileStore.changeFileFormat(eq(md5), eq(userAccess.getUserId()), any(TempFileFormat.class), eq(MediaFileFormat.PREVIEW_JPG))).thenReturn(previewFile);
 		
 		UserInfo userInfo = avatarService.storeAvatar(param, userAccess);

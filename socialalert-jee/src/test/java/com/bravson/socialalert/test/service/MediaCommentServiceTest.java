@@ -68,6 +68,7 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 		MediaEntity mediaEntity = mock(MediaEntity.class);
 		MediaCommentInfo commentInfo = new MediaCommentInfo();
 		
+		when(mediaEntity.getId()).thenReturn(mediaUri);
 		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.of(mediaEntity));
 		when(commentRepository.create(mediaUri, comment, userAccess)).thenReturn(commentEntity);
 		when(commentEntity.toMediaCommentInfo()).thenReturn(commentInfo);
@@ -99,6 +100,7 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 		MediaEntity mediaEntity = mock(MediaEntity.class);
 		QueryResult<MediaCommentEntity> entityResult = new QueryResult<>(Collections.emptyList(), 0, paging);
 		
+		when(mediaEntity.getId()).thenReturn(mediaUri);
 		when(mediaRepository.findMedia(mediaUri)).thenReturn(Optional.of(mediaEntity));
 		when(commentRepository.searchByMediaUri(mediaUri, paging)).thenReturn(entityResult);
 		

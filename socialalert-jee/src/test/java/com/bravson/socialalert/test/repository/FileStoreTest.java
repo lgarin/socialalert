@@ -95,8 +95,7 @@ public class FileStoreTest extends Assertions {
 	
 	@Test
 	public void deleteNonEmptyFolder() throws IOException {
-		File file = store.storeFile(new File("src/main/resources/logo.jpg"), "38c4297b9099b466eab20fea521ee2f6", "20170415", MediaFileFormat.MEDIA_JPG);
-		System.out.println(file);
+		store.storeFile(new File("src/main/resources/logo.jpg"), "38c4297b9099b466eab20fea521ee2f6", "20170415", MediaFileFormat.MEDIA_JPG);
 		boolean result = store.deleteFolder("media/20170415");
 		assertThat(result).isTrue();
 	}

@@ -1,5 +1,7 @@
 package com.bravson.socialalert.test.repository;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -35,17 +37,15 @@ public class AsyncRepositoryTest {
 			asyncCountDown.countDown();
 		}
 		
-		public void waitEvent() throws InterruptedException {
-			boolean eventHandled = asyncCountDown.await(4, TimeUnit.SECONDS);
-			if (!eventHandled) {
-				throw new InterruptedException("Event not received");
-			}
+		public boolean waitEvent() throws InterruptedException {
+			return asyncCountDown.await(4, TimeUnit.SECONDS);
 		}
 	}
 	
 	@Test
 	public void fireAsyncEvent() throws InterruptedException {
 		repository.fireAsync(new TestEvent());
-		observer.waitEvent();
+		boolean result = observer.waitEvent();
+		assertTrue(result);
 	}
 }

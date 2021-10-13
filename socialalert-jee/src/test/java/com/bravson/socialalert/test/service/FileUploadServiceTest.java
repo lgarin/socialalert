@@ -108,7 +108,8 @@ public class FileUploadServiceTest extends BaseServiceTest {
 		when(mediaRepository.findFile(fileMetadata.buildFileUri())).thenReturn(Optional.of(fileEntity));
 		
 		FileUploadParameter param = FileUploadParameter.builder().inputFile(inputFile).contentType(MediaFileConstants.JPG_MEDIA_TYPE).build();
-		assertThatExceptionOfType(ConflictException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, createUserAccess(userId, ipAddress)));
+		UserAccess userAccess = createUserAccess(userId, ipAddress);
+		assertThatExceptionOfType(ConflictException.class).isThrownBy(() -> fileUploadService.uploadMedia(param, userAccess));
 		
 		verifyNoInteractions(logger, newFileEvent);
 	}

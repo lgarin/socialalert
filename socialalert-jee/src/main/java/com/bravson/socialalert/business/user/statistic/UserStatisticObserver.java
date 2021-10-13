@@ -7,6 +7,7 @@ import javax.transaction.Transactional;
 import com.bravson.socialalert.business.file.entity.FileEntity;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;
 import com.bravson.socialalert.business.media.entity.MediaEntity;
+import com.bravson.socialalert.business.user.link.UserLinkEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
@@ -55,5 +56,13 @@ public class UserStatisticObserver {
 	
 	void handleMediaDisliked(@Observes @DislikedEntity MediaEntity media) {
 		profileRepository.findByUserId(media.getUserId()).ifPresent(UserProfileEntity::addMediaDislike);
+	}
+	
+	void handleNewLink(@Observes @NewEntity UserLinkEntity link) {
+		link.getSourceUser().addFollower();
+	}
+	
+	void handleDeleteLink(@Observes @DeleteEntity UserLinkEntity link) {
+		link.getSourceUser().removeFollower();
 	}
 }

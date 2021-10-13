@@ -15,6 +15,7 @@ import com.bravson.socialalert.business.feed.item.FeedItemRepository;
 import com.bravson.socialalert.business.user.UserInfoService;
 import com.bravson.socialalert.business.user.link.UserLinkEntity;
 import com.bravson.socialalert.business.user.link.UserLinkRepository;
+import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.feed.FeedActivity;
 import com.bravson.socialalert.domain.feed.FeedItemInfo;
@@ -62,8 +63,8 @@ public class FeedService {
 	}
 
 	private List<String> buildRelatedUserIdList(String userId) {
-		profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
-		List<UserLinkEntity> followedUserLinks = linkRepository.findBySource(userId);
+		UserProfileEntity sourceProfile = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
+		List<UserLinkEntity> followedUserLinks = linkRepository.findBySource(sourceProfile.getId());
 		List<String> userIdList = new ArrayList<>(followedUserLinks.size() + 1);
 		followedUserLinks.stream().map(link -> link.getId().getTargetUserId()).forEach(userIdList::add);
 		userIdList.add(userId);

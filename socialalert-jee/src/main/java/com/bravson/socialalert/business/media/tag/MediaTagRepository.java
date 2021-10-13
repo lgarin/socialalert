@@ -2,12 +2,9 @@ package com.bravson.socialalert.business.media.tag;
 
 import java.util.List;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import com.bravson.socialalert.business.media.entity.MediaEntity;
-import com.bravson.socialalert.infrastructure.entity.NewEntity;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 
@@ -26,11 +23,9 @@ public class MediaTagRepository {
 	@NonNull
 	PersistenceManager persistenceManager;
 	
-	void handleNewMedia(@Observes @NewEntity MediaEntity media) {
-		for (String tag : media.getTags()) {
-			if (!persistenceManager.find(MediaTagEntity.class, tag).isPresent()) {
-				persistenceManager.persist(new MediaTagEntity(tag));
-			}
+	public void addTag(String tag) {
+		if (!persistenceManager.find(MediaTagEntity.class, tag).isPresent()) {
+			persistenceManager.persist(new MediaTagEntity(tag));
 		}
 	}
 	

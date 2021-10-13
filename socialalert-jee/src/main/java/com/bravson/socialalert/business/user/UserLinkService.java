@@ -64,7 +64,6 @@ public class UserLinkService {
 		if (linkRepository.find(userAccess.getUserId(), userId).isEmpty()) {
 			UserProfileEntity sourceUser = profileRepository.findByUserId(userAccess.getUserId()).orElseThrow(NotFoundException::new);
 			UserLinkEntity link = linkRepository.link(sourceUser, targetUser);
-			targetUser.addFollower();
 			createdLinkEvent.fire(link);
 			return Optional.of(getFollowedTargetUserInfo(link));
 		}
@@ -73,9 +72,8 @@ public class UserLinkService {
 
 	public Optional<UserInfo> unlink(@NonNull UserAccess userAccess, @NonNull String userId) {
 		UserProfileEntity targetUser = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
-		Optional<UserLinkEntity> link = linkRepository.unlink(userAccess.getUserId(), userId);
+		Optional<UserLinkEntity> link = linkRepository.unlink(userAccess.getUserId(), targetUser.getId());
 		if (link.isPresent()) {
-			targetUser.removeFollower();
 			removedLinkEvent.fire(link.get());
 			return Optional.of(getTargetUserInfo(link.get()));
 		}
@@ -83,8 +81,8 @@ public class UserLinkService {
 	}
 
 	public List<LinkedUserInfo> getTargetProfiles(@NonNull String userId) {
-		profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
-		List<UserLinkEntity> followedUserLinks = linkRepository.findBySource(userId);
+		UserProfileEntity sourceUser = profileRepository.findByUserId(userId).orElseThrow(NotFoundException::new);
+		List<UserLinkEntity> followedUserLinks = linkRepository.findBySource(sourceUser.getId());
 		return followedUserLinks.stream().map(this::getFollowedTargetUserInfo).collect(Collectors.toList());
 	}
 	

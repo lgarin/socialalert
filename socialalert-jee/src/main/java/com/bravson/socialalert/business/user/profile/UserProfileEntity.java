@@ -126,21 +126,6 @@ public class UserProfileEntity extends VersionedEntity {
 	@Embedded
 	private UserPrivacy privacy;
 	
-	/*
-	@OneToMany
-	@CollectionTable(name = "UserFile", joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_User_File")), uniqueConstraints = @UniqueConstraint(name = "UK_UserFile_File", columnNames = "files_id"))
-	private Set<FileEntity> files;
-	
-	@OneToMany
-	@JoinColumn(name = "media_id", foreignKey = @ForeignKey(name = "FK_Media_User"))
-	@CollectionTable(name = "UserMedia", joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_User_Media")), uniqueConstraints = @UniqueConstraint(name = "UK_UserMedia_Media", columnNames = "medias_id"))
-	private Set<MediaEntity> medias;
-	
-	@OneToMany
-	@CollectionTable(name = "UserComment", joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_User_Comment")), uniqueConstraints = @UniqueConstraint(name = "UK_UserComment_Comment", columnNames = "comments_id"))
-	private Set<MediaCommentEntity> comments;
-	*/
-	
 	public UserProfileEntity(@NonNull UserAccess userAccess) {
 		this.id = userAccess.getUserId();
 		this.username = userAccess.getUsername();

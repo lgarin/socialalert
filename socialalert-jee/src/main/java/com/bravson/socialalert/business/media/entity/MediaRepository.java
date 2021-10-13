@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
@@ -31,7 +30,6 @@ import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
 import com.bravson.socialalert.domain.media.statistic.PeriodicMediaCount;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
-import com.bravson.socialalert.infrastructure.entity.HitEntity;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 import com.bravson.socialalert.infrastructure.util.GeoHashUtil;
@@ -114,10 +112,6 @@ public class MediaRepository {
 			junction = junction.filter(context.simpleQueryString().field("location.country").matching(parameter.getCountry()).toPredicate());
 		}
 		return junction;
-	}
-
-	void handleNewMediaHit(@Observes @HitEntity MediaEntity media) {
-		media.increaseHitCount();
 	}
 
 	public List<GeoStatistic> groupByGeoHash(@NonNull SearchMediaParameter parameter) {
