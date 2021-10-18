@@ -49,6 +49,7 @@ import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.business.user.notification.UserEventSink;
 import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.media.comment.UserCommentDetail;
+import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.ChangePasswordParameter;
@@ -62,6 +63,7 @@ import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.domain.user.notification.SseUserNotification;
 import com.bravson.socialalert.domain.user.privacy.UserPrivacy;
 import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
+import com.bravson.socialalert.domain.user.statistic.PeriodicLinkActivityCount;
 import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
 @Tag(name="user")
@@ -340,4 +342,17 @@ public class UserFacade {
 		eventSink.init(sse);
 		eventSink.register(userAccess.get().getUserId(), sseEventSink);
 	}
+	
+	@GET
+	@Path("/followerHistogram/{userId : .+}")
+	@Produces(MediaTypeConstants.JSON)
+	@UserActivity
+	@Operation(summary="Get the follower histogram for the specified user.")
+	@SecurityRequirement(name = "JWT")
+	public List<PeriodicLinkActivityCount> groupLinkCountsByPeriod(
+			@Parameter(description="The user id.", required=true) @NotEmpty @PathParam("userId") String userId, 
+			@Parameter(description="Define the period interval.", required=false) @DefaultValue("HOUR") @QueryParam("interval") PeriodInterval interval) {
+		return linkService.groupLinkCountsByPeriod(userId, interval);
+	}
+		
 }

@@ -1,7 +1,9 @@
 package com.bravson.socialalert.business.user;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -15,11 +17,15 @@ import com.bravson.socialalert.business.user.link.UserLinkRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.business.user.session.UserSessionCache;
+import com.bravson.socialalert.business.user.statistic.LinkStatisticRepository;
 import com.bravson.socialalert.business.user.token.UserAccess;
+import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.LinkedUserInfo;
 import com.bravson.socialalert.domain.user.UserInfo;
+import com.bravson.socialalert.domain.user.statistic.LinkActivity;
+import com.bravson.socialalert.domain.user.statistic.PeriodicLinkActivityCount;
 import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
 import com.bravson.socialalert.infrastructure.entity.NewEntity;
 import com.bravson.socialalert.infrastructure.layer.Service;
@@ -54,6 +60,10 @@ public class UserLinkService {
 	@Inject
 	@DeleteEntity
 	Event<UserLinkEntity> removedLinkEvent;
+	
+	@Inject
+	@NonNull
+	LinkStatisticRepository statisticRepository;
 
 	public Optional<Instant> findLinkCreationTimetamp(@NonNull UserAccess userAccess, @NonNull String userId) {
 		return linkRepository.find(userAccess.getUserId(), userId).map(UserLinkEntity::getCreation);
@@ -114,5 +124,46 @@ public class UserLinkService {
 	private LinkedUserInfo getFollowedSourceUserInfo(UserLinkEntity entity) {
 		UserInfo userInfo = getSourceUserInfo(entity);
 		return new LinkedUserInfo(userInfo, entity.getCreation());
+	}
+	
+	public List<PeriodicLinkActivityCount> groupLinkCountsByPeriod(@NonNull String targetUserId, @NonNull PeriodInterval interval) {
+		List<PeriodicLinkActivityCount> creationList = statisticRepository.groupLinkActivitiesByPeriod(targetUserId, LinkActivity.CREATE, interval);
+		List<PeriodicLinkActivityCount> deletionList = statisticRepository.groupLinkActivitiesByPeriod(targetUserId, LinkActivity.DELETE, interval);
+		List<PeriodicLinkActivityCount> resultList = new ArrayList<>(creationList.size() + deletionList.size());
+		ListIterator<PeriodicLinkActivityCount> creationIterator = creationList.listIterator();
+		ListIterator<PeriodicLinkActivityCount> deletionIterator = deletionList.listIterator();
+		long currentCount = 0;
+		
+		while (creationIterator.hasNext() && deletionIterator.hasNext()) {
+			PeriodicLinkActivityCount creation = creationIterator.next();
+			PeriodicLinkActivityCount deletion = deletionIterator.next();
+			if (creation.getPeriod().isBefore(deletion.getPeriod())) {
+				currentCount += creation.getCount();
+				deletionIterator.previous();
+				resultList.add(new PeriodicLinkActivityCount(creation.getPeriod(), currentCount));
+			} else if (deletion.getPeriod().isBefore(creation.getPeriod())) {
+				currentCount -= deletion.getCount();
+				creationIterator.previous();
+				resultList.add(new PeriodicLinkActivityCount(deletion.getPeriod(), currentCount));
+			} else {
+				currentCount += creation.getCount();
+				currentCount -= deletion.getCount();
+				resultList.add(new PeriodicLinkActivityCount(creation.getPeriod(), currentCount));
+			}
+		}
+		
+		while (creationIterator.hasNext()) {
+			PeriodicLinkActivityCount creation = creationIterator.next();
+			currentCount += creation.getCount();
+			resultList.add(new PeriodicLinkActivityCount(creation.getPeriod(), currentCount));
+		}
+		
+		while (deletionIterator.hasNext()) {
+			PeriodicLinkActivityCount deletion = deletionIterator.next();
+			currentCount -= deletion.getCount();
+			resultList.add(new PeriodicLinkActivityCount(deletion.getPeriod(), currentCount));
+		}
+		
+		return resultList;
 	}
 }
