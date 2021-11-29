@@ -1,4 +1,4 @@
-package com.bravson.socialalert.domain.media.statistic;
+package com.bravson.socialalert.domain.histogram;
 
 import java.time.Duration;
 import java.time.Period;

@@ -4,12 +4,14 @@ import java.time.Instant;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+import com.bravson.socialalert.domain.histogram.HistogramCount;
+
 import lombok.Data;
 import lombok.NonNull;
 
 @Schema(description="The number of matching link activities from a specific key.")
 @Data
-public class PeriodicLinkActivityCount {
+public class PeriodicLinkActivityCount implements HistogramCount {
 
 	@Schema(description="The key used for grouping the link activities")
 	@NonNull

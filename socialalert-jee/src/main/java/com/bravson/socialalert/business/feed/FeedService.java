@@ -20,9 +20,9 @@ import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.domain.feed.FeedActivity;
 import com.bravson.socialalert.domain.feed.FeedItemInfo;
 import com.bravson.socialalert.domain.feed.PeriodicFeedActivityCount;
+import com.bravson.socialalert.domain.histogram.HistogramParameter;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.media.comment.MediaCommentInfo;
-import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.infrastructure.layer.Service;
@@ -71,12 +71,14 @@ public class FeedService {
 		return userIdList;
 	}
 	
-	public List<PeriodicFeedActivityCount> groupUserActivitiesByPeriod(@NonNull String userId, @NonNull FeedActivity activity, @NonNull PeriodInterval interval) {
-		return itemRepository.groupUserActivitiesByPeriod(userId, activity, interval);
+	public List<PeriodicFeedActivityCount> groupUserActivitiesByPeriod(@NonNull String userId, @NonNull FeedActivity activity, @NonNull HistogramParameter histogram) {
+		List<PeriodicFeedActivityCount> activityCountList = itemRepository.groupUserActivitiesByPeriod(userId, activity, histogram.getInterval());
+		return histogram.filter(activityCountList);
 	}
 	
-	public List<PeriodicFeedActivityCount> groupMediaActivitiesByPeriod(@NonNull String mediaUri, @NonNull FeedActivity activity, @NonNull PeriodInterval interval) {
-		return itemRepository.groupMediaActivitiesByPeriod(mediaUri, activity, interval);
+	public List<PeriodicFeedActivityCount> groupMediaActivitiesByPeriod(@NonNull String mediaUri, @NonNull FeedActivity activity, @NonNull HistogramParameter histogram) {
+		List<PeriodicFeedActivityCount> activityCountList = itemRepository.groupMediaActivitiesByPeriod(mediaUri, activity, histogram.getInterval());
+		return histogram.filter(activityCountList);
 	}
 	
 }

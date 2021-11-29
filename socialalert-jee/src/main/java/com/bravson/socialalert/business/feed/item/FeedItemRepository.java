@@ -23,7 +23,7 @@ import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.feed.FeedActivity;
 import com.bravson.socialalert.domain.feed.PeriodicFeedActivityCount;
-import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
+import com.bravson.socialalert.domain.histogram.PeriodInterval;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.infrastructure.entity.DeleteEntity;

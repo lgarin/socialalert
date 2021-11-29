@@ -19,7 +19,7 @@ import com.bravson.socialalert.business.user.profile.UserProfileRepository;
 import com.bravson.socialalert.business.user.session.UserSessionCache;
 import com.bravson.socialalert.business.user.statistic.LinkStatisticRepository;
 import com.bravson.socialalert.business.user.token.UserAccess;
-import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
+import com.bravson.socialalert.domain.histogram.HistogramParameter;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.LinkedUserInfo;
@@ -126,44 +126,37 @@ public class UserLinkService {
 		return new LinkedUserInfo(userInfo, entity.getCreation());
 	}
 	
-	public List<PeriodicLinkActivityCount> groupLinkCountsByPeriod(@NonNull String targetUserId, @NonNull PeriodInterval interval) {
-		List<PeriodicLinkActivityCount> creationList = statisticRepository.groupLinkActivitiesByPeriod(targetUserId, LinkActivity.CREATE, interval);
-		List<PeriodicLinkActivityCount> deletionList = statisticRepository.groupLinkActivitiesByPeriod(targetUserId, LinkActivity.DELETE, interval);
+	public List<PeriodicLinkActivityCount> groupLinkCountsByPeriod(@NonNull String targetUserId, @NonNull HistogramParameter histogram) {
+		List<PeriodicLinkActivityCount> creationList = statisticRepository.groupLinkActivitiesByPeriod(targetUserId, LinkActivity.CREATE, histogram.getInterval());
+		List<PeriodicLinkActivityCount> deletionList = statisticRepository.groupLinkActivitiesByPeriod(targetUserId, LinkActivity.DELETE, histogram.getInterval());
 		List<PeriodicLinkActivityCount> resultList = new ArrayList<>(creationList.size() + deletionList.size());
 		ListIterator<PeriodicLinkActivityCount> creationIterator = creationList.listIterator();
 		ListIterator<PeriodicLinkActivityCount> deletionIterator = deletionList.listIterator();
-		long currentCount = 0;
 		
 		while (creationIterator.hasNext() && deletionIterator.hasNext()) {
 			PeriodicLinkActivityCount creation = creationIterator.next();
 			PeriodicLinkActivityCount deletion = deletionIterator.next();
 			if (creation.getPeriod().isBefore(deletion.getPeriod())) {
-				currentCount += creation.getCount();
 				deletionIterator.previous();
-				resultList.add(new PeriodicLinkActivityCount(creation.getPeriod(), currentCount));
+				resultList.add(new PeriodicLinkActivityCount(creation.getPeriod(), 1));
 			} else if (deletion.getPeriod().isBefore(creation.getPeriod())) {
-				currentCount -= deletion.getCount();
 				creationIterator.previous();
-				resultList.add(new PeriodicLinkActivityCount(deletion.getPeriod(), currentCount));
+				resultList.add(new PeriodicLinkActivityCount(deletion.getPeriod(), -1));
 			} else {
-				currentCount += creation.getCount();
-				currentCount -= deletion.getCount();
-				resultList.add(new PeriodicLinkActivityCount(creation.getPeriod(), currentCount));
+				resultList.add(new PeriodicLinkActivityCount(creation.getPeriod(), 0));
 			}
 		}
 		
 		while (creationIterator.hasNext()) {
 			PeriodicLinkActivityCount creation = creationIterator.next();
-			currentCount += creation.getCount();
-			resultList.add(new PeriodicLinkActivityCount(creation.getPeriod(), currentCount));
+			resultList.add(new PeriodicLinkActivityCount(creation.getPeriod(), 1));
 		}
 		
 		while (deletionIterator.hasNext()) {
 			PeriodicLinkActivityCount deletion = deletionIterator.next();
-			currentCount -= deletion.getCount();
-			resultList.add(new PeriodicLinkActivityCount(deletion.getPeriod(), currentCount));
+			resultList.add(new PeriodicLinkActivityCount(deletion.getPeriod(), -1));
 		}
 		
-		return resultList;
+		return histogram.filter(resultList);
 	}
 }

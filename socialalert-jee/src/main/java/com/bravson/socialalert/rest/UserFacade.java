@@ -48,8 +48,9 @@ import com.bravson.socialalert.business.user.UserService;
 import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.business.user.notification.UserEventSink;
 import com.bravson.socialalert.business.user.token.UserAccess;
+import com.bravson.socialalert.domain.histogram.HistogramParameter;
+import com.bravson.socialalert.domain.histogram.PeriodInterval;
 import com.bravson.socialalert.domain.media.comment.UserCommentDetail;
-import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.ChangePasswordParameter;
@@ -351,8 +352,10 @@ public class UserFacade {
 	@SecurityRequirement(name = "JWT")
 	public List<PeriodicLinkActivityCount> groupLinkCountsByPeriod(
 			@Parameter(description="The user id.", required=true) @NotEmpty @PathParam("userId") String userId, 
-			@Parameter(description="Define the period interval.", required=false) @DefaultValue("HOUR") @QueryParam("interval") PeriodInterval interval) {
-		return linkService.groupLinkCountsByPeriod(userId, interval);
+			@Parameter(description="Define the period interval.", required=false) @DefaultValue("HOUR") @QueryParam("interval") PeriodInterval interval,
+			@Parameter(description="Define the maximum size of the returned list.", required=false) @DefaultValue("10") @Min(1) @Max(100) @QueryParam("maxSize") int maxSize,
+			@Parameter(description="Define if the count must be cumulated in the returned list.", required=false) @DefaultValue("false") boolean cumulation) {
+		return linkService.groupLinkCountsByPeriod(userId, new HistogramParameter(interval, maxSize, cumulation));
 	}
 		
 }

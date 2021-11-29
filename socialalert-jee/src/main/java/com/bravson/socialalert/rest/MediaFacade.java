@@ -39,6 +39,8 @@ import com.bravson.socialalert.business.media.MediaService;
 import com.bravson.socialalert.business.media.MediaUpsertService;
 import com.bravson.socialalert.business.user.activity.UserActivity;
 import com.bravson.socialalert.business.user.token.UserAccess;
+import com.bravson.socialalert.domain.histogram.HistogramParameter;
+import com.bravson.socialalert.domain.histogram.PeriodInterval;
 import com.bravson.socialalert.domain.location.GeoArea;
 import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;
@@ -54,7 +56,6 @@ import com.bravson.socialalert.domain.media.query.MediaQueryInfo;
 import com.bravson.socialalert.domain.media.query.MediaQueryParameter;
 import com.bravson.socialalert.domain.media.statistic.CreatorMediaCount;
 import com.bravson.socialalert.domain.media.statistic.LocationMediaCount;
-import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
 import com.bravson.socialalert.domain.media.statistic.PeriodicMediaCount;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
@@ -464,7 +465,9 @@ public class MediaFacade {
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
 			@Parameter(description="Define the user id of the creator for searching the media.", required=false) @QueryParam("creator") String creator,
 			@Parameter(description="Define the maximum list size of the top media for each key.", required=false) @DefaultValue("5") @Min(0) @Max(10) @QueryParam("topMediaCount") int topMediaCount,
-			@Parameter(description="Define the period interval.", required=false) @DefaultValue("HOUR") @QueryParam("interval") PeriodInterval interval) {
+			@Parameter(description="Define the period interval.", required=false) @DefaultValue("HOUR") @QueryParam("interval") PeriodInterval interval,
+			@Parameter(description="Define the maximum size of the returned list.", required=false) @DefaultValue("10") @Min(1) @Max(100) @QueryParam("maxSize") int maxSize,
+			@Parameter(description="Define if the count must be cumulated in the returned list.", required=false) @DefaultValue("false") boolean cumulation) {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
 		if (mediaKind != null) {
@@ -485,7 +488,7 @@ public class MediaFacade {
 		if (creator != null) {
 			parameter.setCreator(creator);
 		}
-		return mediaSearchService.groupByPeriod(parameter, interval, topMediaCount);
+		return mediaSearchService.groupByPeriod(parameter, new HistogramParameter(interval, maxSize, cumulation), topMediaCount);
 	}
 	
 	@GET

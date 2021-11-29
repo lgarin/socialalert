@@ -17,7 +17,7 @@ import org.hibernate.search.engine.search.query.SearchResult;
 
 import com.bravson.socialalert.business.user.link.UserLinkEntity;
 import com.bravson.socialalert.business.user.token.UserAccess;
-import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
+import com.bravson.socialalert.domain.histogram.PeriodInterval;
 import com.bravson.socialalert.domain.user.statistic.LinkActivity;
 import com.bravson.socialalert.domain.user.statistic.PeriodicLinkActivityCount;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;

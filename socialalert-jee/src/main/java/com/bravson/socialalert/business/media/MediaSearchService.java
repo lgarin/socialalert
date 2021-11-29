@@ -14,13 +14,13 @@ import com.bravson.socialalert.business.media.entity.MediaEntity;
 import com.bravson.socialalert.business.media.entity.MediaRepository;
 import com.bravson.socialalert.business.media.tag.MediaTagRepository;
 import com.bravson.socialalert.business.user.UserInfoService;
+import com.bravson.socialalert.domain.histogram.HistogramParameter;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.media.SearchMediaParameter;
 import com.bravson.socialalert.domain.media.statistic.CreatorMediaCount;
 import com.bravson.socialalert.domain.media.statistic.LocationMediaCount;
 import com.bravson.socialalert.domain.media.statistic.MediaCount;
-import com.bravson.socialalert.domain.media.statistic.PeriodInterval;
 import com.bravson.socialalert.domain.media.statistic.PeriodicMediaCount;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
@@ -77,10 +77,10 @@ public class MediaSearchService {
 		return result;
 	}
 	
-	public List<PeriodicMediaCount> groupByPeriod(@NonNull SearchMediaParameter parameter, @NonNull PeriodInterval interval, int maxMediaCount) {
-		List<PeriodicMediaCount> result = mediaRepository.groupByPeriod(parameter, interval);
+	public List<PeriodicMediaCount> groupByPeriod(@NonNull SearchMediaParameter parameter, @NonNull HistogramParameter histogram, int maxMediaCount) {
+		List<PeriodicMediaCount> result = mediaRepository.groupByPeriod(parameter, histogram.getInterval());
 		if (maxMediaCount > 0) {
-			TemporalAmount delta = interval.toTemporalAmount();
+			TemporalAmount delta = histogram.getInterval().toTemporalAmount();
 			Instant now = Instant.now();
 			for (PeriodicMediaCount group : result) {
 				PagingParameter paging = new PagingParameter(group.getPeriod().plus(delta), 0, maxMediaCount);
@@ -88,7 +88,7 @@ public class MediaSearchService {
 				group.setTopMedia(searchMedia(parameter, paging).getContent());
 			}
 		}
-		return result;
+		return histogram.filter(result);
 	}
 
 	public List<String> suggestTags(@NonNull String searchTerm, int maxHitCount) {
