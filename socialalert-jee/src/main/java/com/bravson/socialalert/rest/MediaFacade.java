@@ -467,7 +467,7 @@ public class MediaFacade {
 			@Parameter(description="Define the maximum list size of the top media for each key.", required=false) @DefaultValue("5") @Min(0) @Max(10) @QueryParam("topMediaCount") int topMediaCount,
 			@Parameter(description="Define the period interval.", required=false) @DefaultValue("HOUR") @QueryParam("interval") PeriodInterval interval,
 			@Parameter(description="Define the maximum size of the returned list.", required=false) @DefaultValue("10") @Min(1) @Max(100) @QueryParam("maxSize") int maxSize,
-			@Parameter(description="Define if the count must be cumulated in the returned list.", required=false) @DefaultValue("false") boolean cumulation) {
+			@Parameter(description="Define if the count must be cumulated in the returned list.", required=false) @DefaultValue("true") @QueryParam("cumulation") boolean cumulation) {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
 		if (mediaKind != null) {

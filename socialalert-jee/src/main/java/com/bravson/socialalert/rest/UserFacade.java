@@ -354,7 +354,7 @@ public class UserFacade {
 			@Parameter(description="The user id.", required=true) @NotEmpty @PathParam("userId") String userId, 
 			@Parameter(description="Define the period interval.", required=false) @DefaultValue("HOUR") @QueryParam("interval") PeriodInterval interval,
 			@Parameter(description="Define the maximum size of the returned list.", required=false) @DefaultValue("10") @Min(1) @Max(100) @QueryParam("maxSize") int maxSize,
-			@Parameter(description="Define if the count must be cumulated in the returned list.", required=false) @DefaultValue("false") boolean cumulation) {
+			@Parameter(description="Define if the count must be cumulated in the returned list.", required=false) @DefaultValue("true") @QueryParam("cumulation") boolean cumulation) {
 		return linkService.groupLinkCountsByPeriod(userId, new HistogramParameter(interval, maxSize, cumulation));
 	}
 		

@@ -11,7 +11,7 @@
 	<properties>
 		<surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
 		<compiler-plugin.version>3.8.1</compiler-plugin.version>
-		<quarkus.version>2.2.2.Final</quarkus.version>
+		<quarkus.version>2.5.1.Final</quarkus.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.parameters>true</maven.compiler.parameters>

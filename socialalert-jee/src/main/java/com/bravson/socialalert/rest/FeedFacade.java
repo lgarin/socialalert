@@ -70,7 +70,7 @@ public class FeedFacade {
 			@Parameter(description="Define the type of activity.", required=true) @NotNull @QueryParam("activity") FeedActivity activity, 
 			@Parameter(description="Define the period interval.", required=false) @DefaultValue("HOUR") @QueryParam("interval") PeriodInterval interval,
 			@Parameter(description="Define the maximum size of the returned list.", required=false) @DefaultValue("10") @Min(1) @Max(100) @QueryParam("maxSize") int maxSize,
-			@Parameter(description="Define if the count must be cumulated in the returned list.", required=false) @DefaultValue("false") boolean cumulation) {
+			@Parameter(description="Define if the count must be cumulated in the returned list.", required=false) @DefaultValue("true") @QueryParam("cumulation") boolean cumulation) {
 		return feedService.groupUserActivitiesByPeriod(userId, activity, new HistogramParameter(interval, maxSize, cumulation));
 	}
 	
@@ -84,7 +84,7 @@ public class FeedFacade {
 			@Parameter(description="Define the type of activity.", required=true) @NotNull @QueryParam("activity") FeedActivity activity, 
 			@Parameter(description="Define the period interval.", required=false) @DefaultValue("HOUR") @QueryParam("interval") PeriodInterval interval,
 			@Parameter(description="Define the maximum size of the returned list.", required=false) @DefaultValue("10") @Min(1) @Max(100) @QueryParam("maxSize") int maxSize,
-			@Parameter(description="Define if the count must be cumulated in the returned list.", required=false) @DefaultValue("false") boolean cumulation) {
+			@Parameter(description="Define if the count must be cumulated in the returned list.", required=false) @DefaultValue("true") @QueryParam("cumulation") boolean cumulation) {
 		return feedService.groupMediaActivitiesByPeriod(mediaUri, activity, new HistogramParameter(interval, maxSize, cumulation));
 	}
 }
