@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-import com.bravson.socialalert.domain.histogram.HistogramCount;
 import com.bravson.socialalert.domain.media.MediaInfo;
 
 import lombok.AllArgsConstructor;
@@ -13,7 +12,7 @@ import lombok.NonNull;
 
 @Data
 @AllArgsConstructor
-public class MediaCount implements HistogramCount {
+public class MediaCount {
 
 	@Schema(description="The key used for grouping the media")
 	@NonNull

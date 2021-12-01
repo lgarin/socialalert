@@ -4,6 +4,8 @@ import java.time.Instant;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+import com.bravson.socialalert.domain.histogram.PeriodCount;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -13,7 +15,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class PeriodicMediaCount extends MediaCount {
+public class PeriodicMediaCount extends MediaCount implements PeriodCount {
 	
 	@Schema(description="The grouping period in milliseconds since the epoch.", implementation=Long.class)
 	@NonNull

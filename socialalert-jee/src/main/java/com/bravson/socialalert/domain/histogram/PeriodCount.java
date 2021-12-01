@@ -1,8 +1,12 @@
 package com.bravson.socialalert.domain.histogram;
 
-public interface HistogramCount {
+import java.time.Instant;
+
+public interface PeriodCount {
 
 	long getCount();
 	
 	void setCount(long count);
+	
+	Instant getPeriod();
 }
