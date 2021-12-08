@@ -63,7 +63,7 @@ public class MediaEntity extends VersionedEntity {
 	@NonNull
 	@Getter
 	@Column(name = "kind", nullable = false)
-	@GenericField
+	@GenericField(aggregable = Aggregable.YES)
 	private MediaKind kind;
 	
 	@Getter

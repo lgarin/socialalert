@@ -23,10 +23,12 @@ import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.histogram.PeriodInterval;
 import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;
+import com.bravson.socialalert.domain.media.MediaKind;
 import com.bravson.socialalert.domain.media.SearchMediaParameter;
 import com.bravson.socialalert.domain.media.UpsertMediaParameter;
 import com.bravson.socialalert.domain.media.statistic.LocationMediaCount;
 import com.bravson.socialalert.domain.media.statistic.MediaCount;
+import com.bravson.socialalert.domain.media.statistic.MediaStatisticAggregation;
 import com.bravson.socialalert.domain.media.statistic.PeriodicMediaCount;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
@@ -275,5 +277,66 @@ public class MediaRepository {
 		JsonObject aggs = new JsonObject();
 		aggs.add("date_histogram", histogram);
 		return aggs;
+	}
+	
+	private static JsonObject buildAggregationMetrics(String fieldName, String function) {
+		JsonObject fieldObject = new JsonObject();
+		fieldObject.addProperty("field", fieldName);
+		JsonObject aggregationObject = new JsonObject();
+		aggregationObject.add(function, fieldObject);
+		return aggregationObject;
+	}
+	
+	public MediaStatisticAggregation aggregateStatistic(@NonNull SearchMediaParameter parameter) {
+		AggregationKey<Map<MediaKind, Long>> kindCountKey = AggregationKey.of("mediaKindCount");
+		AggregationKey<JsonObject> hitCountKey = AggregationKey.of("totalHitCount");
+		JsonObject hitCountAgg = buildAggregationMetrics("statistic.hitCount", "sum");
+		AggregationKey<JsonObject> likeCountKey = AggregationKey.of("totalLikeCount");
+		JsonObject likeCountAgg = buildAggregationMetrics("statistic.like_count", "sum");
+		AggregationKey<JsonObject> dislikeCountKey = AggregationKey.of("totalDislikeCount");
+		JsonObject dislikeCountAgg = buildAggregationMetrics("statistic.dislikeCount", "sum");
+		AggregationKey<JsonObject> commentCountKey = AggregationKey.of("totalCommentCount");
+		JsonObject commentCountAgg = buildAggregationMetrics("statistic.commentCount", "sum");
+		AggregationKey<JsonObject> averageFeelingKey = AggregationKey.of("averageFeeling");
+		JsonObject averageFeelingAgg = buildAggregationMetrics("feeling", "avg");
+		AggregationKey<JsonObject> distinctUserKey = AggregationKey.of("distinctUserCount");
+		JsonObject distinctUserAgg = buildAggregationMetrics("versionInfo.userId", "cardinality");
+		AggregationKey<JsonObject> distinctCountryKey = AggregationKey.of("distinctCountryCount");
+		JsonObject distinctCountryAgg = buildAggregationMetrics("location.country", "cardinality");
+		
+		SearchResult<MediaEntity> result = persistenceManager.search(MediaEntity.class)
+				.where(f -> buildSearchQuery(parameter, Instant.now(), f))
+				.aggregation(kindCountKey, f -> f.terms().field("kind", MediaKind.class))
+				.aggregation(hitCountKey, f -> f.extension(ElasticsearchExtension.get()).fromJson(hitCountAgg))
+				.aggregation(likeCountKey, f -> f.extension(ElasticsearchExtension.get()).fromJson(likeCountAgg))
+				.aggregation(dislikeCountKey, f -> f.extension(ElasticsearchExtension.get()).fromJson(dislikeCountAgg))
+				.aggregation(commentCountKey, f -> f.extension(ElasticsearchExtension.get()).fromJson(commentCountAgg))
+				.aggregation(averageFeelingKey, f -> f.extension(ElasticsearchExtension.get()).fromJson(averageFeelingAgg))
+				.aggregation(distinctUserKey, f -> f.extension(ElasticsearchExtension.get()).fromJson(distinctUserAgg))
+				.aggregation(distinctCountryKey, f -> f.extension(ElasticsearchExtension.get()).fromJson(distinctCountryAgg))
+				.fetch(0);
+		
+		Map<MediaKind, Long> mediaKindCountMap = result.aggregation(kindCountKey);
+		if (mediaKindCountMap == null) {
+			return MediaStatisticAggregation.builder().build();	
+		}
+		
+		return MediaStatisticAggregation.builder()
+				.pictureCount(mediaKindCountMap.getOrDefault(MediaKind.PICTURE, 0L))
+				.videoCount(mediaKindCountMap.getOrDefault(MediaKind.VIDEO, 0L))
+				.totalHitCount(readNumber(result, hitCountKey).longValue())
+				.totalLikeCount(readNumber(result, likeCountKey).longValue())
+				.totalDislikeCount(readNumber(result, dislikeCountKey).longValue())
+				.totalCommentCount(readNumber(result, commentCountKey).longValue())
+				.averageFeeling(readNumber(result, averageFeelingKey).doubleValue())
+				.distinctUserCount(readNumber(result, distinctUserKey).longValue())
+				.distinctCountryCount(readNumber(result, distinctCountryKey).longValue())
+				.build();
+		
+	}
+
+	private static Number readNumber(SearchResult<MediaEntity> result, AggregationKey<JsonObject> key) {
+		JsonElement element = result.aggregation(key).get("value");
+		return element.isJsonNull() ? Long.valueOf(0L) : element.getAsNumber();
 	}
 }

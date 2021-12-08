@@ -19,6 +19,7 @@ import com.bravson.socialalert.domain.media.MediaKind;
 import com.bravson.socialalert.domain.media.SearchMediaParameter;
 import com.bravson.socialalert.domain.media.statistic.LocationMediaCount;
 import com.bravson.socialalert.domain.media.statistic.MediaCount;
+import com.bravson.socialalert.domain.media.statistic.MediaStatisticAggregation;
 import com.bravson.socialalert.domain.media.statistic.PeriodicMediaCount;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
@@ -285,5 +286,34 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	
     	List<PeriodicMediaCount> result = repository.groupByPeriod(parameter, PeriodInterval.DAY);
     	assertThat(result).containsExactly(new PeriodicMediaCount(media.getCreation().truncatedTo(ChronoUnit.DAYS), 1));
+    }
+    
+    @Test
+    public void aggregateStatistic() {
+    	storeDefaultMedia();
+    	
+    	SearchMediaParameter parameter = new SearchMediaParameter();
+    	MediaStatisticAggregation result = repository.aggregateStatistic(parameter);
+    	
+    	assertThat(result.getPictureCount()).isOne();
+    	assertThat(result.getVideoCount()).isZero();
+    	assertThat(result.getTotalHitCount()).isZero();
+    	assertThat(result.getAverageFeeling()).isZero();
+    	assertThat(result.getDistinctUserCount()).isOne();
+    	assertThat(result.getDistinctCountryCount()).isOne();
+    }
+    
+    @Test
+    public void aggregateStatisticWithoutData() {
+    	
+    	SearchMediaParameter parameter = new SearchMediaParameter();
+    	MediaStatisticAggregation result = repository.aggregateStatistic(parameter);
+    	
+    	assertThat(result.getPictureCount()).isZero();
+    	assertThat(result.getVideoCount()).isZero();
+    	assertThat(result.getTotalHitCount()).isZero();
+    	assertThat(result.getAverageFeeling()).isZero();
+    	assertThat(result.getDistinctUserCount()).isZero();
+    	assertThat(result.getDistinctCountryCount()).isZero();
     }
 }

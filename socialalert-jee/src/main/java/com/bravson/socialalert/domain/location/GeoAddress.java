@@ -44,7 +44,7 @@ public class GeoAddress {
 	@FullTextField(analyzer = "standard")
 	private String locality;
 	@Column(name = "country", length = FieldLength.ISO_CODE)
-	@KeywordField
+	@KeywordField(aggregable = Aggregable.YES)
 	private String country;
 	
 	@KeywordField(aggregable = Aggregable.YES)
