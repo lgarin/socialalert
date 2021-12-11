@@ -21,6 +21,7 @@ import com.bravson.socialalert.domain.media.SearchMediaParameter;
 import com.bravson.socialalert.domain.media.statistic.CreatorMediaCount;
 import com.bravson.socialalert.domain.media.statistic.LocationMediaCount;
 import com.bravson.socialalert.domain.media.statistic.MediaCount;
+import com.bravson.socialalert.domain.media.statistic.MediaStatisticAggregation;
 import com.bravson.socialalert.domain.media.statistic.PeriodicMediaCount;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
@@ -93,5 +94,9 @@ public class MediaSearchService {
 
 	public List<String> suggestTags(@NonNull String searchTerm, int maxHitCount) {
 		return tagRepository.suggestTags(searchTerm, maxHitCount);
+	}
+	
+	public MediaStatisticAggregation aggregateStatistic(@NonNull SearchMediaParameter parameter) {
+		return mediaRepository.aggregateStatistic(parameter);
 	}
 }

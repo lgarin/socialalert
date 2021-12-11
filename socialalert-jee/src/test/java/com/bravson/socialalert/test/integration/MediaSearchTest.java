@@ -93,4 +93,11 @@ public class MediaSearchTest extends BaseIntegrationTest {
 		Response response = createAuthRequest("/media/topLocations?kind=PICTURE", MediaTypeConstants.JSON, token).get();
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 	}
+	
+	@Test
+	public void getStatitics() {
+		String token = requestLoginToken("test@test.com", "123");
+		Response response = createAuthRequest("/media/statistics?kind=PICTURE", MediaTypeConstants.JSON, token).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());	
+	}
 }

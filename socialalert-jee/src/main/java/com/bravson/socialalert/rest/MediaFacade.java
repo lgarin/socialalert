@@ -56,6 +56,7 @@ import com.bravson.socialalert.domain.media.query.MediaQueryInfo;
 import com.bravson.socialalert.domain.media.query.MediaQueryParameter;
 import com.bravson.socialalert.domain.media.statistic.CreatorMediaCount;
 import com.bravson.socialalert.domain.media.statistic.LocationMediaCount;
+import com.bravson.socialalert.domain.media.statistic.MediaStatisticAggregation;
 import com.bravson.socialalert.domain.media.statistic.PeriodicMediaCount;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
@@ -523,5 +524,42 @@ public class MediaFacade {
 	public MediaQueryInfo findLiveQuery() {
 		return queryService.findLastQueryByUserId(userAccess.get().getUserId())
 				.orElseThrow(NotFoundException::new);
+	}
+	
+	@GET
+	@Path("/statistics")
+	@Produces(MediaTypeConstants.JSON)
+	@Operation(summary="Aggregate the statistics of all matching media.")
+	@SecurityRequirement(name = "JWT")
+	public MediaStatisticAggregation aggregateStatistic(@Parameter(description="Restrict the type of returned media.", required=false) @QueryParam("kind") MediaKind mediaKind,
+			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("minLatitude") Double minLatitude,
+			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("maxLatitude") Double maxLatitude,
+			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("minLongitude") Double minLongitude,
+			@Parameter(description="Define the area for the returned media.", required=false) @QueryParam("maxLongitude") Double maxLongitude,
+			@Parameter(description="Define the keywords for searching the media.", required=false) @QueryParam("keywords") String keywords,
+			@Parameter(description="Define the maximum age in milliseconds of the returned media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
+			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
+			@Parameter(description="Define the user id of the creator for searching the media.", required=false) @QueryParam("creator") String creator) {
+		
+		SearchMediaParameter parameter = new SearchMediaParameter();
+		if (mediaKind != null) {
+			parameter.setMediaKind(mediaKind);
+		}
+		if (minLatitude != null || maxLatitude != null || minLongitude != null || maxLongitude != null) {
+			parameter.setArea(buildGeoBox(minLatitude, maxLatitude, minLongitude, maxLongitude));
+		}
+		if (keywords != null) {
+			parameter.setKeywords(keywords);
+		}
+		if (maxAge != null) {
+			parameter.setMaxAge(Duration.ofMillis(maxAge));
+		}
+		if (category != null) {
+			parameter.setCategory(category);
+		}
+		if (creator != null) {
+			parameter.setCreator(creator);
+		}
+		return mediaSearchService.aggregateStatistic(parameter);
 	}
 }
