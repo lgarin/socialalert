@@ -292,7 +292,7 @@ public class MediaRepository {
 		AggregationKey<JsonObject> hitCountKey = AggregationKey.of("totalHitCount");
 		JsonObject hitCountAgg = buildAggregationMetrics("statistic.hitCount", "sum");
 		AggregationKey<JsonObject> likeCountKey = AggregationKey.of("totalLikeCount");
-		JsonObject likeCountAgg = buildAggregationMetrics("statistic.like_count", "sum");
+		JsonObject likeCountAgg = buildAggregationMetrics("statistic.likeCount", "sum");
 		AggregationKey<JsonObject> dislikeCountKey = AggregationKey.of("totalDislikeCount");
 		JsonObject dislikeCountAgg = buildAggregationMetrics("statistic.dislikeCount", "sum");
 		AggregationKey<JsonObject> commentCountKey = AggregationKey.of("totalCommentCount");
