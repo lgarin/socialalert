@@ -11,11 +11,13 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.hibernate.search.backend.elasticsearch.ElasticsearchExtension;
+import org.hibernate.search.backend.elasticsearch.search.sort.dsl.ElasticsearchSearchSortFactory;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;
 import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateClausesStep;
 import org.hibernate.search.engine.search.predicate.dsl.PredicateFinalStep;
 import org.hibernate.search.engine.search.predicate.dsl.SearchPredicateFactory;
 import org.hibernate.search.engine.search.query.SearchResult;
+import org.hibernate.search.engine.search.sort.dsl.SortFinalStep;
 import org.hibernate.search.engine.spatial.DistanceUnit;
 
 import com.bravson.socialalert.business.file.entity.FileEntity;
@@ -24,6 +26,7 @@ import com.bravson.socialalert.domain.histogram.PeriodInterval;
 import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.MediaKind;
+import com.bravson.socialalert.domain.media.MediaSortOrder;
 import com.bravson.socialalert.domain.media.SearchMediaParameter;
 import com.bravson.socialalert.domain.media.UpsertMediaParameter;
 import com.bravson.socialalert.domain.media.statistic.LocationMediaCount;
@@ -65,7 +68,18 @@ public class MediaRepository {
 		return entity;
 	}
 	
-	public QueryResult<MediaEntity> searchMedia(@NonNull SearchMediaParameter parameter, @NonNull PagingParameter paging) {
+	private SortFinalStep buildSortOrder(MediaSortOrder sortOrder, ElasticsearchSearchSortFactory factory) {
+		if (sortOrder == MediaSortOrder.HITS) {
+			return factory.field("statistic.hitCount").desc();
+		} else if (sortOrder == MediaSortOrder.LIKES) {
+			return factory.field("statistic.likeCount").desc();
+		} else if (sortOrder == MediaSortOrder.CREATION) {
+			return factory.field("versionInfo.creation").desc();
+		}
+		return factory.fromJson(buildScoreSortScript());
+	}
+
+	private JsonObject buildScoreSortScript() {
 		JsonObject sortSource = new JsonObject();
 		sortSource.addProperty("lang", "painless");
 		sortSource.addProperty("source", "_score * doc['statistic.boostFactor'].value * doc['versionInfo.creation'].value.toEpochSecond()");
@@ -75,10 +89,15 @@ public class MediaRepository {
 		sortScript.addProperty("order", "desc");
 		JsonObject sortCriteria = new JsonObject();
 		sortCriteria.add("_script", sortScript);
+		return sortCriteria;
+	}
+	
+	public QueryResult<MediaEntity> searchMedia(@NonNull SearchMediaParameter parameter, @NonNull PagingParameter paging) {
+		
 		SearchResult<MediaEntity> result = persistenceManager.search(MediaEntity.class)
 				.extension( ElasticsearchExtension.get() )
 				.where(f -> buildSearchQuery(parameter, paging.getTimestamp(), f))
-				.sort(f -> f.fromJson(sortCriteria))
+				.sort(f -> buildSortOrder(parameter.getSortOrder(), f))
 				.fetch(paging.getOffset(), paging.getPageSize());
 		return new QueryResult<>(result.hits(), result.total().hitCount(), paging);
 	}

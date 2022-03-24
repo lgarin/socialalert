@@ -48,6 +48,7 @@ import com.bravson.socialalert.domain.media.MediaConstants;
 import com.bravson.socialalert.domain.media.MediaDetail;
 import com.bravson.socialalert.domain.media.MediaInfo;
 import com.bravson.socialalert.domain.media.MediaKind;
+import com.bravson.socialalert.domain.media.MediaSortOrder;
 import com.bravson.socialalert.domain.media.SearchMediaParameter;
 import com.bravson.socialalert.domain.media.UpsertMediaParameter;
 import com.bravson.socialalert.domain.media.comment.MediaCommentDetail;
@@ -148,6 +149,7 @@ public class MediaFacade {
 			@Parameter(description="Define the maximum age in milliseconds of the returned media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
 			@Parameter(description="Define the user id of the creator for searching the media.", required=false) @QueryParam("creator") String creator,
+			@Parameter(description="Define the sort order of the returned media.", required=false) @QueryParam("sortOrder") MediaSortOrder sortOrder,
 			@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
 			@Parameter(description="Sets the page number to return.", required=false) @DefaultValue("0") @Min(0) @QueryParam("pageNumber") int pageNumber,
 			@Parameter(description="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize) {
@@ -171,6 +173,9 @@ public class MediaFacade {
 		if (creator != null) {
 			parameter.setCreator(creator);
 		}
+		if (sortOrder != null) {
+			parameter.setSortOrder(sortOrder);
+		}
 		return mediaSearchService.searchMedia(parameter, PagingParameter.of(pagingTimestamp, pageNumber, pageSize));
 	}
 	
@@ -188,6 +193,7 @@ public class MediaFacade {
 			@Parameter(description="Define the maximum age in milliseconds of the returned media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
 			@Parameter(description="Define the user id of the creator for searching the media.", required=false) @QueryParam("creator") String creator,
+			@Parameter(description="Define the sort order of the returned media.", required=false) @QueryParam("sortOrder") MediaSortOrder sortOrder,
 			@Parameter(description="Sets the timestamp in milliseconds since the epoch when the paging started.", required=false) @Min(0) @QueryParam("pagingTimestamp") Long pagingTimestamp,
 			@Parameter(description="Sets the page number to return.", required=false) @DefaultValue("0") @Min(0) @QueryParam("pageNumber") int pageNumber,
 			@Parameter(description="Sets the size of the page to return.", required=false) @DefaultValue("20") @Min(1) @Max(100) @QueryParam("pageSize")  int pageSize) {
@@ -207,6 +213,9 @@ public class MediaFacade {
 		}
 		if (creator != null) {
 			parameter.setCreator(creator);
+		}
+		if (sortOrder != null) {
+			parameter.setSortOrder(sortOrder);
 		}
 		parameter.setLocation(buildGeoArea(latitude, longitude, maxDistance));
 		return mediaSearchService.searchMedia(parameter, PagingParameter.of(pagingTimestamp, pageNumber, pageSize));
@@ -391,6 +400,7 @@ public class MediaFacade {
 			@Parameter(description="Define the maximum age in milliseconds of the counted media.", required=false) @Min(0) @QueryParam("maxAge") Long maxAge,
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
 			@Parameter(description="Define the maximum list size of the top media for each key.", required=false) @DefaultValue("5") @Min(0) @Max(10) @QueryParam("topMediaCount") int topMediaCount,
+			@Parameter(description="Define the sort order of the returned top media.", required=false) @QueryParam("topMediaSortOrder") MediaSortOrder topMediaSortOrder,
 			@Parameter(description="Define the maximum size of the returned list.", required=false) @DefaultValue("10") @Min(1) @Max(100) @QueryParam("maxSize") int maxSize) {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
@@ -408,6 +418,9 @@ public class MediaFacade {
 		}
 		if (category != null) {
 			parameter.setCategory(category);
+		}
+		if (topMediaSortOrder != null) {
+			parameter.setSortOrder(topMediaSortOrder);
 		}
 		return mediaSearchService.groupByCreator(parameter, maxSize, topMediaCount);
 	}
@@ -427,6 +440,7 @@ public class MediaFacade {
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
 			@Parameter(description="Define the user id of the creator for searching the media.", required=false) @QueryParam("creator") String creator,
 			@Parameter(description="Define the maximum list size of the top media for each key.", required=false) @DefaultValue("5") @Min(0) @Max(10) @QueryParam("topMediaCount") int topMediaCount,
+			@Parameter(description="Define the sort order of the returned top media.", required=false) @QueryParam("topMediaSortOrder") MediaSortOrder topMediaSortOrder,
 			@Parameter(description="Define the maximum size of the returned list.", required=false) @DefaultValue("10") @Min(1) @Max(100) @QueryParam("maxSize") int maxSize) {
 		
 		SearchMediaParameter parameter = new SearchMediaParameter();
@@ -448,6 +462,9 @@ public class MediaFacade {
 		if (creator != null) {
 			parameter.setCreator(creator);
 		}
+		if (topMediaSortOrder != null) {
+			parameter.setSortOrder(topMediaSortOrder);
+		}
 		return mediaSearchService.groupByLocation(parameter, maxSize, topMediaCount);
 	}
 	
@@ -466,6 +483,7 @@ public class MediaFacade {
 			@Parameter(description="Define the category for searching the media.", required=false) @QueryParam("category") String category,
 			@Parameter(description="Define the user id of the creator for searching the media.", required=false) @QueryParam("creator") String creator,
 			@Parameter(description="Define the maximum list size of the top media for each key.", required=false) @DefaultValue("5") @Min(0) @Max(10) @QueryParam("topMediaCount") int topMediaCount,
+			@Parameter(description="Define the sort order of the returned top media.", required=false) @QueryParam("topMediaSortOrder") MediaSortOrder topMediaSortOrder,
 			@Parameter(description="Define the period interval.", required=false) @DefaultValue("HOUR") @QueryParam("interval") PeriodInterval interval,
 			@Parameter(description="Define the maximum size of the returned list.", required=false) @DefaultValue("10") @Min(1) @Max(100) @QueryParam("maxSize") int maxSize,
 			@Parameter(description="Define if the count must be cumulated in the returned list.", required=false) @DefaultValue("true") @QueryParam("cumulation") boolean cumulation) {
@@ -488,6 +506,9 @@ public class MediaFacade {
 		}
 		if (creator != null) {
 			parameter.setCreator(creator);
+		}
+		if (topMediaSortOrder != null) {
+			parameter.setSortOrder(topMediaSortOrder);
 		}
 		return mediaSearchService.groupByPeriod(parameter, new HistogramParameter(interval, maxSize, cumulation), topMediaCount);
 	}

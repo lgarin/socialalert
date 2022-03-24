@@ -9,6 +9,8 @@ import java.util.Optional;
 import javax.inject.Inject;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import com.bravson.socialalert.business.media.entity.MediaEntity;
 import com.bravson.socialalert.business.media.entity.MediaRepository;
@@ -16,6 +18,7 @@ import com.bravson.socialalert.domain.histogram.PeriodInterval;
 import com.bravson.socialalert.domain.location.GeoBox;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.MediaKind;
+import com.bravson.socialalert.domain.media.MediaSortOrder;
 import com.bravson.socialalert.domain.media.SearchMediaParameter;
 import com.bravson.socialalert.domain.media.statistic.LocationMediaCount;
 import com.bravson.socialalert.domain.media.statistic.MediaCount;
@@ -221,6 +224,20 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     	assertThat(result.getNextPage()).isNull();
     	assertThat(result.getContent()).containsExactly(media);
     }
+    
+    @ParameterizedTest
+    @EnumSource(MediaSortOrder.class)
+    public void searchMediaWithSortOrder(MediaSortOrder sortOrder) {
+    	MediaEntity media = storeDefaultMedia();
+    	
+    	SearchMediaParameter parameter = new SearchMediaParameter();
+    	parameter.setSortOrder(sortOrder);
+    	
+    	PagingParameter paging = new PagingParameter(Instant.now(), 0, 10);
+    	QueryResult<MediaEntity> result = repository.searchMedia(parameter, paging);
+    	assertThat(result).isNotNull();
+    	assertThat(result.getContent()).containsExactly(media);
+    }
 
     @Test
     public void groupPicturesByGeoHash() {
@@ -307,6 +324,7 @@ public class MediaRepositoryTest extends BaseRepositoryTest {
     public void aggregateStatisticWithoutData() {
     	
     	SearchMediaParameter parameter = new SearchMediaParameter();
+    	parameter.setCountry("FR");
     	MediaStatisticAggregation result = repository.aggregateStatistic(parameter);
     	
     	assertThat(result.getPictureCount()).isZero();

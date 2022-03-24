@@ -19,4 +19,5 @@ public class SearchMediaParameter {
 	private String creator;
 	private String locality;
 	private String country;
+	private MediaSortOrder sortOrder;
 }

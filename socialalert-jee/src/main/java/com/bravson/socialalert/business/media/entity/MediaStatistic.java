@@ -25,11 +25,11 @@ import lombok.Setter;
 public class MediaStatistic {
 
 	@Column(name = "hit_count", nullable = false)
-	@GenericField(aggregable = Aggregable.YES)
+	@GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES)
 	private int hitCount;
 	
 	@Column(name = "like_count", nullable = false)
-	@GenericField(aggregable = Aggregable.YES)
+	@GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES)
 	private int likeCount;
 	
 	@Column(name = "dislike_count", nullable = false)
