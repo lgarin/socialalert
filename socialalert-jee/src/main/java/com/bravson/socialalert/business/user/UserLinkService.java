@@ -2,6 +2,7 @@ package com.bravson.socialalert.business.user;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
@@ -20,6 +21,7 @@ import com.bravson.socialalert.business.user.session.UserSessionCache;
 import com.bravson.socialalert.business.user.statistic.LinkStatisticRepository;
 import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.histogram.HistogramParameter;
+import com.bravson.socialalert.domain.media.UserContent;
 import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.domain.user.LinkedUserInfo;
@@ -158,5 +160,22 @@ public class UserLinkService {
 		}
 		
 		return histogram.filter(resultList);
+	}
+	
+	public Optional<LinkedUserInfo> findLinkedUserInfo(@NonNull String sourceUserId, @NonNull String targetUserId) {
+		return linkRepository.find(sourceUserId, targetUserId).map(this::getFollowedTargetUserInfo);
+	}
+	
+	public <T extends UserContent> T fillLinkedUserInfo(@NonNull String userId, @NonNull T content) {
+		findLinkedUserInfo(userId, content.getCreatorId()).ifPresent(content::setCreator);
+		content.applyPrivacy();
+		return content;
+	}
+	
+	public <T extends Collection<? extends UserContent>> T fillLinkedUserInfo(@NonNull String userId, @NonNull T collection) {
+		for (UserContent content : collection) {
+			fillLinkedUserInfo(userId, content);
+		}
+		return collection;
 	}
 }

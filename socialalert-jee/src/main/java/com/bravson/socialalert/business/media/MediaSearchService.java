@@ -14,6 +14,7 @@ import com.bravson.socialalert.business.media.entity.MediaEntity;
 import com.bravson.socialalert.business.media.entity.MediaRepository;
 import com.bravson.socialalert.business.media.tag.MediaTagRepository;
 import com.bravson.socialalert.business.user.UserInfoService;
+import com.bravson.socialalert.business.user.UserLinkService;
 import com.bravson.socialalert.domain.histogram.HistogramParameter;
 import com.bravson.socialalert.domain.location.GeoStatistic;
 import com.bravson.socialalert.domain.media.MediaInfo;
@@ -41,6 +42,9 @@ public class MediaSearchService {
 	
 	@Inject
 	MediaTagRepository tagRepository;
+	
+	@Inject
+	UserLinkService linkService;
 
 	public QueryResult<MediaInfo> searchMedia(@NonNull SearchMediaParameter parameter, @NonNull PagingParameter paging) {
 		QueryResult<MediaInfo> result = mediaRepository.searchMedia(parameter, paging).map(MediaEntity::toMediaInfo);
@@ -52,7 +56,7 @@ public class MediaSearchService {
 		return mediaRepository.groupByGeoHash(parameter);
 	}
 	
-	public List<CreatorMediaCount> groupByCreator(@NonNull SearchMediaParameter parameter, int maxCreatorCount, int maxMediaCount) {
+	public List<CreatorMediaCount> groupByCreator(@NonNull String userId, @NonNull SearchMediaParameter parameter, int maxCreatorCount, int maxMediaCount) {
 		List<MediaCount> result = mediaRepository.groupByCreator(parameter, maxCreatorCount);
 		if (maxMediaCount > 0) {
 			PagingParameter paging = new PagingParameter(Instant.now(), 0, maxMediaCount);
@@ -61,7 +65,7 @@ public class MediaSearchService {
 				group.setTopMedia(searchMedia(parameter, paging).getContent());
 			}
 		}
-		return userService.fillUserInfo(result.stream().map(CreatorMediaCount::new).collect(Collectors.toList()));
+		return linkService.fillLinkedUserInfo(userId, result.stream().map(CreatorMediaCount::new).collect(Collectors.toList()));
 		
 	}
 	

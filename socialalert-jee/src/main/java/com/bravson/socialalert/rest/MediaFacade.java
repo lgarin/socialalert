@@ -422,7 +422,7 @@ public class MediaFacade {
 		if (topMediaSortOrder != null) {
 			parameter.setSortOrder(topMediaSortOrder);
 		}
-		return mediaSearchService.groupByCreator(parameter, maxSize, topMediaCount);
+		return mediaSearchService.groupByCreator(userAccess.get().getUserId(), parameter, maxSize, topMediaCount);
 	}
 	
 	@GET
