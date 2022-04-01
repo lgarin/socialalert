@@ -57,16 +57,16 @@ public class MediaSearchService {
 	}
 	
 	public List<CreatorMediaCount> groupByCreator(@NonNull String userId, @NonNull SearchMediaParameter parameter, int maxCreatorCount, int maxMediaCount) {
-		List<MediaCount> result = mediaRepository.groupByCreator(parameter, maxCreatorCount);
+		List<MediaCount> groups = mediaRepository.groupByCreator(parameter, maxCreatorCount);
 		if (maxMediaCount > 0) {
 			PagingParameter paging = new PagingParameter(Instant.now(), 0, maxMediaCount);
-			for (MediaCount group : result) {
+			for (MediaCount group : groups) {
 				parameter.setCreator(group.getKey());
 				group.setTopMedia(searchMedia(parameter, paging).getContent());
 			}
 		}
-		return linkService.fillLinkedUserInfo(userId, result.stream().map(CreatorMediaCount::new).collect(Collectors.toList()));
-		
+		List<CreatorMediaCount> result = groups.stream().map(CreatorMediaCount::new).collect(Collectors.toList());
+		return linkService.fillLinkedUserInfo(userId, userService.fillUserInfo(result));
 	}
 	
 	public List<LocationMediaCount> groupByLocation(@NonNull SearchMediaParameter parameter, int maxLocationCount, int maxMediaCount) {
