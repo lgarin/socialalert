@@ -13,10 +13,10 @@ public class GeoHashUtilTest extends Assertions {
 	 @Test
 	 public void computeBoundingBox() {
 		 BoundingBox box = GeoHashUtil.computeBoundingBox("u0m9");
-		 assertThat(box.getMaxLat()).isEqualTo(46.75, Offset.offset(0.01));
-		 assertThat(box.getMinLat()).isEqualTo(46.58, Offset.offset(0.01));
-		 assertThat(box.getMaxLon()).isEqualTo(8.08, Offset.offset(0.01));
-		 assertThat(box.getMinLon()).isEqualTo(7.73, Offset.offset(0.01));
+		 assertThat(box.getNorthLatitude()).isEqualTo(46.75, Offset.offset(0.01));
+		 assertThat(box.getSouthLatitude()).isEqualTo(46.58, Offset.offset(0.01));
+		 assertThat(box.getEastLongitude()).isEqualTo(8.08, Offset.offset(0.01));
+		 assertThat(box.getWestLongitude()).isEqualTo(7.73, Offset.offset(0.01));
 	 }
 
 	 @Test

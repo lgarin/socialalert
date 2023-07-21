@@ -17,10 +17,10 @@ public class GeoBox {
 	
 	public static GeoBox fromBoundingBox(BoundingBox box) {
 		return GeoBox.builder()
-				.minLon(box.getMinLon())
-				.maxLon(box.getMaxLon())
-				.minLat(box.getMinLat())
-				.maxLat(box.getMaxLat())
+				.minLon(box.getWestLongitude())
+				.maxLon(box.getEastLongitude())
+				.minLat(box.getSouthLatitude())
+				.maxLat(box.getNorthLatitude())
 				.build();
 	}
 	

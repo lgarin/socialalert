@@ -8,7 +8,7 @@ import ch.hsr.geohash.util.GeoHashSizeTable;
 public interface GeoHashUtil {
 
 	public static WGS84Point blurLocation(double latitude, double longitude, int precision) {
-		return GeoHash.withCharacterPrecision(latitude, longitude, precision).getBoundingBoxCenterPoint();
+		return GeoHash.withCharacterPrecision(latitude, longitude, precision).getBoundingBoxCenter();
 	}
 	
 	public static int computeGeoHashPrecision(BoundingBox boundingBox, int division) {
