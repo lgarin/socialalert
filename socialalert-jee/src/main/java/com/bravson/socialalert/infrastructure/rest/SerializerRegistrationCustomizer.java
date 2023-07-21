@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;

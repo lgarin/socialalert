@@ -1,9 +1,9 @@
 package com.bravson.socialalert.domain.media.query;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.PositiveOrZero;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 
 import com.bravson.socialalert.domain.location.GeoArea;
 import com.bravson.socialalert.domain.media.MediaConstants;

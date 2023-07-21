@@ -3,9 +3,9 @@ package com.bravson.socialalert.business.file.video;
 import java.io.File;
 import java.io.IOException;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 
 import com.bravson.socialalert.business.file.media.MediaConfiguration;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;

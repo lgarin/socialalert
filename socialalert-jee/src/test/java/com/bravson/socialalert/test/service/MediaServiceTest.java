@@ -2,8 +2,8 @@ package com.bravson.socialalert.test.service;
 
 import java.util.Optional;
 
-import javax.enterprise.event.Event;
-import javax.ws.rs.NotFoundException;
+import jakarta.enterprise.event.Event;
+import jakarta.ws.rs.NotFoundException;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

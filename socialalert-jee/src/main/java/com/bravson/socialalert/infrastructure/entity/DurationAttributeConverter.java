@@ -2,8 +2,8 @@ package com.bravson.socialalert.infrastructure.entity;
 
 import java.time.Duration;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter(autoApply=true)
 public class DurationAttributeConverter implements AttributeConverter<Duration, Long> {

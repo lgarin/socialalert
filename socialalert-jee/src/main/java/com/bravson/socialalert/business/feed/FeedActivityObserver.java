@@ -1,9 +1,9 @@
 package com.bravson.socialalert.business.feed;
 
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 import com.bravson.socialalert.business.feed.item.FeedItemRepository;
 import com.bravson.socialalert.business.media.comment.MediaCommentEntity;

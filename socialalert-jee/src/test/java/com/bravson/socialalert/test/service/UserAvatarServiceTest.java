@@ -7,8 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Optional;
 
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.NotSupportedException;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.NotSupportedException;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

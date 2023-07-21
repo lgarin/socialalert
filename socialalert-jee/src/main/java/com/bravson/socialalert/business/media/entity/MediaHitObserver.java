@@ -1,7 +1,7 @@
 package com.bravson.socialalert.business.media.entity;
 
-import javax.enterprise.event.Observes;
-import javax.transaction.Transactional;
+import jakarta.enterprise.event.Observes;
+import jakarta.transaction.Transactional;
 
 import com.bravson.socialalert.infrastructure.entity.HitEntity;
 import com.bravson.socialalert.infrastructure.layer.Service;

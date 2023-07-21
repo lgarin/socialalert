@@ -6,9 +6,9 @@ import java.time.temporal.TemporalAmount;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 
 import com.bravson.socialalert.business.media.entity.MediaEntity;
 import com.bravson.socialalert.business.media.entity.MediaRepository;

@@ -3,9 +3,9 @@ package com.bravson.socialalert.test.repository;
 import java.time.Instant;
 import java.util.Optional;
 
-import javax.inject.Inject;
-import javax.persistence.EntityExistsException;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityExistsException;
+import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
 

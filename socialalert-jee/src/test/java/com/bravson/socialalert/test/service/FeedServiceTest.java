@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.Optional;
 
-import javax.ws.rs.NotFoundException;
+import jakarta.ws.rs.NotFoundException;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

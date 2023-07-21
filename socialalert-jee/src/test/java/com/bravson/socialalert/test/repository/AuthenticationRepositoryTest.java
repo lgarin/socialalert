@@ -8,8 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.Instant;
 import java.util.Optional;
 
-import javax.inject.Inject;
-import javax.ws.rs.ClientErrorException;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.ClientErrorException;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

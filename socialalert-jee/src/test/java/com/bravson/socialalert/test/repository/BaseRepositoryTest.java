@@ -3,11 +3,11 @@ package com.bravson.socialalert.test.repository;
 import java.time.Instant;
 import java.util.Arrays;
 
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 
 import org.assertj.core.api.Assertions;
 import org.hibernate.search.mapper.orm.Search;

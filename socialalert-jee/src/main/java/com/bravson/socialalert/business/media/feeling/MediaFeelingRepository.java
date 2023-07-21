@@ -2,9 +2,9 @@ package com.bravson.socialalert.business.media.feeling;
 
 import java.util.Optional;
 
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 import com.bravson.socialalert.business.media.entity.MediaEntity;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;

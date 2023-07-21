@@ -3,8 +3,8 @@ package com.bravson.socialalert.infrastructure.entity;
 import java.time.Instant;
 import java.util.Date;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter(autoApply=true)
 public class InstantAttributeConverter implements AttributeConverter<Instant, Date> {

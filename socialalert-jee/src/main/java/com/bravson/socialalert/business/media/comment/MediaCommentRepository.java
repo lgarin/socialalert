@@ -2,10 +2,10 @@ package com.bravson.socialalert.business.media.comment;
 
 import java.util.Optional;
 
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.ws.rs.NotFoundException;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
 
 import org.hibernate.search.engine.search.query.SearchResult;
 

@@ -4,8 +4,8 @@ import java.io.File;
 import java.time.Instant;
 import java.util.Optional;
 
-import javax.enterprise.event.Event;
-import javax.ws.rs.NotSupportedException;
+import jakarta.enterprise.event.Event;
+import jakarta.ws.rs.NotSupportedException;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

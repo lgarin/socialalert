@@ -2,7 +2,7 @@ package com.bravson.socialalert.domain.user.profile;
 
 import java.time.LocalDate;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 
 import com.bravson.socialalert.domain.user.Gender;
 import com.bravson.socialalert.infrastructure.entity.FieldLength;

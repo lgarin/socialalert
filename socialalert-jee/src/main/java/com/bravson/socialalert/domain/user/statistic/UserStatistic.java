@@ -1,7 +1,7 @@
 package com.bravson.socialalert.domain.user.statistic;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

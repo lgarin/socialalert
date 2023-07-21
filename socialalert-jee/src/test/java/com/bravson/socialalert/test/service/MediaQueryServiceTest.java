@@ -2,7 +2,7 @@ package com.bravson.socialalert.test.service;
 
 import java.util.Optional;
 
-import javax.enterprise.event.Event;
+import jakarta.enterprise.event.Event;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

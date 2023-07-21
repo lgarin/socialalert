@@ -3,10 +3,10 @@ package com.bravson.socialalert.business.user;
 import java.io.File;
 import java.io.IOException;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.NotSupportedException;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.NotSupportedException;
 
 import com.bravson.socialalert.business.file.exchange.FileDownloadResponse;
 import com.bravson.socialalert.business.file.exchange.FileUploadParameter;

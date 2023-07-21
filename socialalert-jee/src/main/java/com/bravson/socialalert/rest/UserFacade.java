@@ -4,38 +4,13 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.sse.Sse;
-import javax.ws.rs.sse.SseEventSink;
-
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -66,6 +41,32 @@ import com.bravson.socialalert.domain.user.privacy.UserPrivacy;
 import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
 import com.bravson.socialalert.domain.user.statistic.PeriodicLinkActivityCount;
 import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
+
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.sse.Sse;
+import jakarta.ws.rs.sse.SseEventSink;
 
 @Tag(name="user")
 @Path("/user")
@@ -98,7 +99,7 @@ public class UserFacade {
 	@Operation(summary="Create a new user.")
 	@APIResponse(responseCode = "409", description = "User already exists.")
 	@APIResponse(responseCode = "201", description = "User created with success.")
-	public Response create(@Parameter(required = true) @Valid @NotNull CreateUserParameter param) {
+	public Response create(@RequestBody(required = true) @Valid @NotNull CreateUserParameter param) {
 		if (userService.createUser(param)) {
 			return Response.status(Status.CREATED).build();
 		}
@@ -113,7 +114,7 @@ public class UserFacade {
 	@Operation(summary="Login an existing user.")
 	@APIResponse(responseCode = "200", description = "Login successfull.", content=@Content(schema=@Schema(implementation=LoginResponse.class)))
 	@APIResponse(responseCode = "401", description = "Login failed.")
-	public Response login(@Parameter(required=true) @Valid @NotNull UserCredential param) {
+	public Response login(@RequestBody(required=true) @Valid @NotNull UserCredential param) {
 		LoginResponse loginResponse = userService.login(param, userAccess.get().getIpAddress()).orElse(null);
 		if (loginResponse == null) {
 			return Response.status(Status.UNAUTHORIZED).build();
@@ -129,7 +130,7 @@ public class UserFacade {
 	@Operation(summary="Renew an existing login using the previous refresh token.")
 	@APIResponse(responseCode = "200", description = "Login successfull.", content=@Content(schema=@Schema(implementation=LoginResponse.class)))
 	@APIResponse(responseCode = "401", description = "Login failed.")
-	public Response renewLogin(@Parameter(required=true) @Valid @NotNull String refreshToken) {
+	public Response renewLogin(@RequestBody(required=true) @Valid @NotNull String refreshToken) {
 		LoginTokenResponse tokenResponse = userService.renewLogin(refreshToken, userAccess.get().getIpAddress()).orElse(null);
 		if (tokenResponse == null) {
 			return Response.status(Status.UNAUTHORIZED).build();
@@ -162,7 +163,7 @@ public class UserFacade {
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "204", description = "Password changed")
 	@APIResponse(responseCode = "401", description = "Invalid credentials")
-	public Response changePassword(@Parameter(required=true) @Valid @NotNull ChangePasswordParameter param) {
+	public Response changePassword(@RequestBody(required=true) @Valid @NotNull ChangePasswordParameter param) {
 		LoginResponse loginResponse = userService.login(param, userAccess.get().getIpAddress()).orElse(null);
 		if (loginResponse == null) {
 			return Response.status(Status.UNAUTHORIZED).build();
@@ -281,7 +282,7 @@ public class UserFacade {
 	@Operation(summary="Update own profile.")
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "Profile has been updated.", content=@Content(schema=@Schema(implementation=UserInfo.class)))
-	public UserInfo updateProfile(@Parameter(required = true) @Valid @NotNull UpdateProfileParameter param) {
+	public UserInfo updateProfile(@RequestBody(required = true) @Valid @NotNull UpdateProfileParameter param) {
 		return profileService.updateProfile(param, userAccess.get());
 	}
 	
@@ -293,7 +294,7 @@ public class UserFacade {
 	@Operation(summary="Update own privacy settings.")
 	@SecurityRequirement(name = "JWT")
 	@APIResponse(responseCode = "200", description = "Profile has been updated.", content=@Content(schema=@Schema(implementation=UserDetail.class)))
-	public UserDetail updatePrivacy(@Parameter(required = true) @Valid @NotNull UserPrivacy param) {
+	public UserDetail updatePrivacy(@RequestBody(required = true) @Valid @NotNull UserPrivacy param) {
 		return profileService.updatePrivacy(param, userAccess.get());
 	}
 	
@@ -324,7 +325,7 @@ public class UserFacade {
 	@Operation(summary="Delete an existing user.")
 	@APIResponse(responseCode = "204", description = "Delete successfull.")
 	@APIResponse(responseCode = "401", description = "Invalid credentials")
-	public Response delete(@Parameter(required=true) @Valid @NotNull UserCredential param) {
+	public Response delete(@RequestBody(required=true) @Valid @NotNull UserCredential param) {
 		LoginResponse loginResponse = userService.login(param, userAccess.get().getIpAddress()).orElse(null);
 		if (loginResponse == null) {
 			return Response.status(Status.UNAUTHORIZED).build();

@@ -1,6 +1,6 @@
 package com.bravson.socialalert.business.user.authentication;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;

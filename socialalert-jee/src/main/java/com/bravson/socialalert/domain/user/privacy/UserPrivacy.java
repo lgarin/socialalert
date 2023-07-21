@@ -1,7 +1,7 @@
 package com.bravson.socialalert.domain.user.privacy;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 import org.hibernate.annotations.ColumnDefault;
 
