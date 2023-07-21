@@ -2,11 +2,18 @@ version: '3.7'
 
 services:
   keycloak:
-    image: "quay.io/keycloak/keycloak-x:13.0.0"
-    entrypoint: /opt/jboss/tools/docker-entrypoint.sh --auto-config --db=postgres -Dkc.db.url.host=postgres --db-username=keycloak --db-password=password --http-enabled=true
+    image: "quay.io/keycloak/keycloak:22.0"
+    command: start-dev
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: localhost
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres/keycloak
+      KC_DB_SCHEMA: public
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password
+      KC_HTTP_ENABLED: true
     restart: on-failure
     logging:
       options:
