@@ -1,10 +1,5 @@
 package com.bravson.socialalert.business.media;
 
-import jakarta.enterprise.event.Event;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotFoundException;
-
 import com.bravson.socialalert.business.media.approval.MediaApprovalEntity;
 import com.bravson.socialalert.business.media.approval.MediaApprovalRepository;
 import com.bravson.socialalert.business.media.entity.MediaEntity;
@@ -20,6 +15,10 @@ import com.bravson.socialalert.infrastructure.entity.HitEntity;
 import com.bravson.socialalert.infrastructure.entity.LikedEntity;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
 import lombok.NonNull;
 
 @Service

@@ -2,10 +2,6 @@ package com.bravson.socialalert.test.integration;
 
 import java.util.List;
 
-import jakarta.ws.rs.core.GenericType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
-
 import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.domain.paging.QueryResult;
@@ -13,6 +9,9 @@ import com.bravson.socialalert.domain.user.UserInfo;
 import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 @QuarkusTest
 public class UserLinkTest extends BaseIntegrationTest {

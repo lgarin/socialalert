@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.NoSuchFileException;
 
-import jakarta.inject.Inject;
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +15,7 @@ import com.bravson.socialalert.business.file.store.FileStoreConfiguration;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 
 @QuarkusTest
 public class FileStoreTest extends Assertions {

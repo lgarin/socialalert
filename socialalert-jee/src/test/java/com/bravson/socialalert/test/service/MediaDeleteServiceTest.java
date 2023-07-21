@@ -4,8 +4,6 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.Optional;
 
-import jakarta.enterprise.event.Event;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -19,6 +17,8 @@ import com.bravson.socialalert.business.media.entity.MediaRepository;
 import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.domain.media.UpsertMediaParameter;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
+
+import jakarta.enterprise.event.Event;
 
 public class MediaDeleteServiceTest extends BaseServiceTest {
 

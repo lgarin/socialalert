@@ -4,11 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.function.Predicate;
 
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
-
 import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.file.media.AsyncMediaProcessedEvent;
@@ -18,6 +13,10 @@ import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 import com.google.common.io.Files;
 
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 @QuarkusTest
 public class FileUploadTest extends BaseIntegrationTest {

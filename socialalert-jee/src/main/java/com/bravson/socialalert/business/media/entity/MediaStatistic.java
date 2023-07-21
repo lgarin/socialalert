@@ -1,14 +1,13 @@
 package com.bravson.socialalert.business.media.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

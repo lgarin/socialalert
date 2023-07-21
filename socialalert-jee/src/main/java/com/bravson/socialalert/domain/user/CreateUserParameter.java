@@ -1,12 +1,11 @@
 package com.bravson.socialalert.domain.user;
 
+import com.bravson.socialalert.infrastructure.entity.FieldLength;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
-import com.bravson.socialalert.infrastructure.entity.FieldLength;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

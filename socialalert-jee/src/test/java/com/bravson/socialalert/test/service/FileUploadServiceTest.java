@@ -4,9 +4,6 @@ import java.io.File;
 import java.time.Instant;
 import java.util.Optional;
 
-import jakarta.enterprise.event.Event;
-import jakarta.ws.rs.NotSupportedException;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -29,6 +26,9 @@ import com.bravson.socialalert.infrastructure.rest.ConflictException;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+import jakarta.enterprise.event.Event;
+import jakarta.ws.rs.NotSupportedException;
 
 public class FileUploadServiceTest extends BaseServiceTest {
 

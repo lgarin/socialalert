@@ -3,6 +3,12 @@ package com.bravson.socialalert.infrastructure.entity;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.hibernate.search.engine.search.query.dsl.SearchQuerySelectStep;
+import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.common.EntityReference;
+import org.hibernate.search.mapper.orm.search.loading.dsl.SearchLoadingOptionsStep;
+
+import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.persistence.EntityManager;
@@ -11,13 +17,6 @@ import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.transaction.Transactional;
-
-import org.hibernate.search.engine.search.query.dsl.SearchQuerySelectStep;
-import org.hibernate.search.mapper.orm.Search;
-import org.hibernate.search.mapper.orm.common.EntityReference;
-import org.hibernate.search.mapper.orm.search.loading.dsl.SearchLoadingOptionsStep;
-
-import io.quarkus.runtime.StartupEvent;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 

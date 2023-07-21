@@ -2,14 +2,13 @@ package com.bravson.socialalert.business.media.query;
 
 import java.util.Optional;
 
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-
 import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.media.query.MediaQueryParameter;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
 import com.bravson.socialalert.infrastructure.layer.Repository;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

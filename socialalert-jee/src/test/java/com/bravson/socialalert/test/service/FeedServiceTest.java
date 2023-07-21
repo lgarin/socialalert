@@ -4,8 +4,6 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.Optional;
 
-import jakarta.ws.rs.NotFoundException;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -22,6 +20,8 @@ import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 
 import static org.mockito.Mockito.when;
+
+import jakarta.ws.rs.NotFoundException;
 
 public class FeedServiceTest extends BaseServiceTest {
 

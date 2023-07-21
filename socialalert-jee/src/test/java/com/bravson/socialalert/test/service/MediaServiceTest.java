@@ -2,9 +2,6 @@ package com.bravson.socialalert.test.service;
 
 import java.util.Optional;
 
-import jakarta.enterprise.event.Event;
-import jakarta.ws.rs.NotFoundException;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -26,6 +23,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+
+import jakarta.enterprise.event.Event;
+import jakarta.ws.rs.NotFoundException;
 
 public class MediaServiceTest extends BaseServiceTest {
 

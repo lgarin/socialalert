@@ -5,14 +5,13 @@ import static com.bravson.socialalert.domain.media.format.MediaFileConstants.JPG
 import java.io.File;
 import java.io.IOException;
 
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import jakarta.transaction.Transactional.TxType;
-
 import com.bravson.socialalert.business.file.media.MediaFileProcessor;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.coobird.thumbnailator.Thumbnails;

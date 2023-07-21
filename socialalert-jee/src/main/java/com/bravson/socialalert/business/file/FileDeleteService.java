@@ -2,10 +2,6 @@ package com.bravson.socialalert.business.file;
 
 import java.io.IOException;
 
-import jakarta.enterprise.event.Observes;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +14,9 @@ import com.bravson.socialalert.business.user.profile.UserProfileEntity;
 import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

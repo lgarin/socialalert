@@ -3,9 +3,6 @@ package com.bravson.socialalert.business.file.media;
 import java.time.Duration;
 import java.time.Instant;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-
 import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.GeoPointBinding;
 import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.Latitude;
 import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.Longitude;
@@ -15,6 +12,8 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

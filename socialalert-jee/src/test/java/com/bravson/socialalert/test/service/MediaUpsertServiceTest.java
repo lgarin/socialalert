@@ -3,10 +3,6 @@ package com.bravson.socialalert.test.service;
 import java.util.Arrays;
 import java.util.Optional;
 
-import jakarta.enterprise.event.Event;
-import jakarta.ws.rs.ForbiddenException;
-import jakarta.ws.rs.NotFoundException;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -24,6 +20,10 @@ import com.bravson.socialalert.domain.media.UpsertMediaParameter;
 import com.bravson.socialalert.infrastructure.rest.ConflictException;
 
 import static org.mockito.Mockito.when;
+
+import jakarta.enterprise.event.Event;
+import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.NotFoundException;
 
 public class MediaUpsertServiceTest extends BaseServiceTest {
 

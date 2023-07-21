@@ -4,12 +4,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Map;
 
-import jakarta.inject.Inject;
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.GenericType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
-
 import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.user.authentication.AuthenticationInfo;
@@ -25,6 +19,11 @@ import com.bravson.socialalert.domain.user.profile.UpdateProfileParameter;
 import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 @QuarkusTest
 public class UserFacadeTest extends BaseIntegrationTest {

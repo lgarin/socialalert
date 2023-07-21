@@ -4,9 +4,6 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.Optional;
 
-import jakarta.enterprise.event.Event;
-import jakarta.ws.rs.NotFoundException;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -34,6 +31,9 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import jakarta.enterprise.event.Event;
+import jakarta.ws.rs.NotFoundException;
+
 public class MediaCommentServiceTest extends BaseServiceTest {
 
 	@InjectMocks
@@ -56,6 +56,9 @@ public class MediaCommentServiceTest extends BaseServiceTest {
 	
 	@Mock
 	Event<MediaCommentEntity> commentLikedEvent;
+	
+	@Mock
+	Event<MediaCommentEntity> commentDislikedEvent;
 	
 	@Mock
 	Event<MediaCommentEntity> newCommentEvent;

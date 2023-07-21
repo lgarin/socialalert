@@ -3,8 +3,6 @@ package com.bravson.socialalert.test.repository;
 import java.time.Instant;
 import java.util.List;
 
-import jakarta.inject.Inject;
-
 import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.user.link.UserLinkEntity;
@@ -14,6 +12,7 @@ import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 
 @QuarkusTest
 public class UserLinkRepositoryTest extends BaseRepositoryTest {

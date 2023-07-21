@@ -2,8 +2,6 @@ package com.bravson.socialalert.test.repository;
 
 import java.util.Optional;
 
-import jakarta.inject.Inject;
-
 import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.media.query.MediaQueryEntity;
@@ -11,6 +9,7 @@ import com.bravson.socialalert.business.media.query.MediaQueryRepository;
 import com.bravson.socialalert.domain.media.query.MediaQueryParameter;
 
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 
 @QuarkusTest
 public class MediaQueryRepositoryTest extends BaseRepositoryTest {

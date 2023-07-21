@@ -3,12 +3,6 @@ package com.bravson.socialalert.test.repository;
 import java.time.Instant;
 import java.util.Arrays;
 
-import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
-import jakarta.transaction.Transactional.TxType;
-
 import org.assertj.core.api.Assertions;
 import org.hibernate.search.mapper.orm.Search;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +16,12 @@ import com.bravson.socialalert.domain.location.GeoAddress;
 import com.bravson.socialalert.domain.media.UpsertMediaParameter;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 import com.bravson.socialalert.infrastructure.entity.PersistenceManager;
+
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 
 public abstract class BaseRepositoryTest extends Assertions {
 

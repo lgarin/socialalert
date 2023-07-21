@@ -3,6 +3,10 @@ package com.bravson.socialalert.business.user.authentication;
 import java.time.Instant;
 import java.util.Optional;
 
+import com.bravson.socialalert.domain.user.CreateUserParameter;
+import com.bravson.socialalert.infrastructure.layer.Repository;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
@@ -12,11 +16,6 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.Form;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-
-import com.bravson.socialalert.domain.user.CreateUserParameter;
-import com.bravson.socialalert.infrastructure.layer.Repository;
-import com.fasterxml.jackson.databind.JsonNode;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

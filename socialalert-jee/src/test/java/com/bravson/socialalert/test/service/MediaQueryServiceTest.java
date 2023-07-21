@@ -2,8 +2,6 @@ package com.bravson.socialalert.test.service;
 
 import java.util.Optional;
 
-import jakarta.enterprise.event.Event;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -20,6 +18,8 @@ import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import jakarta.enterprise.event.Event;
 
 public class MediaQueryServiceTest extends BaseServiceTest {
 

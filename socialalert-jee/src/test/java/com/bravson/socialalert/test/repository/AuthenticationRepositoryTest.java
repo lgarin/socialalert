@@ -8,9 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.Instant;
 import java.util.Optional;
 
-import jakarta.inject.Inject;
-import jakarta.ws.rs.ClientErrorException;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -20,6 +17,8 @@ import com.bravson.socialalert.business.user.authentication.LoginToken;
 import com.bravson.socialalert.domain.user.CreateUserParameter;
 
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.ClientErrorException;
 
 @QuarkusTest
 public class AuthenticationRepositoryTest {

@@ -5,16 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.ObservesAsync;
-import jakarta.inject.Inject;
-
 import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.infrastructure.async.AsyncEvent;
 import com.bravson.socialalert.infrastructure.async.AsyncRepository;
 
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.ObservesAsync;
+import jakarta.inject.Inject;
 
 @QuarkusTest
 public class AsyncRepositoryTest {

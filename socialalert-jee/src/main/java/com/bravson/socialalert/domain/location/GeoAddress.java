@@ -1,9 +1,5 @@
 package com.bravson.socialalert.domain.location;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.Transient;
-
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Projectable;
 import org.hibernate.search.mapper.pojo.bridge.builtin.annotation.GeoPointBinding;
@@ -17,6 +13,9 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.PropertyVa
 
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

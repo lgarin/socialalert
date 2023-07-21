@@ -3,11 +3,6 @@ package com.bravson.socialalert.business.user;
 import java.io.File;
 import java.io.IOException;
 
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotFoundException;
-import jakarta.ws.rs.NotSupportedException;
-
 import com.bravson.socialalert.business.file.exchange.FileDownloadResponse;
 import com.bravson.socialalert.business.file.exchange.FileUploadParameter;
 import com.bravson.socialalert.business.file.store.FileStore;
@@ -21,6 +16,10 @@ import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 import com.bravson.socialalert.domain.user.UserDetail;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.NotSupportedException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

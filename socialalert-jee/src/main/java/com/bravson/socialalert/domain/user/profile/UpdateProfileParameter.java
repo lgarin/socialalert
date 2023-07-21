@@ -2,11 +2,10 @@ package com.bravson.socialalert.domain.user.profile;
 
 import java.time.LocalDate;
 
-import jakarta.validation.constraints.Size;
-
 import com.bravson.socialalert.domain.user.Gender;
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
 
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

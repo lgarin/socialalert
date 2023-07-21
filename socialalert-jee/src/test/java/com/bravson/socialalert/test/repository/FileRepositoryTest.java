@@ -4,8 +4,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.inject.Inject;
-
 import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.file.entity.FileEntity;
@@ -16,6 +14,7 @@ import com.bravson.socialalert.business.user.token.UserAccess;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 
 @QuarkusTest
 public class FileRepositoryTest extends BaseRepositoryTest {

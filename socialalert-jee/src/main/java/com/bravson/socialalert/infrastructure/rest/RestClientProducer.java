@@ -1,5 +1,9 @@
 package com.bravson.socialalert.infrastructure.rest;
 
+import org.jboss.resteasy.plugins.providers.JaxrsFormProvider;
+import org.slf4j.Logger;
+
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Disposes;
@@ -7,10 +11,6 @@ import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
-
-import jakarta.annotation.PostConstruct;
-import org.jboss.resteasy.plugins.providers.JaxrsFormProvider;
-import org.slf4j.Logger;
 
 
 @ApplicationScoped

@@ -6,6 +6,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.bravson.socialalert.business.user.session.UserSession;
+import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
+import com.bravson.socialalert.infrastructure.layer.Repository;
+import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
+
 import jakarta.enterprise.event.Observes;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
@@ -13,12 +18,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.sse.OutboundSseEvent;
 import jakarta.ws.rs.sse.Sse;
 import jakarta.ws.rs.sse.SseEventSink;
-
-import com.bravson.socialalert.business.user.session.UserSession;
-import com.bravson.socialalert.infrastructure.entity.DeleteEntity;
-import com.bravson.socialalert.infrastructure.layer.Repository;
-import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

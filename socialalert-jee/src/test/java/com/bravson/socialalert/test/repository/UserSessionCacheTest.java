@@ -1,13 +1,12 @@
 package com.bravson.socialalert.test.repository;
 
-import jakarta.inject.Inject;
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.user.session.UserSessionCache;
 
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 
 @QuarkusTest
 public class UserSessionCacheTest extends Assertions {

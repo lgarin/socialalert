@@ -3,9 +3,6 @@ package com.bravson.socialalert.test.repository;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-
 import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.media.approval.CommentApprovalEntity;
@@ -15,6 +12,8 @@ import com.bravson.socialalert.business.media.entity.MediaEntity;
 import com.bravson.socialalert.domain.user.approval.ApprovalModifier;
 
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @QuarkusTest
 public class CommentApprovalRepositoryTest extends BaseRepositoryTest {

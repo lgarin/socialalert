@@ -2,11 +2,6 @@ package com.bravson.socialalert.business.file;
 
 import java.io.IOException;
 
-import jakarta.enterprise.event.Event;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotSupportedException;
-
 import org.slf4j.Logger;
 
 import com.bravson.socialalert.business.file.entity.FileEntity;
@@ -22,6 +17,10 @@ import com.bravson.socialalert.infrastructure.entity.NewEntity;
 import com.bravson.socialalert.infrastructure.layer.Service;
 import com.bravson.socialalert.infrastructure.rest.ConflictException;
 
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotSupportedException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

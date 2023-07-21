@@ -6,10 +6,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import com.bravson.socialalert.infrastructure.log.Logged;
+
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Stereotype;
-
-import com.bravson.socialalert.infrastructure.log.Logged;
 
 @Stereotype
 @Retention(RUNTIME)

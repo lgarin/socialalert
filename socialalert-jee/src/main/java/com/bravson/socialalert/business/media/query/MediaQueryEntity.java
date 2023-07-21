@@ -3,10 +3,6 @@ package com.bravson.socialalert.business.media.query;
 import java.time.Duration;
 import java.time.Instant;
 
-import jakarta.persistence.Cacheable;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -17,6 +13,9 @@ import com.bravson.socialalert.domain.media.query.MediaQueryParameter;
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
 import com.bravson.socialalert.infrastructure.entity.VersionedEntity;
 
+import jakarta.persistence.Cacheable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

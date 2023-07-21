@@ -3,9 +3,6 @@ package com.bravson.socialalert.business.file.entity;
 import java.io.Serializable;
 import java.time.Instant;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
@@ -14,6 +11,8 @@ import com.bravson.socialalert.domain.media.format.MediaSizeVariant;
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
 import com.bravson.socialalert.infrastructure.util.DateUtil;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

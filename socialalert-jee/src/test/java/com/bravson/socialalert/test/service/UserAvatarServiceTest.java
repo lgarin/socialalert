@@ -7,9 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Optional;
 
-import jakarta.ws.rs.NotFoundException;
-import jakarta.ws.rs.NotSupportedException;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -30,6 +27,9 @@ import com.bravson.socialalert.domain.user.UserInfo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.NotSupportedException;
 
 public class UserAvatarServiceTest extends BaseServiceTest {
 

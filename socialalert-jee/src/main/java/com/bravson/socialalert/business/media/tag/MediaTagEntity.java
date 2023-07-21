@@ -1,10 +1,5 @@
 package com.bravson.socialalert.business.media.tag;
 
-import jakarta.persistence.Cacheable;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-
 import org.hibernate.search.engine.backend.types.Projectable;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.IdentifierBridgeRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
@@ -15,6 +10,10 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 import com.bravson.socialalert.infrastructure.entity.DefaultStringIdentifierBridge;
 import com.bravson.socialalert.infrastructure.entity.FieldLength;
 
+import jakarta.persistence.Cacheable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

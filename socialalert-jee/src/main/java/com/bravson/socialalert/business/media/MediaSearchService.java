@@ -6,10 +6,6 @@ import java.time.temporal.TemporalAmount;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import jakarta.transaction.Transactional.TxType;
-
 import com.bravson.socialalert.business.media.entity.MediaEntity;
 import com.bravson.socialalert.business.media.entity.MediaRepository;
 import com.bravson.socialalert.business.media.tag.MediaTagRepository;
@@ -28,6 +24,9 @@ import com.bravson.socialalert.domain.paging.PagingParameter;
 import com.bravson.socialalert.domain.paging.QueryResult;
 import com.bravson.socialalert.infrastructure.layer.Service;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 import lombok.NonNull;
 
 @Service

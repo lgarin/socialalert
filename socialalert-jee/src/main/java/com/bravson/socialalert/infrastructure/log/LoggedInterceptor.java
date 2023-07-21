@@ -3,14 +3,14 @@ package com.bravson.socialalert.infrastructure.log;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import jakarta.annotation.Priority;
 import jakarta.interceptor.AroundInvoke;
 import jakarta.interceptor.Interceptor;
 import jakarta.interceptor.InvocationContext;
 import jakarta.ws.rs.core.Response;
-
-import jakarta.annotation.Priority;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Interceptor
 @Priority(1)

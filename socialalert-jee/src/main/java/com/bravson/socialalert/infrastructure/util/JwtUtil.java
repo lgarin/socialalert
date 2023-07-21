@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
 
 import jakarta.json.Json;
 import jakarta.json.JsonReader;
-
 import lombok.NonNull;
 
 public interface JwtUtil {

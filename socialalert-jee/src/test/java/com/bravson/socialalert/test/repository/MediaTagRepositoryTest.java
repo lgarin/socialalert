@@ -2,14 +2,13 @@ package com.bravson.socialalert.test.repository;
 
 import java.util.List;
 
-import jakarta.inject.Inject;
-
 import org.junit.jupiter.api.Test;
 
 import com.bravson.socialalert.business.media.tag.MediaTagEntity;
 import com.bravson.socialalert.business.media.tag.MediaTagRepository;
 
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 
 @QuarkusTest
 public class MediaTagRepositoryTest extends BaseRepositoryTest {

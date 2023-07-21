@@ -2,8 +2,6 @@ package com.bravson.socialalert.test.repository;
 
 import java.io.File;
 
-import jakarta.inject.Inject;
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +12,7 @@ import com.bravson.socialalert.business.file.picture.PictureFileProcessor;
 import com.bravson.socialalert.domain.media.format.MediaFileFormat;
 
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 
 @QuarkusTest
 public class PictureFileProcessorTest extends Assertions {
