@@ -1,6 +1,6 @@
 package com.bravson.socialalert.business.user.statistic;
 
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.IdentifierBridgeRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
@@ -18,7 +18,6 @@ import com.bravson.socialalert.infrastructure.entity.VersionInfo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -39,8 +38,7 @@ public class LinkStatisticEntity {
 	@Column(name = "id", length = FieldLength.ID)
 	@DocumentId(identifierBridge = @IdentifierBridgeRef(type=DefaultStringIdentifierBridge.class))
 	@GenericField
-	@GenericGenerator(name="system-uuid", strategy = "uuid2")
-	@GeneratedValue(generator="system-uuid")
+	@UuidGenerator
 	private String id;
 	
 	@NonNull

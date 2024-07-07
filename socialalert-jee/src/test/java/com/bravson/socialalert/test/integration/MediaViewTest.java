@@ -15,6 +15,7 @@ import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -36,7 +37,9 @@ public class MediaViewTest extends BaseIntegrationTest {
 	}
 	
 	private String uploadPicture(String token) {
-		Response upload = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token).post(getPicture("src/test/resources/media/IMG_0397.JPG"));
+		Response upload = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token)
+				.header(HttpHeaders.CONTENT_TYPE, MediaFileConstants.JPG_MEDIA_TYPE)
+				.post(getPicture("src/test/resources/media/IMG_0397.JPG"));
 		assertThat(upload.getStatus()).isEqualTo(Status.CREATED.getStatusCode());
 		return getLocationPath(upload).replace("/file/download/", "");
 	}

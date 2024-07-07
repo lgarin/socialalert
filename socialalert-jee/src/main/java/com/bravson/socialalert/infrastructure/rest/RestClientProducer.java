@@ -1,6 +1,5 @@
 package com.bravson.socialalert.infrastructure.rest;
 
-import org.jboss.resteasy.plugins.providers.JaxrsFormProvider;
 import org.slf4j.Logger;
 
 import jakarta.annotation.PostConstruct;
@@ -24,7 +23,6 @@ public class RestClientProducer {
 	@PostConstruct
 	void init() {
 		httpClientBuilder = ClientBuilder.newBuilder();
-		httpClientBuilder.register(JaxrsFormProvider.class);
 	}
 	
 	@Produces

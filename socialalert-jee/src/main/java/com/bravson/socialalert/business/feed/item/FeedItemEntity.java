@@ -2,7 +2,7 @@ package com.bravson.socialalert.business.feed.item;
 
 import java.util.stream.Collectors;
 
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.IdentifierBridgeRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
@@ -27,7 +27,6 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -50,8 +49,7 @@ public class FeedItemEntity {
 	@Column(name = "id", length = FieldLength.ID)
 	@DocumentId(identifierBridge = @IdentifierBridgeRef(type=DefaultStringIdentifierBridge.class))
 	@GenericField
-	@GenericGenerator(name="system-uuid", strategy = "uuid2")
-	@GeneratedValue(generator="system-uuid")
+	@UuidGenerator
 	private String id;
 	
 	@Getter

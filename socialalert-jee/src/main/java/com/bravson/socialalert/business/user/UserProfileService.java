@@ -81,11 +81,11 @@ public class UserProfileService {
 	}
 	
 	public Map<String,String> getValidCountries() {
-		return getValidCountryCodes().stream().collect(Collectors.toMap(k -> k, k -> new Locale(ENGLISH_LANGUAGE_CODE, k).getDisplayCountry(Locale.ENGLISH)));
+		return getValidCountryCodes().stream().collect(Collectors.toMap(k -> k, k -> Locale.of(ENGLISH_LANGUAGE_CODE, k).getDisplayCountry(Locale.ENGLISH)));
 	}
 	
 	public Map<String,String> getValidLanguages() {
-		return getValidLanguageCodes().stream().collect(Collectors.toMap(k -> k, k -> new Locale(k).getDisplayLanguage(Locale.ENGLISH)));
+		return getValidLanguageCodes().stream().collect(Collectors.toMap(k -> k, k -> Locale.of(k).getDisplayLanguage(Locale.ENGLISH)));
 	}
 	
 	public UserDetail updatePrivacy(@NonNull UserPrivacy settings, @NonNull UserAccess userAccess) {

@@ -11,6 +11,7 @@ import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -25,7 +26,9 @@ public class FileQueryTest extends BaseIntegrationTest {
 	@Test
 	public void uploadPictureWithLogin() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token).post(getPicture("src/test/resources/media/IMG_0397.JPG"));
+		Response response = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token)
+				.header(HttpHeaders.CONTENT_TYPE, MediaFileConstants.JPG_MEDIA_TYPE)
+				.post(getPicture("src/test/resources/media/IMG_0397.JPG"));
 		assertThat(response.getStatus()).isEqualTo(Status.CREATED.getStatusCode());
 		awaitAsyncEvent(AsyncMediaProcessedEvent.class);
 		FileInfo[] result = createAuthRequest("/file/list/new", MediaTypeConstants.JSON, token).get(FileInfo[].class);

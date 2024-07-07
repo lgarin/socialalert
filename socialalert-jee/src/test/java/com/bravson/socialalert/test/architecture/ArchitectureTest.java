@@ -14,7 +14,7 @@ public class ArchitectureTest {
     public static final ArchRule PACKAGE_DEPENDENCIES = slices().matching("com.bravson.socialalert.(**)").should().beFreeOfCycles();
 	
 	@ArchTest
-    public static final ArchRule LAYER_DEPENDENCIES = layeredArchitecture()
+    public static final ArchRule LAYER_DEPENDENCIES = layeredArchitecture().consideringAllDependencies()
     		.layer("Test").definedBy("com.bravson.socialalert.test..")
     		.layer("Infratstructure").definedBy("com.bravson.socialalert.infrastructure..")
     		.layer("Domain").definedBy("com.bravson.socialalert.domain..")

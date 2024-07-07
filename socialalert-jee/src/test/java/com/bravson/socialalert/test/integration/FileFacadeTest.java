@@ -10,6 +10,7 @@ import com.bravson.socialalert.domain.media.format.MediaFileConstants;
 
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -22,7 +23,9 @@ public class FileFacadeTest extends BaseIntegrationTest {
 	}
 	
 	private String uploadPicture(String token) throws InterruptedException {
-		Response upload = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token).post(getPicture("src/test/resources/media/IMG_0397.JPG"));
+		Response upload = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token)
+				.header(HttpHeaders.CONTENT_TYPE, MediaFileConstants.JPG_MEDIA_TYPE)
+				.post(getPicture("src/test/resources/media/IMG_0397.JPG"));
 		assertThat(upload.getStatus()).isEqualTo(Status.CREATED.getStatusCode());
 		awaitAsyncEvent(AsyncMediaProcessedEvent.class);
 		return getLocationPath(upload);
@@ -89,7 +92,9 @@ public class FileFacadeTest extends BaseIntegrationTest {
 	@Test
 	public void downloadExistingAvatar() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		Response upload = createAuthRequest("/file/upload/avatar", MediaType.WILDCARD, token).post(getPicture("src/test/resources/media/IMG_0397.JPG"));
+		Response upload = createAuthRequest("/file/upload/avatar", MediaType.WILDCARD, token)
+				.header(HttpHeaders.CONTENT_TYPE, MediaFileConstants.JPG_MEDIA_TYPE)
+				.post(getPicture("src/test/resources/media/IMG_0397.JPG"));
 		assertThat(upload.getStatus()).isEqualTo(Status.OK.getStatusCode());
 		Response response = createAuthRequest("/file/avatar/small/8b99179c-2a6b-4e41-92d3-3edfe3df885b/7e9a5a5bd5e64171c176ac6c7b32d685", MediaType.WILDCARD, token).get();
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());

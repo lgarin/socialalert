@@ -31,15 +31,16 @@ import com.bravson.socialalert.domain.media.format.MediaFileConstants;
 import com.bravson.socialalert.domain.user.UserDetail;
 import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
+import io.vertx.core.http.HttpServerRequest;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -47,6 +48,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.ResponseBuilder;
 import jakarta.ws.rs.core.Response.Status;
@@ -64,12 +66,11 @@ public class FileFacade {
 	
 	@Inject
 	Instance<UserAccess> userAccess;
-	
-	@Context
-	HttpServletRequest httpRequest;
 
 	@Context
 	UriInfo uriInfo;
+	
+	@Context HttpServerRequest httpRequest;
 	
 	@Inject
 	FileReadService fileReadService;
@@ -176,8 +177,9 @@ public class FileFacade {
     @APIResponse(responseCode = "413", description = "The file is too large.")
 	@APIResponse(responseCode = "415", description = "The media is not in the expected format.")
 	public Response uploadPicture(
+			@HeaderParam(HttpHeaders.CONTENT_TYPE) @NotNull String contentType,
 			@RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile) throws IOException {
-		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), userAccess.get()));
+		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile, contentType), userAccess.get()));
 	}
 	
 	@POST
@@ -189,15 +191,16 @@ public class FileFacade {
     @APIResponse(responseCode = "413", description = "The file is too large.")
     @APIResponse(responseCode = "415", description = "The media is not in the expected format.")
 	public Response uploadVideo(
+			@HeaderParam(HttpHeaders.CONTENT_TYPE) @NotNull String contentType,
 		    @RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile) throws IOException {
-		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile), userAccess.get()));
+		return createUploadResponse(fileUploadService.uploadMedia(createUploadParameter(inputFile, contentType), userAccess.get()));
 	}
 
-	private FileUploadParameter createUploadParameter(File inputFile) {
+	private FileUploadParameter createUploadParameter(File inputFile, String contentType) {
 		if (inputFile.length() > maxUploadSize) {
 			throw new WebApplicationException(Status.REQUEST_ENTITY_TOO_LARGE);
 		}
-		return FileUploadParameter.builder().inputFile(inputFile).contentType(httpRequest.getContentType()).build();
+		return FileUploadParameter.builder().inputFile(inputFile).contentType(contentType).build();
 	}
 	
 	@POST
@@ -210,8 +213,9 @@ public class FileFacade {
     @APIResponse(responseCode = "413", description = "The file is too large.")
 	@APIResponse(responseCode = "415", description = "The media is not in the expected format.")
 	public UserDetail uploadAvatar(
+			@HeaderParam(HttpHeaders.CONTENT_TYPE) @NotNull String contentType,
 			@RequestBody(description="The file content must be included in the body of the HTTP request.", required=true) @NotNull File inputFile) throws IOException {
-		return userAvatarService.storeAvatar(createUploadParameter(inputFile), userAccess.get());
+		return userAvatarService.storeAvatar(createUploadParameter(inputFile, contentType), userAccess.get());
 	}
 
 	@PermitAll

@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   keycloak:
-    image: "quay.io/keycloak/keycloak:22.0"
+    image: "quay.io/keycloak/keycloak:25.0"
     command: start-dev
     environment:
       KEYCLOAK_ADMIN: admin
@@ -26,7 +26,7 @@ services:
     depends_on:
       - postgres
   postgres:
-    image: "postgres:11.0"
+    image: "postgres:16.3"
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak
@@ -42,7 +42,7 @@ services:
     volumes:
       - "postgres:/var/lib/postgresql/data/dbdata"
   elastic:
-    image: elasticsearch:7.17.10
+    image: elasticsearch:7.17.22
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false

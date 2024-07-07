@@ -19,6 +19,7 @@ import com.bravson.socialalert.infrastructure.rest.MediaTypeConstants;
 
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -39,7 +40,8 @@ public class MediaClaimTest extends BaseIntegrationTest {
 	@Test
 	public void claimNonExistingPicture() {
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/media/claim/20170407/58b28c6b28011a1ad4180419", MediaTypeConstants.JSON, token).post(getClaimMediaParameter());
+		Response response = createAuthRequest("/media/claim/20170407/58b28c6b28011a1ad4180419", MediaTypeConstants.JSON, token)
+				.post(getClaimMediaParameter());
 		assertThat(response.getStatus()).isEqualTo(Status.NOT_FOUND.getStatusCode());
 	}
 	
@@ -48,7 +50,9 @@ public class MediaClaimTest extends BaseIntegrationTest {
 	}
 	
 	private String uploadPicture(String token) {
-		Response upload = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token).post(getPicture("src/test/resources/media/IMG_0397.JPG"));
+		Response upload = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token)
+				.header(HttpHeaders.CONTENT_TYPE, MediaFileConstants.JPG_MEDIA_TYPE)
+				.post(getPicture("src/test/resources/media/IMG_0397.JPG"));
 		assertThat(upload.getStatus()).isEqualTo(Status.CREATED.getStatusCode());
 		return getLocationPath(upload).replace("/file/download/", "");
 	}
@@ -82,7 +86,9 @@ public class MediaClaimTest extends BaseIntegrationTest {
 	}
 	
 	private String uploadVideo(String token) {
-		Response upload = createAuthRequest("/file/upload/video", MediaType.WILDCARD, token).post(getVideo("src/test/resources/media/IMG_0236.MOV"));
+		Response upload = createAuthRequest("/file/upload/video", MediaType.WILDCARD, token)
+				.header(HttpHeaders.CONTENT_TYPE, MediaFileConstants.MOV_MEDIA_TYPE)
+				.post(getVideo("src/test/resources/media/IMG_0236.MOV"));
 		assertThat(upload.getStatus()).isEqualTo(Status.CREATED.getStatusCode());
 		return getLocationPath(upload).replace("/file/download/", "");
 	}

@@ -14,6 +14,7 @@ import com.google.common.io.Files;
 
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -35,7 +36,9 @@ public class FileUploadTest extends BaseIntegrationTest {
 
 	@Test
 	public void uploadPictureWithoutPrincial() throws Exception {
-		Response response = createRequest("/file/upload/picture", MediaType.WILDCARD).post(getPicture("src/main/resources/logo.jpg"));
+		Response response = createRequest("/file/upload/picture", MediaType.WILDCARD)
+				.header(HttpHeaders.CONTENT_TYPE, MediaFileConstants.JPG_MEDIA_TYPE)
+				.post(getPicture("src/main/resources/logo.jpg"));
 		assertThat(response.getStatus()).isEqualTo(Status.UNAUTHORIZED.getStatusCode());
 	}
 	
@@ -52,7 +55,9 @@ public class FileUploadTest extends BaseIntegrationTest {
 	@Test
 	public void uploadPictureWithLogin() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token).post(getPicture("src/test/resources/media/IMG_0397.JPG"));
+		Response response = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token)
+				.header(HttpHeaders.CONTENT_TYPE, MediaFileConstants.JPG_MEDIA_TYPE)
+				.post(getPicture("src/test/resources/media/IMG_0397.JPG"));
 		assertThat(response.getStatus()).isEqualTo(Status.CREATED.getStatusCode());
 		awaitAsyncEvent(AsyncMediaProcessedEvent.class);
 		File content = createAuthRequest(getLocationPath(response), MediaType.WILDCARD, token).get(File.class);
@@ -62,7 +67,9 @@ public class FileUploadTest extends BaseIntegrationTest {
 	@Test
 	public void uploadVideoWithLogin() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/file/upload/video", MediaType.WILDCARD, token).post(getVideo("src/test/resources/media/IMG_0236.MOV"));
+		Response response = createAuthRequest("/file/upload/video", MediaType.WILDCARD, token)
+				.header(HttpHeaders.CONTENT_TYPE, MediaFileConstants.MOV_MEDIA_TYPE)
+				.post(getVideo("src/test/resources/media/IMG_0236.MOV"));
 		assertThat(response.getStatus()).isEqualTo(Status.CREATED.getStatusCode());
 		awaitAsyncEvent(AsyncMediaProcessedEvent.class);
 		File content = createAuthRequest(getLocationPath(response), MediaType.WILDCARD, token).get(File.class);
@@ -72,21 +79,26 @@ public class FileUploadTest extends BaseIntegrationTest {
 	@Test
 	public void uploadPictureTooLarge() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token).post(getPicture("C:/Dev/jdk8/javafx-src.zip"));
+		Response response = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token)
+				.header(HttpHeaders.CONTENT_TYPE, MediaFileConstants.JPG_MEDIA_TYPE)
+				.post(getPicture("C:/Dev/jdk8/javafx-src.zip"));
 		assertThat(response.getStatus()).isEqualTo(Status.REQUEST_ENTITY_TOO_LARGE.getStatusCode());
 	}
 	
 	@Test
 	public void uploadPictureWithWrongMediaType() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token).post(getPlainText("test"));
+		Response response = createAuthRequest("/file/upload/picture", MediaType.WILDCARD, token)
+				.post(getPlainText("test"));
 		assertThat(response.getStatus()).isEqualTo(Status.UNSUPPORTED_MEDIA_TYPE.getStatusCode());
 	}
 
 	@Test
 	public void uploadAvatarWithLogin() throws Exception {
 		String token = requestLoginToken("test@test.com", "123");
-		Response response = createAuthRequest("/file/upload/avatar", MediaType.WILDCARD, token).post(getPicture("src/test/resources/media/IMG_0397.JPG"));
+		Response response = createAuthRequest("/file/upload/avatar", MediaType.WILDCARD, token)
+				.header(HttpHeaders.CONTENT_TYPE, MediaFileConstants.JPG_MEDIA_TYPE)
+				.post(getPicture("src/test/resources/media/IMG_0397.JPG"));
 		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
 		UserInfo userInfo = response.readEntity(UserInfo.class);
 		assertThat(userInfo.getImageUri()).isNotNull();

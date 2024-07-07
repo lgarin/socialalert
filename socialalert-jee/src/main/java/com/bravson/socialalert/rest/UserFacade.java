@@ -14,7 +14,7 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import org.jboss.resteasy.annotations.SseElementType;
+import org.jboss.resteasy.reactive.RestStreamElementType;
 
 import com.bravson.socialalert.business.media.MediaCommentService;
 import com.bravson.socialalert.business.user.UserLinkService;
@@ -337,7 +337,7 @@ public class UserFacade {
 	@GET
 	@Produces(MediaType.SERVER_SENT_EVENTS)
 	@Path("/notificationStream")
-	@SseElementType(MediaTypeConstants.JSON)
+	@RestStreamElementType(MediaTypeConstants.JSON)
 	@Operation(summary="Open a SSE stream of user notifications.")
 	@APIResponse(responseCode = "200", description = "SSE Stream is opened.", content=@Content(schema=@Schema(implementation=SseUserNotification.class)))
 	public void eventStream(@Context SseEventSink sseEventSink, @Context Sse sse) {
