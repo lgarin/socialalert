@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   keycloak:
     image: "quay.io/keycloak/keycloak:25.0"
@@ -103,6 +101,5 @@ services:
 #    links:
 #      - "postgres:postgres"
 volumes:
-  keycloak:
   postgres:
   elastic:
