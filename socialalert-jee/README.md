@@ -49,3 +49,11 @@ cp logo.jpg bin/
 ```bash
 tar -cvJf bin.tar.xz bin/
 ```
+
+# PostgreSQL database
+
+### Restore
+
+```bash
+pg_restore -U keycloak -d keycloak -c -F t /tmp/dbdata.tar
+```

@@ -25,8 +25,8 @@ public class LocationMediaCount extends MediaCount {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		// fullLocality has the following format '<locality> [<country>]' 
-		int countrySeperator = fullLocality.lastIndexOf(' ');
+		int countrySeperator = fullLocality.lastIndexOf(" [");
 		locality = fullLocality.substring(0, countrySeperator);
-		country = fullLocality.substring(countrySeperator + 1, fullLocality.length() - 1); 
+		country = fullLocality.substring(countrySeperator + 2, fullLocality.length() - 1); 
 	}
 }
