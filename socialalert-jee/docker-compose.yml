@@ -40,12 +40,13 @@ services:
     volumes:
       - "postgres:/var/lib/postgresql/data/dbdata"
   elastic:
-    image: elasticsearch:7.17.22
+    image: elasticsearch:8.14.3
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
       - xpack.security.transport.ssl.enabled=false
       - xpack.security.http.ssl.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     restart: on-failure
     logging:
       options:
